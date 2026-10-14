@@ -30,6 +30,11 @@
       "too-large": "This image is larger than {{max}} MB.",
       "unreadable": "The image file could not be read."
     },
+    "bibliography": {
+      "invalid-key": "The key \"{{key}}\" cannot be used. Use letters, digits and _ : . - / +, and do not start with a label prefix such as fig:.",
+      "duplicate-key": "Another entry already uses the key \"{{key}}\".",
+      "not-found": "The entry \"{{key}}\" could not be found."
+    },
     "document": {
       "not-found": "The document could not be found.",
       "singleton": "This project already has a document of that kind."

@@ -204,9 +204,9 @@ function familyOf(author: string): string {
   return family.replace(/[{}\\]/g, "");
 }
 
-/** Bibliography keys cannot look like a label, otherwise a citation and a cross-reference would be mixed up. */
+/** Bibliography keys follow the citation syntax and cannot look like a label. */
 export function isValidBibKey(key: string): boolean {
-  return /^[A-Za-z0-9_][A-Za-z0-9_.:+\-/]*$/.test(key) && !/^(cha|sec|fig|tbl|eq|lst):/.test(key);
+  return /^[A-Za-z0-9_](?:[A-Za-z0-9_]|[:.\-/+](?=[A-Za-z0-9_]))*$/.test(key) && !/^(cha|sec|fig|tbl|eq|lst):/.test(key);
 }
 
 export const ENTRY_TYPES = ["article", "book", "inproceedings", "incollection", "phdthesis", "mastersthesis", "techreport", "misc"] as const;

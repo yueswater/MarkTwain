@@ -91,3 +91,17 @@ export function collectTargets(doc: DocJson, scope: string): CollectedTargets {
   walk(doc as JsonNode);
   return { targets, references };
 }
+
+/** Bibliography keys cited in a document, in order of appearance and possibly repeated. */
+export function collectCitations(doc: DocJson): string[] {
+  const keys: string[] = [];
+  const walk = (node: JsonNode): void => {
+    if (node.type === "citation" && Array.isArray(node.attrs?.keys)) {
+      for (const key of node.attrs.keys) if (typeof key === "string") keys.push(key);
+      return;
+    }
+    for (const child of node.content ?? []) walk(child);
+  };
+  walk(doc as JsonNode);
+  return keys;
+}

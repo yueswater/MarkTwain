@@ -1,6 +1,6 @@
 import { describe, expect, it } from "@jest/globals";
 import { parseMarkdown } from "../markdown/parse";
-import { collectTargets } from "./collect";
+import { collectCitations, collectTargets } from "./collect";
 import { resolveNumbers } from "./numbering";
 
 const collect = (md: string, scope = "d1") => collectTargets(parseMarkdown(md), scope);
@@ -72,5 +72,16 @@ describe("captions decide numbering", () => {
   it("figures and tables without a caption get no number", () => {
     const md = ["![](a.png)", "", "![有說明](b.png)", "", "| a |", "| --- |", "", "| c |", "| --- |", "", ": 表標題"].join("\n");
     expect(collect(md).targets.map((t) => t.kind)).toEqual(["fig", "tbl"]);
+  });
+});
+
+describe("collectCitations", () => {
+  it("lists cited keys in order, also inside headings and lists", () => {
+    const md = "# 標題 [@a]\n\n文字 [@b; @c] 與 @d。\n\n- 項目 [-@a]\n";
+    expect(collectCitations(parseMarkdown(md))).toEqual(["a", "b", "c", "d", "a"]);
+  });
+
+  it("ignores cross-references and text without citations", () => {
+    expect(collectCitations(parseMarkdown("見 @fig:one 與 email a@b.com"))).toEqual([]);
   });
 });

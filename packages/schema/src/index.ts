@@ -14,7 +14,7 @@ export type {
   NumberingResult,
   Target,
 } from "./numbering/types";
-export { collectTargets, type CollectedTargets } from "./numbering/collect";
+export { collectCitations, collectTargets, type CollectedTargets } from "./numbering/collect";
 export {
   ConfigParseError,
   defaultFields,
@@ -68,3 +68,12 @@ export {
   type BibError,
   type BibParseResult,
 } from "./bibliography/bibtex";
+export {
+  detectFormat,
+  importCslJson,
+  importEntries,
+  importHayagriva,
+  type ImportFormat,
+  type ImportResult,
+  type ImportedEntry,
+} from "./bibliography/import";
