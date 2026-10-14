@@ -45,11 +45,13 @@ export function escapeText(text: string, context: EscapeContext): string {
     }
   }
 
-  if (context.startOfLine) {
-    out = out
-      .replace(/^(\s*)(#{1,6})(\s|$)/, "$1\\$2$3")
-      .replace(/^([+\-=>:])/, "\\$1")
-      .replace(/^(\d+)([.)])/, "$1\\$2");
-  }
-  return out;
+  return context.startOfLine ? escapeLineStart(out) : out;
+}
+
+/** 行首會被當成區塊標記（標題、清單、引用、定義、div 圍欄）的字元要跳脫。 */
+export function escapeLineStart(text: string): string {
+  return text
+    .replace(/^(\s*)(#{1,6})(\s|$)/, "$1\\$2$3")
+    .replace(/^([+\-=>:])/, "\\$1")
+    .replace(/^(\d+)([.)])/, "$1\\$2");
 }
