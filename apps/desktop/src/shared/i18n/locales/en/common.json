@@ -1,0 +1,14 @@
+{
+  "app": {
+    "name": "MarkTwain",
+    "tagline": "Offline thesis editor",
+    "version": "Version {{version}} ({{platform}})"
+  },
+  "settings": {
+    "language": "Language",
+    "locale": {
+      "zh-Hant": "繁體中文",
+      "en": "English"
+    }
+  }
+}

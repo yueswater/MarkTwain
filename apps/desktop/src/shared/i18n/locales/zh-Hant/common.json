@@ -1,0 +1,14 @@
+{
+  "app": {
+    "name": "MarkTwain",
+    "tagline": "離線論文編輯器",
+    "version": "版本 {{version}}（{{platform}}）"
+  },
+  "settings": {
+    "language": "介面語言",
+    "locale": {
+      "zh-Hant": "繁體中文",
+      "en": "English"
+    }
+  }
+}

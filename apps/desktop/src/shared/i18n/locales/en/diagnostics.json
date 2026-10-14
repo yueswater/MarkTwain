@@ -1,0 +1,10 @@
+{
+  "error": {
+    "app": {
+      "unknown": "An unexpected error occurred."
+    },
+    "settings": {
+      "invalid-locale": "That interface language is not supported."
+    }
+  }
+}

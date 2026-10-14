@@ -1,0 +1,10 @@
+{
+  "error": {
+    "app": {
+      "unknown": "發生未預期的錯誤。"
+    },
+    "settings": {
+      "invalid-locale": "不支援的介面語言。"
+    }
+  }
+}
