@@ -44,5 +44,15 @@
     "titleHint": "Leave empty to use the default title.",
     "deleteTitle": "Delete this document?",
     "deleteBody": "“{{title}}” and its content will be permanently deleted. This cannot be undone."
+  },
+  "search": {
+    "title": "Search the project",
+    "description": "Find text in every document of the project.",
+    "placeholder": "Search in all documents",
+    "none": "Nothing found.",
+    "count": "{{count}} found",
+    "truncated": "Only the first matches are shown, narrow the search to see the others.",
+    "caseSensitive": "Match case",
+    "open": "Search the project"
   }
 }

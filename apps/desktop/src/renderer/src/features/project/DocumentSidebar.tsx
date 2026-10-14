@@ -8,6 +8,7 @@ import {
   PanelLeftIcon,
   PencilIcon,
   PlusIcon,
+  SearchIcon,
   SettingsIcon,
   Trash2Icon,
 } from "lucide-react";
@@ -42,6 +43,7 @@ type Props = {
   onReorder: (id: string, targetId: string, placement: "before" | "after") => void;
   onDelete: (id: string) => void;
   onOpenSettings: () => void;
+  onOpenSearch: () => void;
   collapsed: boolean;
   onToggleCollapsed: () => void;
 };
@@ -59,6 +61,7 @@ export function DocumentSidebar({
   onReorder,
   onDelete,
   onOpenSettings,
+  onOpenSearch,
   collapsed,
   onToggleCollapsed,
 }: Props) {
@@ -204,6 +207,9 @@ export function DocumentSidebar({
         {!collapsed && (
           <>
             <h2 className="mr-auto ml-2 text-xs font-medium text-muted-foreground">{t("workspace.documents")}</h2>
+            <Button variant="ghost" size="icon-sm" aria-label={t("search.open")} title={t("search.open")} onClick={onOpenSearch}>
+              <SearchIcon aria-hidden="true" />
+            </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon-sm" aria-label={t("workspace.add")}>

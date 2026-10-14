@@ -171,5 +171,14 @@
     "crop": "裁切",
     "width": "寬度 {{value}}",
     "remove": "移除圖片"
+  },
+  "find": {
+    "label": "在這份文件中尋找",
+    "placeholder": "尋找",
+    "none": "找不到",
+    "next": "下一個",
+    "previous": "上一個",
+    "close": "關閉尋找列",
+    "caseSensitive": "區分大小寫"
   }
 }
