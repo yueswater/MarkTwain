@@ -31,12 +31,17 @@ const NO_SCHOOL = "none";
 type TextField = Exclude<keyof ConfigFields, "keywords" | "keywordsEn" | "school">;
 
 /** Project settings form that saves while typing, fields of config.yml. */
-export function ConfigForm() {
+export function ConfigForm({ onSaved }: { onSaved?: () => void }) {
   const { t, i18n } = useTranslation("config");
   const [state, setState] = useState<ConfigState | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<SaveStatus>("idle");
   const fieldsRef = useRef<ConfigFields | null>(null);
+  const savedRef = useRef(onSaved);
+  savedRef.current = onSaved;
+  useEffect(() => {
+    if (status === "saved") savedRef.current?.();
+  }, [status]);
 
   const autosaver = useMemo(
     () =>

@@ -7,7 +7,7 @@ export function registerExportController(build: BuildService, dialogs: DialogSer
   handle(IpcChannel.ExportPdf, async () => {
     const path = await dialogs.choosePdfPath(build.suggestedName());
     if (!path) return null;
-    build.savePdf(path);
+    await build.savePdf(path);
     return { path };
   });
 

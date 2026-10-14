@@ -16,5 +16,9 @@
   "export": "Export",
   "exportPdf": "Export PDF…",
   "exportProject": "Export Typst project…",
-  "exported": "Exported to {{path}}"
+  "exported": "Exported to {{path}}",
+  "watch": "Auto update",
+  "watchHint": "Rebuild after every save",
+  "page": "Page {{n}}",
+  "pages": "{{count}} pages"
 }

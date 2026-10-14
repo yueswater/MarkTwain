@@ -59,18 +59,20 @@ const code = async (fn: () => Promise<unknown>) => {
 
 describe("BuildService", () => {
   it("passes documents, images and config to the builder and returns a preview URL", async () => {
-    const outcome = await service({ ok: true, pdf: new Uint8Array([37, 80]), diagnostics: [], mathFailures: ["x"] }).build();
-    expect(outcome).toEqual({ ok: true, diagnostics: [], mathFailures: ["x"], previewUrl: "marktwain-preview://pdf/1.pdf" });
+    const outcome = await service({ ok: true, pdf: new Uint8Array(), pages: [new Uint8Array([37, 80])], diagnostics: [], mathFailures: ["x"] }).build();
+    expect(outcome).toEqual({ ok: true, diagnostics: [], mathFailures: ["x"], pageCount: 1, revision: 1 });
     expect(seen[0]?.documents.map((d) => [d.kind, d.text])).toEqual([["abstract", ""], ["chapter", "# 緒論\n"]]);
     expect(seen[0]?.files.map((f) => f.path)).toEqual(["images/a.png"]);
     expect(seen[0]?.config).toContain("title: 我的論文");
   });
 
-  it("keeps the latest PDF and bumps the revision on each success", async () => {
-    const s = service({ ok: true, pdf: new Uint8Array([1, 2]), diagnostics: [], mathFailures: [] });
+  it("keeps the page images and bumps the revision on each success", async () => {
+    const s = service({ ok: true, pdf: new Uint8Array(), pages: [new Uint8Array([1, 2]), new Uint8Array([3])], diagnostics: [], mathFailures: [] });
     await s.build();
-    expect((await s.build()).previewUrl).toBe("marktwain-preview://pdf/2.pdf");
-    expect([...(s.latestPdf() ?? [])]).toEqual([1, 2]);
+    expect((await s.build()).revision).toBe(2);
+    expect([...(s.page(0) ?? [])]).toEqual([1, 2]);
+    expect([...(s.page(1) ?? [])]).toEqual([3]);
+    expect(s.page(2)).toBeNull();
   });
 
   it("returns diagnostics for a failed build without a preview", async () => {
@@ -80,13 +82,13 @@ describe("BuildService", () => {
       mathFailures: [],
     }).build();
     expect(outcome.ok).toBe(false);
-    expect(outcome.previewUrl).toBeNull();
+    expect(outcome.pageCount).toBe(0);
     expect(outcome.diagnostics[0]).toMatchObject({ message: "boom", code: null, source: { documentId: "id-2", block: 0 } });
   });
 
   it("rejects a second build while one is running", async () => {
     let release!: (r: BuildResult) => void;
-    const done: BuildResult = { ok: true, pdf: new Uint8Array(), diagnostics: [], mathFailures: [] };
+    const done: BuildResult = { ok: true, pdf: new Uint8Array(), pages: [], diagnostics: [], mathFailures: [] };
     const s = service(() => new Promise<BuildResult>((r) => (release = r)));
     const first = s.build();
     expect(await code(() => s.build())).toBe("build.busy");
@@ -105,13 +107,13 @@ describe("BuildService", () => {
   });
 
   describe("export", () => {
-    it("saves the latest PDF and refuses when nothing was built", async () => {
-      const s = service({ ok: true, pdf: new Uint8Array([7, 8]), diagnostics: [], mathFailures: [] });
+    it("builds the PDF at export time and saves it, failing with the first error", async () => {
       const target = join(templateDir, "out.pdf");
-      expect(await code(async () => s.savePdf(target))).toBe("export.no-pdf");
-      await s.build();
-      s.savePdf(target);
+      await service({ ok: true, pdf: new Uint8Array([7, 8]), pages: [], diagnostics: [], mathFailures: [] }).savePdf(target);
       expect([...readFileSync(target)]).toEqual([7, 8]);
+      const failing = service({ ok: false, diagnostics: [{ severity: "error", message: "boom", file: null, line: null, column: null, source: null }], mathFailures: [] });
+      expect(await code(() => failing.savePdf(target))).toBe("export.failed");
+      expect(seen.at(-1)?.format).toBe("pdf");
     });
 
     it("exports the project into a folder named after the title", () => {

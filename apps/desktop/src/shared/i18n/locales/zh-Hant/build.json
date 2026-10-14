@@ -16,5 +16,9 @@
   "export": "匯出",
   "exportPdf": "匯出 PDF…",
   "exportProject": "匯出 Typst 專案…",
-  "exported": "已匯出到 {{path}}"
+  "exported": "已匯出到 {{path}}",
+  "watch": "自動更新",
+  "watchHint": "每次儲存後自動重新建置",
+  "page": "第 {{n}} 頁",
+  "pages": "共 {{count}} 頁"
 }

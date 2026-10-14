@@ -29,10 +29,15 @@ import { useLabelIndex } from "./use-label-index";
 import { findUnlabeledTargets, newLabel, type UnlabeledTarget } from "./unlabeled-targets";
 import { Toolbar } from "./Toolbar";
 
-type Props = { documentId: string; scrollTo?: { block: number; nonce: number } | null };
+type Props = {
+  documentId: string;
+  scrollTo?: { block: number; nonce: number } | null;
+  /** Called every time the text has been saved */
+  onSaved?: () => void;
+};
 
 /** Loads one document. The caller remounts with key when the document changes, so each document has its own editor and undo history. */
-export function DocumentEditor({ documentId, scrollTo }: Props) {
+export function DocumentEditor({ documentId, scrollTo, onSaved }: Props) {
   const { t } = useTranslation();
   const [doc, setDoc] = useState<DocumentData | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -57,12 +62,20 @@ export function DocumentEditor({ documentId, scrollTo }: Props) {
     );
   }
   if (!doc) return null;
-  return <EditorSurface doc={doc} scrollTo={scrollTo ?? null} />;
+  return <EditorSurface doc={doc} scrollTo={scrollTo ?? null} onSaved={onSaved} />;
 }
 
 const ATOM_TYPES = new Set(["footnote", "citation", "crossRef"]);
 
-function EditorSurface({ doc, scrollTo }: { doc: DocumentData; scrollTo: { block: number; nonce: number } | null }) {
+function EditorSurface({
+  doc,
+  scrollTo,
+  onSaved,
+}: {
+  doc: DocumentData;
+  scrollTo: { block: number; nonce: number } | null;
+  onSaved?: () => void;
+}) {
   const { t } = useTranslation("editor");
   const { t: tCommon } = useTranslation();
   const [status, setStatus] = useState<SaveStatus>("idle");
@@ -75,6 +88,11 @@ function EditorSurface({ doc, scrollTo }: { doc: DocumentData; scrollTo: { block
   const [unlabeled, setUnlabeled] = useState<UnlabeledTarget[]>([]);
 
   const labels = useLabelIndex(status);
+  const savedRef = useRef(onSaved);
+  savedRef.current = onSaved;
+  useEffect(() => {
+    if (status === "saved") savedRef.current?.();
+  }, [status]);
   const labelsRef = useRef(labels);
   labelsRef.current = labels;
   const tRef = useRef(t);

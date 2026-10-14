@@ -26,9 +26,11 @@ export function resolveBuildPaths(): BuildPaths {
 export function registerBuildController(service: BuildService): void {
   handle(IpcChannel.BuildTypst, () => service.build());
 
-  protocol.handle(PREVIEW_SCHEME, () => {
-    const pdf = service.latestPdf();
-    if (!pdf) return new Response(null, { status: 404 });
-    return new Response(pdf as unknown as BodyInit, { headers: { "content-type": "application/pdf" } });
+  // marktwain-preview://page/<revision>/<index>.png
+  protocol.handle(PREVIEW_SCHEME, (request) => {
+    const match = /\/(\d+)\.png$/.exec(new URL(request.url).pathname);
+    const page = match ? service.page(Number(match[1])) : null;
+    if (!page) return new Response(null, { status: 404 });
+    return new Response(page as unknown as BodyInit, { headers: { "content-type": "image/png", "cache-control": "no-store" } });
   });
 }

@@ -19,6 +19,9 @@ export function Workspace({ state, build, previewOpen, onClosePreview }: Props) 
   const project = state.project;
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [settings, setSettings] = useState(false);
+  // Grows whenever a document or the settings were saved, the preview watches it
+  const [saveTick, setSaveTick] = useState(0);
+  const bumpSaved = () => setSaveTick((n) => n + 1);
   const [collapsed, setCollapsed] = useState(() => {
     try {
       return localStorage.getItem("marktwain.sidebar.collapsed") === "1";
@@ -81,9 +84,9 @@ export function Workspace({ state, build, previewOpen, onClosePreview }: Props) 
       />
       <section className="min-w-0 flex-1">
         {settings ? (
-          <ConfigForm />
+          <ConfigForm onSaved={bumpSaved} />
         ) : selected ? (
-          <DocumentEditor key={selected.id} documentId={selected.id} scrollTo={target} />
+          <DocumentEditor key={selected.id} documentId={selected.id} scrollTo={target} onSaved={bumpSaved} />
         ) : (
           <p className="p-8 text-sm text-muted-foreground">{t("workspace.empty")}</p>
         )}
@@ -91,6 +94,7 @@ export function Workspace({ state, build, previewOpen, onClosePreview }: Props) 
       {previewOpen && (
         <PreviewPanel
           build={build}
+          saveTick={saveTick}
           onClose={onClosePreview}
           onJump={(documentId, block) => {
             setSettings(false);
