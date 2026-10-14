@@ -14,6 +14,7 @@ import { useResizableWidth } from "@/lib/resizable-width";
 import { IpcChannel } from "../../../../shared/enums/ipc-channel.enum";
 import { api } from "../../shared/api";
 import { errorMessage } from "../../shared/error-message";
+import { showNotes, warningItems } from "./build-notes";
 import type { BuildState } from "./use-build";
 
 type Props = {
@@ -44,10 +45,7 @@ export function PreviewPanel({ build, saveTick, onClose, onJump }: Props) {
   const { width, separator } = useResizableWidth("marktwain.preview.width", 520, 320, 0.7);
 
   const errors = outcome?.diagnostics.filter((d) => d.severity === "error") ?? [];
-  const warnings = outcome?.diagnostics.filter((d) => d.severity === "warning") ?? [];
-  const uncited = warnings.filter((d) => d.code === "citation-no-bibliography").map((d) => d.message);
-  // One line for all unfilled settings, not one per field
-  const missingFields = warnings.filter((d) => d.code === "config-missing").map((d) => d.message);
+  const items = warningItems(outcome?.diagnostics ?? [], outcome?.mathFailures ?? []);
 
   // Opening the preview starts watching, and every save rebuilds after a short pause
   useEffect(() => {
@@ -158,7 +156,7 @@ export function PreviewPanel({ build, saveTick, onClose, onJump }: Props) {
         )}
       </div>
 
-      {(errors.length > 0 || warnings.length > 0 || (outcome?.mathFailures.length ?? 0) > 0) && (
+      {showNotes(errors, items) && (
         <div className="max-h-56 shrink-0 overflow-y-auto border-t p-3 text-sm" role="log" aria-label={t("errors")}>
           {errors.length > 0 && <h3 className="mb-1 text-xs font-medium text-destructive">{t("errors")}</h3>}
           <ul className="flex flex-col gap-1">
@@ -178,18 +176,35 @@ export function PreviewPanel({ build, saveTick, onClose, onJump }: Props) {
               </li>
             ))}
           </ul>
-          {(warnings.length > 0 || (outcome?.mathFailures.length ?? 0) > 0) && (
-            <h3 className="mt-2 mb-1 flex items-center gap-1 text-xs font-medium text-muted-foreground">
+          {items.length > 0 && (
+            <h3 className={cn("mb-1 flex items-center gap-1 text-xs font-medium text-muted-foreground", errors.length > 0 && "mt-2")}>
               <AlertTriangleIcon className="size-3" aria-hidden="true" />
               {t("warnings")}
             </h3>
           )}
           <ul className="flex flex-col gap-1 text-muted-foreground">
-            {missingFields.length > 0 && <li className="select-text">{t("configMissing", { field: missingFields.join(", ") })}</li>}
-            {uncited.length > 0 && <li className="select-text">{t("citationNoBibliography", { keys: uncited.join(", ") })}</li>}
-            {outcome?.mathFailures.map((latex, i) => (
-              <li key={`m${i}`} className="select-text">
-                {t("mathFailed", { latex })}
+            {items.map((item, i) => (
+              <li key={`w${i}`} className="select-text">
+                {item.kind === "configMissing" && t("configMissing", { field: item.fields.join(", ") })}
+                {item.kind === "citation" && t("citationNoBibliography", { keys: item.keys.join(", ") })}
+                {item.kind === "math" && t("mathFailed", { latex: item.latex })}
+                {item.kind === "font" && t("fontMissing", { font: item.font })}
+                {item.kind === "other" && (
+                  <>
+                    {item.message}
+                    {item.file ? <span className="ml-1 text-xs">{`${item.file}${item.line ? `:${item.line}` : ""}`}</span> : null}
+                    {item.source ? (
+                      <Button
+                        variant="link"
+                        size="sm"
+                        className="h-auto px-1 py-0"
+                        onClick={() => onJump(item.source!.documentId, item.source!.block)}
+                      >
+                        {t("goTo")}
+                      </Button>
+                    ) : null}
+                  </>
+                )}
               </li>
             ))}
           </ul>
