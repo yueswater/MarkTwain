@@ -130,6 +130,7 @@ function applyExtras(tokens: Token[], from: number, meta: CaptionMeta): Token[] 
   }
 
   const widths = parseWidths(meta.widths);
+  const columns = Math.max(1, ...rows.map((_, r) => cells.filter((cell) => cell.row === r + 1).length));
   rows.forEach((r, index) => {
     const height = meta.heights.get(index + 1);
     const token = tokens[r.open];
@@ -139,8 +140,9 @@ function applyExtras(tokens: Token[], from: number, meta: CaptionMeta): Token[] 
   const covered = new Set<string>();
   for (const cell of cells) {
     const extra = meta.cells.get(`${cell.row}.${cell.col}`);
-    const colspan = extra?.colspan ?? 1;
-    const rowspan = extra?.rowspan ?? 1;
+    // A span cannot reach past the table
+    const colspan = Math.min(extra?.colspan ?? 1, columns - cell.col + 1);
+    const rowspan = Math.min(extra?.rowspan ?? 1, rows.length - cell.row + 1);
     const token = tokens[cell.open];
     if (!token) continue;
     for (let dr = 0; dr < rowspan; dr += 1) {

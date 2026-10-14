@@ -42,6 +42,7 @@ type Props = {
   onInsertAtom: (type: "footnote" | "citation" | "crossRef") => void;
   onEditCaption: () => void;
   onInsertImage: () => void;
+  onEditRowHeight: () => void;
 };
 
 const BLOCKS = ["paragraph", "heading1", "heading2", "heading3", "heading4"] as const;
@@ -97,7 +98,7 @@ function insertDefinition(editor: Editor, inList: boolean): void {
     .run();
 }
 
-export function Toolbar({ editor, onInsertMath, onInsertAtom, onEditCaption, onInsertImage }: Props) {
+export function Toolbar({ editor, onInsertMath, onInsertAtom, onEditCaption, onInsertImage, onEditRowHeight }: Props) {
   const { t } = useTranslation("editor");
 
   // Recompute button state when the selection or content changes
@@ -225,7 +226,7 @@ export function Toolbar({ editor, onInsertMath, onInsertAtom, onEditCaption, onI
       )}
       {button(t("toolbar.definitionList"), BookAIcon, () => insertDefinition(editor, state.inDefinitionList))}
     </div>
-    {state.inTable && <TableTools editor={editor} onEditCaption={onEditCaption} />}
+    {state.inTable && <TableTools editor={editor} onEditCaption={onEditCaption} onEditRowHeight={onEditRowHeight} />}
     </>
   );
 }

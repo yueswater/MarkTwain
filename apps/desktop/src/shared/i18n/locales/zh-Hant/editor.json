@@ -100,7 +100,22 @@
     "alignLeft": "靠左",
     "alignCenter": "置中",
     "alignRight": "靠右",
-    "caption": "表格標題與附註"
+    "caption": "表格標題與附註",
+    "merge": "合併儲存格",
+    "split": "分割儲存格",
+    "styleThreeLine": "切換為全框線",
+    "styleGrid": "切換為三線表",
+    "valignTop": "垂直靠上",
+    "valignMiddle": "垂直置中",
+    "valignBottom": "垂直靠下",
+    "rowHeight": "列高",
+    "rowHeightTitle": "列高",
+    "rowHeightLabel": "高度",
+    "rowHeightHint": "長度，例如 30pt、1cm 或 2em。留空表示自動高度。",
+    "rowHeightInvalid": "請輸入數字加單位，例如 pt、cm、mm、in 或 em。",
+    "alignColumnLeft": "整欄靠左",
+    "alignColumnCenter": "整欄置中",
+    "alignColumnRight": "整欄靠右"
   },
   "caption": {
     "tableTitle": "表格標題",

@@ -19,6 +19,8 @@ import {
 } from "./AtomDialogs";
 import { CaptionDialog, type CaptionTarget } from "./CaptionDialog";
 import { FigureDialog, type FigureTarget } from "./FigureDialog";
+import { RowHeightDialog } from "./RowHeightDialog";
+import { currentRowHeight, setRowHeight } from "./table-commands";
 import { MathDialog, type MathTarget } from "./MathDialog";
 import { MarkdownPaste } from "./extensions/markdown-paste";
 import { RefDecorations, REFS_CHANGED } from "./extensions/ref-decorations";
@@ -66,6 +68,7 @@ function EditorSurface({ doc, scrollTo }: { doc: DocumentData; scrollTo: { block
   const [math, setMath] = useState<MathTarget | null>(null);
   const [atom, setAtom] = useState<AtomTarget | null>(null);
   const [caption, setCaption] = useState<CaptionTarget | null>(null);
+  const [rowHeight, setRowHeightState] = useState<string | null>(null);
   const [figure, setFigure] = useState<FigureTarget | null>(null);
   const [importError, setImportError] = useState<string | null>(null);
   const [unlabeled, setUnlabeled] = useState<UnlabeledTarget[]>([]);
@@ -236,6 +239,7 @@ function EditorSurface({ doc, scrollTo }: { doc: DocumentData; scrollTo: { block
         editor={editor}
         onInsertMath={(kind) => setMath({ kind, latex: "", pos: null })}
         onInsertAtom={openAtom}
+        onEditRowHeight={() => setRowHeightState(currentRowHeight(editor))}
         onInsertImage={() => {
           setImportError(null);
           api
@@ -295,6 +299,14 @@ function EditorSurface({ doc, scrollTo }: { doc: DocumentData; scrollTo: { block
             ).run();
           }}
           onClose={() => setMath(null)}
+          onRestoreFocus={() => editor.commands.focus()}
+        />
+      )}
+      {rowHeight !== null && (
+        <RowHeightDialog
+          initial={rowHeight}
+          onSubmit={(height) => setRowHeight(editor, height)}
+          onClose={() => setRowHeightState(null)}
           onRestoreFocus={() => editor.commands.focus()}
         />
       )}

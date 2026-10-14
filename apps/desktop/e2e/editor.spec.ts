@@ -353,3 +353,69 @@ test("pasting Markdown text becomes document structure; Ctrl+S saves at once", a
     rmSync(dir, { recursive: true, force: true });
   }
 });
+
+test("tables can be merged, aligned, restyled and given a row height", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "marktwain 表格版面 "));
+  const file = join(dir, "論文.marktwain");
+  const args = [`--user-data-dir=${join(dir, "userData")}`, "--lang=en-US"];
+  if (process.platform === "linux") args.push("--no-sandbox");
+
+  const app = await electron.launch({
+    executablePath: findPackagedExecutable(dist),
+    args,
+    env: { ...process.env, MARKTWAIN_TEST_DIALOG_PATH: file },
+  });
+  try {
+    const page = await app.firstWindow();
+    await page.getByRole("button", { name: "New project" }).click();
+    const editor = page.locator(".ProseMirror");
+    await editor.click();
+    const dialog = page.getByRole("dialog");
+
+    await page.getByRole("button", { name: "Insert table" }).click();
+    await page.keyboard.type("A");
+    await page.keyboard.press("Tab");
+    await page.keyboard.type("B");
+    await page.keyboard.press("Tab");
+    await page.keyboard.type("C");
+    await page.keyboard.press("Tab");
+    await page.keyboard.type("1");
+
+    // Merge the first two cells of the second row by dragging across them
+    const row2 = editor.locator("tr").nth(1).locator("td");
+    await row2.nth(0).click();
+    await row2.nth(1).click({ modifiers: ["Shift"] });
+    await page.getByRole("button", { name: "Merge cells" }).click();
+    await expect(editor.locator("tr").nth(1).locator("td").first()).toHaveAttribute("colspan", "2");
+
+    // Align the third column to the right, switch to grid lines and set the height of the second row
+    await editor.locator("tr").nth(0).locator("th").nth(2).click();
+    await page.getByRole("button", { name: "Align column right" }).click();
+    await page.getByRole("button", { name: "Switch to grid lines" }).click();
+    await expect(editor.locator(".tableWrapper")).toHaveAttribute("data-table-style", "grid");
+
+    await row2.first().click();
+    await page.getByRole("button", { name: "Row height" }).click();
+    await dialog.getByLabel("Height").fill("2cm");
+    await dialog.getByRole("button", { name: "Save" }).click();
+    await expect(dialog).toBeHidden();
+    await expect(editor.locator("tr").nth(1)).toHaveAttribute("data-height", "2cm");
+    await expect(page.getByRole("status")).toHaveText("Saved");
+
+    const text = await page.evaluate(async () => {
+      const list = await window.marktwain.invoke("document:list");
+      if (!list.ok) return "";
+      const chapter = list.data.find((d) => d.kind === "chapter");
+      const doc = chapter && (await window.marktwain.invoke("document:get", { id: chapter.id }));
+      return doc && doc.ok ? doc.data.text : "";
+    });
+    expect(text).toContain("| A | B | C |");
+    expect(text).toContain("---:");
+    expect(text).toContain("cells=2.1:colspan=2");
+    expect(text).toContain("heights=2:2cm");
+    expect(text).toContain("style=grid");
+  } finally {
+    await app.close();
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
