@@ -10,6 +10,7 @@ import { api } from "../../shared/api";
 import { errorMessage } from "../../shared/error-message";
 import { Autosaver, type SaveStatus } from "./autosaver";
 import { createSchemaExtensions } from "./extensions/schema-extensions";
+import { MathDialog, type MathTarget } from "./MathDialog";
 import { Toolbar } from "./Toolbar";
 
 type Props = { documentId: string };
@@ -46,6 +47,7 @@ export function DocumentEditor({ documentId }: Props) {
 function EditorSurface({ doc }: { doc: DocumentData }) {
   const { t } = useTranslation("editor");
   const [status, setStatus] = useState<SaveStatus>("idle");
+  const [math, setMath] = useState<MathTarget | null>(null);
 
   const autosaver = useMemo(
     () =>
@@ -61,7 +63,9 @@ function EditorSurface({ doc }: { doc: DocumentData }) {
   const editor = useEditor(
     {
       extensions: [
-        ...createSchemaExtensions(),
+        ...createSchemaExtensions({
+          onMathClick: (kind, latex, pos) => setMath({ kind, latex, pos }),
+        }),
         Placeholder.configure({ placeholder: t("placeholder") }),
       ],
       content: parseMarkdown(doc.text) as JSONContent,
@@ -85,7 +89,10 @@ function EditorSurface({ doc }: { doc: DocumentData }) {
 
   return (
     <div className="flex h-full min-h-0 flex-col">
-      <Toolbar editor={editor} />
+      <Toolbar
+        editor={editor}
+        onInsertMath={(kind) => setMath({ kind, latex: "", pos: null })}
+      />
       <div className="min-h-0 flex-1 overflow-y-auto">
         <EditorContent editor={editor} className="mx-auto max-w-3xl px-8 py-8" />
       </div>
@@ -96,6 +103,37 @@ function EditorSurface({ doc }: { doc: DocumentData }) {
       >
         {status === "idle" ? "" : t(`save.${status}`)}
       </p>
+      {math && (
+        <MathDialog
+          target={math}
+          onSubmit={(latex) => {
+            const chain = editor.chain().focus();
+            if (math.pos === null) {
+              (math.kind === "inline"
+                ? chain.insertInlineMath({ latex })
+                : chain.insertBlockMath({ latex })
+              ).run();
+            } else {
+              (math.kind === "inline"
+                ? chain.updateInlineMath({ latex, pos: math.pos })
+                : chain.updateBlockMath({ latex, pos: math.pos })
+              ).run();
+            }
+          }}
+          onRemove={() => {
+            if (math.pos === null) return;
+            const chain = editor.chain().focus();
+            (math.kind === "inline"
+              ? chain.deleteInlineMath({ pos: math.pos })
+              : chain.deleteBlockMath({ pos: math.pos })
+            ).run();
+          }}
+          onClose={() => {
+            setMath(null);
+            editor.commands.focus();
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -25,6 +25,20 @@
     "blockquote": "引言",
     "codeBlock": "程式碼區塊",
     "rule": "分隔線",
-    "table": "插入表格"
+    "table": "插入表格",
+    "inlineMath": "行內公式",
+    "blockMath": "獨立公式"
+  },
+  "math": {
+    "insertTitle": "插入公式",
+    "editTitle": "編輯公式",
+    "latex": "LaTeX",
+    "preview": "預覽",
+    "empty": "輸入 LaTeX 即可預覽。",
+    "invalid": "這個公式有語法錯誤。",
+    "insert": "插入",
+    "update": "更新",
+    "remove": "移除",
+    "hint": "例如：\\frac{a}{b} 或 \\sum_{i=1}^{n} x_i"
   }
 }

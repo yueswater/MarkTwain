@@ -9,6 +9,7 @@ import { DefinitionDescription, DefinitionList, DefinitionTerm } from "./nodes/d
 import { Div } from "./nodes/div";
 import { FigureGroup } from "./nodes/figure-group";
 import { Figure } from "./nodes/figure";
+import { MathInputRules } from "./math-input";
 import { Footnote } from "./nodes/footnote";
 import { CjkBold, CjkItalic, CjkStrike } from "./marks";
 
@@ -16,7 +17,13 @@ import { CjkBold, CjkItalic, CjkStrike } from "./marks";
  * 編輯器的 schema：只包含 `@marktwain/schema` 認得的節點與標記（對等測試會驗證）。
  * 不含任何畫面相關的程式（NodeView、工具列），所以可以在沒有 DOM 的測試裡使用。
  */
-export function createSchemaExtensions(): Extensions {
+export type SchemaExtensionOptions = {
+  /** 點擊公式時呼叫（編輯器的畫面層用來開啟編輯對話框）；測試與純 schema 用途不需要 */
+  onMathClick?: (kind: "inline" | "block", latex: string, pos: number) => void;
+};
+
+export function createSchemaExtensions(options: SchemaExtensionOptions = {}): Extensions {
+  const { onMathClick } = options;
   return [
     StarterKit.configure({
       heading: { levels: [1, 2, 3, 4] },
@@ -32,7 +39,11 @@ export function createSchemaExtensions(): Extensions {
     CjkItalic,
     CjkStrike,
     GlobalAttributes,
-    Mathematics,
+    Mathematics.configure({
+      inlineOptions: onMathClick ? { onClick: (node, pos) => onMathClick("inline", node.attrs.latex, pos) } : undefined,
+      blockOptions: onMathClick ? { onClick: (node, pos) => onMathClick("block", node.attrs.latex, pos) } : undefined,
+    }),
+    MathInputRules,
     Table.configure({ resizable: false }),
     TableRow,
     // 儲存格只有一個段落（管線表格沒有多段儲存格）
