@@ -30,7 +30,9 @@
     "blockMath": "Math block",
     "footnote": "Footnote",
     "citation": "Citation",
-    "crossRef": "Cross-reference"
+    "crossRef": "Cross-reference",
+    "definitionList": "Definition list",
+    "addDefinition": "Add term"
   },
   "math": {
     "insertTitle": "Insert math",
@@ -85,5 +87,27 @@
     "insert": "Insert",
     "update": "Update",
     "remove": "Remove"
+  },
+  "table": {
+    "label": "Table tools",
+    "addRow": "Add row below",
+    "addColumn": "Add column right",
+    "deleteRow": "Delete row",
+    "deleteColumn": "Delete column",
+    "toggleHeader": "Toggle header row",
+    "deleteTable": "Delete table",
+    "alignLeft": "Align left",
+    "alignCenter": "Align center",
+    "alignRight": "Align right",
+    "caption": "Table caption and notes"
+  },
+  "caption": {
+    "tableTitle": "Table caption",
+    "codeTitle": "Listing caption",
+    "captionLabel": "Caption",
+    "captionHint": "Inline Markdown is allowed. Leave empty for no caption.",
+    "notes": "Notes",
+    "notesHint": "Shown below the table, for example the source of the data.",
+    "save": "Save"
   }
 }

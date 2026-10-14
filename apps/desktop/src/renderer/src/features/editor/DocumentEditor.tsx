@@ -17,6 +17,7 @@ import {
   type AtomTarget,
   type CrossRefChoice,
 } from "./AtomDialogs";
+import { CaptionDialog, type CaptionTarget } from "./CaptionDialog";
 import { MathDialog, type MathTarget } from "./MathDialog";
 import { RefDecorations, REFS_CHANGED } from "./extensions/ref-decorations";
 import { useLabelIndex } from "./use-label-index";
@@ -61,6 +62,7 @@ function EditorSurface({ doc }: { doc: DocumentData }) {
   const [status, setStatus] = useState<SaveStatus>("idle");
   const [math, setMath] = useState<MathTarget | null>(null);
   const [atom, setAtom] = useState<AtomTarget | null>(null);
+  const [caption, setCaption] = useState<CaptionTarget | null>(null);
   const [unlabeled, setUnlabeled] = useState<UnlabeledTarget[]>([]);
 
   const labels = useLabelIndex(status);
@@ -197,6 +199,14 @@ function EditorSurface({ doc }: { doc: DocumentData }) {
         editor={editor}
         onInsertMath={(kind) => setMath({ kind, latex: "", pos: null })}
         onInsertAtom={openAtom}
+        onEditCaption={() => {
+          const attrs = editor.getAttributes(editor.isActive("table") ? "table" : "codeBlock");
+          setCaption({
+            kind: editor.isActive("table") ? "table" : "codeBlock",
+            caption: String(attrs.caption ?? ""),
+            notes: String(attrs.notes ?? ""),
+          });
+        }}
       />
       <div className="min-h-0 flex-1 overflow-y-auto">
         <EditorContent editor={editor} className="mx-auto max-w-3xl px-8 py-8" />
@@ -234,6 +244,20 @@ function EditorSurface({ doc }: { doc: DocumentData }) {
             ).run();
           }}
           onClose={() => setMath(null)}
+          onRestoreFocus={() => editor.commands.focus()}
+        />
+      )}
+      {caption && (
+        <CaptionDialog
+          target={caption}
+          onSubmit={({ caption: text, notes }) =>
+            editor
+              .chain()
+              .focus()
+              .updateAttributes(caption.kind, caption.kind === "table" ? { caption: text, notes } : { caption: text })
+              .run()
+          }
+          onClose={() => setCaption(null)}
           onRestoreFocus={() => editor.commands.focus()}
         />
       )}

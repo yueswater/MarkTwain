@@ -193,3 +193,67 @@ test("footnotes, citations and cross-references can be inserted, shown, and save
     rmSync(dir, { recursive: true, force: true });
   }
 });
+
+test("tables get rows, a caption and notes; definition lists keep term and description", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "marktwain 表格 "));
+  const file = join(dir, "論文.marktwain");
+  const args = [`--user-data-dir=${join(dir, "userData")}`, "--lang=en-US"];
+  if (process.platform === "linux") args.push("--no-sandbox");
+
+  const app = await electron.launch({
+    executablePath: findPackagedExecutable(dist),
+    args,
+    env: { ...process.env, MARKTWAIN_TEST_DIALOG_PATH: file },
+  });
+  try {
+    const page = await app.firstWindow();
+    await page.getByRole("button", { name: "New project" }).click();
+    const editor = page.locator(".ProseMirror");
+    await editor.click();
+    const dialog = page.getByRole("dialog");
+    const settle = async () => {
+      await expect(dialog).toBeHidden();
+      await expect(editor).toBeFocused();
+    };
+
+    await page.getByRole("button", { name: "Insert table" }).click();
+    await page.keyboard.type("A");
+    await page.keyboard.press("Tab");
+    await page.keyboard.type("B");
+    await page.keyboard.press("Tab");
+    await page.keyboard.type("C");
+    await page.getByRole("button", { name: "Add row below" }).click();
+    await expect(editor.locator("tr")).toHaveCount(4);
+
+    await page.getByRole("button", { name: "Table caption and notes" }).click();
+    await dialog.getByLabel("Caption").fill("Results");
+    await dialog.getByLabel("Notes").fill("Source: survey");
+    await dialog.getByRole("button", { name: "Save" }).click();
+    await settle();
+
+    // 表格之後：游標移到文件最後，加入定義清單
+    await page.keyboard.press("Control+End");
+    await page.getByRole("button", { name: "Definition list" }).click();
+    await page.keyboard.type("alpha");
+    await page.keyboard.press("Enter");
+    await page.keyboard.type("Learning rate");
+    await expect(editor.locator("dl dt")).toHaveText("alpha");
+    await expect(editor.locator("dl dd")).toHaveText("Learning rate");
+    await expect(page.getByRole("status")).toHaveText("Saved");
+
+    const text = await page.evaluate(async () => {
+      const list = await window.marktwain.invoke("document:list");
+      if (!list.ok) return "";
+      const chapter = list.data.find((d) => d.kind === "chapter");
+      const doc = chapter && (await window.marktwain.invoke("document:get", { id: chapter.id }));
+      return doc && doc.ok ? doc.data.text : "";
+    });
+    expect(text).toContain("| A");
+    expect(text).toContain("Results");
+    expect(text).toContain("Source: survey");
+    expect(text).toContain("alpha\n: Learning rate");
+  } finally {
+    await app.close();
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
