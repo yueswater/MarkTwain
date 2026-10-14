@@ -1,6 +1,10 @@
+import { declareAssetScheme, handleAssetProtocol } from "./core/asset-protocol";
 import { bootstrap } from "./core/bootstrap";
 import { DatabaseSession } from "./core/database-session";
+import { registerAssetController } from "./features/asset/asset.controller";
+import { AssetService } from "./features/asset/asset.service";
 import { registerAppController } from "./features/app/app.controller";
+import type { DialogService } from "./features/dialog/dialog.service";
 import { registerDialogController } from "./features/dialog/dialog.controller";
 import { registerDocumentController } from "./features/document/document.controller";
 import { DocumentService } from "./features/document/document.service";
@@ -15,11 +19,20 @@ const session = new DatabaseSession();
 const documents = new DocumentService(session);
 const projects = new ProjectService(session, documents);
 const labels = new LabelService(documents);
+const assets = new AssetService(session);
+let dialogs: DialogService;
+
+// 自訂協定必須在 app ready 之前宣告
+declareAssetScheme();
 
 bootstrap([
   registerAppController,
   registerSettingsController,
-  registerDialogController,
+  () => {
+    dialogs = registerDialogController();
+  },
+  () => registerAssetController(assets, dialogs),
+  () => handleAssetProtocol((path) => assets.read(path)),
   () => registerProjectController(projects),
   () => registerDocumentController(documents),
   () => registerLabelController(labels),

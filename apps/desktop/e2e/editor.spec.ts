@@ -1,5 +1,5 @@
 import { _electron as electron, expect, test } from "@playwright/test";
-import { mkdtempSync, rmSync } from "node:fs";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { findPackagedExecutable } from "./find-app";
@@ -252,6 +252,65 @@ test("tables get rows, a caption and notes; definition lists keep term and descr
     expect(text).toContain("Results");
     expect(text).toContain("Source: survey");
     expect(text).toContain("alpha\n: Learning rate");
+  } finally {
+    await app.close();
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+// 1×1 的 PNG
+const PNG_1X1 = Buffer.from(
+  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
+  "base64",
+);
+
+test("an image is stored in the project, shown in the editor, and saved as Markdown", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "marktwain 圖片 "));
+  const file = join(dir, "論文.marktwain");
+  const image = join(dir, "我的 圖.png");
+  writeFileSync(image, PNG_1X1);
+  const args = [`--user-data-dir=${join(dir, "userData")}`, "--lang=en-US"];
+  if (process.platform === "linux") args.push("--no-sandbox");
+
+  const app = await electron.launch({
+    executablePath: findPackagedExecutable(dist),
+    args,
+    env: { ...process.env, MARKTWAIN_TEST_DIALOG_PATH: file, MARKTWAIN_TEST_IMAGE_PATH: image },
+  });
+  try {
+    const page = await app.firstWindow();
+    await page.getByRole("button", { name: "New project" }).click();
+    const editor = page.locator(".ProseMirror");
+    await editor.click();
+    const dialog = page.getByRole("dialog");
+
+    await page.getByRole("button", { name: "Insert image" }).click();
+    await dialog.getByLabel("Caption").fill("Sample");
+    await dialog.getByRole("combobox", { name: "Width" }).click();
+    await page.getByRole("option", { name: "60%" }).click();
+    await dialog.getByRole("button", { name: "Insert" }).click();
+    await expect(dialog).toBeHidden();
+
+    // 圖片經由自訂協定從專案檔載入
+    const img = editor.locator("figure img");
+    await expect(img).toBeVisible();
+    await expect.poll(() => img.evaluate((el: HTMLImageElement) => el.naturalWidth)).toBe(1);
+    await expect(editor.locator("figcaption")).toHaveText("Sample");
+    await expect(page.getByRole("status")).toHaveText("Saved");
+
+    // 重新開啟專案後圖片仍在
+    await page.getByRole("button", { name: "Close project" }).click();
+    await page.getByRole("button", { name: "Open project" }).click();
+    await expect.poll(() => editor.locator("figure img").evaluate((el: HTMLImageElement) => el.naturalWidth)).toBe(1);
+
+    const text = await page.evaluate(async () => {
+      const list = await window.marktwain.invoke("document:list");
+      if (!list.ok) return "";
+      const chapter = list.data.find((d) => d.kind === "chapter");
+      const doc = chapter && (await window.marktwain.invoke("document:get", { id: chapter.id }));
+      return doc && doc.ok ? doc.data.text : "";
+    });
+    expect(text).toMatch(/!\[Sample\]\(images\/[0-9a-f]{16}\.png\)\{[^}]*width=60%[^}]*\}/);
   } finally {
     await app.close();
     rmSync(dir, { recursive: true, force: true });

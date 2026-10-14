@@ -32,7 +32,8 @@
     "citation": "文獻引用",
     "crossRef": "交叉引用",
     "definitionList": "定義清單",
-    "addDefinition": "新增詞條"
+    "addDefinition": "新增詞條",
+    "image": "插入圖片"
   },
   "math": {
     "insertTitle": "插入公式",
@@ -109,5 +110,13 @@
     "notes": "附註",
     "notesHint": "顯示在表格下方，例如資料來源。",
     "save": "儲存"
+  },
+  "figure": {
+    "insertTitle": "插入圖片",
+    "editTitle": "編輯圖片",
+    "caption": "圖說",
+    "captionHint": "可以使用行內 Markdown。留空表示沒有圖說。",
+    "width": "寬度",
+    "widthAuto": "原始大小"
   }
 }

@@ -1,6 +1,6 @@
 import { basename, extname } from "node:path";
 import type { TFunction } from "i18next";
-import { PROJECT_EXTENSION } from "../../config/app.config";
+import { IMAGE_EXTENSIONS, PROJECT_EXTENSION } from "../../config/app.config";
 
 /** 對 Electron `dialog` 的最小抽象，方便測試。 */
 export type DialogPort = {
@@ -23,6 +23,7 @@ export class DialogService {
     private readonly translator: () => TFunction,
     /** 測試鉤子的路徑；有值就不顯示對話框 */
     private readonly forcedPath: () => string | undefined = () => undefined,
+    private readonly forcedImagePath: () => string | undefined = () => undefined,
   ) {}
 
   private filters(t: TFunction) {
@@ -40,6 +41,17 @@ export class DialogService {
       filters: this.filters(t),
     });
     return chosen === null ? null : withExtension(chosen);
+  }
+
+  async chooseImage(): Promise<string | null> {
+    const forced = this.forcedImagePath();
+    if (forced) return forced;
+    const t = this.translator();
+    return this.port.showOpen({
+      title: t("openImage.title"),
+      buttonLabel: t("openImage.button"),
+      filters: [{ name: t("filter.image"), extensions: [...IMAGE_EXTENSIONS] }],
+    });
   }
 
   async chooseOpenProject(): Promise<string | null> {

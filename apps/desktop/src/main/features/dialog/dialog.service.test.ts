@@ -52,4 +52,18 @@ describe("DialogService", () => {
     expect(await service.chooseOpenProject()).toBe("/forced.marktwain");
     expect(calls).toHaveLength(0);
   });
+
+  it("選擇圖片：標題與篩選器翻譯，限制副檔名；測試鉤子可略過對話框", async () => {
+    const { port, calls } = fakePort(null, "/x/a.png");
+    const service = new DialogService(port, t(Locale.ZhHant));
+    expect(await service.chooseImage()).toBe("/x/a.png");
+    expect(calls[0]).toMatchObject({
+      title: "選擇圖片",
+      filters: [{ name: "圖片", extensions: ["png", "jpg", "jpeg", "svg"] }],
+    });
+
+    const forced = new DialogService(port, t(Locale.En), () => undefined, () => "/forced.png");
+    expect(await forced.chooseImage()).toBe("/forced.png");
+    expect(calls).toHaveLength(1);
+  });
 });

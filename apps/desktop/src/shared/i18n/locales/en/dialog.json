@@ -8,6 +8,11 @@
     "button": "Open"
   },
   "filter": {
-    "project": "MarkTwain project"
+    "project": "MarkTwain project",
+    "image": "Images"
+  },
+  "openImage": {
+    "title": "Choose an image",
+    "button": "Insert"
   }
 }

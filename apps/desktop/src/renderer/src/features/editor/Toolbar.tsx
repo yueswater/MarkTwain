@@ -8,6 +8,7 @@ import {
   BookAIcon,
   CodeIcon,
   FileCodeIcon,
+  ImageIcon,
   ItalicIcon,
   Link2Icon,
   ListIcon,
@@ -40,6 +41,7 @@ type Props = {
   onInsertMath: (kind: "inline" | "block") => void;
   onInsertAtom: (type: "footnote" | "citation" | "crossRef") => void;
   onEditCaption: () => void;
+  onInsertImage: () => void;
 };
 
 const BLOCKS = ["paragraph", "heading1", "heading2", "heading3", "heading4"] as const;
@@ -95,7 +97,7 @@ function insertDefinition(editor: Editor, inList: boolean): void {
     .run();
 }
 
-export function Toolbar({ editor, onInsertMath, onInsertAtom, onEditCaption }: Props) {
+export function Toolbar({ editor, onInsertMath, onInsertAtom, onEditCaption, onInsertImage }: Props) {
   const { t } = useTranslation("editor");
 
   // 選取範圍或內容改變時重新計算按鈕狀態
@@ -217,6 +219,7 @@ export function Toolbar({ editor, onInsertMath, onInsertAtom, onEditCaption }: P
       {button(t("toolbar.crossRef"), Link2Icon, () => onInsertAtom("crossRef"))}
       <span className="mx-1 h-5 w-px bg-border" aria-hidden="true" />
       {button(t("toolbar.rule"), MinusIcon, () => editor.chain().focus().setHorizontalRule().run())}
+      {button(t("toolbar.image"), ImageIcon, onInsertImage)}
       {button(t("toolbar.table"), TableIcon, () =>
         editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run(),
       )}
