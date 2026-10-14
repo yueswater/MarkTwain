@@ -79,6 +79,31 @@ export {
   type ImportResult,
   type ImportedEntry,
 } from "./bibliography/import";
+export {
+  LINE_STYLES,
+  LINE_WIDTHS,
+  allKeys,
+  baseEdges,
+  dKey,
+  diffRules,
+  effectiveEdges,
+  formatBorders,
+  formatLine,
+  hKey,
+  isInterior,
+  matchesPreset,
+  normalizeBorders,
+  parseBorders,
+  parseLine,
+  solid,
+  vKey,
+  type Edge,
+  type Edges,
+  type Grid,
+  type Line,
+  type LineStyle,
+  type Rule,
+} from "./markdown/table-borders";
 export { DEFAULT_PLACEMENT, PLACEMENTS, effectivePlacement, isPlacement, resolvePlacementDefaults, typstPlacement, type Placement } from "./placement";
 export {
   STATEMENT_KINDS,

@@ -42,6 +42,7 @@ import { SlashCommand } from "./slash/slash-command";
 import type { SlashHandlers } from "./slash/slash-items";
 import { EquationShortcut } from "./extensions/equation-shortcut";
 import type { Placement } from "@marktwain/schema";
+import { TableBorders } from "./extensions/table-borders";
 import { PlacementMarks } from "./extensions/placement-marks";
 import { StatementDecorations, STATEMENTS_CHANGED } from "./extensions/statement-decorations";
 import { StatementDialog, type StatementTarget } from "./StatementDialog";
@@ -196,6 +197,7 @@ function EditorSurface({
         MarkdownPaste.configure({ enabled: () => prefsRef.current.pasteMarkdown }),
         Placeholder.configure({ placeholder: t("placeholder") }),
         PlacementMarks,
+        TableBorders,
         StatementDecorations.configure({
           getBase: () => labelsRef.current.statementBases[doc.id] ?? {},
           nameOf: (kind) => tRef.current(`statement.kinds.${kind.id}`),

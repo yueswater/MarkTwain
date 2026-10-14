@@ -2,6 +2,7 @@ import { effectivePlacement, statementOfClasses, typstPlacement, type Placement 
 import type { Align, Block, Cell, Inline } from "../ir/types";
 import { escapeString, fenceFor, safeLength } from "./escape";
 import { renderInline, type InlineContext } from "./inline";
+import { diagonalCell, lineEntries, tableLines } from "./borders";
 import { convertMath, mathFallback } from "./math";
 
 /** What floats where when a figure or a table says nothing, the settings of the thesis. */
@@ -48,6 +49,7 @@ function isPlain(table: TableBlock): boolean {
   const cells = [...(table.header ?? []), ...table.rows.flat()];
   return (
     table.style === "three-line" &&
+    table.borders === "" &&
     table.widths.length === 0 &&
     table.heights.every((h) => h === null) &&
     cells.every((c) => c.colspan === 1 && c.rowspan === 1 && c.valign === null)
@@ -86,7 +88,29 @@ function renderTable(block: TableBlock, ctx: BlockContext): string[] {
   // Cells with their own spans or alignment need table.cell, so draw the figure here like tlt does
   const all = block.header ? [block.header, ...block.rows] : block.rows;
   const starts = columnStarts(all);
-  const cell = (c: Cell, column: number): string => {
+  // The lines of a table with borders are drawn one by one, the preset helpers of the template are not used then
+  const custom = block.borders !== "";
+  const area = new Map<string, number>();
+  let areas = 0;
+  all.forEach((cells, r) =>
+    cells.forEach((c, i) => {
+      areas += 1;
+      for (let dr = 0; dr < c.rowspan; dr += 1) for (let dc = 0; dc < c.colspan; dc += 1) area.set(`${r + dr}.${(starts[r]?.[i] ?? i) + dc}`, areas);
+    }),
+  );
+  const lines = custom
+    ? tableLines(
+        {
+          rows: all.length,
+          cols: columns,
+          header: block.header !== null,
+          style: block.style,
+          area: (r, c) => area.get(`${r}.${c}`) ?? -(r * 1000 + c) - 1,
+        },
+        block.borders,
+      )
+    : null;
+  const cell = (c: Cell, column: number, row: number): string => {
     const options: string[] = [];
     if (c.colspan > 1) options.push(`colspan: ${c.colspan}`);
     if (c.rowspan > 1) options.push(`rowspan: ${c.rowspan}`);
@@ -95,11 +119,15 @@ function renderTable(block: TableBlock, ctx: BlockContext): string[] {
     if (own || c.valign !== null) {
       options.push(`align: ${c.align ?? columnAlign[column] ?? "center"} + ${VALIGN[c.valign ?? "middle"]}`);
     }
-    const body = content(c.content, ctx);
+    // A diagonal is a line placed over the cell, the cell has no padding then and the drawing adds it back
+    const text = content(c.content, ctx);
+    const diagonal = lines ? diagonalCell(lines, row, column, text) : null;
+    const body = diagonal ?? text;
+    if (diagonal) options.push("inset: 0pt");
     return options.length > 0 ? `table.cell(${options.join(", ")})${body}` : body;
   };
   const cellsOf = (row: Cell[], rowIndex: number) =>
-    row.map((c, i) => `      ${cell(c, starts[rowIndex]?.[i] ?? i)},`);
+    row.map((c, i) => `      ${cell(c, starts[rowIndex]?.[i] ?? i, rowIndex)},`);
   const grid = block.style === "grid";
   const widths = block.widths.length > 0 ? Array.from({ length: columns }, (_, i) => block.widths[i] ?? "auto") : null;
   const rowCount = (block.header ? 1 : 0) + block.rows.length;
@@ -110,19 +138,20 @@ function renderTable(block: TableBlock, ctx: BlockContext): string[] {
     `      columns: (${(widths ?? Array.from({ length: columns }, () => "1fr")).join(", ")},),`,
     ...(heights ? [`      rows: (${heights.join(", ")},),`] : []),
     `      align: (${columnAlign.map((a) => ALIGN[a]).join(", ")},),`,
-    `      stroke: ${grid ? "0.5pt" : "none"},`,
+    `      stroke: ${grid && !custom ? "0.5pt" : "none"},`,
     "      inset: (x: 0.6em, y: 0.45em),",
     ...(block.header
       ? [
-          grid ? "      table.header(repeat: true," : "      table.header(repeat: true, toprule,",
+          grid || custom ? "      table.header(repeat: true," : "      table.header(repeat: true, toprule,",
           ...cellsOf(block.header, 0),
-          grid ? "      )," : "      midrule),",
+          grid || custom ? "      )," : "      midrule),",
         ]
-      : grid
+      : grid || custom
         ? []
         : ["      toprule,"]),
     ...block.rows.flatMap((r, i) => cellsOf(r, i + (block.header ? 1 : 0))),
-    ...(grid ? [] : ["      bottomrule,"]),
+    ...(grid || custom ? [] : ["      bottomrule,"]),
+    ...(lines ? lineEntries(lines).map((entry) => `      ${entry},`) : []),
     "    )",
     ...(notes ? [`    block(width: 100%, above: 0.5em, std.align(left, text(size: 0.9em, [註：] + ${notes})))`] : []),
   ];

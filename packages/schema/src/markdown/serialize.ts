@@ -2,6 +2,7 @@ import { Node } from "prosemirror-model";
 import { MarkdownSerializer, type MarkdownSerializerState } from "prosemirror-markdown";
 import { formatAttributes } from "./attributes";
 import { escapeLineStart, escapeText } from "./escape";
+import { formatBorders, parseBorders } from "./table-borders";
 import { formatCells, formatHeights, normalizeWidths, type CellExtra } from "./table-extras";
 import { MarkName, NodeName } from "../model/names";
 import { schema } from "../model/schema";
@@ -264,6 +265,8 @@ const serializer = new MarkdownSerializer(
       if (node.attrs.style === "grid") props.style = "grid";
       const widths = normalizeWidths(String(node.attrs.widths ?? ""));
       if (widths) props.widths = widths;
+      const borders = formatBorders(parseBorders(String(node.attrs.borders ?? "")));
+      if (borders) props.borders = borders;
       if (isPlacement(node.attrs.placement)) props.placement = node.attrs.placement;
       if (heights.size > 0) props.heights = formatHeights(heights);
       if (extras.size > 0) props.cells = formatCells(extras);

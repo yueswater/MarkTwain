@@ -110,6 +110,7 @@ const markdownParser = new MarkdownParser(schema, createMarkdownIt() as unknown 
       notes: String(token.meta?.notes ?? ""),
       style: token.meta?.style === "grid" ? "grid" : "three-line",
       widths: String(token.meta?.widths ?? ""),
+      borders: String(token.meta?.borders ?? ""),
       placement: placementOf(token.meta?.placement),
     }),
   },

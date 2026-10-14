@@ -127,6 +127,8 @@ const nodes: Record<NodeName, NodeSpec> = {
       style: { default: "three-line" },
       // Column widths such as "20%,30%,50%", an empty string means automatic
       widths: { default: "" },
+      // Lines that differ from the preset, see table-borders, an empty string means the preset as it is
+      borders: { default: "" },
       placement: { default: null },
     },
   },

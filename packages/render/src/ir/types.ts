@@ -68,6 +68,8 @@ export type Block =
   | {
       type: "table";
       placement: Placement | null;
+      /** Lines that differ from the preset, see table-borders of the schema, empty means the preset */
+      borders: string;
       label: string | null;
       caption: Inline[];
       notes: Inline[];
