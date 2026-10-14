@@ -20,6 +20,7 @@ import {
 import { CaptionDialog, type CaptionTarget } from "./CaptionDialog";
 import { FigureDialog, type FigureTarget } from "./FigureDialog";
 import { MathDialog, type MathTarget } from "./MathDialog";
+import { MarkdownPaste } from "./extensions/markdown-paste";
 import { RefDecorations, REFS_CHANGED } from "./extensions/ref-decorations";
 import { useLabelIndex } from "./use-label-index";
 import { findUnlabeledTargets, newLabel, type UnlabeledTarget } from "./unlabeled-targets";
@@ -92,6 +93,7 @@ function EditorSurface({ doc }: { doc: DocumentData }) {
         ...createSchemaExtensions({
           onMathClick: (kind, latex, pos) => setMath({ kind, latex, pos }),
         }),
+        MarkdownPaste,
         Placeholder.configure({ placeholder: t("placeholder") }),
         RefDecorations.configure({
           getNumbers: () => labelsRef.current.numbers,
@@ -144,9 +146,18 @@ function EditorSurface({ doc }: { doc: DocumentData }) {
   // 切換文件、關閉專案或關閉視窗前，把未存的變更存下來
   useEffect(() => {
     const flush = () => void flushRef.current.flush();
+    // Ctrl／⌘ + S：立刻存檔（平常是停手後自動存）
+    const onKeyDown = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "s") {
+        event.preventDefault();
+        flush();
+      }
+    };
     window.addEventListener("beforeunload", flush);
+    window.addEventListener("keydown", onKeyDown);
     return () => {
       window.removeEventListener("beforeunload", flush);
+      window.removeEventListener("keydown", onKeyDown);
       flush();
     };
   }, [autosaver]);
