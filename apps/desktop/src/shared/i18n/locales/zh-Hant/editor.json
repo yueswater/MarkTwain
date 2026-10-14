@@ -317,5 +317,11 @@
       "crossRefBefore": "各區域畫在",
       "crossRefTarget": "圖 1"
     }
+  },
+  "card": {
+    "footnote": "腳註",
+    "broken": "這個引用找不到目標。",
+    "goTo": "前往",
+    "moreRows": "…還有更多列"
   }
 }

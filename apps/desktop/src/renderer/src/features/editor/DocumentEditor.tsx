@@ -37,6 +37,7 @@ import { Toolbar } from "./Toolbar";
 import { CodeBlockWithLanguage } from "./extensions/nodes/code-block-view";
 import { LineGutter } from "./LineGutter";
 import { EquationLabelBubble } from "./EquationLabelBubble";
+import { ReferenceCard } from "./ReferenceCard";
 import { SlashCommand } from "./slash/slash-command";
 import type { SlashHandlers } from "./slash/slash-items";
 import { EquationShortcut } from "./extensions/equation-shortcut";
@@ -48,10 +49,12 @@ type Props = {
   registerFlush?: (flush: (() => Promise<void>) | null) => void;
   /** Called every time the text has been saved */
   onSaved?: () => void;
+  /** Goes to a block of a document from a card over a reference, opening the document first */
+  onOpenTarget?: (documentId: string, block: number) => void;
 };
 
 /** Loads one document. The caller remounts with key when the document changes, so each document has its own editor and undo history. */
-export function DocumentEditor({ documentId, scrollTo, onSaved, registerFlush }: Props) {
+export function DocumentEditor({ documentId, scrollTo, onSaved, registerFlush, onOpenTarget }: Props) {
   const { t } = useTranslation();
   const [doc, setDoc] = useState<DocumentData | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -76,7 +79,7 @@ export function DocumentEditor({ documentId, scrollTo, onSaved, registerFlush }:
     );
   }
   if (!doc) return null;
-  return <EditorSurface doc={doc} scrollTo={scrollTo ?? null} onSaved={onSaved} registerFlush={registerFlush} />;
+  return <EditorSurface doc={doc} scrollTo={scrollTo ?? null} onSaved={onSaved} registerFlush={registerFlush} onOpenTarget={onOpenTarget} />;
 }
 
 const WIDTH = { narrow: "max-w-xl", normal: "max-w-3xl", wide: "max-w-5xl" } as const;
@@ -104,11 +107,13 @@ function EditorSurface({
   scrollTo,
   onSaved,
   registerFlush,
+  onOpenTarget,
 }: {
   doc: DocumentData;
   scrollTo: { block: number; nonce: number; term?: string } | null;
   onSaved?: () => void;
   registerFlush?: (flush: (() => Promise<void>) | null) => void;
+  onOpenTarget?: (documentId: string, block: number) => void;
 }) {
   const { t } = useTranslation("editor");
   const { t: tCommon } = useTranslation();
@@ -518,6 +523,7 @@ function EditorSurface({
         />
       )}
       <EquationLabelBubble editor={editor} labels={labels} />
+      <ReferenceCard editor={editor} labels={labels} onOpenTarget={(documentId, block) => onOpenTarget?.(documentId, block)} />
       {atom?.type === "footnote" && (
         <FootnoteDialog
           target={atom}

@@ -120,7 +120,17 @@ function WorkspaceBody({ state, build, previewOpen, onClosePreview, onOpenSettin
             }}
           />
         ) : selected ? (
-          <DocumentEditor key={selected.id} documentId={selected.id} scrollTo={target} onSaved={onSaved} registerFlush={registerFlush} />
+          <DocumentEditor
+            key={selected.id}
+            documentId={selected.id}
+            scrollTo={target}
+            onSaved={onSaved}
+            registerFlush={registerFlush}
+            onOpenTarget={(documentId, block) => {
+              setSelectedId(documentId);
+              setTarget({ block, nonce: Date.now() });
+            }}
+          />
         ) : (
           <p className="p-8 text-sm text-muted-foreground">{t("workspace.empty")}</p>
         )}

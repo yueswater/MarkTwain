@@ -51,6 +51,15 @@ describe("LabelService.resolve", () => {
     expect(wholeThesis.resolve().numbers["eq:b"]).toBe("2");
   });
 
+  it("取得標籤指向的內容，在哪份文件的哪一個區塊", () => {
+    documents.seedDefaults();
+    documents.save("id-2", "# 章\n\n![說明](a.png){#fig:a}\n\n文字。\n");
+    const preview = labels.preview("fig:a");
+    expect(preview).toMatchObject({ label: "fig:a", documentId: "id-2", block: 1, content: { type: "figure", src: "a.png", caption: "說明" } });
+    expect(preview?.document.kind).toBe("chapter");
+    expect(labels.preview("fig:none")).toBeNull();
+  });
+
   it("找出失效的引用與重複的標籤", () => {
     documents.seedDefaults();
     documents.save("id-2", "![一](a.png){#fig:a}\n\n![二](b.png){#fig:a}\n\n見 @fig:a 與 @fig:gone。\n");
