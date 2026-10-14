@@ -1,6 +1,6 @@
 import { mergeAttributes, Node } from "@tiptap/core";
 
-/** 交叉引用：label 是 cha、sec、fig、tbl、eq、lst 開頭的標籤。 */
+/** Cross-reference, label starts with cha, sec, fig, tbl, eq or lst. */
 export const CrossRef = Node.create({
   name: "crossRef",
   group: "inline",

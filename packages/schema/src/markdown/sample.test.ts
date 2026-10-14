@@ -5,7 +5,7 @@ import { MarkName, NodeName } from "../model/names";
 import { parseMarkdown } from "./parse";
 import { serializeMarkdown } from "./serialize";
 
-// fixtures/dialect-sample.md 涵蓋方言的每一種語法；編輯器的對等測試與匯出測試也使用它。
+// fixtures/dialect-sample.md covers every syntax of the dialect, the editor parity test and the export tests use it too.
 const sample = readFileSync(join(__dirname, "../../fixtures/dialect-sample.md"), "utf8");
 
 type Json = { type: string; content?: Json[]; marks?: Array<{ type: string }> };

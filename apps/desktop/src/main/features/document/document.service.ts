@@ -5,7 +5,7 @@ import type { DatabaseSession } from "../../core/database-session";
 import { AppError } from "../../core/errors";
 import { DocumentRepository, type DocumentRow } from "./document.repository";
 
-/** 文件文字一律以 LF 儲存（規格 9.1 節規則 3）。 */
+/** Document text is always stored with LF. */
 function normalizeNewlines(text: string): string {
   return text.replace(/\r\n?/g, "\n");
 }
@@ -35,7 +35,7 @@ export class DocumentService {
     return new DocumentRepository(this.session.db);
   }
 
-  /** 新專案的預設文件：摘要與第一章。 */
+  /** Default documents of a new project, the abstract and the first chapter. */
   seedDefaults(): void {
     const repository = this.repository();
     const updatedAt = this.now().getTime();
@@ -91,7 +91,7 @@ export class DocumentService {
     return toSummary(row);
   }
 
-  /** 刪除後，同種類剩下的文件重新編號為 1…n。 */
+  /** After a delete the remaining documents of that kind are renumbered 1 to n. */
   remove(id: string): void {
     this.session.db.transaction(() => {
       const repository = this.repository();

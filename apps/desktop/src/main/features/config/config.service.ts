@@ -13,7 +13,7 @@ import { AppError } from "../../core/errors";
 import { ProjectRepository } from "../project/project.repository";
 import { ConfigRepository } from "./config.repository";
 
-/** 專案設定（config.yml）：表單欄位的讀寫與驗證；其他鍵與註解原樣保留。 */
+/** Project settings in config.yml, reads and validates the form fields and keeps other keys and comments. */
 export class ConfigService {
   constructor(
     private readonly session: DatabaseSession,
@@ -35,12 +35,12 @@ export class ConfigService {
   set(fields: ConfigFields): ConfigState {
     const repository = new ConfigRepository(this.session.db);
     const existing = repository.read() ?? "";
-    this.parse(existing); // 既有內容不是有效 YAML 時不要覆蓋
+    this.parse(existing); // Do not overwrite content that is not valid YAML
     repository.write(writeConfig(existing, fields), this.now().getTime());
     return { fields, issues: validateConfig(fields) };
   }
 
-  /** 還沒有 config.yml 時，題目預設為專案名稱。 */
+  /** Without a config.yml the title defaults to the project name. */
   private initialFields(): ConfigFields {
     const project = new ProjectRepository(this.session.db).get();
     return { ...defaultFields(), title: project?.name ?? "" };

@@ -1,6 +1,6 @@
 import type { Database } from "../../infra/db";
 
-/** files 資料表的讀寫：專案內的二進位檔（圖片等）。 */
+/** Read and write of the files table, binary files of a project such as images. */
 export class AssetRepository {
   constructor(private readonly db: Database) {}
 

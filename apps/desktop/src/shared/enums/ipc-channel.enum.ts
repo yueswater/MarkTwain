@@ -1,4 +1,4 @@
-/** 所有 IPC channel 的名稱；契約型別以這裡的值當鍵，避免打錯字串。 */
+/** Names of all IPC channels, the contract types use these values as keys to avoid typos. */
 export const IpcChannel = {
   AppInfo: "app:info",
   SettingsGetLocale: "settings:get-locale",

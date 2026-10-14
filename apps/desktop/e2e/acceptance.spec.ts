@@ -17,7 +17,7 @@ async function launch(dir: string, file: string, lang: string) {
   });
 }
 
-// v0.2.0 的完成條件：使用到每種節點的內容，關閉再開啟專案後保持不變
+// Done when: content using every node survives closing and reopening the project
 test("a document that uses every node survives closing and reopening", async () => {
   const dir = mkdtempSync(join(tmpdir(), "marktwain 驗收 "));
   const file = join(dir, "論文.marktwain");
@@ -27,7 +27,7 @@ test("a document that uses every node survives closing and reopening", async () 
     await page.getByRole("button", { name: "新增專案" }).click();
     await expect(page.locator(".ProseMirror")).toBeVisible();
 
-    // 把涵蓋所有語法的範例寫進第一章
+    // Write the sample covering all syntax into the first chapter
     const id = await page.evaluate(async (text) => {
       const list = await window.marktwain.invoke("document:list");
       if (!list.ok) return null;
@@ -38,7 +38,7 @@ test("a document that uses every node survives closing and reopening", async () 
     }, sample);
     expect(id).not.toBeNull();
 
-    // 重新開啟專案，在編輯器裡載入，不做任何修改，再讀回文字
+    // Reopen the project, load it in the editor without changes, then read the text back
     await page.getByRole("button", { name: "關閉專案" }).click();
     await page.getByRole("button", { name: "開啟專案" }).click();
     await expect(page.locator(".ProseMirror")).toBeVisible();
@@ -64,8 +64,8 @@ test("a document that uses every node survives closing and reopening", async () 
     }, id);
     expect(after).toBe(sample);
 
-    // 在編輯器裡打字再存：序列化出來與範例的差異只有那幾個字（沒有節點被吃掉）
-    // 打在第一個標題的開頭：不依賴文件結尾是哪一種節點（分隔線後面打字會多出空段落）
+    // Type in the editor and save, the output differs from the sample only by the typed text
+    // Type at the start of the first heading so the last node of the document does not matter
     await page.locator(".ProseMirror h1").first().click();
     await page.keyboard.press("ControlOrMeta+Home");
     await page.keyboard.type("結尾");
@@ -82,7 +82,7 @@ test("a document that uses every node survives closing and reopening", async () 
   }
 });
 
-// 圖表增減後，交叉引用的編號立刻更新
+// Numbers in cross-references update at once when figures or tables change
 test("cross-reference numbers update when a figure is removed", async () => {
   const dir = mkdtempSync(join(tmpdir(), "marktwain 編號 "));
   const file = join(dir, "論文.marktwain");
@@ -106,13 +106,13 @@ test("cross-reference numbers update when a figure is removed", async () => {
     const ref = page.locator(".ProseMirror [data-cross-ref]");
     await expect(ref).toHaveAttribute("data-display", "Figure 1.2");
 
-    // 刪掉第一張圖，第二張變成 1.1
+    // Delete the first figure, the second becomes 1.1
     await page.locator(".ProseMirror figure").first().click();
     await page.getByRole("dialog").getByRole("button", { name: "Remove" }).click();
     await expect(page.locator(".ProseMirror figure")).toHaveCount(1);
     await expect(ref).toHaveAttribute("data-display", "Figure 1.1");
 
-    // 再刪掉被引用的那張，引用變成失效
+    // Delete the referenced figure too, the reference becomes broken
     await page.locator(".ProseMirror figure").first().click();
     await page.getByRole("dialog").getByRole("button", { name: "Remove" }).click();
     await expect(ref).toHaveAttribute("data-broken", "");

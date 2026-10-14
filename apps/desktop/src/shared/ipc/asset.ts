@@ -1,6 +1,6 @@
 import { IpcChannel } from "../enums/ipc-channel.enum";
 
 export type AssetContract = {
-  /** 讓使用者選一張圖片並存進專案；回傳專案內的路徑（例如 images/ab12….png），取消時回傳 null */
+  /** Lets the user pick an image and stores it in the project, returns the path inside the project such as images/ab12.png, or null on cancel */
   [IpcChannel.AssetImportImage]: { req: void; res: { src: string } | null };
 };

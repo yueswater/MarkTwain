@@ -1,9 +1,9 @@
 import { parseDocument, Document } from "yaml";
 import { isKnownSchool } from "./schools";
 
-/** 專案設定表單的欄位（`config.yml` 的一部分；其餘欄位原樣保留）。 */
+/** Fields of the project settings form, part of config.yml and other fields are kept as they are. */
 export type ConfigFields = {
-  /** 學校代碼；空字串表示不使用學校預設 */
+  /** School code, an empty string means no school preset */
   school: string;
   title: string;
   titleEn: string;
@@ -20,9 +20,9 @@ export type ConfigFields = {
   degreeEn: string;
   type: string;
   typeEn: string;
-  /** 出版日期 YYYY-MM-DD */
+  /** Publication date YYYY-MM-DD */
   date: string;
-  /** 口試日期 YYYY-MM-DD */
+  /** Defense date YYYY-MM-DD */
   oralDate: string;
   keywords: string[];
   keywordsEn: string[];
@@ -32,7 +32,7 @@ type StringField = {
   [K in keyof ConfigFields]: ConfigFields[K] extends string ? K : never;
 }[keyof ConfigFields];
 
-/** 欄位名稱對應 config.yml 的鍵（模板用 kebab-case）。 */
+/** Maps field names to keys of config.yml, the template uses kebab-case. */
 const YAML_KEYS: Record<keyof ConfigFields, string> = {
   school: "school",
   title: "title",
@@ -111,11 +111,11 @@ function parse(text: string): Document {
 }
 
 function asString(value: unknown): string {
-  // YAML 會把 2024-01-05 這種寫法讀成 Date 以外的字串；數字型的學號也要保留成字串
+  // YAML reads dates and numbers as other types, a numeric student id must stay a string
   return value === null || value === undefined ? "" : String(value);
 }
 
-/** 從 config.yml 的文字讀出表單欄位；沒有的欄位用預設值。 */
+/** Reads the form fields from the text of config.yml, missing fields use defaults. */
 export function readConfig(text: string): ConfigFields {
   const doc = parse(text);
   const fields = defaultFields();
@@ -134,8 +134,8 @@ export function readConfig(text: string): ConfigFields {
 }
 
 /**
- * 把表單欄位寫回 config.yml 的文字：只改表單管的鍵，其他鍵與註解原樣保留。
- * 空字串與空陣列會刪掉該鍵，讓學校預設與模板預設生效。
+ * Writes the form fields back into the text of config.yml, only keys of the form change and other keys and comments are kept.
+ * Empty strings and empty arrays delete the key so school and template defaults apply.
  */
 export function writeConfig(text: string, fields: ConfigFields): string {
   const doc = text.trim() === "" ? new Document({}) : parse(text);
@@ -165,7 +165,7 @@ function isIsoDate(value: string): boolean {
   return date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day;
 }
 
-/** 表單欄位的驗證：題目與作者必填、日期格式、學校代碼存在。 */
+/** Validates the form, title and author are required, dates must be valid and the school code must exist. */
 export function validateConfig(fields: ConfigFields): ConfigIssue[] {
   const issues: ConfigIssue[] = [];
   for (const field of ["title", "author"] as const) {

@@ -24,7 +24,7 @@ export function Workspace({ state, build, previewOpen, onClosePreview }: Props) 
   const documents = project?.documents ?? [];
   const selected = documents.find((d) => d.id === selectedId) ?? null;
 
-  // 選取的文件被刪除（或剛開啟專案）時，改選第一份第一章，沒有就選第一份。
+  // When the selected document is deleted or a project was just opened, select the first chapter, or else the first document.
   useEffect(() => {
     if (selected) return;
     const fallback = documents.find((d) => d.kind === "chapter") ?? documents[0];

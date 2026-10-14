@@ -6,13 +6,13 @@ import { serializeMarkdown } from "./serialize";
 type Mark = { type: string; attrs?: Record<string, unknown> };
 type TextNode = { type: "text"; text: string; marks?: Mark[] };
 
-// 會讓 Markdown 誤判的字元都放進來，加上一般的字
+// Put in every character that Markdown may misjudge, plus ordinary characters
 const RISKY = [..."*_`[]()<>#-+!~\\|$@{}:.&\"'/=", "1", "2", "a", "B", "中", "文", " "];
 
 /**
- * 標記（粗體、斜體…）的內容要以字或數字開頭與結尾。CommonMark 的「左側包夾」規則
- * 讓 `說**「重點」**` 這種「標記緊貼文字、內容以標點開頭」的寫法無法成立，
- * 這是標準 Markdown 本身的限制（見 issue：CJK 標點與強調）。
+ * Content of a mark such as bold or italic should start and end with a letter or digit. The left flanking rule of CommonMark
+ * makes bold that touches text and starts with CJK punctuation impossible, where the mark touches text and the content starts with punctuation,
+ * a limit of standard Markdown itself, see the issue about CJK punctuation and emphasis.
  */
 const markedText = fc
   .string({ unit: fc.constantFrom(...RISKY), minLength: 0, maxLength: 12 })
@@ -30,7 +30,7 @@ function doc(...content: unknown[]): DocJson {
   return { type: "doc", content };
 }
 
-/** 相鄰且標記相同的文字節點合併，與解析器的輸出一致。 */
+/** Adjacent text nodes with the same marks are merged, matching the output of the parser. */
 function normalize(json: DocJson): DocJson {
   const walk = (node: any): any => {
     if (!node.content) return node;
@@ -52,7 +52,7 @@ function normalize(json: DocJson): DocJson {
   return walk(json);
 }
 
-/** 序列化再解析，結果必須與原本相同。失敗時 expect 會丟出例外，fast-check 會縮小反例。 */
+/** Serializing and parsing again must give the same result. On failure expect throws and fast-check shrinks the counterexample. */
 function roundTrips(input: DocJson): boolean {
   const output = parseMarkdown(serializeMarkdown(input));
   expect(normalize(output)).toEqual(normalize(input));
@@ -110,7 +110,7 @@ describe("往返的屬性測試", () => {
       .string({ unit: cjk, minLength: 1, maxLength: 10 })
       .filter((s) => s === s.trim());
     const markSets: Mark[][] = [[{ type: "bold" }], [{ type: "italic" }], [{ type: "strike" }]];
-    // 前面緊貼拉丁字母（例如 `a**「x」**`）仍不成立：markdown-it-cjk-friendly 只放寬 CJK 相鄰的情形
+    // A Latin letter right before, such as a**「x」**, still does not work, markdown-it-cjk-friendly relaxes only the CJK neighbours
     fc.assert(
       fc.property(edgeText, fc.constantFrom(...markSets), fc.constantFrom("說", "，", "「"), (text, marks, before) =>
         roundTrips(

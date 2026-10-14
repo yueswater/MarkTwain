@@ -6,14 +6,14 @@ directories:
 files:
   - out/**
   - package.json
-# 視窗圖示（Windows、Linux）：打包後放在 resources/icon.png
+# Window icon for Windows and Linux, packaged as resources/icon.png
 extraResources:
   - from: build/icon.png
     to: icon.png
 mac:
   icon: build/icon.icns
   # Development and CI builds are not signed. Signing and notarization are
-  # decided with the release workflow (design spec section 12, item 13).
+  # decided with the release workflow.
   identity: null
 win:
   icon: build/icon.ico

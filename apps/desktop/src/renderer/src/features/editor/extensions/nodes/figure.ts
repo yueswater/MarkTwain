@@ -1,6 +1,6 @@
 import { Node } from "@tiptap/core";
 
-/** 專案內的檔案以自訂協定顯示（main/core/asset-protocol.ts）。 */
+/** Project files are shown through a custom protocol, see main/core/asset-protocol.ts. */
 export function assetUrl(src: string): string {
   return `marktwain-asset://project/${src.split("/").map(encodeURIComponent).join("/")}`;
 }
@@ -12,7 +12,7 @@ const data = (name: string, fallback: string | null = null) => ({
     attributes[name] ? { [`data-${name}`]: String(attributes[name]) } : {},
 });
 
-/** 圖：獨立成段的圖片。caption 是行內 Markdown 原文；width 例如 "60%"。 */
+/** Figure, an image in its own paragraph. Caption is inline Markdown source and width is for example "60%". */
 export const Figure = Node.create({
   name: "figure",
   group: "block",

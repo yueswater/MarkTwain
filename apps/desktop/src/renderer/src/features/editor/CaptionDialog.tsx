@@ -15,7 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 export type CaptionTarget = {
   kind: "table" | "codeBlock";
   caption: string;
-  /** 只有表格有附註 */
+  /** Only tables have notes */
   notes: string;
 };
 
@@ -26,7 +26,7 @@ type Props = {
   onRestoreFocus: () => void;
 };
 
-/** 表格與程式碼區塊的標題（與表格的附註）。 */
+/** Caption of a table or a code block, plus the notes of a table. */
 export function CaptionDialog({ target, onSubmit, onClose, onRestoreFocus }: Props) {
   const { t } = useTranslation("editor");
   const [caption, setCaption] = useState(target.caption);

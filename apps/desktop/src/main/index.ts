@@ -20,7 +20,7 @@ import { registerProjectController } from "./features/project/project.controller
 import { ProjectService } from "./features/project/project.service";
 import { registerSettingsController } from "./features/settings/settings.controller";
 
-// 組合根：在這裡建立共用的物件，並把各 feature 的 controller 傳給 bootstrap。
+// Composition root, creates the shared objects and passes each feature controller to bootstrap.
 const session = new DatabaseSession();
 const documents = new DocumentService(session);
 const projects = new ProjectService(session, documents);
@@ -30,7 +30,7 @@ const config = new ConfigService(session);
 const build = new BuildService(session, documents, config, resolveBuildPaths);
 let dialogs: DialogService;
 
-// 自訂協定必須在 app ready 之前宣告
+// The custom protocol must be declared before app ready
 declareAssetScheme();
 
 bootstrap([

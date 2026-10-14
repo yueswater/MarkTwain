@@ -20,7 +20,7 @@ export function currentVersion(db: Database): number {
   return db.get<{ user_version: number }>("PRAGMA user_version")?.user_version ?? 0;
 }
 
-/** 還沒套用的 migration 數量；資料庫比程式新時丟出 project.too-new。 */
+/** Number of migrations not applied yet, throws project.too-new when the database is newer than the program. */
 export function pendingMigrations(db: Database, migrations: Migration[]): number {
   assertSequential(migrations);
   const from = currentVersion(db);
@@ -31,8 +31,8 @@ export function pendingMigrations(db: Database, migrations: Migration[]): number
 }
 
 /**
- * 依序套用還沒套用的 migration。全部在單一交易內，失敗則整批回滾，
- * 版本號（`PRAGMA user_version`）也不變（規格 4.6 節）。
+ * Applies pending migrations in order inside one transaction, the whole batch rolls back on failure
+ * and the version in PRAGMA user_version stays unchanged.
  */
 export function migrate(db: Database, migrations: Migration[]): MigrateResult {
   const pending = pendingMigrations(db, migrations);
@@ -48,7 +48,7 @@ export function migrate(db: Database, migrations: Migration[]): MigrateResult {
   return { from, to: migrations.length };
 }
 
-/** 資料庫裡沒有任何使用者建立的資料表（用來辨認「不是 MarkTwain 的檔案」）。 */
+/** The database has no user created tables, used to recognize files that are not MarkTwain projects. */
 export function isEmptyDatabase(db: Database): boolean {
   return (
     db.get<{ n: number }>(

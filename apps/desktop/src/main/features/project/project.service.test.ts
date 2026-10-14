@@ -18,7 +18,7 @@ let documents: DocumentService;
 const NOW = new Date(Date.UTC(2026, 9, 14, 13, 30, 5));
 
 beforeEach(() => {
-  // 路徑刻意含空白與中文（規格 9.1 節規則 2）
+  // Path deliberately contains a space and Chinese characters
   dir = mkdtempSync(join(tmpdir(), "marktwain 專案 "));
   file = join(dir, "我的論文.marktwain");
   session = new DatabaseSession();

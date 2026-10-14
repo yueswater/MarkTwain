@@ -7,9 +7,9 @@ type StateInline = InstanceType<MarkdownItInstance["inline"]["State"]>;
 const DOLLAR = 0x24;
 const BACKSLASH = 0x5c;
 
-/** 區塊公式的結尾行：`$$`，後面可以接 `{#eq:x}`。 */
+/** Closing line of a block formula, $$ optionally followed by {#eq:x}. */
 const CLOSING_LINE = /^\$\$\s*(?:\{([^}]*)\})?\s*$/;
-/** 單行的區塊公式：`$$ … $$`，後面可以接 `{#eq:x}`。 */
+/** A single line block formula, $$ … $$ optionally followed by {#eq:x}. */
 const SINGLE_LINE = /^\$\$(.+?)\$\$\s*(?:\{([^}]*)\})?\s*$/;
 
 function lineText(state: StateBlock, line: number): string {
@@ -17,13 +17,13 @@ function lineText(state: StateBlock, line: number): string {
 }
 
 /**
- * 區塊公式：
+ * Block formula:
  *
  *     $$
  *     E = mc^2
  *     $$ {#eq:one}
  *
- * 或單行的 `$$ E = mc^2 $$ {#eq:one}`。標籤放在 token 的 `id` 屬性。
+ * or a single line $$ E = mc^2 $$ {#eq:one}. The label goes into the id attribute of the token.
  */
 function mathBlock(state: StateBlock, startLine: number, endLine: number, silent: boolean): boolean {
   if ((state.sCount[startLine] ?? 0) - state.blkIndent >= 4) return false;
@@ -69,9 +69,9 @@ function mathBlock(state: StateBlock, startLine: number, endLine: number, silent
 }
 
 /**
- * 行內公式 `$…$`：開頭的 `$` 後面不是空白，結尾的 `$` 前面不是空白，
- * 不跨行；內容原樣保存（`\$` 保留為 `\$`）。價格這類 `$5 和 $6` 因為
- * 結尾的 `$` 前面是空白，不會被當成公式。
+ * Inline formula $…$, the opening $ is not followed by a space and the closing $ is not preceded by one,
+ * it does not span lines and the content is kept as written, \$ stays \$. Prices such as $5 and $6 are not formulas
+ * because the closing $ there is preceded by a space.
  */
 function mathInline(state: StateInline, silent: boolean): boolean {
   const start = state.pos;

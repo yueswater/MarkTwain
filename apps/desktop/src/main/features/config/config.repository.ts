@@ -2,7 +2,7 @@ import type { Database } from "../../infra/db";
 
 const CONFIG_PATH = "config.yml";
 
-/** files 資料表裡的 config.yml（UTF-8 文字）。 */
+/** The config.yml in the files table, as UTF-8 text. */
 export class ConfigRepository {
   constructor(private readonly db: Database) {}
 

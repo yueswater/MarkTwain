@@ -3,13 +3,13 @@ import type { TFunction } from "i18next";
 import { MenuCommand } from "../../shared/ipc/menu";
 
 export type MenuActions = {
-  /** 把指令送給目前的視窗 */
+  /** Sends a command to the current window */
   send: (command: MenuCommand) => void;
   isDev: boolean;
   websiteUrl: string;
 };
 
-/** 依目前語言產生應用程式選單；語言改變時重建。 */
+/** Builds the application menu for the current language, rebuilt when the language changes. */
 export function buildAppMenu(t: TFunction, actions: MenuActions): Menu {
   const isMac = process.platform === "darwin";
 

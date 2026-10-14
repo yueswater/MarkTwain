@@ -2,7 +2,7 @@ import { describe, expect, it } from "@jest/globals";
 import { parseMarkdown } from "./parse";
 import { serializeMarkdown } from "./serialize";
 
-/** 一章約 700 段、含公式、腳註、引用、表格的長文件（約 12 萬字元）。 */
+/** A long chapter of about 700 paragraphs with formulas, footnotes, citations and tables, about 120 thousand characters. */
 function longChapter(paragraphs: number): string {
   const parts: string[] = ["# 第一章 {#cha:long}\n"];
   for (let i = 1; i <= paragraphs; i++) {

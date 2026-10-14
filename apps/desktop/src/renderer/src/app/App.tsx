@@ -28,7 +28,7 @@ export function App() {
     }
   }
 
-  // 原生選單的「檔案」指令；每次渲染都用最新的 state，所以用 ref 避免重複訂閱
+  // Native menu File commands, a ref keeps the latest state so the subscription is not repeated on every render
   const stateRef = useRef(state);
   stateRef.current = state;
   useEffect(

@@ -2,7 +2,7 @@ import { basename, extname } from "node:path";
 import type { TFunction } from "i18next";
 import { IMAGE_EXTENSIONS, PROJECT_EXTENSION } from "../../config/app.config";
 
-/** 對 Electron `dialog` 的最小抽象，方便測試。 */
+/** Smallest abstraction over the Electron dialog, for testing. */
 export type DialogPort = {
   showSave(options: {
     title: string;
@@ -22,7 +22,7 @@ export class DialogService {
   constructor(
     private readonly port: DialogPort,
     private readonly translator: () => TFunction,
-    /** 測試鉤子的路徑；有值就不顯示對話框 */
+    /** Path from the test hook, no dialog is shown when set */
     private readonly forcedPath: () => string | undefined = () => undefined,
     private readonly forcedImagePath: () => string | undefined = () => undefined,
     private readonly forcedExportPath: () => string | undefined = () => undefined,
@@ -87,7 +87,7 @@ export class DialogService {
   }
 }
 
-/** 使用者沒輸入副檔名時補上（某些平台的儲存對話框不會自動補）。 */
+/** Adds the extension when the user left it out, some platforms do not add it in the save dialog. */
 export function withExtension(path: string): string {
   return extname(basename(path)) === "" ? `${path}.${PROJECT_EXTENSION}` : path;
 }

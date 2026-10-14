@@ -1,9 +1,9 @@
 import { Extension } from "@tiptap/core";
 
 /**
- * 替 TipTap 內建的節點與標記加上我們的 schema 需要的屬性（`@marktwain/schema`）：
- * 標題與程式碼區塊的標籤、程式碼的標題、連結的 title、表格的標題與附註、儲存格的對齊。
- * 用 global attributes 而不是替換內建擴充，內建的行為與快捷鍵都維持原樣。
+ * Adds the attributes our schema needs to built-in TipTap nodes and marks, see @marktwain/schema:
+ * They are labels of headings and code blocks, captions of code, titles of links, captions and notes of tables and alignment of cells.
+ * Global attributes are used instead of replacing built-in extensions, so built-in behavior and shortcuts stay unchanged.
  */
 const text = (name: string, fallback: string | null = null) => ({
   default: fallback,

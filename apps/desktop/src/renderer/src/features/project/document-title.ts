@@ -1,12 +1,12 @@
 import type { TFunction } from "i18next";
 import type { DocumentSummary } from "../../../../shared/ipc";
 
-/** 顯示用的標題：使用者自訂的優先，否則依種類與順序產生（例如「第 2 章」）。 */
+/** Title for display, a custom one wins, otherwise it comes from kind and position such as Chapter 2. */
 export function documentTitle(t: TFunction, doc: Pick<DocumentSummary, "kind" | "position" | "title">): string {
   return doc.title || t(`kind.title.${doc.kind}`, { ns: "project", n: doc.position });
 }
 
-/** 專案檔的預設名稱：檔名去掉副檔名。 */
+/** Default name of a project, the file name without extension. */
 export function projectNameFromPath(path: string): string {
   const file = path.split(/[\\/]/).pop() ?? path;
   const dot = file.lastIndexOf(".");

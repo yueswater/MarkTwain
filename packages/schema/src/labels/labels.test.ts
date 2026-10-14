@@ -55,7 +55,7 @@ describe("createLabel", () => {
   });
 
   it("不與既有標籤衝突", () => {
-    // 亂數永遠先給出 0000，再給出 0001
+    // The random source always gives 0000 first and then 0001
     const values = [0, 0, 1 / 65536];
     let i = 0;
     const random = () => values[i++] ?? 0.5;

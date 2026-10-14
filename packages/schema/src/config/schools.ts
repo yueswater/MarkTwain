@@ -1,4 +1,4 @@
-/** 兩個模板內建的學校預設（`schools/*.yml`）；名稱取自各檔的 `university` 欄位。 */
+/** School presets built into both templates, names come from the university field of each file. */
 export type School = { code: string; name: string; nameEn: string };
 
 export const SCHOOLS: readonly School[] = [

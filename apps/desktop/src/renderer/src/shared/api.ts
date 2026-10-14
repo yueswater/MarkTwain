@@ -1,7 +1,7 @@
 import type { IpcChannelName, IpcResponse, InvokeArgs } from "../../../shared/ipc";
 import { IpcError } from "./ipc-error";
 
-/** 前端呼叫後端的唯一入口：解開 IpcResult，失敗時丟出 IpcError。 */
+/** The only entry from the renderer to the back end, unwraps IpcResult and throws IpcError on failure. */
 async function invoke<C extends IpcChannelName>(
   channel: C,
   ...args: InvokeArgs<C>

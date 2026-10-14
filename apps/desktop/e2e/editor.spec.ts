@@ -24,7 +24,7 @@ test("typing in the editor is saved as Markdown and survives a reopen", async ()
     const editor = page.locator(".ProseMirror");
     await expect(editor).toBeVisible();
     await editor.click();
-    // Markdown 輸入規則：「# 」變成標題，「**」包住的文字變成粗體
+    // Markdown input rules, "# " becomes a heading and text wrapped in ** becomes bold
     await page.keyboard.type("# 緒論");
     await page.keyboard.press("Enter");
     await page.keyboard.type("這是**重點**內文。");
@@ -32,20 +32,20 @@ test("typing in the editor is saved as Markdown and survives a reopen", async ()
     await expect(editor.locator("h1")).toHaveText("緒論");
     await expect(editor.locator("strong")).toHaveText("重點");
 
-    // 切到摘要再切回來：內容還在（切換時會先存檔）
+    // Switch to the abstract and back, the content is kept because switching saves first
     const sidebar = page.getByRole("complementary", { name: "文件" });
     await sidebar.getByRole("button", { name: "摘要", exact: true }).click();
     await expect(page.locator(".ProseMirror h1")).toHaveCount(0);
     await sidebar.getByRole("button", { name: "第 1 章", exact: true }).click();
     await expect(page.locator(".ProseMirror h1")).toHaveText("緒論");
 
-    // 關閉再開啟專案：從 SQLite 讀回 Markdown
+    // Close and reopen the project, Markdown is read back from SQLite
     await page.getByRole("button", { name: "關閉專案" }).click();
     await page.getByRole("button", { name: "開啟專案" }).click();
     await expect(page.locator(".ProseMirror h1")).toHaveText("緒論");
     await expect(page.locator(".ProseMirror strong")).toHaveText("重點");
 
-    // 檔案裡存的是 Markdown，不是 JSON
+    // The file stores Markdown, not JSON
     const text = await page.evaluate(async () => {
       const list = await window.marktwain.invoke("document:list");
       if (!list.ok) return "";
@@ -77,7 +77,7 @@ test("math can be inserted from the dialog, typed with $…$, edited, and saved 
     const editor = page.locator(".ProseMirror");
     await editor.click();
 
-    // 從對話框插入：先看預覽，語法錯誤時不能送出
+    // Insert from the dialog, preview first, a syntax error blocks submit
     await page.getByRole("button", { name: "Inline math" }).click();
     const dialog = page.getByRole("dialog");
     await dialog.getByLabel("LaTeX").fill("\\frac{a");
@@ -88,17 +88,17 @@ test("math can be inserted from the dialog, typed with $…$, edited, and saved 
     await dialog.getByRole("button", { name: "Insert" }).click();
     await expect(editor.locator(".katex")).toHaveCount(1);
 
-    // 中文後面直接輸入 $…$ 也能變成公式
+    // Typing $...$ right after Chinese text also becomes a formula
     await page.keyboard.type("，且設$y=1$");
     await expect(editor.locator(".katex")).toHaveCount(2);
 
-    // 點擊公式編輯
+    // Click a formula to edit it
     await editor.locator("[data-type='inline-math'] .katex-html").first().click();
     await page.getByRole("dialog").getByLabel("LaTeX").fill("z^3");
     await page.getByRole("dialog").getByRole("button", { name: "Update" }).click();
     await expect(editor.locator("[data-type='inline-math']").first()).toHaveAttribute("data-latex", "z^3");
 
-    // 獨立公式
+    // Block formula
     await page.keyboard.press("Enter");
     await page.getByRole("button", { name: "Math block" }).click();
     await page.getByRole("dialog").getByLabel("LaTeX").fill("E=mc^2");
@@ -138,7 +138,7 @@ test("footnotes, citations and cross-references can be inserted, shown, and save
     const editor = page.locator(".ProseMirror");
     await editor.click();
     const dialog = page.getByRole("dialog");
-    // 對話框關閉、焦點回到編輯器之後才繼續打字
+    // Continue typing only after the dialog closes and focus is back in the editor
     const settle = async () => {
       await expect(dialog).toBeHidden();
       await expect(editor).toBeFocused();
@@ -148,7 +148,7 @@ test("footnotes, citations and cross-references can be inserted, shown, and save
     await page.keyboard.press("Enter");
     await page.keyboard.type("As shown in ");
 
-    // 交叉引用：選尚未有標籤的標題，會自動加上標籤
+    // Cross-reference, pick an unlabeled heading and a label is added automatically
     await page.getByRole("button", { name: "Cross-reference" }).click();
     await dialog.getByRole("combobox", { name: "Target" }).click();
     await page.getByRole("option", { name: "Section · Motivation" }).click();
@@ -156,7 +156,7 @@ test("footnotes, citations and cross-references can be inserted, shown, and save
     await settle();
     await expect(editor.locator("[data-cross-ref]")).toHaveAttribute("data-display", "Motivation");
 
-    // 腳註
+    // Footnote
     await page.keyboard.type(" and noted");
     await page.getByRole("button", { name: "Footnote" }).click();
     await dialog.getByLabel("Footnote text").fill("A **bold** remark.");
@@ -164,7 +164,7 @@ test("footnotes, citations and cross-references can be inserted, shown, and save
     await settle();
     await expect(editor.locator("sup[data-footnote]")).toHaveAttribute("data-n", "1");
 
-    // 文獻引用
+    // Citation
     await page.keyboard.type(" see ");
     await page.getByRole("button", { name: "Citation" }).click();
     await dialog.getByLabel("Bibliography keys").fill("wang2020, lee2019");
@@ -172,7 +172,7 @@ test("footnotes, citations and cross-references can be inserted, shown, and save
     await settle();
     await expect(editor.locator("[data-citation]")).toHaveAttribute("data-display", "(wang2020; lee2019)");
 
-    // 點擊腳註可以再編輯
+    // Click a footnote to edit it again
     await editor.locator("sup[data-footnote]").click();
     await dialog.getByLabel("Footnote text").fill("Edited.");
     await dialog.getByRole("button", { name: "Update" }).click();
@@ -231,7 +231,7 @@ test("tables get rows, a caption and notes; definition lists keep term and descr
     await dialog.getByRole("button", { name: "Save" }).click();
     await settle();
 
-    // 表格之後：游標移到文件最後，加入定義清單
+    // After the table, move the cursor to the end and add a definition list
     await page.keyboard.press("Control+End");
     await page.getByRole("button", { name: "Definition list" }).click();
     await page.keyboard.type("alpha");
@@ -258,7 +258,7 @@ test("tables get rows, a caption and notes; definition lists keep term and descr
   }
 });
 
-// 1×1 的 PNG
+// A 1x1 PNG
 const PNG_1X1 = Buffer.from(
   "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
   "base64",
@@ -291,14 +291,14 @@ test("an image is stored in the project, shown in the editor, and saved as Markd
     await dialog.getByRole("button", { name: "Insert" }).click();
     await expect(dialog).toBeHidden();
 
-    // 圖片經由自訂協定從專案檔載入
+    // The image loads from the project file through the custom protocol
     const img = editor.locator("figure img");
     await expect(img).toBeVisible();
     await expect.poll(() => img.evaluate((el: HTMLImageElement) => el.naturalWidth)).toBe(1);
     await expect(editor.locator("figcaption")).toHaveText("Sample");
     await expect(page.getByRole("status")).toHaveText("Saved");
 
-    // 重新開啟專案後圖片仍在
+    // The image is still there after reopening the project
     await page.getByRole("button", { name: "Close project" }).click();
     await page.getByRole("button", { name: "Open project" }).click();
     await expect.poll(() => editor.locator("figure img").evaluate((el: HTMLImageElement) => el.naturalWidth)).toBe(1);

@@ -6,7 +6,7 @@ import { MarkName, NodeName } from "../model/names";
 import { schema } from "../model/schema";
 import type { DocJson } from "./parse";
 
-/** 圍欄要比內容裡最長的反引號序列再長一個。 */
+/** A fence is one longer than the longest backtick run in the content. */
 function fenceFor(content: string): string {
   const runs = content.match(/`{3,}/g);
   if (!runs) return "```";
@@ -25,9 +25,9 @@ function backticksFor(node: Node, side: -1 | 1): string {
 }
 
 /**
- * 清單是否可以用緊湊格式（項目之間不空行）：每個項目只有一個段落，
- * 後面最多接巢狀清單。有多段的項目必須用鬆散格式，否則重新解析時
- * 第二段會被併進第一段。
+ * Whether a list can use the compact format with no blank line between items, every item has a single paragraph
+ * followed at most by a nested list. Items with several paragraphs need the loose format, otherwise the second paragraph
+ * is merged into the first when parsed again.
  */
 function isTight(list: Node): boolean {
   let tight = true;
@@ -41,10 +41,10 @@ function isTight(list: Node): boolean {
   return tight;
 }
 
-/** 行內公式的內容：修剪、換行變空白、把沒跳脫的 `$` 跳脫（否則會提前結束公式）。 */
+/** Content of an inline formula, trimmed, newlines become spaces, and a $ that is not escaped is escaped, otherwise it would end the formula early. */
 function inlineLatex(latex: string): string {
   let flat = latex.replace(/\s*\n\s*/g, " ").trim();
-  // 儲存格裡的 `|` 會被當成欄位分隔；改寫成等價的 \vert{}
+  // A | inside a cell is a column separator, rewrite it as the equivalent \vert{}
   if (inTableCell) flat = flat.replace(/\|/g, "\\vert{}");
   let out = "";
   for (let i = 0; i < flat.length; i += 1) {
@@ -61,17 +61,17 @@ function inlineLatex(latex: string): string {
 
 const SIMPLE_KEY = /^[A-Za-z0-9_](?:[A-Za-z0-9_]|[:.\-/+](?=[A-Za-z0-9_]))*$/;
 
-/** 正在輸出表格儲存格：`|` 要跳脫、硬換行改成空白、公式裡的 `|` 改寫。 */
+/** Writing a table cell now, | must be escaped, hard breaks become spaces and | in formulas is rewritten. */
 let inTableCell = false;
 
-/** 腳註在這次序列化中的內容，依出現順序；序列化是同步的，所以模組層級的暫存是安全的。 */
+/** Footnote content of this serialization in order of appearance, serializing is synchronous so module level storage is safe. */
 let footnotes: string[] = [];
 
 function keyToken(key: string, forceBraces: boolean): string {
   return forceBraces || !SIMPLE_KEY.test(key) ? `@{${key}}` : `@${key}`;
 }
 
-/** 前一個與後一個兄弟節點的文字邊界，用來決定敘述式引用要不要加大括號。 */
+/** Text edges of the previous and next sibling, to decide whether a narrative citation needs braces. */
 function neighbors(parent: Node, index: number): { previousWord: boolean; nextConflicts: boolean } {
   const previous = index > 0 ? parent.child(index - 1) : null;
   const next = index + 1 < parent.childCount ? parent.child(index + 1) : null;
@@ -80,24 +80,24 @@ function neighbors(parent: Node, index: number): { previousWord: boolean; nextCo
   return { previousWord, nextConflicts };
 }
 
-/** 圖片的目的地：含空白或括號時用 `<…>`。 */
+/** Destination of an image, <…> is used when it contains spaces or parentheses. */
 function destination(src: string): string {
   return /[\s()<>]/.test(src) ? `<${src}>` : src;
 }
 
-/** 圖的標題：單行、修剪、跳脫中括號（`![…]` 裡的括號要成對）。 */
+/** Caption of a figure, one line, trimmed, with brackets escaped since brackets inside ![…] must be paired. */
 function figureCaption(caption: string): string {
   return caption.replace(/\s*\n\s*/g, " ").trim().replace(/([[\]])/g, "\\$1");
 }
 
-/** 讓目前的區塊在下一次寫入前只換一行（而不是空一行）；prosemirror-markdown 的型別沒有公開它。 */
+/** Makes the current block break only one line before the next write, not leave a blank line. The types of prosemirror-markdown do not expose it. */
 function endLine(state: MarkdownSerializerState): void {
   (state as unknown as { flushClose(size: number): void }).flushClose(1);
 }
 
 type CellText = { text: string; align: string | null };
 
-/** 把一個儲存格的段落輸出成單行文字；借用 state 的輸出緩衝，結束後還原。 */
+/** Writes the paragraph of a cell as one line of text, borrowing the output buffer of state and restoring it afterwards. */
 function renderCell(state: MarkdownSerializerState, paragraph: Node | null): string {
   if (!paragraph) return "";
   const internal = state as unknown as { out: string; delim: string; closed: unknown; atBlockStart: boolean };
@@ -243,7 +243,7 @@ const serializer = new MarkdownSerializer(
     },
 
     [NodeName.DefinitionDescription](state, node) {
-      endLine(state); // 詞與說明之間只換一行
+      endLine(state); // Only one line between a term and its description
       state.wrapBlock("  ", ": ", node, () => state.renderContent(node));
     },
 
@@ -325,7 +325,7 @@ const serializer = new MarkdownSerializer(
         state.write(" ");
         return;
       }
-      // 段落結尾的換行沒有意義，不輸出
+      // A newline at the end of a paragraph is meaningless, not written
       for (let i = index + 1; i < parent.childCount; i += 1) {
         if (parent.child(i).type !== node.type) {
           state.write("\\\n");
@@ -335,7 +335,7 @@ const serializer = new MarkdownSerializer(
     },
 
     [NodeName.Text](state: MarkdownSerializerState, node, parent) {
-      // 這兩個成員在執行時存在，但 prosemirror-markdown 的型別宣告把它們標為內部
+      // These two members exist at run time but the type declaration of prosemirror-markdown marks them as internal
       const internal = state as unknown as { atBlockStart: boolean; atBlank(): boolean };
       const startOfLine = internal.atBlockStart || internal.atBlank();
       const inHeading = parent.type.name === NodeName.Heading;
@@ -366,7 +366,7 @@ const serializer = new MarkdownSerializer(
   },
 );
 
-/** 把 ProseMirror／TipTap 的 JSON 序列化成規範形式的 Markdown。文件結尾有一個換行。 */
+/** Serializes ProseMirror or TipTap JSON into Markdown in canonical form. The document ends with one newline. */
 export function serializeMarkdown(doc: DocJson): string {
   footnotes = [];
   const body = serializer.serialize(Node.fromJSON(schema, doc));

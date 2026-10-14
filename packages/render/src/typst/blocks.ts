@@ -4,7 +4,7 @@ import { renderInline, type InlineContext } from "./inline";
 import { convertMath, mathFallback } from "./math";
 
 export type BlockContext = InlineContext & {
-  /** 專案內的圖片路徑 → 建置目錄裡的絕對路徑（以 / 開頭） */
+  /** Image path in the project to absolute path in the build directory, starting with / */
   imagePath: (src: string) => string;
 };
 
@@ -22,7 +22,7 @@ function indent(lines: string[], by: string): string[] {
   return lines.map((line) => (line === "" ? line : by + line));
 }
 
-/** 區塊轉成行；區塊之間由呼叫端以空行隔開。 */
+/** Turns a block into lines, blocks are separated by a blank line by the caller. */
 export function renderBlock(block: Block, ctx: BlockContext): string[] {
   switch (block.type) {
     case "heading":
@@ -128,7 +128,7 @@ export function renderBlock(block: Block, ctx: BlockContext): string[] {
 }
 
 /**
- * 多個區塊以空行隔開。在清單項目裡（`inList`），第二個以後的段落不縮排首行（轉換陷阱）。
+ * Blocks are separated by blank lines. Inside list items, controlled by inList, later paragraphs get no first line indent.
  */
 export function renderBlocks(blocks: Block[], ctx: BlockContext, inList = false): string[] {
   const out: string[] = [];
@@ -138,7 +138,7 @@ export function renderBlocks(blocks: Block[], ctx: BlockContext, inList = false)
     if (inList && index > 0 && block.type === "paragraph") {
       lines = ["#par(first-line-indent: 0em)[", ...indent(lines, "  "), "]"];
     }
-    // 清單項目裡，段落與緊接的巢狀清單之間不留空行（留了會變成寬鬆清單）
+    // Inside a list item no blank line between a paragraph and a nested list that follows, it would make a loose list
     if (out.length > 0 && !(inList && block.type === "list")) out.push("");
     out.push(...lines);
   });

@@ -1,7 +1,7 @@
 /**
- * 中介表示（IR）：與 Typst、LaTeX 的語法無關的區塊與行內樹（規格第 5 節）。
- * 已解決的事：腳註與圖說的行內內容已解析、交叉引用的種類已判定、
- * 指到不存在目標的引用已退回純文字。渲染器只負責把它轉成各自的語法。
+ * Intermediate representation, a tree of blocks and inlines independent of Typst or LaTeX syntax, see section 5 of the spec.
+ * Resolved here, inline content of footnotes and captions is parsed and the kind of every cross-reference is known,
+ * and references to missing targets became plain text. Renderers only turn it into their own syntax.
  */
 export type TextMark = "bold" | "italic" | "strike";
 
@@ -16,7 +16,7 @@ export type Inline =
 
 export type CitationForm = "paren" | "prose" | "year" | "author";
 
-/** 標籤的前綴：cha、sec、fig、tbl、eq、lst */
+/** Prefix of the label, one of cha, sec, fig, tbl, eq and lst */
 export type RefKind = "cha" | "sec" | "fig" | "tbl" | "eq" | "lst";
 
 export type Align = "left" | "center" | "right" | null;
@@ -41,7 +41,7 @@ export type Block =
       src: string;
       caption: Inline[];
       label: string | null;
-      /** 例如 "60%"；null 表示用模板的預設 */
+      /** For example "60%", null means the template default */
       width: string | null;
     }
   | {
@@ -57,7 +57,7 @@ export type Block =
       label: string | null;
       caption: Inline[];
       notes: Inline[];
-      /** 表頭列；沒有表頭時為 null */
+      /** Header row, null when there is none */
       header: Cell[] | null;
       rows: Cell[][];
     }
@@ -71,7 +71,7 @@ export type Block =
       children: Block[];
     };
 
-/** 一份文件的 IR；`blocks` 的索引就是頂層區塊的順序，用來把輸出對回來源區塊。 */
+/** IR of one document, the index in blocks is the order of top level blocks, used to map output back to source blocks. */
 export type IrDocument = {
   documentId: string;
   blocks: Block[];
@@ -80,7 +80,7 @@ export type IrDocument = {
 export type IrIssue = {
   code: "broken-ref" | "unknown-node";
   documentId: string;
-  /** 頂層區塊的索引 */
+  /** Index of the top level block */
   block: number;
   detail: string;
 };

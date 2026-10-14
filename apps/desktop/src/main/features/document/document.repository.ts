@@ -9,7 +9,7 @@ export type DocumentRow = {
   updated_at: number;
 };
 
-/** documents 資料表的讀寫；整個功能裡唯一寫 SQL 的地方。 */
+/** Read and write of the documents table, the only place in this feature that writes SQL. */
 export class DocumentRepository {
   constructor(private readonly db: Database) {}
 
@@ -38,7 +38,7 @@ export class DocumentRepository {
     );
   }
 
-  /** 回傳是否有刪到列。 */
+  /** Returns whether a row was deleted. */
   delete(id: string): boolean {
     return this.db.run("DELETE FROM documents WHERE id = ?", [id]).changes > 0;
   }
@@ -51,7 +51,7 @@ export class DocumentRepository {
     return this.db.run("UPDATE documents SET title = ? WHERE id = ?", [title, id]).changes > 0;
   }
 
-  /** 回傳是否有更新到列。 */
+  /** Returns whether a row was updated. */
   updateText(id: string, text: string, updatedAt: number): boolean {
     return (
       this.db.run("UPDATE documents SET text = ?, updated_at = ? WHERE id = ?", [text, updatedAt, id])

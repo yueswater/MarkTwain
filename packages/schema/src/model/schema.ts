@@ -40,7 +40,7 @@ const nodes: Record<NodeName, NodeSpec> = {
 
   [NodeName.HardBreak]: { inline: true, group: "inline", selectable: false },
 
-  // 公式的內容是 LaTeX 原文，不是 Markdown；名稱與 TipTap 官方的數學擴充一致。
+  // The content of a formula is LaTeX source and not Markdown, the name matches the official math extension of TipTap.
   [NodeName.InlineMath]: {
     inline: true,
     group: "inline",
@@ -54,7 +54,7 @@ const nodes: Record<NodeName, NodeSpec> = {
     attrs: { latex: { default: "" }, label: { default: null } },
   },
 
-  // 腳註的內容是行內 Markdown 原文（單一段落）；編號在序列化時依出現順序產生。
+  // Footnote, content is inline Markdown source in a single paragraph, numbers are generated in order of appearance when serializing.
   [NodeName.Footnote]: {
     inline: true,
     group: "inline",
@@ -62,7 +62,7 @@ const nodes: Record<NodeName, NodeSpec> = {
     attrs: { text: { default: "" } },
   },
 
-  // 文獻引用：keys 是書目的 key；form 是 paren、prose、year、author 其中之一（規格 4.3 節）。
+  // Citation, keys are bibliography keys and form is one of paren, prose, year and author, see section 4.3 of the spec.
   [NodeName.Citation]: {
     inline: true,
     group: "inline",
@@ -70,7 +70,7 @@ const nodes: Record<NodeName, NodeSpec> = {
     attrs: { keys: { default: [] }, form: { default: "paren" } },
   },
 
-  // 交叉引用：label 是 cha、sec、fig、tbl、eq、lst 開頭的標籤。
+  // Cross-reference, label starts with cha, sec, fig, tbl, eq or lst.
   [NodeName.CrossRef]: {
     inline: true,
     group: "inline",
@@ -78,7 +78,7 @@ const nodes: Record<NodeName, NodeSpec> = {
     attrs: { label: { default: "" } },
   },
 
-  // 圖：獨立成段的圖片。caption 是行內 Markdown 原文；width 例如 "60%"。
+  // Figure, an image in its own paragraph. Caption is inline Markdown source and width is for example "60%".
   [NodeName.Figure]: {
     group: "block",
     atom: true,
@@ -90,7 +90,7 @@ const nodes: Record<NodeName, NodeSpec> = {
     },
   },
 
-  // 並排圖（layout 為 row）或網格圖（grid）；子圖的 caption 是子標題，這裡的 caption 是總標題。
+  // Side by side figures, layout row, or a grid. A caption of a sub figure is its sub title and the caption here is the overall title.
   [NodeName.FigureGroup]: {
     group: "block",
     content: "figure+",
@@ -102,7 +102,7 @@ const nodes: Record<NodeName, NodeSpec> = {
     },
   },
 
-  // 一般的圍欄 div（摘要的 .abstract-zh 等）；不符合並排圖結構的 .figrow 也保持成 div。
+  // Plain fenced div such as .abstract-zh of an abstract. A .figrow that does not fit the figure group structure also stays a div.
   [NodeName.Div]: {
     group: "block",
     content: "block+",
@@ -110,8 +110,8 @@ const nodes: Record<NodeName, NodeSpec> = {
     attrs: { id: { default: null }, classes: { default: [] }, props: { default: {} } },
   },
 
-  // 表格：名稱與 TipTap 的表格擴充一致。儲存格只有一個段落（管線表格沒有多段儲存格）；
-  // align 是欄位對齊（left、center、right 或 null）。標題、標籤與附註在表格節點上。
+  // Table, names match the table extension of TipTap. A cell holds a single paragraph, pipe tables have no multi paragraph cells.
+  // align is the column alignment, left, center, right or null. Caption, label and notes are on the table node.
   [NodeName.Table]: {
     group: "block",
     content: "tableRow+",
@@ -143,7 +143,7 @@ const nodes: Record<NodeName, NodeSpec> = {
     },
   },
 
-  // 定義清單（符號說明頁）：每個詞有一個以上的說明。
+  // Definition list for the notation page, each term has one or more descriptions.
   [NodeName.DefinitionList]: { group: "block", content: "(definitionTerm definitionDescription+)+" },
   [NodeName.DefinitionTerm]: { content: "inline*" },
   [NodeName.DefinitionDescription]: { content: "block+" },

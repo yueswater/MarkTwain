@@ -27,7 +27,7 @@ test("switching the language takes effect at once and is remembered", async () =
       await first.close();
     }
 
-    // 重新啟動：作業系統語系仍是繁體中文，但使用者選的英文要被記住
+    // Restart, the OS locale is still Traditional Chinese but the English chosen by the user is remembered
     const second = await launch(userData);
     try {
       const page = await second.firstWindow();

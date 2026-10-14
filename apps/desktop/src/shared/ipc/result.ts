@@ -6,7 +6,7 @@ export type IpcErrorPayload = {
 };
 
 /**
- * 每個 IPC 呼叫的回傳外殼。錯誤以代碼與參數的形式跨過行程邊界（規格 3.5 節），
- * 由前端翻成目前語言的文字。
+ * Wrapper of every IPC response. Errors cross the process boundary as a code with parameters, see section 3.5 of the spec,
+ * and the renderer translates them into the current language.
  */
 export type IpcResult<T> = { ok: true; data: T } | { ok: false; error: IpcErrorPayload };

@@ -5,7 +5,7 @@ export function ensureDir(path: string): void {
   mkdirSync(path, { recursive: true });
 }
 
-/** 讀取 JSON 檔；檔案不存在或內容損毀時回傳 null。 */
+/** Reads a JSON file, returns null when it is missing or corrupt. */
 export function readJsonSafe(path: string): unknown {
   try {
     return JSON.parse(readFileSync(path, "utf8"));
@@ -14,7 +14,7 @@ export function readJsonSafe(path: string): unknown {
   }
 }
 
-/** 寫入 JSON 檔（縮排 2 格、結尾換行）；會先建立不存在的資料夾。 */
+/** Writes a JSON file with 2 space indent and a trailing newline, creating missing folders first. */
 export function writeJson(path: string, data: unknown): void {
   ensureDir(dirname(path));
   writeFileSync(path, `${JSON.stringify(data, null, 2)}\n`, "utf8");

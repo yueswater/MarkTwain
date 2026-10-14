@@ -75,7 +75,7 @@ export class ProjectService {
     this.session.close();
   }
 
-  /** 開啟資料庫並確認它真的是 SQLite 檔案。 */
+  /** Opens the database and checks it really is a SQLite file. */
   private openChecked(path: string): Database {
     const db = openDatabase(path);
     try {

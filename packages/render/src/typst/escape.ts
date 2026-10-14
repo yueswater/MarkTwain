@@ -1,28 +1,28 @@
-/** Typst 標記模式裡有特殊意義的字元，一律加反斜線。 */
+/** Characters that are special in Typst markup mode always get a backslash. */
 const MARKUP_SPECIAL = /[\\#$*_`<@[\]~/]/g;
 
 export function escapeMarkup(text: string): string {
   return text
     .replace(MARKUP_SPECIAL, (ch) => `\\${ch}`)
-    .replace(/^(\s*)([=\-+])(?=\s|$)/gm, "$1\\$2") // 行首的標題、清單記號
-    .replace(/^(\s*)(\d+)\.(?=\s)/gm, "$1$2\\."); // 行首的編號清單記號
+    .replace(/^(\s*)([=\-+])(?=\s|$)/gm, "$1\\$2") // heading and list markers at line start
+    .replace(/^(\s*)(\d+)\.(?=\s)/gm, "$1$2\\."); // numbered list marker at line start
 }
 
-/** Typst 字串（雙引號）裡的跳脫。 */
+/** Escapes inside Typst strings in double quotes. */
 export function escapeString(text: string): string {
   return text.replace(/[\\"]/g, (ch) => `\\${ch}`).replace(/\n/g, "\\n");
 }
 
-/** 圍欄用的反引號數量：比內容裡最長的連續反引號多一個，至少三個。 */
+/** Number of backticks for a fence, one more than the longest run in the content and at least three. */
 export function fenceFor(text: string): string {
   const longest = Math.max(0, ...[...text.matchAll(/`+/g)].map((m) => m[0].length));
   return "`".repeat(Math.max(3, longest + 1));
 }
 
-/** 零寬空格：放在函式呼叫的 `]` 與接著的 `(` 之間，避免被當成參數列。 */
+/** Zero width space, placed between the closing bracket of a function call and a following opening parenthesis so it is not taken as an argument list. */
 export const ZWSP = "​";
 
-/** 圖片寬度只接受「數字加單位」，其餘丟掉（避免把任意文字塞進 Typst 程式碼）。 */
+/** Image width accepts only a number with a unit and anything else is dropped, so arbitrary text never enters Typst code. */
 export function safeLength(width: string | null): string | null {
   return width !== null && /^\d+(\.\d+)?(%|pt|cm|mm|in|em)$/.test(width) ? width : null;
 }

@@ -22,7 +22,7 @@ import { Textarea } from "@/components/ui/textarea";
 import type { LabelTarget } from "../../../../shared/ipc";
 import type { UnlabeledTarget } from "./unlabeled-targets";
 
-/** 腳註、文獻引用、交叉引用這三種行內「原子」節點共用的編輯狀態。 */
+/** Editing state shared by the three inline atom nodes, footnote, citation and cross-reference. */
 export type AtomTarget =
   | { type: "footnote"; pos: number | null; text: string }
   | { type: "citation"; pos: number | null; keys: string[]; form: string }
@@ -59,7 +59,7 @@ function Frame({
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
       <DialogContent
-        // 關閉後焦點回到編輯器（預設會回到工具列按鈕，接著打的字就不會進文件）
+        // Focus returns to the editor after closing, by default it goes to the toolbar button and typed text would miss the document
         onCloseAutoFocus={(event) => {
           event.preventDefault();
           onRestoreFocus();
@@ -141,7 +141,7 @@ export function FootnoteDialog({
 
 const CITATION_FORMS = ["paren", "prose", "year", "author"] as const;
 
-/** 把「wang2020, lee2019」拆成代號清單。 */
+/** Splits "wang2020, lee2019" into a list of keys. */
 export function parseCitationKeys(input: string): string[] {
   return input.split(/[,;，；\s]+/).filter(Boolean);
 }
@@ -228,7 +228,7 @@ export function CrossRefDialog({
     ],
     [labeled, unlabeled, t],
   );
-  // 編輯時目標可能已失效（不在清單裡）；仍保留原值，讓使用者看得到
+  // When editing, the target may be gone and missing from the list, keep the old value so the user can see it
   const known = options.some((option) => option.value === value);
 
   function submit(): void {

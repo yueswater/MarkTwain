@@ -14,7 +14,7 @@ function send(command: MenuCommand): void {
   window?.webContents.send(MENU_COMMAND_CHANNEL, command);
 }
 
-/** 依目前設定的語言重建原生選單；啟動時與語言改變後呼叫。 */
+/** Rebuilds the native menu in the current language, at startup and after a language change. */
 export function applyAppMenu(): void {
   const { effective } = describeLocale(app.getLocale(), settings.read().locale);
   Menu.setApplicationMenu(
