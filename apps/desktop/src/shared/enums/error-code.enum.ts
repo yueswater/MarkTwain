@@ -15,6 +15,8 @@ export const ErrorCode = {
   BuildBusy: "build.busy",
   BuildTypstMissing: "build.typst-missing",
   BuildTemplateMissing: "build.template-missing",
+  ExportNoPdf: "export.no-pdf",
+  ExportFailed: "export.failed",
   ConfigInvalid: "config.invalid",
   AssetUnsupported: "asset.unsupported",
   AssetTooLarge: "asset.too-large",

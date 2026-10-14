@@ -12,5 +12,9 @@
   "configMissing": "專案設定尚未填寫：{{field}}",
   "mathFailed": "這個公式無法轉換，已改以原始碼顯示：{{latex}}",
   "noSource": "沒有對應的原文位置",
-  "citationNoBibliography": "尚未加入書目，以純文字顯示：{{keys}}"
+  "citationNoBibliography": "尚未加入書目，以純文字顯示：{{keys}}",
+  "export": "匯出",
+  "exportPdf": "匯出 PDF…",
+  "exportProject": "匯出 Typst 專案…",
+  "exported": "已匯出到 {{path}}"
 }

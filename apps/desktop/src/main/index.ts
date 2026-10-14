@@ -5,6 +5,7 @@ import { registerAssetController } from "./features/asset/asset.controller";
 import { AssetService } from "./features/asset/asset.service";
 import { registerAppController } from "./features/app/app.controller";
 import type { DialogService } from "./features/dialog/dialog.service";
+import { registerExportController } from "./features/build/export.controller";
 import { registerBuildController, resolveBuildPaths } from "./features/build/build.controller";
 import { BuildService } from "./features/build/build.service";
 import { registerConfigController } from "./features/config/config.controller";
@@ -46,4 +47,5 @@ bootstrap([
   () => registerLabelController(labels),
   () => registerConfigController(config),
   () => registerBuildController(build),
+  () => registerExportController(build, dialogs),
 ]);

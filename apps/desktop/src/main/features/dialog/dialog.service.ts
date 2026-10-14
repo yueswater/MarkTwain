@@ -15,6 +15,7 @@ export type DialogPort = {
     buttonLabel: string;
     filters: { name: string; extensions: string[] }[];
   }): Promise<string | null>;
+  showFolder(options: { title: string; buttonLabel: string }): Promise<string | null>;
 };
 
 export class DialogService {
@@ -24,6 +25,7 @@ export class DialogService {
     /** 測試鉤子的路徑；有值就不顯示對話框 */
     private readonly forcedPath: () => string | undefined = () => undefined,
     private readonly forcedImagePath: () => string | undefined = () => undefined,
+    private readonly forcedExportPath: () => string | undefined = () => undefined,
   ) {}
 
   private filters(t: TFunction) {
@@ -52,6 +54,25 @@ export class DialogService {
       buttonLabel: t("openImage.button"),
       filters: [{ name: t("filter.image"), extensions: [...IMAGE_EXTENSIONS] }],
     });
+  }
+
+  async choosePdfPath(suggestedName: string): Promise<string | null> {
+    const forced = this.forcedExportPath();
+    if (forced) return forced;
+    const t = this.translator();
+    return this.port.showSave({
+      title: t("savePdf.title"),
+      buttonLabel: t("savePdf.button"),
+      defaultPath: `${suggestedName}.pdf`,
+      filters: [{ name: t("filter.pdf"), extensions: ["pdf"] }],
+    });
+  }
+
+  async chooseExportFolder(): Promise<string | null> {
+    const forced = this.forcedExportPath();
+    if (forced) return forced;
+    const t = this.translator();
+    return this.port.showFolder({ title: t("exportFolder.title"), buttonLabel: t("exportFolder.button") });
   }
 
   async chooseOpenProject(): Promise<string | null> {
