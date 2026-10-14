@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""Generate every icon the app needs from the two source images in brand/.
+"""Generate every icon the app needs from the two source images in assets/brand/.
 
     python3 tools/brand/make-icons.py
 
 Needs Pillow (`pip install pillow`) and, for the macOS .icns, `iconutil`
 (ships with macOS). The generated files are committed, so this only has to be
-run when brand/logo.png or brand/app-icon.png changes.
+run when assets/brand/logo.png or assets/brand/app-icon.png changes.
 
-  brand/app-icon.png  ->  apps/desktop/build/   (app icon: .icns, .ico, PNG sizes)
-  brand/logo.png      ->  apps/desktop/src/renderer/src/assets/logo.png (in-app logo)
+  assets/brand/app-icon.png  ->  apps/desktop/build/   (app icon: .icns, .ico, PNG sizes)
+  assets/brand/logo.png      ->  apps/desktop/src/renderer/src/assets/logo.png (in-app logo)
                           apps/desktop/src/renderer/public/favicon.*     (favicon)
 """
 from __future__ import annotations
@@ -22,8 +22,8 @@ from pathlib import Path
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[2]
-APP_ICON = ROOT / "brand" / "app-icon.png"
-LOGO = ROOT / "brand" / "logo.png"
+APP_ICON = ROOT / "assets" / "brand" / "app-icon.png"
+LOGO = ROOT / "assets" / "brand" / "logo.png"
 BUILD = ROOT / "apps" / "desktop" / "build"
 RENDERER = ROOT / "apps" / "desktop" / "src" / "renderer"
 
