@@ -86,7 +86,7 @@ export async function buildTypst(input: BuildInput): Promise<BuildResult> {
       root,
       input.timeoutMs ?? 120_000,
     );
-    if (process.env.MARKTWAIN_DEBUG_TYPST) console.log(JSON.stringify(stderr));
+    if (code !== 0 && process.env.CI) console.log("TYPST_STDERR", JSON.stringify(stderr));
     const diagnostics = [
       ...completed.missing.map<Diagnostic>((field) => ({
         severity: "warning",
