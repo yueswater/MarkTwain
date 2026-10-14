@@ -1,0 +1,13 @@
+{
+  "newProject": {
+    "title": "Create a project",
+    "button": "Create"
+  },
+  "openProject": {
+    "title": "Open a project",
+    "button": "Open"
+  },
+  "filter": {
+    "project": "MarkTwain project"
+  }
+}

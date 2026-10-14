@@ -1,0 +1,13 @@
+{
+  "newProject": {
+    "title": "建立專案",
+    "button": "建立"
+  },
+  "openProject": {
+    "title": "開啟專案",
+    "button": "開啟"
+  },
+  "filter": {
+    "project": "MarkTwain 專案"
+  }
+}
