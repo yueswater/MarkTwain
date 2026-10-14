@@ -87,6 +87,9 @@ describe("BibliographyService", () => {
     const bibtex = bib.import("x.bib", "@book{a, title={dup}}\n@book{n1, title={New}}\n@book{fig:bad, title={bad}}");
     expect(bibtex).toMatchObject({ added: 1, skipped: ["a"], errors: ["fig:bad"] });
 
+    // A BibTeX entry keeps the way it was written
+    expect(bibtex.view.text).toContain("@book{n1, title={New}}");
+
     const csl = bib.import("x.json", JSON.stringify([{ id: "c1", type: "book", title: "C" }]));
     expect(csl.added).toBe(1);
     const yaml = bib.import("x.yml", "h1:\n  type: book\n  title: H\n");

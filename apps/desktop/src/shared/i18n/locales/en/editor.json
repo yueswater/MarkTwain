@@ -58,9 +58,13 @@
   "citation": {
     "insertTitle": "Insert citation",
     "editTitle": "Edit citation",
-    "keys": "Bibliography keys",
-    "keysHint": "Separate several keys with commas, for example wang2020, lee2019.",
+    "keys": "Other keys",
+    "keysHint": "Keys that are not in the bibliography yet. Separate several with commas, for example wang2020, lee2019.",
     "form": "Style",
+    "pick": "Choose from the bibliography",
+    "filter": "Search by author, title or key",
+    "noMatch": "No entry matches.",
+    "noBibliography": "The bibliography is empty. Add entries in Bibliography in the sidebar, or type keys below. Citations without an entry stay plain text in the PDF.",
     "forms": {
       "paren": "(Author, Year)",
       "prose": "Author (Year)",

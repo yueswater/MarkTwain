@@ -3,7 +3,9 @@ import {
   collectCitations,
   detectFormat,
   duplicateKeys,
+  entryAuthor,
   entryLabel,
+  entryYear,
   formatEntry,
   importEntries,
   isValidBibKey,
@@ -33,6 +35,12 @@ function normalize(entry: BibEntryInput): BibEntryInput {
   }
   const type = entry.type.trim().toLowerCase();
   return { type: TYPE_NAME.test(type) ? type : "misc", key: entry.key.trim(), fields };
+}
+
+/** Adds a block of text after the existing source with a blank line between. */
+function appendText(text: string, block: string): string {
+  const base = text.replace(/\s+$/, "");
+  return `${base}${base === "" ? "" : "\n\n"}${block}\n`;
 }
 
 /** The bibliography of the project, kept as BibTeX source so comments and order of the user stay. */
@@ -86,9 +94,12 @@ export class BibliographyService {
     return this.setText(removeEntry(text, target));
   }
 
-  /** Adds the entries of a file, keys that exist stay as they are. */
+  /** Adds the entries of a file, keys that exist stay as they are. BibTeX entries keep their own text. */
   import(name: string, source: string): BibImportOutcome {
-    const result = importEntries(detectFormat(name, source), source);
+    const format = detectFormat(name, source);
+    const result = importEntries(format, source);
+    const verbatim = format === "bibtex" ? new Map(parseBibtex(source).entries.map((e) => [e.key, source.slice(e.start, e.end)])) : null;
+
     let text = this.repository().read();
     const known = new Set(parseBibtex(text).entries.map((e) => e.key));
     const errors = [...result.errors];
@@ -105,7 +116,8 @@ export class BibliographyService {
         continue;
       }
       known.add(entry.key);
-      text = appendEntry(text, entry);
+      const original = verbatim?.get(raw.key);
+      text = original ? appendText(text, original) : appendEntry(text, entry);
       added += 1;
     }
     if (added > 0) this.repository().write(text, this.now().getTime());
@@ -131,6 +143,8 @@ export class BibliographyService {
       type: entry.type,
       fields: entry.fields,
       label: entryLabel(entry),
+      author: entryAuthor(entry),
+      year: entryYear(entry),
       missing: missingFields(entry),
       citedBy: [...(cited.get(entry.key) ?? [])].map(([documentId, count]) => ({ documentId, count })),
     }));

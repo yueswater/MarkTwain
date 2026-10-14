@@ -7,6 +7,9 @@ export type BibItem = {
   fields: Record<string, string>;
   /** Short name for lists, such as the first author and the year */
   label: string;
+  /** Short author text and the year, the editor builds the text of a citation from them */
+  author: string;
+  year: string;
   /** Required fields that are empty */
   missing: string[];
   /** Documents that cite the entry with the number of citations in each */

@@ -187,16 +187,22 @@ export function appendEntry(text: string, entry: Pick<BibEntry, "type" | "key" |
   return `${base}${base === "" ? "" : "\n\n"}${formatEntry(entry)}\n`;
 }
 
-/** A short name for lists and for the editor: the first author's family name and the year. */
-export function entryLabel(entry: Pick<BibEntry, "key" | "fields">): string {
+/** Short author text such as Wang, Wang & Lee or Wang et al. */
+export function entryAuthor(entry: Pick<BibEntry, "fields">): string {
   const authors = (entry.fields.author ?? entry.fields.editor ?? "").split(/\s+and\s+/).filter(Boolean);
-  const first = authors[0] ?? "";
-  const family = first.includes(",") ? first.split(",")[0]!.trim() : (first.split(/\s+/).pop() ?? "");
-  const name = family.replace(/[{}\\]/g, "");
-  const more = authors.length > 2 ? " et al." : authors.length === 2 ? ` & ${familyOf(authors[1]!)}` : "";
-  const year = entry.fields.year ?? entry.fields.date?.slice(0, 4) ?? "";
-  const label = [name + more, year].filter(Boolean).join(", ");
-  return label || entry.key;
+  const first = authors[0] ? familyOf(authors[0]) : "";
+  if (authors.length > 2) return `${first} et al.`;
+  if (authors.length === 2) return `${first} & ${familyOf(authors[1]!)}`;
+  return first;
+}
+
+export function entryYear(entry: Pick<BibEntry, "fields">): string {
+  return entry.fields.year ?? entry.fields.date?.slice(0, 4) ?? "";
+}
+
+/** A short name for lists and for the editor, the author and the year. */
+export function entryLabel(entry: Pick<BibEntry, "key" | "fields">): string {
+  return [entryAuthor(entry), entryYear(entry)].filter(Boolean).join(", ") || entry.key;
 }
 
 function familyOf(author: string): string {

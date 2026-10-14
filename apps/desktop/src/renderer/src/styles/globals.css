@@ -215,7 +215,8 @@
 .ProseMirror sup[data-footnote] { cursor: pointer; color: var(--foreground); font-size: 0.75em; padding: 0 0.1em; border-radius: 0.25rem; }
 .ProseMirror sup[data-footnote]::after { content: "[" attr(data-n) "]"; }
 .ProseMirror sup[data-footnote]:hover, .ProseMirror span[data-citation]:hover, .ProseMirror span[data-cross-ref]:hover { background: var(--muted); }
-.ProseMirror span[data-citation] { cursor: pointer; border-radius: 0.25rem; }
+.ProseMirror span[data-citation] { cursor: pointer; border-radius: 0.25rem; background: color-mix(in oklab, var(--primary) 10%, transparent); }
+.ProseMirror span[data-citation][data-broken] { color: var(--destructive); background: color-mix(in oklab, var(--destructive) 10%, transparent); text-decoration: underline wavy var(--destructive); text-underline-offset: 3px; }
 .ProseMirror span[data-citation]::after { content: attr(data-display); }
 .ProseMirror span[data-cross-ref] { cursor: pointer; border-radius: 0.25rem; text-decoration: underline; text-decoration-style: dotted; text-underline-offset: 3px; }
 .ProseMirror span[data-cross-ref]::after { content: attr(data-display); }
