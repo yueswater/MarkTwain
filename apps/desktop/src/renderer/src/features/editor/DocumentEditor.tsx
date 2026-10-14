@@ -79,6 +79,22 @@ export function DocumentEditor({ documentId, scrollTo, onSaved, registerFlush }:
 
 const WIDTH = { narrow: "max-w-xl", normal: "max-w-3xl", wide: "max-w-5xl" } as const;
 
+/** Where the cursor is, in window coordinates, for a box that opens at it. */
+function anchorAtCursor(editor: Editor | null): MathTarget["anchor"] {
+  if (!editor || editor.isDestroyed) return undefined;
+  const coords = editor.view.coordsAtPos(editor.state.selection.from);
+  return { top: coords.top, bottom: coords.bottom, left: coords.left, right: coords.right };
+}
+
+/** Where an existing formula is drawn. */
+function anchorOfNode(editor: Editor | null, pos: number): MathTarget["anchor"] {
+  if (!editor || editor.isDestroyed) return undefined;
+  const dom = editor.view.nodeDOM(pos);
+  if (!(dom instanceof HTMLElement)) return undefined;
+  const box = dom.getBoundingClientRect();
+  return { top: box.top, bottom: box.bottom, left: box.left, right: box.right };
+}
+
 const ATOM_TYPES = new Set(["footnote", "citation", "crossRef"]);
 
 function EditorSurface({
@@ -149,7 +165,7 @@ function EditorSurface({
       extensions: [
         ...createSchemaExtensions({
           codeBlock: CodeBlockWithLanguage,
-          onMathClick: (kind, latex, pos) => setMath({ kind, latex, pos }),
+          onMathClick: (kind, latex, pos) => setMath({ kind, latex, pos, anchor: anchorOfNode(editorRef.current, pos) }),
           figureLabel: (percent) => tRef.current("figure.dragWidth", { value: percent }),
           resizeLabels: {
             width: (percent) => tRef.current("table.dragWidth", { value: percent }),
@@ -317,7 +333,7 @@ function EditorSurface({
     <div className="flex h-full min-h-0 flex-col">
       <Toolbar
         editor={editor}
-        onInsertMath={(kind) => setMath({ kind, latex: "", pos: null })}
+        onInsertMath={(kind) => setMath({ kind, latex: "", pos: null, anchor: anchorAtCursor(editor) })}
         onInsertAtom={openAtom}
         onInsertTable={() => setTableDialog(true)}
         onInsertImage={() => {
@@ -340,7 +356,7 @@ function EditorSurface({
       />
       <EditorBubbleMenu
         editor={editor}
-        onInsertMath={() => setMath({ kind: "inline", latex: "", pos: null })}
+        onInsertMath={() => setMath({ kind: "inline", latex: "", pos: null, anchor: anchorAtCursor(editor) })}
         onEditFigure={(pos, attrs) =>
           setFigure({ pos, src: String(attrs.src), caption: String(attrs.caption ?? ""), width: (attrs.width as string | null) ?? null })
         }
