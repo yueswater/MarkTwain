@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { DocumentKind } from "../../../../shared/enums/document-kind.enum";
 import { IpcChannel } from "../../../../shared/enums/ipc-channel.enum";
-import type { ProjectInfo } from "../../../../shared/ipc";
+import type { ProjectInfo, RecentProject } from "../../../../shared/ipc";
 import { api } from "../../shared/api";
 import { errorMessage } from "../../shared/error-message";
 import { projectNameFromPath } from "./document-title";
@@ -11,6 +11,7 @@ import { projectNameFromPath } from "./document-title";
 export function useProject() {
   const { t } = useTranslation();
   const [project, setProject] = useState<ProjectInfo | null>(null);
+  const [recent, setRecent] = useState<RecentProject[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,8 +31,18 @@ export function useProject() {
     setProject(await api.invoke(IpcChannel.ProjectCurrent));
   }, []);
 
+  const refreshRecent = useCallback(async () => {
+    setRecent(await api.invoke(IpcChannel.RecentList));
+  }, []);
+
   useEffect(() => {
-    void run(refresh).finally(() => setLoading(false));
+    // Reopen the project of the last session, unless the user closed it on purpose
+    void run(async () => {
+      await refresh();
+      const open = await api.invoke(IpcChannel.ProjectCurrent);
+      if (!open) setProject(await api.invoke(IpcChannel.ProjectResume));
+      await refreshRecent();
+    }).finally(() => setLoading(false));
     // Fetch once on load
   }, []);
 
@@ -40,6 +51,17 @@ export function useProject() {
       const path = await api.invoke(IpcChannel.DialogChooseNewProject, { suggestedName });
       if (!path) return;
       setProject(await api.invoke(IpcChannel.ProjectCreate, { path, name: projectNameFromPath(path) }));
+      await refreshRecent();
+    });
+
+  const openRecent = (path: string) =>
+    run(async () => {
+      setProject(await api.invoke(IpcChannel.ProjectOpen, { path }));
+    });
+
+  const removeRecent = (path: string) =>
+    run(async () => {
+      setRecent(await api.invoke(IpcChannel.RecentRemove, { path }));
     });
 
   const openProject = () =>
@@ -53,6 +75,7 @@ export function useProject() {
     run(async () => {
       await api.invoke(IpcChannel.ProjectClose);
       setProject(null);
+      await refreshRecent();
     });
 
   const addDocument = (kind: DocumentKind) =>
@@ -81,6 +104,9 @@ export function useProject() {
 
   return {
     project,
+    recent,
+    openRecent,
+    removeRecent,
     loading,
     error,
     createProject,

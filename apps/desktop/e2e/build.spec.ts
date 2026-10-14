@@ -116,7 +116,8 @@ test("the PDF and the whole Typst project can be exported", async () => {
   const second = await launch(dir, join(dir, "論文.marktwain"), { MARKTWAIN_TEST_EXPORT_PATH: parent });
   try {
     const page = await second.firstWindow();
-    await page.getByRole("button", { name: "Open project" }).click();
+    // The project of the first session reopens by itself
+    await expect(page.getByRole("complementary", { name: "Documents" })).toBeVisible();
     await page.getByRole("button", { name: "Preview" }).click();
     await page.getByRole("button", { name: "Export" }).click();
     await page.getByRole("menuitem", { name: "Export Typst project…" }).click();
