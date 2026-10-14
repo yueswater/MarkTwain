@@ -18,6 +18,8 @@ export type LabelIndex = {
   /** Labels defined more than once */
   duplicates: string[];
   targets: LabelTarget[];
+  /** Labels that some document refers to, a name that is used cannot be changed or removed without breaking it */
+  used: string[];
 };
 
 export type LabelContract = {

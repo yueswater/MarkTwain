@@ -195,5 +195,17 @@
     "previous": "Previous match",
     "close": "Close the find bar",
     "caseSensitive": "Match case"
+  },
+  "equation": {
+    "title": "Formula name",
+    "name": "Formula name",
+    "placeholder": "Name, letters and digits only",
+    "apply": "Set name",
+    "remove": "Remove number",
+    "chars": "Use letters and digits only.",
+    "taken": "Another target already has this name.",
+    "locked": "This formula is referred to, so its name cannot be changed or removed.",
+    "hint": "A formula with a name is numbered and can be referred to.",
+    "numbered": "Numbered {{number}}"
   }
 }
