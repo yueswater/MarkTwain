@@ -15,3 +15,13 @@ export type {
   Target,
 } from "./numbering/types";
 export { collectTargets, type CollectedTargets } from "./numbering/collect";
+export {
+  ConfigParseError,
+  defaultFields,
+  readConfig,
+  validateConfig,
+  writeConfig,
+  type ConfigFields,
+  type ConfigIssue,
+} from "./config/config";
+export { SCHOOLS, isKnownSchool, type School } from "./config/schools";

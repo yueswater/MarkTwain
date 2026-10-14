@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { ProjectState } from "./use-project";
 import { DocumentEditor } from "../editor/DocumentEditor";
+import { ConfigForm } from "./ConfigForm";
 import { DocumentSidebar } from "./DocumentSidebar";
 
 type Props = { state: ProjectState };
@@ -10,6 +11,7 @@ export function Workspace({ state }: Props) {
   const { t } = useTranslation("project");
   const project = state.project;
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [settings, setSettings] = useState(false);
 
   const documents = project?.documents ?? [];
   const selected = documents.find((d) => d.id === selectedId) ?? null;
@@ -28,14 +30,21 @@ export function Workspace({ state }: Props) {
       <DocumentSidebar
         documents={documents}
         selectedId={selected?.id ?? null}
-        onSelect={setSelectedId}
+        onSelect={(id) => {
+          setSettings(false);
+          setSelectedId(id);
+        }}
+        settingsSelected={settings}
+        onSelectSettings={() => setSettings(true)}
         onAdd={(kind) => void state.addDocument(kind)}
         onRename={(id, title) => void state.renameDocument(id, title)}
         onMove={(id, delta) => void state.moveDocument(id, delta)}
         onDelete={(id) => void state.removeDocument(id)}
       />
       <section className="min-w-0 flex-1">
-        {selected ? (
+        {settings ? (
+          <ConfigForm />
+        ) : selected ? (
           <DocumentEditor key={selected.id} documentId={selected.id} />
         ) : (
           <p className="p-8 text-sm text-muted-foreground">{t("workspace.empty")}</p>

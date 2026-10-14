@@ -13,6 +13,9 @@
       "none-open": "No project is open.",
       "exists": "A file already exists at that location and will not be overwritten."
     },
+    "config": {
+      "invalid": "The project settings (config.yml) are not valid YAML."
+    },
     "asset": {
       "unsupported": "This file type is not supported. Use PNG, JPEG or SVG images.",
       "too-large": "This image is larger than {{max}} MB.",

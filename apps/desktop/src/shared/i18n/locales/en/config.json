@@ -1,0 +1,54 @@
+{
+  "title": "Project settings",
+  "description": "These details appear on the cover and title pages. Changes are saved automatically.",
+  "save": {
+    "dirty": "Unsaved changes",
+    "saving": "Saving…",
+    "saved": "Saved",
+    "error": "Could not save"
+  },
+  "section": {
+    "school": "School",
+    "thesis": "Thesis",
+    "author": "Author",
+    "advisor": "Advisor",
+    "department": "Department",
+    "degree": "Degree",
+    "dates": "Dates",
+    "keywords": "Keywords"
+  },
+  "field": {
+    "school": "School preset",
+    "title": "Title (Chinese)",
+    "titleEn": "Title (English)",
+    "author": "Author (Chinese)",
+    "authorEn": "Author (English)",
+    "id": "Student ID",
+    "advisor": "Advisor (Chinese)",
+    "advisorEn": "Advisor (English)",
+    "college": "College (Chinese)",
+    "collegeEn": "College (English)",
+    "institute": "Department (Chinese)",
+    "instituteEn": "Department (English)",
+    "degree": "Degree (Chinese)",
+    "degreeEn": "Degree (English)",
+    "type": "Document type (Chinese)",
+    "typeEn": "Document type (English)",
+    "date": "Publication date",
+    "oralDate": "Defense date",
+    "keywords": "Keywords (Chinese)",
+    "keywordsEn": "Keywords (English)"
+  },
+  "hint": {
+    "date": "YYYY-MM-DD",
+    "keywords": "Separate with commas.",
+    "school": "Formatting rules of the chosen university. Leave empty to use the default format."
+  },
+  "noSchool": "No school preset (default format)",
+  "issue": {
+    "required": "This field is required.",
+    "date-format": "Use the format YYYY-MM-DD.",
+    "unknown-school": "This school is not available."
+  },
+  "open": "Project settings"
+}
