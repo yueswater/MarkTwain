@@ -32,7 +32,8 @@ test("find in the document highlights and steps through matches, and the project
     await expect(editor.locator("h1")).toHaveText("Intro");
 
     // Find in this document
-    await editor.click();
+    // The heading comes before every match, so the search starts at the first one wherever the window is sized
+    await editor.locator("h1").click();
     await page.keyboard.press("ControlOrMeta+f");
     const bar = page.getByRole("search", { name: "Find in this document" });
     await expect(bar).toBeVisible();

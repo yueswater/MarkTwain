@@ -124,7 +124,6 @@ export function DocumentSidebar({
     if (!event.currentTarget.contains(event.target as Node)) return;
     if (event.button !== 0 || (event.target as HTMLElement).closest("[data-no-drag]")) return;
     press.current = { id: doc.id, startY: event.clientY, active: false, list: event.currentTarget.parentElement, y: event.clientY };
-    event.currentTarget.setPointerCapture(event.pointerId);
   }
 
   function onRowPointerMove(event: PointerEvent<HTMLLIElement>): void {
@@ -134,6 +133,8 @@ export function DocumentSidebar({
     if (!current.active) {
       if (Math.abs(event.clientY - current.startY) < DRAG_THRESHOLD) return;
       current.active = true;
+      // The pointer is captured only once it is a drag, a plain press must still reach the button as a click
+      event.currentTarget.setPointerCapture(event.pointerId);
       setDragId(current.id);
     }
     if (!current.list) return;
@@ -146,16 +147,18 @@ export function DocumentSidebar({
     const current = press.current;
     if (!current) return;
     if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
-    if (current.active) {
-      // The click that follows a drag must not select the row
-      suppressClick.current = true;
-      setTimeout(() => {
-        suppressClick.current = false;
-      }, 0);
-      if (current.list) {
-        const target = dropTarget(boxes(current.list), current.id, event.clientY);
-        if (target) onReorder(current.id, target.targetId, target.placement);
-      }
+    if (!current.active) {
+      press.current = null;
+      return;
+    }
+    // The click that follows a drag must not select the row
+    suppressClick.current = true;
+    setTimeout(() => {
+      suppressClick.current = false;
+    }, 0);
+    if (current.list) {
+      const target = dropTarget(boxes(current.list), current.id, event.clientY);
+      if (target) onReorder(current.id, target.targetId, target.placement);
     }
     endDrag();
   }
