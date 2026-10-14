@@ -4,11 +4,21 @@ import type { LabelIndex } from "../../../../shared/ipc";
 import { api } from "../../shared/api";
 import type { SaveStatus } from "./autosaver";
 
+/** Sent on the window when the numbers have to be read again. */
+export const LABELS_CHANGED = "marktwain:labels-changed";
+
 const EMPTY: LabelIndex = { numbers: {}, broken: [], duplicates: [], targets: [], used: [] };
 
 /** Labels and numbers of the project, updated on load and after every save. The back end scans saved documents. */
 export function useLabelIndex(status: SaveStatus): LabelIndex {
   const [index, setIndex] = useState<LabelIndex>(EMPTY);
+  // Something outside the document changed the numbers, for example the numbering setting
+  const [version, setVersion] = useState(0);
+  useEffect(() => {
+    const bump = () => setVersion((value) => value + 1);
+    window.addEventListener(LABELS_CHANGED, bump);
+    return () => window.removeEventListener(LABELS_CHANGED, bump);
+  }, []);
 
   useEffect(() => {
     if (status !== "idle" && status !== "saved") return;
@@ -20,7 +30,7 @@ export function useLabelIndex(status: SaveStatus): LabelIndex {
     return () => {
       cancelled = true;
     };
-  }, [status]);
+  }, [status, version]);
 
   return index;
 }

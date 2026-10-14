@@ -31,9 +31,8 @@ export function resolveNumbers(
       numbers.set(target.label, target.text);
       if (target.kind === "cha") {
         chapter += 1;
-        if (options.numberPerChapter) {
-          for (const kind of Object.keys(counters) as CountedTarget["kind"][]) counters[kind] = 0;
-        }
+        // Only equations restart in each chapter, figures, tables and listings are numbered through the whole thesis
+        if (options.numberPerChapter) counters.eq = 0;
       }
       continue;
     }
@@ -42,7 +41,7 @@ export function resolveNumbers(
 
     counters[target.kind] += 1;
     const n = counters[target.kind];
-    numbers.set(target.label, options.numberPerChapter ? `${chapter}.${n}` : String(n));
+    numbers.set(target.label, target.kind === "eq" && options.numberPerChapter ? `${chapter}.${n}` : String(n));
   }
 
   const broken: string[] = [];

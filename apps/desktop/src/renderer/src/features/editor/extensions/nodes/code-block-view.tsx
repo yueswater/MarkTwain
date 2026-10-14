@@ -14,6 +14,8 @@ function CodeBlockView({ node, editor, getPos, updateAttributes }: NodeViewProps
   const { t } = useTranslation("editor");
   const [open, setOpen] = useState(false);
   const language = String(node.attrs.language ?? "");
+  // The numbers of the lines of the code count by themselves, from 1 in every block
+  const lineCount = node.textContent.split("\n").length;
 
   // The shortcut cannot reach React state directly, it sends an event with the position of the block
   useEffect(() => {
@@ -61,7 +63,12 @@ function CodeBlockView({ node, editor, getPos, updateAttributes }: NodeViewProps
           </SelectContent>
         </Select>
       </div>
-      <pre>
+      <pre className="code-with-lines">
+        <div className="code-lines" aria-hidden="true" contentEditable={false} data-testid="code-lines">
+          {Array.from({ length: lineCount }, (_, index) => (
+            <span key={index}>{index + 1}</span>
+          ))}
+        </div>
         <NodeViewContent<"code"> as="code" />
       </pre>
     </NodeViewWrapper>

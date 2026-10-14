@@ -52,7 +52,7 @@ function WorkspaceBody({ state, build, previewOpen, onClosePreview, onOpenSettin
       return !value;
     });
 
-  // Ctrl or Cmd plus B folds the sidebar, and plus Shift and F searches the whole project
+  // Ctrl or Cmd plus a backslash folds the sidebar, and plus Shift and F searches the whole project
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key.toLowerCase() === "f") {
@@ -60,7 +60,8 @@ function WorkspaceBody({ state, build, previewOpen, onClosePreview, onOpenSettin
         setSearchOpen(true);
         return;
       }
-      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "b") {
+      // The sidebar takes Ctrl or Cmd with a backslash, Ctrl or Cmd with B is bold in the editor
+      if ((event.ctrlKey || event.metaKey) && event.key === "\\") {
         event.preventDefault();
         toggleCollapsed();
       }

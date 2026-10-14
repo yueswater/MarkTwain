@@ -47,6 +47,10 @@ export const RefDecorations = Extension.create<RefDecorationOptions>({
                     ...(ref.broken ? { "data-broken": "" } : {}),
                   }),
                 );
+              } else if (node.type.name === "blockMath") {
+                // A formula with a name is numbered, the number is written in brackets at its right edge
+                const number = typeof node.attrs.label === "string" ? numbers[node.attrs.label] : undefined;
+                if (number !== undefined) decorations.push(Decoration.node(pos, pos + node.nodeSize, { "data-eq-number": number }));
               } else if (node.type.name === "citation") {
                 const cite = citationDisplay(node.attrs.keys as string[], String(node.attrs.form), options.getCitations());
                 decorations.push(

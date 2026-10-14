@@ -104,13 +104,13 @@ test("cross-reference numbers update when a figure is removed", async () => {
     await page.getByRole("button", { name: "Open project" }).click();
 
     const ref = page.locator(".ProseMirror [data-cross-ref]");
-    await expect(ref).toHaveAttribute("data-display", "Figure 1.2");
+    await expect(ref).toHaveAttribute("data-display", "Figure 2");
 
-    // Delete the first figure, the second becomes 1.1
+    // Delete the first figure, the second becomes 1
     await page.locator(".ProseMirror figure").first().click();
     await page.getByRole("button", { name: "Remove the picture" }).click();
     await expect(page.locator(".ProseMirror figure")).toHaveCount(1);
-    await expect(ref).toHaveAttribute("data-display", "Figure 1.1");
+    await expect(ref).toHaveAttribute("data-display", "Figure 1");
 
     // Delete the referenced figure too, the reference becomes broken
     await page.locator(".ProseMirror figure").first().click();

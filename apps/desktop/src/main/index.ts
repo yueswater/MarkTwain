@@ -1,6 +1,7 @@
 import { declareAssetScheme, handleAssetProtocol } from "./core/asset-protocol";
 import { settingsFilePath } from "./config/paths.config";
 import { readFileSync } from "node:fs";
+import { DEFAULT_NUMBERING } from "./config/numbering.config";
 import { join } from "node:path";
 import { bootstrap } from "./core/bootstrap";
 import { DatabaseSession } from "./core/database-session";
@@ -37,7 +38,6 @@ import { registerSettingsController } from "./features/settings/settings.control
 const session = new DatabaseSession();
 const documents = new DocumentService(session);
 const projects = new ProjectService(session, documents);
-const labels = new LabelService(documents);
 const assets = new AssetService(session);
 const search = new SearchService(documents);
 const bibliography = new BibliographyService(session, documents);
@@ -46,6 +46,15 @@ const config = new ConfigService(session, undefined, (path) => {
     return readFileSync(join(resolveBuildPaths().templateDir, path), "utf8");
   } catch {
     return null;
+  }
+});
+const labels = new LabelService(documents, () => {
+  // The thesis settings decide whether equation numbers restart in each chapter, a closed project uses the defaults
+  try {
+    const { values, inherited } = config.advanced();
+    return { ...DEFAULT_NUMBERING, numberPerChapter: (values["layout.equation-per-chapter"] ?? inherited["layout.equation-per-chapter"]) === true };
+  } catch {
+    return DEFAULT_NUMBERING;
   }
 });
 const settingsRepository = new SettingsRepository(settingsFilePath());

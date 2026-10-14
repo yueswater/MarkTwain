@@ -24,7 +24,7 @@ export const DEFAULT_PREFS: EditorPrefs = {
   fontSize: 16,
   lineHeight: 1.75,
   contentWidth: "normal",
-  lineNumbers: false,
+  lineNumbers: true,
   spellcheck: false,
   fontFamily: "sans",
   codeFontSize: 14,
