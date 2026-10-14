@@ -12,6 +12,9 @@ export const ErrorCode = {
   ProjectNoneOpen: "project.none-open",
   DocumentNotFound: "document.not-found",
   DocumentSingleton: "document.singleton",
+  AssetUnsupported: "asset.unsupported",
+  AssetTooLarge: "asset.too-large",
+  AssetUnreadable: "asset.unreadable",
 } as const;
 
 export type ErrorCode = (typeof ErrorCode)[keyof typeof ErrorCode];

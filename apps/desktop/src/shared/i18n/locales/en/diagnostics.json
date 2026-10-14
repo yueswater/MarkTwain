@@ -13,6 +13,11 @@
       "none-open": "No project is open.",
       "exists": "A file already exists at that location and will not be overwritten."
     },
+    "asset": {
+      "unsupported": "This file type is not supported. Use PNG, JPEG or SVG images.",
+      "too-large": "This image is larger than {{max}} MB.",
+      "unreadable": "The image file could not be read."
+    },
     "document": {
       "not-found": "The document could not be found.",
       "singleton": "This project already has a document of that kind."

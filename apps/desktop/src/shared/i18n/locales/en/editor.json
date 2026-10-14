@@ -32,7 +32,8 @@
     "citation": "Citation",
     "crossRef": "Cross-reference",
     "definitionList": "Definition list",
-    "addDefinition": "Add term"
+    "addDefinition": "Add term",
+    "image": "Insert image"
   },
   "math": {
     "insertTitle": "Insert math",
@@ -109,5 +110,13 @@
     "notes": "Notes",
     "notesHint": "Shown below the table, for example the source of the data.",
     "save": "Save"
+  },
+  "figure": {
+    "insertTitle": "Insert image",
+    "editTitle": "Edit image",
+    "caption": "Caption",
+    "captionHint": "Inline Markdown is allowed. Leave empty for no caption.",
+    "width": "Width",
+    "widthAuto": "Original size"
   }
 }

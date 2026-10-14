@@ -8,6 +8,11 @@
     "button": "開啟"
   },
   "filter": {
-    "project": "MarkTwain 專案"
+    "project": "MarkTwain 專案",
+    "image": "圖片"
+  },
+  "openImage": {
+    "title": "選擇圖片",
+    "button": "插入"
   }
 }

@@ -13,6 +13,11 @@
       "none-open": "目前沒有開啟的專案。",
       "exists": "這個位置已經有檔案了，不能覆蓋。"
     },
+    "asset": {
+      "unsupported": "不支援這種檔案。請使用 PNG、JPEG 或 SVG 圖片。",
+      "too-large": "這張圖片超過 {{max}} MB。",
+      "unreadable": "無法讀取這個圖片檔。"
+    },
     "document": {
       "not-found": "找不到這份文件。",
       "singleton": "這個專案已經有這種文件了。"

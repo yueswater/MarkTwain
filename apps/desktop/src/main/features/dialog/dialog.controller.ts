@@ -1,6 +1,6 @@
 import { app, BrowserWindow, dialog } from "electron";
 import { IpcChannel } from "../../../shared/enums/ipc-channel.enum";
-import { TEST_DIALOG_PATH_ENV } from "../../config/app.config";
+import { TEST_DIALOG_PATH_ENV, TEST_IMAGE_PATH_ENV } from "../../config/app.config";
 import { settingsFilePath } from "../../config/paths.config";
 import { handle } from "../../core/ipc";
 import { translatorFor } from "../../core/translator";
@@ -27,17 +27,19 @@ const port: DialogPort = {
   },
 };
 
-export function registerDialogController(): void {
+export function registerDialogController(): DialogService {
   const settings = new SettingsRepository(settingsFilePath());
   const service = new DialogService(
     port,
     () =>
       translatorFor(describeLocale(app.getLocale(), settings.read().locale).effective, "dialog"),
     () => process.env[TEST_DIALOG_PATH_ENV] || undefined,
+    () => process.env[TEST_IMAGE_PATH_ENV] || undefined,
   );
 
   handle(IpcChannel.DialogChooseNewProject, ({ suggestedName }) =>
     service.chooseNewProject(suggestedName),
   );
   handle(IpcChannel.DialogChooseOpenProject, () => service.chooseOpenProject());
+  return service;
 }

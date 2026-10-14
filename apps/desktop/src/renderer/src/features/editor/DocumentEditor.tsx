@@ -18,6 +18,7 @@ import {
   type CrossRefChoice,
 } from "./AtomDialogs";
 import { CaptionDialog, type CaptionTarget } from "./CaptionDialog";
+import { FigureDialog, type FigureTarget } from "./FigureDialog";
 import { MathDialog, type MathTarget } from "./MathDialog";
 import { RefDecorations, REFS_CHANGED } from "./extensions/ref-decorations";
 import { useLabelIndex } from "./use-label-index";
@@ -59,10 +60,13 @@ const ATOM_TYPES = new Set(["footnote", "citation", "crossRef"]);
 
 function EditorSurface({ doc }: { doc: DocumentData }) {
   const { t } = useTranslation("editor");
+  const { t: tCommon } = useTranslation();
   const [status, setStatus] = useState<SaveStatus>("idle");
   const [math, setMath] = useState<MathTarget | null>(null);
   const [atom, setAtom] = useState<AtomTarget | null>(null);
   const [caption, setCaption] = useState<CaptionTarget | null>(null);
+  const [figure, setFigure] = useState<FigureTarget | null>(null);
+  const [importError, setImportError] = useState<string | null>(null);
   const [unlabeled, setUnlabeled] = useState<UnlabeledTarget[]>([]);
 
   const labels = useLabelIndex(status);
@@ -101,6 +105,15 @@ function EditorSurface({ doc }: { doc: DocumentData }) {
         attributes: { "aria-label": doc.title || doc.kind, spellcheck: "false" },
         // 點到腳註、引用、交叉引用時開啟編輯對話框
         handleClickOn: (_view, _pos, node, nodePos, _event, direct) => {
+          if (direct && node.type.name === "figure") {
+            setFigure({
+              pos: nodePos,
+              src: String(node.attrs.src),
+              caption: String(node.attrs.caption ?? ""),
+              width: (node.attrs.width as string | null) ?? null,
+            });
+            return true;
+          }
           if (!direct || !ATOM_TYPES.has(node.type.name)) return false;
           if (node.type.name === "footnote") {
             setAtom({ type: "footnote", pos: nodePos, text: String(node.attrs.text) });
@@ -199,6 +212,15 @@ function EditorSurface({ doc }: { doc: DocumentData }) {
         editor={editor}
         onInsertMath={(kind) => setMath({ kind, latex: "", pos: null })}
         onInsertAtom={openAtom}
+        onInsertImage={() => {
+          setImportError(null);
+          api
+            .invoke(IpcChannel.AssetImportImage)
+            .then((imported) => {
+              if (imported) setFigure({ pos: null, src: imported.src, caption: "", width: null });
+            })
+            .catch((e: unknown) => setImportError(errorMessage(tCommon, e)));
+        }}
         onEditCaption={() => {
           const attrs = editor.getAttributes(editor.isActive("table") ? "table" : "codeBlock");
           setCaption({
@@ -211,6 +233,11 @@ function EditorSurface({ doc }: { doc: DocumentData }) {
       <div className="min-h-0 flex-1 overflow-y-auto">
         <EditorContent editor={editor} className="mx-auto max-w-3xl px-8 py-8" />
       </div>
+      {importError && (
+        <p role="alert" className="border-t bg-destructive/5 px-4 py-1 text-xs text-destructive select-text">
+          {importError}
+        </p>
+      )}
       <p
         role="status"
         className="shrink-0 border-t px-4 py-1 text-xs text-muted-foreground"
@@ -244,6 +271,32 @@ function EditorSurface({ doc }: { doc: DocumentData }) {
             ).run();
           }}
           onClose={() => setMath(null)}
+          onRestoreFocus={() => editor.commands.focus()}
+        />
+      )}
+      {figure && (
+        <FigureDialog
+          target={figure}
+          onSubmit={({ caption: text, width }) => {
+            const attrs = { src: figure.src, caption: text, width };
+            if (figure.pos === null) editor.chain().focus().insertContent({ type: "figure", attrs }).run();
+            else {
+              const pos = figure.pos;
+              const node = editor.state.doc.nodeAt(pos);
+              if (node) {
+                editor
+                  .chain()
+                  .focus()
+                  .command(({ tr }) => {
+                    tr.setNodeMarkup(pos, undefined, { ...node.attrs, caption: text, width });
+                    return true;
+                  })
+                  .run();
+              }
+            }
+          }}
+          onRemove={() => removeAtom(figure.pos)}
+          onClose={() => setFigure(null)}
           onRestoreFocus={() => editor.commands.focus()}
         />
       )}
