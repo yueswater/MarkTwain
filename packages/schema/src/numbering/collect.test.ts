@@ -67,3 +67,10 @@ describe("collectTargets", () => {
     expect(result.duplicates).toEqual([]);
   });
 });
+
+describe("captions decide numbering", () => {
+  it("figures and tables without a caption get no number", () => {
+    const md = ["![](a.png)", "", "![有說明](b.png)", "", "| a |", "| --- |", "", "| c |", "| --- |", "", ": 表標題"].join("\n");
+    expect(collect(md).targets.map((t) => t.kind)).toEqual(["fig", "tbl"]);
+  });
+});

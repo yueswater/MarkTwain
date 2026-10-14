@@ -1,4 +1,5 @@
 import type { JSONContent } from "@tiptap/core";
+import { findTable } from "@tiptap/pm/tables";
 import { EditorContent, useEditor } from "@tiptap/react";
 import Placeholder from "@tiptap/extension-placeholder";
 import { parseMarkdown, serializeMarkdown } from "@marktwain/schema";
@@ -19,6 +20,7 @@ import {
 } from "./AtomDialogs";
 import { CaptionDialog, type CaptionTarget } from "./CaptionDialog";
 import { FigureDialog, type FigureTarget } from "./FigureDialog";
+import { TableInsertDialog } from "./TableInsertDialog";
 import { RowHeightDialog } from "./RowHeightDialog";
 import { currentRowHeight, setRowHeight } from "./table-commands";
 import { MathDialog, type MathTarget } from "./MathDialog";
@@ -68,6 +70,7 @@ function EditorSurface({ doc, scrollTo }: { doc: DocumentData; scrollTo: { block
   const [math, setMath] = useState<MathTarget | null>(null);
   const [atom, setAtom] = useState<AtomTarget | null>(null);
   const [caption, setCaption] = useState<CaptionTarget | null>(null);
+  const [tableDialog, setTableDialog] = useState(false);
   const [rowHeight, setRowHeightState] = useState<string | null>(null);
   const [figure, setFigure] = useState<FigureTarget | null>(null);
   const [importError, setImportError] = useState<string | null>(null);
@@ -240,6 +243,7 @@ function EditorSurface({ doc, scrollTo }: { doc: DocumentData; scrollTo: { block
         onInsertMath={(kind) => setMath({ kind, latex: "", pos: null })}
         onInsertAtom={openAtom}
         onEditRowHeight={() => setRowHeightState(currentRowHeight(editor))}
+        onInsertTable={() => setTableDialog(true)}
         onInsertImage={() => {
           setImportError(null);
           api
@@ -302,6 +306,23 @@ function EditorSurface({ doc, scrollTo }: { doc: DocumentData; scrollTo: { block
           onRestoreFocus={() => editor.commands.focus()}
         />
       )}
+      {tableDialog && (
+        <TableInsertDialog
+          onSubmit={({ rows, columns, caption }) => {
+            const chain = editor.chain().focus();
+            // A table cannot hold another table, so a new one goes after the current one
+            const table = findTable(editor.state.selection.$from);
+            if (table) {
+              const after = table.pos + table.node.nodeSize;
+              chain.insertContentAt(after, { type: "paragraph" }).setTextSelection(after + 1);
+            }
+            chain.insertTable({ rows, cols: columns, withHeaderRow: true }).run();
+            if (caption) editor.chain().updateAttributes("table", { caption }).run();
+          }}
+          onClose={() => setTableDialog(false)}
+          onRestoreFocus={() => editor.commands.focus()}
+        />
+      )}
       {rowHeight !== null && (
         <RowHeightDialog
           initial={rowHeight}
@@ -315,7 +336,14 @@ function EditorSurface({ doc, scrollTo }: { doc: DocumentData; scrollTo: { block
           target={figure}
           onSubmit={({ caption: text, width }) => {
             const attrs = { src: figure.src, caption: text, width };
-            if (figure.pos === null) editor.chain().focus().insertContent({ type: "figure", attrs }).run();
+            if (figure.pos === null) {
+              // A figure cannot live inside a table cell, so it goes after the table
+              const table = findTable(editor.state.selection.$from);
+              const chain = editor.chain().focus();
+              if (table) chain.insertContentAt(table.pos + table.node.nodeSize, { type: "figure", attrs });
+              else chain.insertContent({ type: "figure", attrs });
+              chain.run();
+            }
             else {
               const pos = figure.pos;
               const node = editor.state.doc.nodeAt(pos);

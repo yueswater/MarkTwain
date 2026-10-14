@@ -75,6 +75,7 @@ export function FigureDialog({ target, onSubmit, onRemove, onClose, onRestoreFoc
               value={caption}
               autoFocus
               rows={2}
+              placeholder={t("figure.captionPlaceholder")}
               onChange={(event) => setCaption(event.target.value)}
             />
           </div>

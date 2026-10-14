@@ -217,6 +217,9 @@ test("tables get rows, a caption and notes; definition lists keep term and descr
     };
 
     await page.getByRole("button", { name: "Insert table" }).click();
+    await page.getByRole("dialog").getByRole("button", { name: "Insert" }).click();
+    await expect(page.getByRole("dialog")).toBeHidden();
+    await expect(editor).toBeFocused();
     await page.keyboard.type("A");
     await page.keyboard.press("Tab");
     await page.keyboard.type("B");
@@ -373,6 +376,9 @@ test("tables can be merged, aligned, restyled and given a row height", async () 
     const dialog = page.getByRole("dialog");
 
     await page.getByRole("button", { name: "Insert table" }).click();
+    await page.getByRole("dialog").getByRole("button", { name: "Insert" }).click();
+    await expect(page.getByRole("dialog")).toBeHidden();
+    await expect(editor).toBeFocused();
     await page.keyboard.type("A");
     await page.keyboard.press("Tab");
     await page.keyboard.type("B");
@@ -414,6 +420,55 @@ test("tables can be merged, aligned, restyled and given a row height", async () 
     expect(text).toContain("cells=2.1:colspan=2");
     expect(text).toContain("heights=2:2cm");
     expect(text).toContain("style=grid");
+  } finally {
+    await app.close();
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("a table or figure without a caption has no number, and an image never lands inside a table", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "marktwain 無標題 "));
+  const file = join(dir, "論文.marktwain");
+  const image = join(dir, "圖.png");
+  writeFileSync(image, PNG_1X1);
+  const args = [`--user-data-dir=${join(dir, "userData")}`, "--lang=en-US"];
+  if (process.platform === "linux") args.push("--no-sandbox");
+  const app = await electron.launch({
+    executablePath: findPackagedExecutable(dist),
+    args,
+    env: { ...process.env, MARKTWAIN_TEST_DIALOG_PATH: file, MARKTWAIN_TEST_IMAGE_PATH: image },
+  });
+  try {
+    const page = await app.firstWindow();
+    await page.getByRole("button", { name: "New project" }).click();
+    const editor = page.locator(".ProseMirror");
+    await editor.click();
+    const dialog = page.getByRole("dialog");
+
+    // The caption fields offer a placeholder and may stay empty
+    await page.getByRole("button", { name: "Insert table" }).click();
+    await expect(dialog.getByPlaceholder("Table caption, optional")).toBeVisible();
+    await dialog.getByRole("button", { name: "Insert" }).click();
+    await expect(dialog).toBeHidden();
+
+    // With the cursor still in the table, an image goes after it
+    await page.getByRole("button", { name: "Insert image" }).click();
+    await expect(dialog.getByPlaceholder("Figure caption, optional")).toBeVisible();
+    await dialog.getByRole("button", { name: "Insert" }).click();
+    await expect(dialog).toBeHidden();
+    await expect(editor.locator("td figure")).toHaveCount(0);
+    await expect(editor.locator("figure")).toHaveCount(1);
+    await expect(page.getByRole("status")).toHaveText("Saved");
+
+    const text = await page.evaluate(async () => {
+      const list = await window.marktwain.invoke("document:list");
+      if (!list.ok) return "";
+      const chapter = list.data.find((d) => d.kind === "chapter");
+      const doc = chapter && (await window.marktwain.invoke("document:get", { id: chapter.id }));
+      return doc && doc.ok ? doc.data.text : "";
+    });
+    expect(text).toMatch(/\|\n\n!\[\]\(images\/[0-9a-f]{16}\.png\)\n$/);
+    expect(text).not.toContain(": !");
   } finally {
     await app.close();
     rmSync(dir, { recursive: true, force: true });

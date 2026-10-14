@@ -43,6 +43,7 @@ type Props = {
   onEditCaption: () => void;
   onInsertImage: () => void;
   onEditRowHeight: () => void;
+  onInsertTable: () => void;
 };
 
 const BLOCKS = ["paragraph", "heading1", "heading2", "heading3", "heading4"] as const;
@@ -98,7 +99,7 @@ function insertDefinition(editor: Editor, inList: boolean): void {
     .run();
 }
 
-export function Toolbar({ editor, onInsertMath, onInsertAtom, onEditCaption, onInsertImage, onEditRowHeight }: Props) {
+export function Toolbar({ editor, onInsertMath, onInsertAtom, onEditCaption, onInsertImage, onEditRowHeight, onInsertTable }: Props) {
   const { t } = useTranslation("editor");
 
   // Recompute button state when the selection or content changes
@@ -221,9 +222,7 @@ export function Toolbar({ editor, onInsertMath, onInsertAtom, onEditCaption, onI
       <span className="mx-1 h-5 w-px bg-border" aria-hidden="true" />
       {button(t("toolbar.rule"), MinusIcon, () => editor.chain().focus().setHorizontalRule().run())}
       {button(t("toolbar.image"), ImageIcon, onInsertImage)}
-      {button(t("toolbar.table"), TableIcon, () =>
-        editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run(),
-      )}
+      {button(t("toolbar.table"), TableIcon, onInsertTable)}
       {button(t("toolbar.definitionList"), BookAIcon, () => insertDefinition(editor, state.inDefinitionList))}
     </div>
     {state.inTable && <TableTools editor={editor} onEditCaption={onEditCaption} onEditRowHeight={onEditRowHeight} />}

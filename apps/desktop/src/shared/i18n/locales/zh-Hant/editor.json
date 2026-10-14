@@ -115,7 +115,13 @@
     "rowHeightInvalid": "請輸入數字加單位，例如 pt、cm、mm、in 或 em。",
     "alignColumnLeft": "整欄靠左",
     "alignColumnCenter": "整欄置中",
-    "alignColumnRight": "整欄靠右"
+    "alignColumnRight": "整欄靠右",
+    "insertTitle": "插入表格",
+    "insertHint": "標題可以不填，沒有標題的表格不會有編號。",
+    "rows": "列數",
+    "columns": "欄數",
+    "captionPlaceholder": "表格標題，選填",
+    "insert": "插入"
   },
   "caption": {
     "tableTitle": "表格標題",
@@ -130,8 +136,9 @@
     "insertTitle": "插入圖片",
     "editTitle": "編輯圖片",
     "caption": "圖說",
-    "captionHint": "可以使用行內 Markdown。留空表示沒有圖說。",
+    "captionHint": "可以使用行內 Markdown。沒有圖說的圖不會有編號。",
     "width": "寬度",
-    "widthAuto": "原始大小"
+    "widthAuto": "原始大小",
+    "captionPlaceholder": "圖說，選填"
   }
 }
