@@ -16,8 +16,8 @@ export type Inline =
 
 export type CitationForm = "paren" | "prose" | "year" | "author";
 
-/** Prefix of the label, one of cha, sec, fig, tbl, eq and lst */
-export type RefKind = "cha" | "sec" | "fig" | "tbl" | "eq" | "lst";
+/** Prefix of the label, one of cha, sec, fig, tbl, eq and lst, or the prefix of a block of a mathematical thesis such as lem */
+export type RefKind = string;
 
 export type Align = "left" | "center" | "right" | null;
 

@@ -94,6 +94,42 @@ maybe("buildTypst with the real template", () => {
     }
   }, 120_000);
 
+  it.each(["plain", "boxed"])("builds the blocks of a mathematical thesis in the %s look", async (look) => {
+    const work = mkdtempSync(join(tmpdir(), "marktwain 定理 "));
+    try {
+      const result = await buildTypst(
+        input(work, {
+          config: `${config}statements:\n  look: ${look}\n  accent:\n    lemma: "#FF0000"\n`,
+          documents: [
+            {
+              id: "c1",
+              kind: "chapter",
+              text: [
+                "# 緒論",
+                "",
+                "::: {.definition #def:a title=\"範數\"}",
+                "定義內容 $x$。",
+                ":::",
+                "",
+                "::: {.lemma #lem:ss}",
+                "引理內容。",
+                ":::",
+                "",
+                "::: {.proof}",
+                "由 @lem:ss 與 @def:a 可得。",
+                ":::",
+              ].join("\n"),
+            },
+          ],
+        }),
+      );
+      expect(result.diagnostics.filter((d) => d.severity === "error")).toEqual([]);
+      expect(result.ok).toBe(true);
+    } finally {
+      rmSync(work, { recursive: true, force: true });
+    }
+  }, 120_000);
+
   it("reports a typst error against the source block", async () => {
     const work = mkdtempSync(join(tmpdir(), "marktwain 錯誤 "));
     try {

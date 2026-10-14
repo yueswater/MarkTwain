@@ -1,5 +1,5 @@
-/** Targets numbered in sequence, figures, tables, equations and listings. */
-export type CountedTarget = { kind: "fig" | "tbl" | "eq" | "lst"; label: string };
+/** Targets numbered in sequence, figures, tables, equations, listings and the blocks of a mathematical thesis, each kind counted on its own. */
+export type CountedTarget = { kind: string; label: string };
 
 /** Targets whose title is shown when referenced, chapters and sections. */
 export type HeadingTarget = { kind: "cha" | "sec"; label: string; text: string };

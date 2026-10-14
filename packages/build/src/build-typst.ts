@@ -1,8 +1,8 @@
 import { spawn } from "node:child_process";
 import { copyFileSync, existsSync, mkdirSync, statSync, mkdtempSync, readFileSync, readdirSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { basename, dirname, join } from "node:path";
-import { collectTargets, parseMarkdown } from "@marktwain/schema";
-import { renderTypstFile, toIr } from "@marktwain/render";
+import { collectTargets, parseMarkdown, resolveStatementStyle } from "@marktwain/schema";
+import { renderStatementsTypst, renderTypstFile, toIr } from "@marktwain/render";
 import { completeConfig } from "./config";
 import { parseDiagnostics, type LineMap } from "./diagnostics";
 import { assignPaths, renderMain } from "./layout";
@@ -77,6 +77,7 @@ function prepare(input: BuildInput, root: string, link: boolean): Prepared {
 
   const completed = completeConfig(input.config, new Date().toISOString().slice(0, 10));
   writeText(root, "config.yml", completed.text);
+  writeText(root, "statements.typ", renderStatementsTypst(resolveStatementStyle(completed.statements, completed.language === "english" ? "en" : "zh")));
   for (const file of input.files) {
     const target = join(root, "figures", file.path);
     mkdirSync(dirname(target), { recursive: true });

@@ -1,3 +1,4 @@
+import { statementOfClasses } from "@marktwain/schema";
 import type { Align, Block, Cell, Inline } from "../ir/types";
 import { escapeString, fenceFor, safeLength } from "./escape";
 import { renderInline, type InlineContext } from "./inline";
@@ -237,8 +238,14 @@ export function renderBlock(block: Block, ctx: BlockContext): string[] {
       return lines;
     }
 
-    case "div":
-      return renderBlocks(block.children, ctx);
+    case "div": {
+      const statement = statementOfClasses(block.classes);
+      if (!statement) return renderBlocks(block.children, ctx);
+      const args = [`"${statement.id}"`];
+      if (block.id && statement.numbered) args.push(`id: "${escapeString(block.id)}"`);
+      if (block.props.title) args.push(`title: "${escapeString(block.props.title)}"`);
+      return [`#statement(${args.join(", ")})[`, ...indent(renderBlocks(block.children, ctx), "  "), "]"];
+    }
   }
 }
 

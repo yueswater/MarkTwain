@@ -16,7 +16,7 @@ export type TypstOptions = BlockContext & {
   firstAppendix?: boolean;
 };
 
-const IMPORT = '#import "/helper/mod.typ": *';
+const IMPORTS = ['#import "/helper/mod.typ": *', '#import "/statements.typ": statement, statement-ref'];
 
 function abstractFunction(classes: string[]): "abstract-zh" | "abstract-en" | null {
   if (classes.includes("abstract-zh")) return "abstract-zh";
@@ -29,7 +29,7 @@ export function renderTypstFile(doc: IrDocument, options: TypstOptions): TypstFi
   const lines: string[] = [];
   const push = (...next: string[]) => lines.push(...next);
 
-  push(IMPORT, "");
+  push(...IMPORTS, "");
   if (options.kind === "acknowledgement") push("#show: acknowledgement", "");
   if (options.kind === "denotation") push("#show: denotation", "");
   if (options.kind === "appendix") {

@@ -79,3 +79,15 @@ export {
   type ImportResult,
   type ImportedEntry,
 } from "./bibliography/import";
+export {
+  STATEMENT_KINDS,
+  STATEMENT_PREFIXES,
+  isHexColor,
+  resolveStatementStyle,
+  statementKind,
+  statementKindOfPrefix,
+  statementOfClasses,
+  tintOf,
+  type StatementKind,
+  type StatementStyle,
+} from "./statements/kinds";

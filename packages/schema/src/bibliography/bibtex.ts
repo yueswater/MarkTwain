@@ -1,3 +1,5 @@
+import { LABEL_KINDS } from "../labels/constants";
+
 /**
  * A small BibTeX reader and writer. It keeps the position of every entry in the text, so one entry can
  * be changed, added or removed without touching comments, order or the way the rest is written.
@@ -212,7 +214,7 @@ function familyOf(author: string): string {
 
 /** Bibliography keys follow the citation syntax and cannot look like a label. */
 export function isValidBibKey(key: string): boolean {
-  return /^[A-Za-z0-9_](?:[A-Za-z0-9_]|[:.\-/+](?=[A-Za-z0-9_]))*$/.test(key) && !/^(cha|sec|fig|tbl|eq|lst):/.test(key);
+  return /^[A-Za-z0-9_](?:[A-Za-z0-9_]|[:.\-/+](?=[A-Za-z0-9_]))*$/.test(key) && !new RegExp(`^(${LABEL_KINDS.join("|")}):`).test(key);
 }
 
 export const ENTRY_TYPES = ["article", "book", "inproceedings", "incollection", "phdthesis", "mastersthesis", "techreport", "misc"] as const;

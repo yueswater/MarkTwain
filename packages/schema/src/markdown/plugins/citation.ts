@@ -1,9 +1,10 @@
+import { LABEL_KINDS } from "../../labels/constants";
 import type { MarkdownItInstance } from "../markdown-it";
 
 type StateInline = InstanceType<MarkdownItInstance["inline"]["State"]>;
 
 /** Prefixes of cross-reference labels, bibliography keys may not start with them, see section 4.3 of the spec. */
-const XREF_PREFIX = /^(?:cha|sec|fig|tbl|eq|lst):/;
+const XREF_PREFIX = new RegExp(`^(?:${LABEL_KINDS.join("|")}):`);
 
 /** A plain key, letters, digits and underscores, inside it : . - / + are allowed but must be followed by a letter or digit. */
 const SIMPLE_KEY = "[A-Za-z0-9_](?:[A-Za-z0-9_]|[:.\\-/+](?=[A-Za-z0-9_]))*";
