@@ -14,7 +14,8 @@
       "exists": "A file already exists at that location and will not be overwritten."
     },
     "document": {
-      "not-found": "The document could not be found."
+      "not-found": "The document could not be found.",
+      "singleton": "This project already has a document of that kind."
     }
   }
 }

@@ -6,4 +6,8 @@ export function registerDocumentController(service: DocumentService): void {
   handle(IpcChannel.DocumentList, () => service.list());
   handle(IpcChannel.DocumentGet, ({ id }) => service.get(id));
   handle(IpcChannel.DocumentSave, ({ id, text }) => service.save(id, text));
+  handle(IpcChannel.DocumentCreate, ({ kind }) => service.create(kind));
+  handle(IpcChannel.DocumentDelete, ({ id }) => service.remove(id));
+  handle(IpcChannel.DocumentMove, ({ id, delta }) => service.move(id, delta));
+  handle(IpcChannel.DocumentRename, ({ id, title }) => service.rename(id, title));
 }

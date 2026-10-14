@@ -31,6 +31,26 @@ export class DocumentRepository {
     );
   }
 
+  listByKind(kind: string): DocumentRow[] {
+    return this.db.all<DocumentRow>(
+      "SELECT id, kind, position, title, text, updated_at FROM documents WHERE kind = ? ORDER BY position",
+      [kind],
+    );
+  }
+
+  /** 回傳是否有刪到列。 */
+  delete(id: string): boolean {
+    return this.db.run("DELETE FROM documents WHERE id = ?", [id]).changes > 0;
+  }
+
+  updatePosition(id: string, position: number): void {
+    this.db.run("UPDATE documents SET position = ? WHERE id = ?", [position, id]);
+  }
+
+  updateTitle(id: string, title: string): boolean {
+    return this.db.run("UPDATE documents SET title = ? WHERE id = ?", [title, id]).changes > 0;
+  }
+
   /** 回傳是否有更新到列。 */
   updateText(id: string, text: string, updatedAt: number): boolean {
     return (

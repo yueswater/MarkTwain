@@ -16,4 +16,9 @@ export type DocumentContract = {
   [IpcChannel.DocumentList]: { req: void; res: DocumentSummary[] };
   [IpcChannel.DocumentGet]: { req: { id: string }; res: DocumentData };
   [IpcChannel.DocumentSave]: { req: { id: string; text: string }; res: void };
+  [IpcChannel.DocumentCreate]: { req: { kind: DocumentKind }; res: DocumentSummary };
+  [IpcChannel.DocumentDelete]: { req: { id: string }; res: void };
+  /** 在同一種類內上移（-1）或下移（1）一格；已在邊界時不動 */
+  [IpcChannel.DocumentMove]: { req: { id: string; delta: -1 | 1 }; res: void };
+  [IpcChannel.DocumentRename]: { req: { id: string; title: string }; res: void };
 };
