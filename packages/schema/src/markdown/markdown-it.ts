@@ -2,6 +2,8 @@ import MarkdownIt from "markdown-it";
 import attrs from "markdown-it-attrs";
 import footnote from "markdown-it-footnote";
 import { citationPlugin } from "./plugins/citation";
+import { divPlugin } from "./plugins/div";
+import { figuresPlugin } from "./plugins/figures";
 import { footnoteResolvePlugin } from "./plugins/footnote";
 import { mathPlugin } from "./plugins/math";
 
@@ -12,10 +14,18 @@ import { mathPlugin } from "./plugins/math";
 export type MarkdownItInstance = InstanceType<typeof MarkdownIt>;
 
 export function createMarkdownIt(): MarkdownItInstance {
-  return new MarkdownIt({ html: false, linkify: false, typographer: false, breaks: false })
+  const md = new MarkdownIt({ html: false, linkify: false, typographer: false, breaks: false });
+  // 路徑與網址保持原樣：預設會把非 ASCII 字元百分比編碼（`圖.png` 變成 `%E5%9C%96.png`），
+  // 專案裡的圖片路徑要原樣保存與寫回。
+  md.normalizeLink = (url) => url;
+  md.normalizeLinkText = (url) => url;
+
+  return md
     .use(attrs)
     .use(footnote)
     .use(mathPlugin)
     .use(citationPlugin)
-    .use(footnoteResolvePlugin);
+    .use(divPlugin)
+    .use(footnoteResolvePlugin)
+    .use(figuresPlugin);
 }

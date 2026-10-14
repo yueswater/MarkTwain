@@ -77,6 +77,38 @@ const nodes: Record<NodeName, NodeSpec> = {
     atom: true,
     attrs: { label: { default: "" } },
   },
+
+  // 圖：獨立成段的圖片。caption 是行內 Markdown 原文；width 例如 "60%"。
+  [NodeName.Figure]: {
+    group: "block",
+    atom: true,
+    attrs: {
+      src: { default: "" },
+      caption: { default: "" },
+      label: { default: null },
+      width: { default: null },
+    },
+  },
+
+  // 並排圖（layout 為 row）或網格圖（grid）；子圖的 caption 是子標題，這裡的 caption 是總標題。
+  [NodeName.FigureGroup]: {
+    group: "block",
+    content: "figure+",
+    attrs: {
+      label: { default: null },
+      caption: { default: "" },
+      layout: { default: "row" },
+      columns: { default: null },
+    },
+  },
+
+  // 一般的圍欄 div（摘要的 .abstract-zh 等）；不符合並排圖結構的 .figrow 也保持成 div。
+  [NodeName.Div]: {
+    group: "block",
+    content: "block+",
+    defining: true,
+    attrs: { id: { default: null }, classes: { default: [] }, props: { default: {} } },
+  },
 };
 
 const marks: Record<MarkName, MarkSpec> = {

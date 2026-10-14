@@ -19,6 +19,9 @@ export const NodeName = {
   Footnote: "footnote",
   Citation: "citation",
   CrossRef: "crossRef",
+  Figure: "figure",
+  FigureGroup: "figureGroup",
+  Div: "div",
 } as const;
 
 export type NodeName = (typeof NodeName)[keyof typeof NodeName];

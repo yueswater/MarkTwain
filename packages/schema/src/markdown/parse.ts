@@ -4,6 +4,11 @@ import { MarkName, NodeName } from "../model/names";
 import { schema } from "../model/schema";
 import { createMarkdownIt } from "./markdown-it";
 
+/** 圖的標題在 `![…]` 裡跳脫了中括號，還原回來。 */
+function unescapeBrackets(text: string): string {
+  return text.replace(/\\([[\]])/g, "$1").trim();
+}
+
 function infoLanguage(token: Token): string | null {
   return token.info.trim().split(/\s+/)[0] || null;
 }
@@ -46,6 +51,32 @@ const markdownParser = new MarkdownParser(schema, createMarkdownIt() as unknown 
   },
   code_inline: { mark: MarkName.Code, noCloseToken: true },
   math_inline: { node: NodeName.InlineMath, getAttrs: (token) => ({ latex: token.content }) },
+  figure: {
+    node: NodeName.Figure,
+    getAttrs: (token) => ({
+      src: String(token.meta?.src ?? ""),
+      caption: unescapeBrackets(token.content),
+      label: token.meta?.id ?? null,
+      width: token.meta?.width ?? null,
+    }),
+  },
+  figure_group: {
+    block: NodeName.FigureGroup,
+    getAttrs: (token) => ({
+      label: token.meta?.id ?? null,
+      caption: String(token.meta?.caption ?? ""),
+      layout: token.meta?.layout ?? "row",
+      columns: token.meta?.columns ?? null,
+    }),
+  },
+  div: {
+    block: NodeName.Div,
+    getAttrs: (token) => ({
+      id: token.meta?.id ?? null,
+      classes: token.meta?.classes ?? [],
+      props: token.meta?.props ?? {},
+    }),
+  },
   footnote_ref: {
     node: NodeName.Footnote,
     getAttrs: (token) => ({ text: String(token.meta?.text ?? "") }),

@@ -1,7 +1,7 @@
 import { Node } from "prosemirror-model";
 import { MarkdownSerializer, type MarkdownSerializerState } from "prosemirror-markdown";
 import { formatAttributes } from "./attributes";
-import { escapeText } from "./escape";
+import { escapeLineStart, escapeText } from "./escape";
 import { MarkName, NodeName } from "../model/names";
 import { schema } from "../model/schema";
 import type { DocJson } from "./parse";
@@ -73,6 +73,21 @@ function neighbors(parent: Node, index: number): { previousWord: boolean; nextCo
   const previousWord = Boolean(previous?.isText && /\w$/.test(previous.text ?? ""));
   const nextConflicts = Boolean(next?.isText && /^[\w.:\-/+]/.test(next.text ?? ""));
   return { previousWord, nextConflicts };
+}
+
+/** 圖片的目的地：含空白或括號時用 `<…>`。 */
+function destination(src: string): string {
+  return /[\s()<>]/.test(src) ? `<${src}>` : src;
+}
+
+/** 圖的標題：單行、修剪、跳脫中括號（`![…]` 裡的括號要成對）。 */
+function figureCaption(caption: string): string {
+  return caption.replace(/\s*\n\s*/g, " ").trim().replace(/([[\]])/g, "\\$1");
+}
+
+/** 讓目前的區塊在下一次寫入前只換一行（而不是空一行）；prosemirror-markdown 的型別沒有公開它。 */
+function endLine(state: MarkdownSerializerState): void {
+  (state as unknown as { flushClose(size: number): void }).flushClose(1);
 }
 
 const serializer = new MarkdownSerializer(
@@ -150,6 +165,49 @@ const serializer = new MarkdownSerializer(
       state.closeBlock(node);
     },
 
+    [NodeName.Figure](state, node) {
+      const label = node.attrs.label as string | null;
+      const width = node.attrs.width as string | null;
+      const attributes = formatAttributes({ id: label, classes: [], props: width ? { width } : {} });
+      state.write(
+        `![${figureCaption(String(node.attrs.caption))}](${destination(String(node.attrs.src))})${attributes}`,
+      );
+      state.closeBlock(node);
+    },
+
+    [NodeName.FigureGroup](state, node) {
+      const grid = node.attrs.layout === "grid";
+      const columns = node.attrs.columns as string | null;
+      const attributes = formatAttributes({
+        id: node.attrs.label as string | null,
+        classes: [grid ? "figgrid" : "figrow"],
+        props: columns ? { columns } : {},
+      });
+      state.write(`::: ${attributes}\n`);
+      state.renderContent(node);
+      const caption = String(node.attrs.caption).replace(/\s*\n\s*/g, " ").trim();
+      if (caption) {
+        state.write(escapeLineStart(caption));
+        state.closeBlock(node);
+      }
+      endLine(state);
+      state.write(":::");
+      state.closeBlock(node);
+    },
+
+    [NodeName.Div](state, node) {
+      const attributes = formatAttributes({
+        id: node.attrs.id as string | null,
+        classes: node.attrs.classes as string[],
+        props: node.attrs.props as Record<string, string>,
+      });
+      state.write(attributes ? `::: ${attributes}\n` : "::: div\n");
+      state.renderContent(node);
+      endLine(state);
+      state.write(":::");
+      state.closeBlock(node);
+    },
+
     [NodeName.Footnote](state, node) {
       const text = String(node.attrs.text).replace(/\s*\n\s*/g, " ").trim();
       if (text === "") return;
@@ -205,7 +263,8 @@ const serializer = new MarkdownSerializer(
     [MarkName.Link]: {
       open: "[",
       close(_state, mark) {
-        const href = String(mark.attrs.href).replace(/[()"]/g, "\\$&");
+        const raw = String(mark.attrs.href);
+        const href = /\s/.test(raw) ? `<${raw}>` : raw.replace(/[()"]/g, "\\$&");
         const title = mark.attrs.title
           ? ` "${String(mark.attrs.title).replace(/"/g, '\\"')}"`
           : "";
