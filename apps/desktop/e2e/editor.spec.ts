@@ -316,3 +316,40 @@ test("an image is stored in the project, shown in the editor, and saved as Markd
     rmSync(dir, { recursive: true, force: true });
   }
 });
+
+test("pasting Markdown text becomes document structure; Ctrl+S saves at once", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "marktwain 貼上 "));
+  const file = join(dir, "論文.marktwain");
+  const args = [`--user-data-dir=${join(dir, "userData")}`, "--lang=en-US"];
+  if (process.platform === "linux") args.push("--no-sandbox");
+
+  const app = await electron.launch({
+    executablePath: findPackagedExecutable(dist),
+    args,
+    env: { ...process.env, MARKTWAIN_TEST_DIALOG_PATH: file },
+  });
+  try {
+    const page = await app.firstWindow();
+    await page.getByRole("button", { name: "New project" }).click();
+    const editor = page.locator(".ProseMirror");
+    await editor.click();
+
+    await page.evaluate(() => {
+      const data = new DataTransfer();
+      data.setData("text/plain", "# 貼上的標題\n\n- 一\n- 二\n\n含 **粗體** 與 $x^2$。\n");
+      document
+        .querySelector(".ProseMirror")!
+        .dispatchEvent(new ClipboardEvent("paste", { clipboardData: data, bubbles: true, cancelable: true }));
+    });
+    await expect(editor.locator("h1")).toHaveText("貼上的標題");
+    await expect(editor.locator("ul li")).toHaveCount(2);
+    await expect(editor.locator("strong")).toHaveText("粗體");
+    await expect(editor.locator("[data-type='inline-math']")).toHaveCount(1);
+
+    await page.keyboard.press("ControlOrMeta+s");
+    await expect(page.getByRole("status")).toHaveText("Saved");
+  } finally {
+    await app.close();
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
