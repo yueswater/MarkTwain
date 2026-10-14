@@ -14,6 +14,114 @@ const ALIGN: Record<Exclude<Align, null>, string> = {
   right: "right + horizon",
 };
 
+const VALIGN = { top: "top", middle: "horizon", bottom: "bottom" } as const;
+
+type TableBlock = Extract<Block, { type: "table" }>;
+
+/** Starting grid column of every cell, skipping positions that rows above cover with a rowspan. */
+function columnStarts(rows: Cell[][]): number[][] {
+  const covered = new Set<string>();
+  return rows.map((cells, r) => {
+    let c = 0;
+    return cells.map((cell) => {
+      while (covered.has(`${r}.${c}`)) c += 1;
+      for (let dr = 0; dr < cell.rowspan; dr += 1) {
+        for (let dc = 0; dc < cell.colspan; dc += 1) covered.add(`${r + dr}.${c + dc}`);
+      }
+      const start = c;
+      c += cell.colspan;
+      return start;
+    });
+  });
+}
+
+/** A table that the template's tlt can draw as is, with no merges, widths, heights or vertical alignment. */
+function isPlain(table: TableBlock): boolean {
+  const cells = [...(table.header ?? []), ...table.rows.flat()];
+  return (
+    table.style === "three-line" &&
+    table.widths.length === 0 &&
+    table.heights.every((h) => h === null) &&
+    cells.every((c) => c.colspan === 1 && c.rowspan === 1 && c.valign === null)
+  );
+}
+
+function renderTable(block: TableBlock, ctx: BlockContext): string[] {
+  const columns = block.columns;
+  const first: Cell[] = block.header ?? block.rows[0] ?? [];
+  const columnAlign = Array.from({ length: columns }, (_, i) => first[i]?.align ?? "center");
+  const caption = `caption: ${content(block.caption, ctx)}`;
+  const notes = block.notes.length > 0 ? content(block.notes, ctx) : null;
+
+  if (isPlain(block)) {
+    const row = (cells: Cell[]) =>
+      `(${Array.from({ length: columns }, (_, i) => content(cells[i]?.content ?? [], ctx)).join(", ")},)`;
+    return [
+      "#tlt(",
+      `  ${caption},`,
+      `  columns: ${columns},`,
+      `  align: (${columnAlign.map((a) => ALIGN[a]).join(", ")},),`,
+      ...(block.header ? [`  header: ${row(block.header)},`] : []),
+      "  rows: (",
+      ...block.rows.map((r) => `    ${row(r)},`),
+      "  ),",
+      ...(notes ? [`  notes: ${notes},`] : []),
+      `)${label(block.label)}`,
+    ];
+  }
+
+  // Cells with their own spans or alignment need table.cell, so draw the figure here like tlt does
+  const all = block.header ? [block.header, ...block.rows] : block.rows;
+  const starts = columnStarts(all);
+  const cell = (c: Cell, column: number): string => {
+    const options: string[] = [];
+    if (c.colspan > 1) options.push(`colspan: ${c.colspan}`);
+    if (c.rowspan > 1) options.push(`rowspan: ${c.rowspan}`);
+    // Alignment is only spelled out when it differs from the column
+    const own = c.align !== null && c.align !== (columnAlign[column] ?? "center");
+    if (own || c.valign !== null) {
+      options.push(`align: ${c.align ?? columnAlign[column] ?? "center"} + ${VALIGN[c.valign ?? "middle"]}`);
+    }
+    const body = content(c.content, ctx);
+    return options.length > 0 ? `table.cell(${options.join(", ")})${body}` : body;
+  };
+  const cellsOf = (row: Cell[], rowIndex: number) =>
+    row.map((c, i) => `      ${cell(c, starts[rowIndex]?.[i] ?? i)},`);
+  const grid = block.style === "grid";
+  const widths = block.widths.length > 0 ? Array.from({ length: columns }, (_, i) => block.widths[i] ?? "auto") : null;
+  const rowCount = (block.header ? 1 : 0) + block.rows.length;
+  const heights = block.heights.some((h) => h !== null) ? Array.from({ length: rowCount }, (_, i) => block.heights[i] ?? "auto") : null;
+
+  return [
+    "#figure(",
+    "  {",
+    "    table(",
+    `      columns: ${widths ? `(${widths.join(", ")},)` : columns},`,
+    ...(heights ? [`      rows: (${heights.join(", ")},),`] : []),
+    `      align: (${columnAlign.map((a) => ALIGN[a]).join(", ")},),`,
+    `      stroke: ${grid ? "0.5pt" : "none"},`,
+    "      inset: (x: 0.6em, y: 0.45em),",
+    ...(block.header
+      ? [
+          grid ? "      table.header(repeat: true," : "      table.header(repeat: true, toprule,",
+          ...cellsOf(block.header, 0),
+          grid ? "      )," : "      midrule),",
+        ]
+      : grid
+        ? []
+        : ["      toprule,"]),
+    ...block.rows.flatMap((r, i) => cellsOf(r, i + (block.header ? 1 : 0))),
+    ...(grid ? [] : ["      bottomrule,"]),
+    "    )",
+    ...(notes ? [`    block(width: 100%, above: 0.5em, std.align(left, text(size: 0.9em, [註：] + ${notes})))`] : []),
+    "  },",
+    `  ${caption},`,
+    "  kind: table,",
+    "  supplement: table-supplement,",
+    `)${label(block.label)}`,
+  ];
+}
+
 const label = (value: string | null) => (value ? ` <${value}>` : "");
 const str = (value: string) => `"${escapeString(value)}"`;
 const content = (nodes: Inline[], ctx: BlockContext) => `[${renderInline(nodes, ctx)}]`;
@@ -87,26 +195,8 @@ export function renderBlock(block: Block, ctx: BlockContext): string[] {
       return [`#${fn}(`, ...indent([...args.map((a) => `${a},`), ...items.map((i) => `${i},`)], "  "), `)${label(block.label)}`];
     }
 
-    case "table": {
-      const columns = Math.max(block.header?.length ?? 0, ...block.rows.map((row) => row.length), 1);
-      const first: Cell[] = block.header ?? block.rows[0] ?? [];
-      const align = Array.from({ length: columns }, (_, i) => ALIGN[first[i]?.align ?? "center"]);
-      const row = (cells: Cell[]) =>
-        `(${Array.from({ length: columns }, (_, i) => content(cells[i]?.content ?? [], ctx)).join(", ")},)`;
-      const lines = [
-        "#tlt(",
-        `  caption: ${content(block.caption, ctx)},`,
-        `  columns: ${columns},`,
-        `  align: (${align.join(", ")},),`,
-        ...(block.header ? [`  header: ${row(block.header)},`] : []),
-        "  rows: (",
-        ...block.rows.map((r) => `    ${row(r)},`),
-        "  ),",
-        ...(block.notes.length > 0 ? [`  notes: ${content(block.notes, ctx)},`] : []),
-        `)${label(block.label)}`,
-      ];
-      return lines;
-    }
+    case "table":
+      return renderTable(block, ctx);
 
     case "rule":
       return ["#line(length: 100%)"];

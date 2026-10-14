@@ -69,7 +69,7 @@ const figure = fc
 const cell = (header: boolean) =>
   word.map((w): Json => ({
     type: header ? "tableHeader" : "tableCell",
-    attrs: { align: null, colspan: 1, rowspan: 1, colwidth: null },
+    attrs: { align: null, valign: null, colspan: 1, rowspan: 1, colwidth: null },
     content: [{ type: "paragraph", content: [text(w)] }],
   }));
 const table = fc
@@ -84,8 +84,8 @@ const table = fc
   )
   .map(([head, body, label, caption]): Json => ({
     type: "table",
-    attrs: { label, caption, notes: "" },
-    content: [{ type: "tableRow", content: head }, ...body.map((cells) => ({ type: "tableRow", content: cells }))],
+    attrs: { label, caption, notes: "", style: "three-line", widths: "" },
+    content: [{ type: "tableRow", attrs: { height: null }, content: head }, ...body.map((cells) => ({ type: "tableRow", attrs: { height: null }, content: cells }))],
   }));
 
 const definitionList = fc

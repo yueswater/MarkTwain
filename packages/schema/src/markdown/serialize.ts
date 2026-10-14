@@ -2,6 +2,7 @@ import { Node } from "prosemirror-model";
 import { MarkdownSerializer, type MarkdownSerializerState } from "prosemirror-markdown";
 import { formatAttributes } from "./attributes";
 import { escapeLineStart, escapeText } from "./escape";
+import { formatCells, formatHeights, normalizeWidths, type CellExtra } from "./table-extras";
 import { MarkName, NodeName } from "../model/names";
 import { schema } from "../model/schema";
 import type { DocJson } from "./parse";
@@ -95,7 +96,6 @@ function endLine(state: MarkdownSerializerState): void {
   (state as unknown as { flushClose(size: number): void }).flushClose(1);
 }
 
-type CellText = { text: string; align: string | null };
 
 /** Writes the paragraph of a cell as one line of text, borrowing the output buffer of state and restoring it afterwards. */
 function renderCell(state: MarkdownSerializerState, paragraph: Node | null): string {
@@ -198,27 +198,59 @@ const serializer = new MarkdownSerializer(
     },
 
     [NodeName.Table](state, node) {
-      const rows: CellText[][] = [];
-      node.forEach((tableRow) => {
-        const cells: CellText[] = [];
+      type Slot = { text: string; align: string | null; real: boolean };
+      const grid: (Slot | undefined)[][] = [];
+      const extras = new Map<string, CellExtra>();
+      const heights = new Map<number, string>();
+
+      node.forEach((tableRow, _offset, rowIndex) => {
+        const r = rowIndex + 1;
+        grid[rowIndex] ??= [];
+        const height = tableRow.attrs.height as string | null;
+        if (height) heights.set(r, height);
+        let c = 0;
         tableRow.forEach((cell) => {
-          cells.push({ text: renderCell(state, cell.firstChild), align: (cell.attrs.align as string | null) ?? null });
+          while (grid[rowIndex]?.[c]) c += 1;
+          const colspan = Math.max(1, Number(cell.attrs.colspan) || 1);
+          const rowspan = Math.max(1, Number(cell.attrs.rowspan) || 1);
+          const align = (cell.attrs.align as string | null) ?? null;
+          const valign = (cell.attrs.valign as string | null) ?? null;
+          for (let dr = 0; dr < rowspan; dr += 1) {
+            grid[rowIndex + dr] ??= [];
+            for (let dc = 0; dc < colspan; dc += 1) {
+              (grid[rowIndex + dr] as Slot[])[c + dc] =
+                dr === 0 && dc === 0 ? { text: renderCell(state, cell.firstChild), align, real: true } : { text: "", align: null, real: false };
+            }
+          }
+          const extra: CellExtra = {};
+          if (colspan > 1) extra.colspan = colspan;
+          if (rowspan > 1) extra.rowspan = rowspan;
+          if (valign) extra.valign = valign as CellExtra["valign"];
+          if (r > 1 && align) extra.align = align as CellExtra["align"];
+          if (Object.keys(extra).length > 0) extras.set(`${r}.${c + 1}`, extra);
+          c += colspan;
         });
-        rows.push(cells);
       });
 
-      const width = Math.max(1, ...rows.map((cells) => cells.length));
-      const pad = (cells: CellText[]): CellText[] => [
-        ...cells,
-        ...Array.from({ length: width - cells.length }, () => ({ text: "", align: null })),
-      ];
-      const line = (cells: CellText[]) => `| ${pad(cells).map((c) => c.text).join(" | ")} |`;
+      const width = Math.max(1, ...grid.map((cells) => cells.length));
+      const slot = (cells: (Slot | undefined)[], c: number): Slot => cells[c] ?? { text: "", align: null, real: false };
+      const line = (cells: (Slot | undefined)[]) =>
+        `| ${Array.from({ length: width }, (_, c) => slot(cells, c).text).join(" | ")} |`;
 
-      const header = pad(rows[0] ?? []);
+      const header = grid[0] ?? [];
+      const columnAlign = Array.from({ length: width }, (_, c) => slot(header, c).align);
+      // A body cell only needs its own entry when it differs from the column.
+      for (const [position, extra] of extras) {
+        const c = Number(position.split(".")[1]);
+        if (extra.align && extra.align === (columnAlign[c - 1] ?? null)) {
+          delete extra.align;
+          if (Object.keys(extra).length === 0) extras.delete(position);
+        }
+      }
       const lines = [
         line(header),
-        `| ${header.map((cell) => alignMarker(cell.align)).join(" | ")} |`,
-        ...rows.slice(1).map(line),
+        `| ${columnAlign.map((align) => alignMarker(align)).join(" | ")} |`,
+        ...grid.slice(1).map(line),
       ];
       state.text(lines.join("\n"), false);
       state.closeBlock(node);
@@ -226,7 +258,14 @@ const serializer = new MarkdownSerializer(
       const caption = String(node.attrs.caption).replace(/\s*\n\s*/g, " ").trim();
       const notes = String(node.attrs.notes).replace(/\s*\n\s*/g, " ").trim();
       const label = node.attrs.label as string | null;
-      const attributes = formatAttributes({ id: label, classes: [], props: notes ? { notes } : {} });
+      const props: Record<string, string> = {};
+      if (notes) props.notes = notes;
+      if (node.attrs.style === "grid") props.style = "grid";
+      const widths = normalizeWidths(String(node.attrs.widths ?? ""));
+      if (widths) props.widths = widths;
+      if (heights.size > 0) props.heights = formatHeights(heights);
+      if (extras.size > 0) props.cells = formatCells(extras);
+      const attributes = formatAttributes({ id: label, classes: [], props });
       if (caption || attributes) {
         state.write(`: ${[caption, attributes].filter(Boolean).join(" ")}`);
         state.closeBlock(node);
