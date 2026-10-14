@@ -33,16 +33,18 @@ test("editor preferences apply at once and survive a restart, thesis format is k
     await dialog.getByLabel("Text size", { exact: true }).fill("20");
     await dialog.getByLabel("Text size", { exact: true }).press("Enter");
     await expect(editor).toHaveCSS("font-size", "20px");
+    await dialog.getByRole("button", { name: "Writing", exact: true }).click();
     await dialog.getByRole("switch", { name: "Block numbers" }).click();
     await expect(page.locator("[data-line-numbers='true']")).toHaveCount(1);
     // A value that is out of range is refused and the editor keeps the old size
+    await dialog.getByRole("button", { name: "Appearance", exact: true }).click();
     await dialog.getByLabel("Text size", { exact: true }).fill("99");
     await dialog.getByLabel("Text size", { exact: true }).press("Enter");
     await expect(dialog.getByLabel("Text size", { exact: true })).toHaveAttribute("aria-invalid", "true");
     await expect(editor).toHaveCSS("font-size", "20px");
 
     // The advanced thesis format shows the inherited value and an override can be reset
-    await dialog.getByRole("button", { name: "Thesis, advanced" }).click();
+    await dialog.getByRole("button", { name: "Text", exact: true }).click();
     const size = dialog.getByLabel("Text size", { exact: true });
     await expect(size).toHaveAttribute("placeholder", "12");
     await size.fill("14");
@@ -53,8 +55,22 @@ test("editor preferences apply at once and survive a restart, thesis format is k
       return r.ok ? r.data.values : null;
     });
     expect(advanced).toMatchObject({ "layout.font-size": 14 });
+    // The page that holds an override shows a dot in the list
+    await expect(dialog.getByRole("button", { name: /^Text /, includeHidden: false })).toContainText("");
+    await expect(dialog.getByRole("button", { name: /^Text .*differ from the school format/ })).toBeVisible();
     await dialog.getByRole("button", { name: "Use the default: Text size" }).click();
     await expect(size).toHaveValue("");
+
+    // Search finds a setting on another page and opens that page with the setting in view
+    await dialog.getByRole("textbox", { name: "Search settings" }).fill("top margin");
+    await dialog.getByRole("list", { name: "Search results" }).getByRole("button", { name: /Top margin/ }).click();
+    await expect(dialog.getByRole("heading", { name: "Page", exact: true, level: 2 })).toBeVisible();
+    await expect(dialog.getByLabel("Top margin", { exact: true })).toBeVisible();
+    await expect(dialog.getByRole("textbox", { name: "Search settings" })).toHaveValue("");
+    // Closing and opening again returns to the page that was open last
+    await page.keyboard.press("Escape");
+    await page.keyboard.press("ControlOrMeta+,");
+    await expect(page.getByRole("dialog", { name: "Settings" }).getByRole("heading", { name: "Page", exact: true, level: 2 })).toBeVisible();
     await first.close();
 
     // Second start: the editor preferences are still there

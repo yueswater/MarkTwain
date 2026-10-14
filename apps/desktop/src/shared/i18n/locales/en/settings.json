@@ -2,12 +2,6 @@
   "title": "Settings",
   "description": "Preferences of the editor, and the format of the thesis.",
   "close": "Close",
-  "nav": {
-    "editor": "Editor",
-    "editorAdvanced": "Editor, advanced",
-    "thesis": "Thesis",
-    "thesisAdvanced": "Thesis, advanced"
-  },
   "reset": "Use the default",
   "inherited": "Default: {{value}}",
   "followDefault": "Follow the default",
@@ -138,5 +132,62 @@
     "pt": "pt",
     "cm": "cm",
     "em": "em"
-  }
+  },
+  "section": {
+    "editor": "Editor",
+    "thesis": "Thesis"
+  },
+  "page": {
+    "editorAppearance": {
+      "title": "Appearance",
+      "description": "How the text looks in the editor."
+    },
+    "editorWriting": {
+      "title": "Writing",
+      "description": "Block numbers, spell check, pasting and saving."
+    },
+    "editorPreview": {
+      "title": "Preview",
+      "description": "How the preview of the thesis is built."
+    },
+    "thesisSchool": {
+      "title": "School and format",
+      "description": "The school decides the format. Changes are saved at once."
+    },
+    "thesisInfo": {
+      "title": "Information",
+      "description": "What goes on the cover and the title page. Changes are saved at once."
+    },
+    "thesisPage": {
+      "title": "Page",
+      "description": "Paper size and margins. Leave a field empty to follow the school format."
+    },
+    "thesisText": {
+      "title": "Text",
+      "description": "Fonts, size and spacing of the body text."
+    },
+    "thesisHeadings": {
+      "title": "Headings and numbering",
+      "description": "Heading sizes and alignment, and the numbering of footnotes and formulas."
+    },
+    "thesisCaptions": {
+      "title": "Figures, tables and references",
+      "description": "Captions and the words used for cross-references."
+    },
+    "thesisPageNumber": {
+      "title": "Page numbers and outline",
+      "description": "Page numbers of the front and the main part, and the table of contents."
+    },
+    "thesisBibliography": {
+      "title": "Bibliography",
+      "description": "Title and listing of the references."
+    }
+  },
+  "search": {
+    "label": "Search settings",
+    "placeholder": "Search settings",
+    "results": "Search results",
+    "none": "No setting matches."
+  },
+  "changedDot": "This page has settings that differ from the school format"
 }

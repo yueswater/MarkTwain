@@ -45,7 +45,6 @@
     "institutePick": "系所"
   },
   "hint": {
-    "date": "YYYY-MM-DD",
     "keywords": "以逗號分隔。",
     "school": "套用所選學校的論文格式規定。留空則使用預設格式。"
   },

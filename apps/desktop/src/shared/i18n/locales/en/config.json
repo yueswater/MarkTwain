@@ -45,7 +45,6 @@
     "institutePick": "Department"
   },
   "hint": {
-    "date": "YYYY-MM-DD",
     "keywords": "Separate with commas.",
     "school": "Formatting rules of the chosen university. Leave empty to use the default format."
   },

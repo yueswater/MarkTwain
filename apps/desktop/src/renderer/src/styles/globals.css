@@ -281,3 +281,6 @@
 .ProseMirror figure .figure-handle-sw { bottom: -5px; left: -5px; cursor: nesw-resize; }
 .ProseMirror figure .figure-handle-se { bottom: -5px; right: -5px; cursor: nwse-resize; }
 .ProseMirror figure figcaption { line-height: 1.5; }
+
+/* A setting found by search is marked for a moment */
+.settings-flash { outline: 2px solid var(--ring); outline-offset: 4px; border-radius: 0.375rem; }
