@@ -52,3 +52,19 @@ export {
   type AdvancedValue,
   type AdvancedValues,
 } from "./config/advanced";
+export {
+  ENTRY_TYPES,
+  REQUIRED_FIELDS,
+  appendEntry,
+  duplicateKeys,
+  entryLabel,
+  formatEntry,
+  isValidBibKey,
+  missingFields,
+  parseBibtex,
+  removeEntry,
+  replaceEntry,
+  type BibEntry,
+  type BibError,
+  type BibParseResult,
+} from "./bibliography/bibtex";
