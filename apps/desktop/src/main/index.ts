@@ -4,6 +4,8 @@ import { registerAppController } from "./features/app/app.controller";
 import { registerDialogController } from "./features/dialog/dialog.controller";
 import { registerDocumentController } from "./features/document/document.controller";
 import { DocumentService } from "./features/document/document.service";
+import { registerLabelController } from "./features/label/label.controller";
+import { LabelService } from "./features/label/label.service";
 import { registerProjectController } from "./features/project/project.controller";
 import { ProjectService } from "./features/project/project.service";
 import { registerSettingsController } from "./features/settings/settings.controller";
@@ -12,6 +14,7 @@ import { registerSettingsController } from "./features/settings/settings.control
 const session = new DatabaseSession();
 const documents = new DocumentService(session);
 const projects = new ProjectService(session, documents);
+const labels = new LabelService(documents);
 
 bootstrap([
   registerAppController,
@@ -19,4 +22,5 @@ bootstrap([
   registerDialogController,
   () => registerProjectController(projects),
   () => registerDocumentController(documents),
+  () => registerLabelController(labels),
 ]);

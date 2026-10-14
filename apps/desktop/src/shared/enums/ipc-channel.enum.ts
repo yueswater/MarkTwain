@@ -7,6 +7,7 @@ export const IpcChannel = {
   ProjectOpen: "project:open",
   ProjectCurrent: "project:current",
   ProjectClose: "project:close",
+  LabelResolve: "label:resolve",
   DialogChooseNewProject: "dialog:choose-new-project",
   DialogChooseOpenProject: "dialog:choose-open-project",
   DocumentList: "document:list",

@@ -14,3 +14,4 @@ export type {
   NumberingResult,
   Target,
 } from "./numbering/types";
+export { collectTargets, type CollectedTargets } from "./numbering/collect";
