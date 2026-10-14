@@ -6,6 +6,7 @@ import { divPlugin } from "./plugins/div";
 import { figuresPlugin } from "./plugins/figures";
 import { footnoteResolvePlugin } from "./plugins/footnote";
 import { mathPlugin } from "./plugins/math";
+import { tablesPlugin } from "./plugins/tables";
 
 /**
  * 方言的 markdown-it 實例（規格 4.3 節）。後續的小節會在這裡加入腳註、
@@ -27,5 +28,6 @@ export function createMarkdownIt(): MarkdownItInstance {
     .use(citationPlugin)
     .use(divPlugin)
     .use(footnoteResolvePlugin)
+    .use(tablesPlugin)
     .use(figuresPlugin);
 }

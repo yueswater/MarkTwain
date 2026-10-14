@@ -3,6 +3,8 @@ export type EscapeContext = {
   startOfLine: boolean;
   /** 是否在標題裡：標題結尾的 `#` 序列會被當成關閉記號 */
   inHeading: boolean;
+  /** 是否在表格儲存格裡：`|` 是欄位分隔 */
+  inTableCell?: boolean;
 };
 
 /** 看起來像字元實體的 `&…;`（`&amp;`、`&#35;`、`&#x23;`）。 */
@@ -38,6 +40,8 @@ export function escapeText(text: string, context: EscapeContext): string {
       out += "\\@";
     } else if (ch === "&" && ENTITY.test(text.slice(i))) {
       out += "\\&";
+    } else if (ch === "|" && context.inTableCell) {
+      out += "\\|";
     } else if (ch === "#" && context.inHeading) {
       out += "\\#";
     } else {

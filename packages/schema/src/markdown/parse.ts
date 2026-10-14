@@ -4,6 +4,12 @@ import { MarkName, NodeName } from "../model/names";
 import { schema } from "../model/schema";
 import { createMarkdownIt } from "./markdown-it";
 
+/** 欄位對齊：markdown-it 把 `:---:` 變成儲存格的 style 屬性。 */
+function cellAttrs(token: Token): { align: string | null } {
+  const match = /text-align:\s*(left|center|right)/.exec(String(token.attrGet("style") ?? ""));
+  return { align: match?.[1] ?? null };
+}
+
 /** 圖的標題在 `![…]` 裡跳脫了中括號，還原回來。 */
 function unescapeBrackets(text: string): string {
   return text.replace(/\\([[\]])/g, "$1").trim();
@@ -77,6 +83,19 @@ const markdownParser = new MarkdownParser(schema, createMarkdownIt() as unknown 
       props: token.meta?.props ?? {},
     }),
   },
+  table: {
+    block: NodeName.Table,
+    getAttrs: (token) => ({
+      label: token.meta?.label ?? null,
+      caption: String(token.meta?.caption ?? ""),
+      notes: String(token.meta?.notes ?? ""),
+    }),
+  },
+  thead: { ignore: true },
+  tbody: { ignore: true },
+  tr: { block: NodeName.TableRow },
+  th: { block: NodeName.TableHeader, getAttrs: cellAttrs },
+  td: { block: NodeName.TableCell, getAttrs: cellAttrs },
   footnote_ref: {
     node: NodeName.Footnote,
     getAttrs: (token) => ({ text: String(token.meta?.text ?? "") }),

@@ -43,7 +43,9 @@ function isTight(list: Node): boolean {
 
 /** 行內公式的內容：修剪、換行變空白、把沒跳脫的 `$` 跳脫（否則會提前結束公式）。 */
 function inlineLatex(latex: string): string {
-  const flat = latex.replace(/\s*\n\s*/g, " ").trim();
+  let flat = latex.replace(/\s*\n\s*/g, " ").trim();
+  // 儲存格裡的 `|` 會被當成欄位分隔；改寫成等價的 \vert{}
+  if (inTableCell) flat = flat.replace(/\|/g, "\\vert{}");
   let out = "";
   for (let i = 0; i < flat.length; i += 1) {
     const ch = flat.charAt(i);
@@ -58,6 +60,9 @@ function inlineLatex(latex: string): string {
 }
 
 const SIMPLE_KEY = /^[A-Za-z0-9_](?:[A-Za-z0-9_]|[:.\-/+](?=[A-Za-z0-9_]))*$/;
+
+/** 正在輸出表格儲存格：`|` 要跳脫、硬換行改成空白、公式裡的 `|` 改寫。 */
+let inTableCell = false;
 
 /** 腳註在這次序列化中的內容，依出現順序；序列化是同步的，所以模組層級的暫存是安全的。 */
 let footnotes: string[] = [];
@@ -88,6 +93,33 @@ function figureCaption(caption: string): string {
 /** 讓目前的區塊在下一次寫入前只換一行（而不是空一行）；prosemirror-markdown 的型別沒有公開它。 */
 function endLine(state: MarkdownSerializerState): void {
   (state as unknown as { flushClose(size: number): void }).flushClose(1);
+}
+
+type CellText = { text: string; align: string | null };
+
+/** 把一個儲存格的段落輸出成單行文字；借用 state 的輸出緩衝，結束後還原。 */
+function renderCell(state: MarkdownSerializerState, paragraph: Node | null): string {
+  if (!paragraph) return "";
+  const internal = state as unknown as { out: string; delim: string; closed: unknown; atBlockStart: boolean };
+  const saved = { out: internal.out, delim: internal.delim, closed: internal.closed, atBlockStart: internal.atBlockStart };
+  internal.out = "";
+  internal.delim = "";
+  internal.closed = null;
+  inTableCell = true;
+  try {
+    state.renderInline(paragraph, true);
+    return internal.out.replace(/\s*\n\s*/g, " ").trim();
+  } finally {
+    inTableCell = false;
+    Object.assign(internal, saved);
+  }
+}
+
+function alignMarker(align: string | null): string {
+  if (align === "left") return ":---";
+  if (align === "center") return ":---:";
+  if (align === "right") return "---:";
+  return "---";
 }
 
 const serializer = new MarkdownSerializer(
@@ -165,6 +197,42 @@ const serializer = new MarkdownSerializer(
       state.closeBlock(node);
     },
 
+    [NodeName.Table](state, node) {
+      const rows: CellText[][] = [];
+      node.forEach((tableRow) => {
+        const cells: CellText[] = [];
+        tableRow.forEach((cell) => {
+          cells.push({ text: renderCell(state, cell.firstChild), align: (cell.attrs.align as string | null) ?? null });
+        });
+        rows.push(cells);
+      });
+
+      const width = Math.max(1, ...rows.map((cells) => cells.length));
+      const pad = (cells: CellText[]): CellText[] => [
+        ...cells,
+        ...Array.from({ length: width - cells.length }, () => ({ text: "", align: null })),
+      ];
+      const line = (cells: CellText[]) => `| ${pad(cells).map((c) => c.text).join(" | ")} |`;
+
+      const header = pad(rows[0] ?? []);
+      const lines = [
+        line(header),
+        `| ${header.map((cell) => alignMarker(cell.align)).join(" | ")} |`,
+        ...rows.slice(1).map(line),
+      ];
+      state.text(lines.join("\n"), false);
+      state.closeBlock(node);
+
+      const caption = String(node.attrs.caption).replace(/\s*\n\s*/g, " ").trim();
+      const notes = String(node.attrs.notes).replace(/\s*\n\s*/g, " ").trim();
+      const label = node.attrs.label as string | null;
+      const attributes = formatAttributes({ id: label, classes: [], props: notes ? { notes } : {} });
+      if (caption || attributes) {
+        state.write(`: ${[caption, attributes].filter(Boolean).join(" ")}`);
+        state.closeBlock(node);
+      }
+    },
+
     [NodeName.Figure](state, node) {
       const label = node.attrs.label as string | null;
       const width = node.attrs.width as string | null;
@@ -239,6 +307,10 @@ const serializer = new MarkdownSerializer(
     },
 
     [NodeName.HardBreak](state, node, parent, index) {
+      if (inTableCell) {
+        state.write(" ");
+        return;
+      }
       // 段落結尾的換行沒有意義，不輸出
       for (let i = index + 1; i < parent.childCount; i += 1) {
         if (parent.child(i).type !== node.type) {
@@ -253,7 +325,7 @@ const serializer = new MarkdownSerializer(
       const internal = state as unknown as { atBlockStart: boolean; atBlank(): boolean };
       const startOfLine = internal.atBlockStart || internal.atBlank();
       const inHeading = parent.type.name === NodeName.Heading;
-      state.text(escapeText(node.text ?? "", { startOfLine, inHeading }), false);
+      state.text(escapeText(node.text ?? "", { startOfLine, inHeading, inTableCell }), false);
     },
   },
   {

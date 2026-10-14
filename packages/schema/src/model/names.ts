@@ -22,6 +22,10 @@ export const NodeName = {
   Figure: "figure",
   FigureGroup: "figureGroup",
   Div: "div",
+  Table: "table",
+  TableRow: "tableRow",
+  TableHeader: "tableHeader",
+  TableCell: "tableCell",
 } as const;
 
 export type NodeName = (typeof NodeName)[keyof typeof NodeName];
