@@ -1,7 +1,7 @@
 import tsParser from "@typescript-eslint/parser";
 import i18next from "eslint-plugin-i18next";
 
-// 只啟用這一條規則：UI 的文字一律走 i18n（規格 3.5 節）。
+// Only this rule is on, text in the UI always goes through i18n.
 export default [
   { ignores: ["**/out/**", "**/dist/**", "**/node_modules/**", "resources/**", "docs/**"] },
   {
