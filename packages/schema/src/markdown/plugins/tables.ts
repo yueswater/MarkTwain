@@ -1,4 +1,5 @@
 import { parseAttributes } from "../attributes";
+import { isPlacement } from "../../placement";
 import { normalizeWidths, parseCells, parseHeights, parseWidths, type CellExtra } from "../table-extras";
 import type { MarkdownItInstance } from "../markdown-it";
 
@@ -15,6 +16,7 @@ type CaptionMeta = {
   notes: string;
   style: "three-line" | "grid";
   widths: string;
+  placement: string | null;
   heights: Map<number, string>;
   cells: Map<string, CellExtra>;
 };
@@ -25,6 +27,7 @@ function parseCaption(content: string): CaptionMeta {
   let notes = "";
   let style: CaptionMeta["style"] = "three-line";
   let widths = "";
+  let placement: string | null = null;
   let heights = new Map<number, string>();
   let cells = new Map<string, CellExtra>();
 
@@ -35,11 +38,12 @@ function parseCaption(content: string): CaptionMeta {
     notes = attributes.props.notes ?? "";
     if (attributes.props.style === "grid") style = "grid";
     widths = normalizeWidths(attributes.props.widths ?? "");
+    placement = isPlacement(attributes.props.placement) ? attributes.props.placement : null;
     heights = parseHeights(attributes.props.heights ?? "");
     cells = parseCells(attributes.props.cells ?? "");
     caption = caption.slice(0, match.index).trim();
   }
-  return { caption, label, notes, style, widths, heights, cells };
+  return { caption, label, notes, style, widths, placement, heights, cells };
 }
 
 /**
@@ -82,7 +86,7 @@ function promoteTables(state: CoreState): void {
         const meta = parseCaption(inline.content);
         const tableOpen = findOpen(result);
         if (tableOpen) {
-          tableOpen.meta = { caption: meta.caption, label: meta.label, notes: meta.notes, style: meta.style, widths: meta.widths };
+          tableOpen.meta = { caption: meta.caption, label: meta.label, notes: meta.notes, style: meta.style, widths: meta.widths, placement: meta.placement };
           result.splice(0, result.length, ...applyExtras(result, result.indexOf(tableOpen), meta));
         }
         i += 3;

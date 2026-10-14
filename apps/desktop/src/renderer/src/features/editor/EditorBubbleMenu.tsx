@@ -24,6 +24,8 @@ import {
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { setColumnAlign } from "./table-commands";
+import { PlacementPicker } from "./PlacementPicker";
+import type { Placement } from "@marktwain/schema";
 
 type ItemProps = {
   icon: LucideIcon;
@@ -131,6 +133,8 @@ export function EditorBubbleMenu({ editor, onInsertMath, onEditFigure, onCropFig
                 {width}
               </button>
             ))}
+            {divider}
+            <PlacementPicker compact value={(state.figure.attrs.placement as Placement | null) ?? null} onChange={(placement) => run(() => editor.chain().updateAttributes("figure", { placement }).run())()} />
             {divider}
             <Item icon={Trash2Icon} label={t("figureMenu.remove")} destructive onClick={run(() => editor.chain().deleteSelection().run())} />
           </>

@@ -1,7 +1,7 @@
 import { spawn } from "node:child_process";
 import { copyFileSync, existsSync, mkdirSync, statSync, mkdtempSync, readFileSync, readdirSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { basename, dirname, join } from "node:path";
-import { collectTargets, parseMarkdown, resolveStatementStyle } from "@marktwain/schema";
+import { collectTargets, parseMarkdown, resolvePlacementDefaults, resolveStatementStyle } from "@marktwain/schema";
 import { renderStatementsTypst, renderTypstFile, toIr } from "@marktwain/render";
 import { completeConfig } from "./config";
 import { parseDiagnostics, type LineMap } from "./diagnostics";
@@ -110,6 +110,7 @@ function prepare(input: BuildInput, root: string, link: boolean): Prepared {
       imagePath: (src) => `/figures/${src}`,
       onMathFailure: (latex) => mathFailures.push(latex),
       hasBibliography: input.bibliography.length > 0,
+      defaultPlacement: resolvePlacementDefaults(completed.placement),
       onCitationFallback: (keys) => citationFallbacks.push(...keys),
     });
     if (doc.kind === "appendix") firstAppendix = false;

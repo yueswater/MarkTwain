@@ -214,6 +214,40 @@ describe("文件種類", () => {
   });
 });
 
+describe("placement", () => {
+  const ctxOf = (md: string, figure: "auto" | "here" = "here", table: "auto" | "here" = "here") => {
+    const { document } = toIr(parseMarkdown(md), { documentId: "d", knownLabels: new Set() });
+    return renderTypstFile(document, {
+      kind: "chapter",
+      imagePath: (src) => `/figures/${src}`,
+      onMathFailure: () => undefined,
+      defaultPlacement: { figure, table },
+    }).text;
+  };
+
+  it("a figure floats where it asks to and follows the default of the thesis otherwise", () => {
+    expect(ctxOf("![圖](a.png){placement=top}\n")).toContain('#fig("/figures/a.png", caption: [圖], placement: top)');
+    expect(ctxOf("![圖](a.png){placement=bottom}\n")).toContain("placement: bottom");
+    expect(ctxOf("![圖](a.png){placement=here}\n", "auto")).not.toContain("placement");
+    expect(ctxOf("![圖](a.png)\n", "auto")).toContain("placement: auto");
+    expect(ctxOf("![圖](a.png)\n")).not.toContain("placement");
+  });
+
+  it("near follows auto and a page of its own goes to the top, Typst has no better", () => {
+    expect(ctxOf("![圖](a.png){placement=near}\n")).toContain("placement: auto");
+    expect(ctxOf("![圖](a.png){placement=page}\n")).toContain("placement: top");
+  });
+
+  it("a table takes the placement through a set rule around tlt and an argument on a drawn figure", () => {
+    const plain = ctxOf("| a |\n|---|\n| 1 |\n\n: 表 {#tbl:t placement=top}\n");
+    expect(plain).toContain("#[\n#set figure(placement: top)\n#tlt(");
+    expect(plain).toContain(") <tbl:t>\n]");
+    const merged = ctxOf("| a |\n|---|\n| 1 |\n\n: 表 {#tbl:t style=grid placement=bottom}\n");
+    expect(merged).toContain("  placement: bottom,");
+    expect(ctxOf("| a |\n|---|\n| 1 |\n\n: 表\n")).not.toContain("placement");
+  });
+});
+
 describe("statements", () => {
   it("writes a block of a mathematical thesis with its kind, label and title", () => {
     const out = render('::: {.lemma #lem:ss title="Sum"}\n內容\n:::\n').body;

@@ -87,6 +87,8 @@ const nodes: Record<NodeName, NodeSpec> = {
       caption: { default: "" },
       label: { default: null },
       width: { default: null },
+      // Where it floats, one of the placements, null follows the thesis
+      placement: { default: null },
     },
   },
 
@@ -99,6 +101,7 @@ const nodes: Record<NodeName, NodeSpec> = {
       caption: { default: "" },
       layout: { default: "row" },
       columns: { default: null },
+      placement: { default: null },
     },
   },
 
@@ -124,6 +127,7 @@ const nodes: Record<NodeName, NodeSpec> = {
       style: { default: "three-line" },
       // Column widths such as "20%,30%,50%", an empty string means automatic
       widths: { default: "" },
+      placement: { default: null },
     },
   },
 

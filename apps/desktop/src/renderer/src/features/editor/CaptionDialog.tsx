@@ -11,17 +11,21 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { PlacementPicker } from "./PlacementPicker";
+import type { Placement } from "@marktwain/schema";
 
 export type CaptionTarget = {
   kind: "table" | "codeBlock";
   caption: string;
   /** Only tables have notes */
   notes: string;
+  /** Only tables float */
+  placement?: Placement | null;
 };
 
 type Props = {
   target: CaptionTarget;
-  onSubmit: (values: { caption: string; notes: string }) => void;
+  onSubmit: (values: { caption: string; notes: string; placement: Placement | null }) => void;
   onClose: () => void;
   onRestoreFocus: () => void;
 };
@@ -31,6 +35,7 @@ export function CaptionDialog({ target, onSubmit, onClose, onRestoreFocus }: Pro
   const { t } = useTranslation("editor");
   const [caption, setCaption] = useState(target.caption);
   const [notes, setNotes] = useState(target.notes);
+  const [placement, setPlacement] = useState<Placement | null>(target.placement ?? null);
 
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
@@ -44,7 +49,7 @@ export function CaptionDialog({ target, onSubmit, onClose, onRestoreFocus }: Pro
           className="grid gap-4"
           onSubmit={(event) => {
             event.preventDefault();
-            onSubmit({ caption: caption.trim(), notes: notes.trim() });
+            onSubmit({ caption: caption.trim(), notes: notes.trim(), placement });
             onClose();
           }}
         >
@@ -73,6 +78,13 @@ export function CaptionDialog({ target, onSubmit, onClose, onRestoreFocus }: Pro
                 onChange={(event) => setNotes(event.target.value)}
               />
               <p className="text-xs text-muted-foreground">{t("caption.notesHint")}</p>
+            </div>
+          )}
+          {target.kind === "table" && (
+            <div className="grid gap-2">
+              <Label>{t("placement.label")}</Label>
+              <PlacementPicker value={placement} onChange={setPlacement} />
+              <p className="text-xs text-muted-foreground">{t("placement.followDefault")}</p>
             </div>
           )}
           <DialogFooter>

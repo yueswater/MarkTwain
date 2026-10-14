@@ -56,7 +56,7 @@ export const SETTINGS_PAGES: readonly SettingsPage[] = [
   { id: "thesisPage", section: "thesis", icon: LayoutIcon, needsProject: true, groups: ["page"] },
   { id: "thesisText", section: "thesis", icon: TypeIcon, needsProject: true, groups: ["text"] },
   { id: "thesisHeadings", section: "thesis", icon: HashIcon, needsProject: true, groups: ["headings", "numbering"] },
-  { id: "thesisCaptions", section: "thesis", icon: ImageIcon, needsProject: true, groups: ["captions", "crossRef", "statements"] },
+  { id: "thesisCaptions", section: "thesis", icon: ImageIcon, needsProject: true, groups: ["captions", "placement", "crossRef", "statements"] },
   { id: "thesisPageNumber", section: "thesis", icon: ListOrderedIcon, needsProject: true, groups: ["pageNumber", "outline"] },
   { id: "thesisBibliography", section: "thesis", icon: BookOpenIcon, needsProject: true, groups: ["bibliography"] },
 ];

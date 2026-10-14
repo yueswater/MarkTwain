@@ -1,10 +1,17 @@
-import { statementOfClasses } from "@marktwain/schema";
+import { effectivePlacement, statementOfClasses, typstPlacement, type Placement } from "@marktwain/schema";
 import type { Align, Block, Cell, Inline } from "../ir/types";
 import { escapeString, fenceFor, safeLength } from "./escape";
 import { renderInline, type InlineContext } from "./inline";
 import { convertMath, mathFallback } from "./math";
 
+/** What floats where when a figure or a table says nothing, the settings of the thesis. */
+export type PlacementDefaults = { figure: Placement; table: Placement };
+
+const HERE: PlacementDefaults = { figure: "here", table: "here" };
+
 export type BlockContext = InlineContext & {
+  /** Placement of figures and tables that have none of their own, floats nowhere when missing */
+  defaultPlacement?: PlacementDefaults;
   /** Image path in the project to absolute path in the build directory, starting with / */
   imagePath: (src: string) => string;
 };
@@ -55,10 +62,12 @@ function renderTable(block: TableBlock, ctx: BlockContext): string[] {
   const caption = `caption: ${content(block.caption, ctx)}`;
   const notes = block.notes.length > 0 ? content(block.notes, ctx) : null;
 
+  const placement = typstPlacement(effectivePlacement(block.placement, (ctx.defaultPlacement ?? HERE).table));
+
   if (isPlain(block) && captioned) {
     const row = (cells: Cell[]) =>
       `(${Array.from({ length: columns }, (_, i) => content(cells[i]?.content ?? [], ctx)).join(", ")},)`;
-    return [
+    const tlt = [
       "#tlt(",
       `  ${caption},`,
       `  columns: (${Array.from({ length: columns }, () => "1fr").join(", ")},),`,
@@ -70,6 +79,8 @@ function renderTable(block: TableBlock, ctx: BlockContext): string[] {
       ...(notes ? [`  notes: ${notes},`] : []),
       `)${label(block.label)}`,
     ];
+    // tlt passes no placement on, so the figure it draws takes it from a set rule
+    return placement ? ["#[", `#set figure(placement: ${placement})`, ...tlt, "]"] : tlt;
   }
 
   // Cells with their own spans or alignment need table.cell, so draw the figure here like tlt does
@@ -127,6 +138,7 @@ function renderTable(block: TableBlock, ctx: BlockContext): string[] {
     `  ${caption},`,
     "  kind: table,",
     "  supplement: table-supplement,",
+    ...(placement ? [`  placement: ${placement},`] : []),
     `)${label(block.label)}`,
   ];
 }
@@ -201,6 +213,8 @@ export function renderBlock(block: Block, ctx: BlockContext): string[] {
       }
       const args = [str(ctx.imagePath(block.src)), `caption: ${content(block.caption, ctx)}`];
       if (width) args.push(`width: ${width}`);
+      const placement = typstPlacement(effectivePlacement(block.placement, (ctx.defaultPlacement ?? HERE).figure));
+      if (placement) args.push(`placement: ${placement}`);
       return [`#fig(${args.join(", ")})${label(block.label)}`];
     }
 
@@ -217,6 +231,8 @@ export function renderBlock(block: Block, ctx: BlockContext): string[] {
       const args: string[] = [];
       if (block.layout === "grid" && block.columns) args.push(`columns: ${block.columns}`);
       args.push(`caption: ${content(block.caption, ctx)}`);
+      const placement = typstPlacement(effectivePlacement(block.placement, (ctx.defaultPlacement ?? HERE).figure));
+      if (placement) args.push(`placement: ${placement}`);
       const fn = block.layout === "grid" ? "fig-grid" : "fig-row";
       return [`#${fn}(`, ...indent([...args.map((a) => `${a},`), ...items.map((i) => `${i},`)], "  "), `)${label(block.label)}`];
     }

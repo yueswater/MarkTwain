@@ -41,6 +41,8 @@ import { ReferenceCard } from "./ReferenceCard";
 import { SlashCommand } from "./slash/slash-command";
 import type { SlashHandlers } from "./slash/slash-items";
 import { EquationShortcut } from "./extensions/equation-shortcut";
+import type { Placement } from "@marktwain/schema";
+import { PlacementMarks } from "./extensions/placement-marks";
 import { StatementDecorations, STATEMENTS_CHANGED } from "./extensions/statement-decorations";
 import { StatementDialog, type StatementTarget } from "./StatementDialog";
 import { statementOf } from "./statement-heads";
@@ -193,6 +195,7 @@ function EditorSurface({
         }),
         MarkdownPaste.configure({ enabled: () => prefsRef.current.pasteMarkdown }),
         Placeholder.configure({ placeholder: t("placeholder") }),
+        PlacementMarks,
         StatementDecorations.configure({
           getBase: () => labelsRef.current.statementBases[doc.id] ?? {},
           nameOf: (kind) => tRef.current(`statement.kinds.${kind.id}`),
@@ -218,7 +221,7 @@ function EditorSurface({
         // A double click on a figure edits its caption, a single click only selects it
         handleDoubleClickOn: (_view, _pos, node, nodePos) => {
           if (node.type.name !== "figure") return false;
-          setFigure({ pos: nodePos, src: String(node.attrs.src), caption: String(node.attrs.caption ?? ""), width: (node.attrs.width as string | null) ?? null });
+          setFigure({ pos: nodePos, src: String(node.attrs.src), caption: String(node.attrs.caption ?? ""), width: (node.attrs.width as string | null) ?? null, placement: (node.attrs.placement as Placement | null) ?? null });
           return true;
         },
         // Open the edit dialog when a footnote, citation or cross-reference is clicked
@@ -396,6 +399,7 @@ function EditorSurface({
             kind: editor.isActive("table") ? "table" : "codeBlock",
             caption: String(attrs.caption ?? ""),
             notes: String(attrs.notes ?? ""),
+            placement: (attrs.placement as Placement | null | undefined) ?? null,
           });
         }}
       />
@@ -403,7 +407,7 @@ function EditorSurface({
         editor={editor}
         onInsertMath={() => setMath({ kind: "inline", latex: "", pos: null, anchor: anchorAtCursor(editor) })}
         onEditFigure={(pos, attrs) =>
-          setFigure({ pos, src: String(attrs.src), caption: String(attrs.caption ?? ""), width: (attrs.width as string | null) ?? null })
+          setFigure({ pos, src: String(attrs.src), caption: String(attrs.caption ?? ""), width: (attrs.width as string | null) ?? null, placement: (attrs.placement as Placement | null) ?? null })
         }
         onCropFigure={(pos, src) => setCrop({ pos, src })}
       />
@@ -510,8 +514,8 @@ function EditorSurface({
       {figure && (
         <FigureDialog
           target={figure}
-          onSubmit={({ caption: text, width }) => {
-            const attrs = { src: figure.src, caption: text, width };
+          onSubmit={({ caption: text, width, placement }) => {
+            const attrs = { src: figure.src, caption: text, width, placement };
             if (figure.pos === null) {
               // A figure cannot live inside a table cell, so it goes after the table
               const table = findTable(editor.state.selection.$from);
@@ -528,7 +532,7 @@ function EditorSurface({
                   .chain()
                   .focus()
                   .command(({ tr }) => {
-                    tr.setNodeMarkup(pos, undefined, { ...node.attrs, caption: text, width });
+                    tr.setNodeMarkup(pos, undefined, { ...node.attrs, caption: text, width, placement });
                     return true;
                   })
                   .run();
@@ -543,11 +547,11 @@ function EditorSurface({
       {caption && (
         <CaptionDialog
           target={caption}
-          onSubmit={({ caption: text, notes }) =>
+          onSubmit={({ caption: text, notes, placement }) =>
             editor
               .chain()
               .focus()
-              .updateAttributes(caption.kind, caption.kind === "table" ? { caption: text, notes } : { caption: text })
+              .updateAttributes(caption.kind, caption.kind === "table" ? { caption: text, notes, placement } : { caption: text })
               .run()
           }
           onClose={() => setCaption(null)}
