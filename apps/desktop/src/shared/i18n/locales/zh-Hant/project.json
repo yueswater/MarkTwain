@@ -43,7 +43,8 @@
     "titleLabel": "標題",
     "titleHint": "留空則使用預設標題。",
     "deleteTitle": "要刪除這份文件嗎？",
-    "deleteBody": "「{{title}}」與其內容會被永久刪除，無法復原。"
+    "deleteBody": "「{{title}}」與其內容會被永久刪除，無法復原。",
+    "dragSameKind": "只能在同一種文件之間調整順序。"
   },
   "search": {
     "title": "搜尋整個專案",
