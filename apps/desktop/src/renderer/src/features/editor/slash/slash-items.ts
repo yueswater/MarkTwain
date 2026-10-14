@@ -19,6 +19,8 @@ import {
   VariableIcon,
   type LucideIcon,
 } from "lucide-react";
+import { STATEMENT_KINDS } from "@marktwain/schema";
+import { insertStatement } from "../statement-commands";
 
 /** What the menu asks the editor view to do, the same functions the toolbar uses. */
 export type SlashHandlers = {
@@ -28,7 +30,7 @@ export type SlashHandlers = {
   insertTable: () => void;
 };
 
-export type SlashGroup = "basic" | "thesis";
+export type SlashGroup = "basic" | "thesis" | "statement";
 
 export type SlashItem = {
   id: string;
@@ -46,7 +48,7 @@ export type SlashItem = {
 /** Takes the typed slash and its text away, then runs the command at the place where they were. */
 const here = (editor: Editor, range: Range) => editor.chain().focus().deleteRange(range);
 
-export const SLASH_ITEMS: readonly SlashItem[] = [
+const BASE_ITEMS: readonly SlashItem[] = [
   { id: "text", group: "basic", icon: TypeIcon, aliases: ["paragraph", "text", "文字", "段落", "內文"], preview: "text", run: (e, r) => here(e, r).setParagraph().run() },
   { id: "heading1", group: "basic", icon: Heading1Icon, aliases: ["h1", "heading", "title", "標題", "章"], markdown: "#", preview: "heading", run: (e, r) => here(e, r).setHeading({ level: 1 }).run() },
   { id: "heading2", group: "basic", icon: Heading2Icon, aliases: ["h2", "heading", "section", "標題", "節"], markdown: "##", preview: "heading", run: (e, r) => here(e, r).setHeading({ level: 2 }).run() },
@@ -66,5 +68,21 @@ export const SLASH_ITEMS: readonly SlashItem[] = [
   { id: "crossRef", group: "thesis", icon: LinkIcon, aliases: ["cross", "reference", "ref", "link", "交叉引用", "引用", "參照"], preview: "crossRef", run: (e, r, h) => { here(e, r).run(); h.insertAtom("crossRef"); } },
 ];
 
-export const SLASH_GROUPS: readonly SlashGroup[] = ["basic", "thesis"];
+/** One item for each kind of block of a mathematical thesis, definition, lemma, theorem and so on. */
+const STATEMENT_ITEMS: readonly SlashItem[] = STATEMENT_KINDS.map((kind) => ({
+  id: `statement_${kind.id}`,
+  group: "statement" as const,
+  icon: kind.id === "proof" ? MinusIcon : SigmaIcon,
+  aliases: [kind.id, kind.name.zh, kind.name.en.toLowerCase(), "theorem", "定理", "數學"],
+  markdown: `::: ${kind.id}`,
+  preview: "text" as const,
+  run: (e: Editor, r: Range) => {
+    here(e, r).run();
+    insertStatement(e, kind.id);
+  },
+}));
+
+export const SLASH_ITEMS: readonly SlashItem[] = [...BASE_ITEMS, ...STATEMENT_ITEMS];
+
+export const SLASH_GROUPS: readonly SlashGroup[] = ["basic", "thesis", "statement"];
 

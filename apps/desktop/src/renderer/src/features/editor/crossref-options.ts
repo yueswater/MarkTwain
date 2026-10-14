@@ -1,9 +1,10 @@
+import { STATEMENT_PREFIXES } from "@marktwain/schema";
 import type { LabelTarget } from "../../../../shared/ipc";
 import { shortenMath, shortenText } from "@/lib/shorten";
 import type { UnlabeledTarget } from "./unlabeled-targets";
 
 /** The kinds the dialog offers on the left, a heading is a chapter or a section. */
-export const REF_KINDS = ["heading", "figure", "table", "formula", "code"] as const;
+export const REF_KINDS = ["heading", "figure", "table", "formula", "code", "statement"] as const;
 export type RefKind = (typeof REF_KINDS)[number];
 
 const BY_LABEL_KIND: Record<string, RefKind> = {
@@ -13,6 +14,7 @@ const BY_LABEL_KIND: Record<string, RefKind> = {
   tbl: "table",
   eq: "formula",
   lst: "code",
+  ...Object.fromEntries(STATEMENT_PREFIXES.map((prefix) => [prefix, "statement"] as const)),
 };
 
 export function refKindOf(labelKind: string): RefKind | null {

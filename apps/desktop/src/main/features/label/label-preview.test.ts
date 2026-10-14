@@ -23,6 +23,11 @@ describe("findPreview", () => {
     expect(findPreview(blocks("## 動機 {#sec:why}\n\n第一段文字。\n"), "sec:why")).toEqual({ block: 0, content: { type: "heading", title: "動機", excerpt: "第一段文字。" } });
   });
 
+  it("shows a block of a mathematical thesis with its kind, title and first paragraph", () => {
+    const preview = findPreview(blocks("::: {.lemma #lem:ss title=\"Sum\"}\n第一段。\n\n第二段。\n:::\n"), "lem:ss");
+    expect(preview).toEqual({ block: 0, content: { type: "statement", kind: "lemma", title: "Sum", excerpt: "第一段。" } });
+  });
+
   it("returns null for a label that does not exist", () => {
     expect(findPreview(blocks("文字\n"), "fig:none")).toBeNull();
   });

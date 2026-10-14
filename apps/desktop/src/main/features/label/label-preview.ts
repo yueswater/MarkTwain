@@ -1,3 +1,4 @@
+import { statementOfClasses } from "@marktwain/schema";
 import { blockText } from "../search/search.service";
 import type { LabelPreviewContent } from "../../../shared/ipc";
 
@@ -34,6 +35,14 @@ function previewOf(node: JsonNode, next: JsonNode | undefined): LabelPreviewCont
       const lines = blockText(node).split("\n");
       return { type: "code", text: lines.slice(0, MAX_CODE_LINES).join("\n"), more: lines.length > MAX_CODE_LINES, language: str(node.attrs?.language), caption: plainCaption(str(node.attrs?.caption)) };
     }
+    case "div": {
+      const classes = Array.isArray(node.attrs?.classes) ? (node.attrs.classes as unknown[]).filter((c): c is string => typeof c === "string") : [];
+      const kind = statementOfClasses(classes);
+      if (!kind) return null;
+      const first = (node.content ?? []).find((child) => child.type === "paragraph");
+      const props = (node.attrs?.props ?? {}) as Record<string, unknown>;
+      return { type: "statement", kind: kind.id, title: str(props.title), excerpt: first ? blockText(first).trim().slice(0, EXCERPT) : "" };
+    }
     default:
       return null;
   }
@@ -43,7 +52,7 @@ function previewOf(node: JsonNode, next: JsonNode | undefined): LabelPreviewCont
 export function findPreview(blocks: readonly JsonNode[], label: string): { content: LabelPreviewContent; block: number } | null {
   for (let index = 0; index < blocks.length; index += 1) {
     const node = blocks[index]!;
-    if (node.attrs?.label !== label) continue;
+    if (node.attrs?.label !== label && node.attrs?.id !== label) continue;
     const content = previewOf(node, blocks[index + 1]);
     return content ? { content, block: index } : null;
   }

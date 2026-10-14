@@ -3,7 +3,7 @@ import { isValidLabel } from "../labels/labels";
 import { parseMarkdown } from "../markdown/parse";
 import { collectTargets } from "../numbering/collect";
 import { resolveNumbers } from "../numbering/numbering";
-import { resolveStatementStyle, statementOfClasses, tintOf } from "./kinds";
+import { resolveStatementStyle, statementOfClasses } from "./kinds";
 
 const options = { equationNumbering: "all", numberPerChapter: false } as const;
 
@@ -58,11 +58,6 @@ describe("statement style", () => {
   it("class 對到種類", () => {
     expect(statementOfClasses(["x", "lemma"])?.prefix).toBe("lem");
     expect(statementOfClasses(["abstract-zh"])).toBeNull();
-  });
-
-  it("淡底從 accent 推導", () => {
-    expect(tintOf("#000000", 0.1)).toBe("#E6E6E6");
-    expect(tintOf("#FFFFFF")).toBe("#FFFFFF");
   });
 
   it("自訂名稱去掉空白，空白名稱改用語言預設", () => {

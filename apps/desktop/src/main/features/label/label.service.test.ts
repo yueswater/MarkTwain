@@ -22,7 +22,21 @@ beforeEach(() => {
 describe("LabelService.resolve", () => {
   it("沒有文件內容時什麼都沒有", () => {
     documents.seedDefaults();
-    expect(labels.resolve()).toEqual({ numbers: {}, broken: [], duplicates: [], targets: [], used: [] });
+    const index = labels.resolve();
+    expect(index).toMatchObject({ numbers: {}, broken: [], duplicates: [], targets: [], used: [] });
+    expect(Object.values(index.statementBases).every((base) => Object.keys(base).length === 0)).toBe(true);
+  });
+
+  it("定理區塊每種類各自編號，後面的文件從前面的數量接續", () => {
+    documents.seedDefaults(); // id-2 is chapter 1
+    documents.save("id-2", "# 一\n\n::: {.lemma #lem:a}\nx\n:::\n\n::: {.lemma}\ny\n:::\n\n::: {.proof}\nz\n:::\n");
+    const second = documents.create("chapter");
+    documents.save(second.id, "# 二\n\n::: {.lemma #lem:c}\nx\n:::\n\n::: {.definition #def:d}\nx\n:::\n");
+
+    const index = labels.resolve();
+    expect(index.numbers).toMatchObject({ "lem:a": "1", "lem:c": "3", "def:d": "1" });
+    expect(index.targets.map((t) => [t.label, t.kind])).toEqual(expect.arrayContaining([["lem:a", "lem"], ["def:d", "def"]]));
+    expect(index.statementBases[second.id]).toEqual({ lem: 2 });
   });
 
   it("圖整篇連續編號，沒標籤的也佔編號；章標題顯示標題文字", () => {

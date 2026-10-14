@@ -41,6 +41,10 @@ import { ReferenceCard } from "./ReferenceCard";
 import { SlashCommand } from "./slash/slash-command";
 import type { SlashHandlers } from "./slash/slash-items";
 import { EquationShortcut } from "./extensions/equation-shortcut";
+import { StatementDecorations, STATEMENTS_CHANGED } from "./extensions/statement-decorations";
+import { StatementDialog, type StatementTarget } from "./StatementDialog";
+import { statementOf } from "./statement-heads";
+import { unwrapStatement, updateStatement } from "./statement-commands";
 
 type Props = {
   documentId: string;
@@ -131,6 +135,7 @@ function EditorSurface({
   const gutterHolder = useRef<HTMLDivElement>(null);
   const [importError, setImportError] = useState<string | null>(null);
   const [unlabeled, setUnlabeled] = useState<UnlabeledTarget[]>([]);
+  const [statement, setStatement] = useState<StatementTarget | null>(null);
 
   const labels = useLabelIndex(status);
   const { view: bibliography } = useBibliography();
@@ -188,6 +193,17 @@ function EditorSurface({
         }),
         MarkdownPaste.configure({ enabled: () => prefsRef.current.pasteMarkdown }),
         Placeholder.configure({ placeholder: t("placeholder") }),
+        StatementDecorations.configure({
+          getBase: () => labelsRef.current.statementBases[doc.id] ?? {},
+          nameOf: (kind) => tRef.current(`statement.kinds.${kind.id}`),
+          getStyle: () => prefsRef.current.statementStyle,
+          colorOf: (kind) => prefsRef.current.statementColors[kind.id] ?? kind.accent,
+          onEdit: (pos) => {
+            const node = editorRef.current?.state.doc.nodeAt(pos);
+            const kind = node ? statementOf(node) : null;
+            if (node && kind) setStatement({ pos, kind: kind.id, title: String((node.attrs.props as { title?: string })?.title ?? "") });
+          },
+        }),
         RefDecorations.configure({
           getNumbers: () => labelsRef.current.numbers,
           kindName: (kind) => tRef.current(`crossRef.kind.${kind}`),
@@ -255,6 +271,12 @@ function EditorSurface({
     if (!editor || editor.isDestroyed) return;
     editor.view.dispatch(editor.state.tr.setMeta(REFS_CHANGED, true));
   }, [editor, labels, citations]);
+
+  // The numbers of the blocks follow the other documents, and the style and colors are a preference
+  useEffect(() => {
+    if (!editor || editor.isDestroyed) return;
+    editor.view.dispatch(editor.state.tr.setMeta(STATEMENTS_CHANGED, true));
+  }, [editor, labels, prefs.statementStyle, prefs.statementColors]);
 
   // Save pending changes before switching documents, closing the project or closing the window
   useEffect(() => {
@@ -343,7 +365,8 @@ function EditorSurface({
         editor
           .chain()
           .command(({ tr }) => {
-            tr.setNodeMarkup(choice.pos, undefined, { ...target.attrs, label });
+            // A block of a mathematical thesis keeps its label in id
+            tr.setNodeMarkup(choice.pos, undefined, { ...target.attrs, [target.type.name === "div" ? "id" : "label"]: label });
             return true;
           })
           .run();
@@ -405,6 +428,15 @@ function EditorSurface({
         </div>
       </div>
       </div>
+      {statement && (
+        <StatementDialog
+          target={statement}
+          onSubmit={(change) => updateStatement(editor, statement.pos, change)}
+          onUnwrap={() => unwrapStatement(editor, statement.pos)}
+          onClose={() => setStatement(null)}
+          onRestoreFocus={() => editor.commands.focus()}
+        />
+      )}
       {importError && (
         <p role="alert" className="border-t bg-destructive/5 px-4 py-1 text-xs text-destructive select-text">
           {importError}

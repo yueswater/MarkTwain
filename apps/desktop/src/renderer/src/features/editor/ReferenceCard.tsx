@@ -222,6 +222,16 @@ function Content({ content }: { content: LabelPreview["content"] }) {
       const html = renderLatex(content.latex, true);
       return html ? <div className="overflow-x-auto" dangerouslySetInnerHTML={{ __html: html }} /> : <code className="text-xs">{content.latex}</code>;
     }
+    case "statement":
+      return (
+        <div className="grid gap-1">
+          <p className="font-semibold leading-snug">
+            {t(`statement.kinds.${content.kind}`)}
+            {content.title ? `（${content.title}）` : ""}
+          </p>
+          {content.excerpt && <p className="text-xs leading-snug text-muted-foreground">{content.excerpt}</p>}
+        </div>
+      );
     case "heading":
       return (
         <div className="grid gap-1">

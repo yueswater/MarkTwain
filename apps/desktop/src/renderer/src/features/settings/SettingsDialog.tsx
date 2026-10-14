@@ -9,7 +9,7 @@ import { ConfigForm } from "../project/ConfigForm";
 import { WatermarkSettings } from "./WatermarkSettings";
 import { ProfileSettings } from "./ProfileSettings";
 import { AdvancedForm, useAdvancedState } from "./AdvancedForm";
-import { EditorAppearanceSettings, EditorPreviewSettings, EditorWritingSettings } from "./EditorSettings";
+import { EditorAppearanceSettings, EditorPreviewSettings, EditorStatementSettings, EditorWritingSettings } from "./EditorSettings";
 import {
   SETTINGS_PAGES,
   SETTINGS_SECTIONS,
@@ -176,6 +176,8 @@ function PageBody({ pageId, onThesisSaved, advanced }: { pageId: SettingsPageId;
       return <EditorAppearanceSettings />;
     case "editorWriting":
       return <EditorWritingSettings />;
+    case "editorStatements":
+      return <EditorStatementSettings />;
     case "editorPreview":
       return <EditorPreviewSettings />;
     case "editorProfile":

@@ -3,6 +3,7 @@ import {
   labelKind,
   parseMarkdown,
   resolveNumbers,
+  STATEMENT_PREFIXES,
   type NumberingOptions,
   type Target,
 } from "@marktwain/schema";
@@ -37,6 +38,8 @@ export class LabelService {
     const targets: Target[] = [];
     const references: string[] = [];
     const owners = new Map<string, string>();
+    const statementBases: Record<string, Record<string, number>> = {};
+    const running: Record<string, number> = {};
 
     for (const summary of this.documents.list()) {
       const { text } = this.documents.get(summary.id);
@@ -48,6 +51,10 @@ export class LabelService {
       }
       for (const target of collected.targets) {
         if (!owners.has(target.label)) owners.set(target.label, summary.id);
+      }
+      statementBases[summary.id] = { ...running };
+      for (const target of collected.targets) {
+        if (STATEMENT_PREFIXES.includes(target.kind)) running[target.kind] = (running[target.kind] ?? 0) + 1;
       }
       targets.push(...collected.targets);
       references.push(...collected.references);
@@ -70,6 +77,7 @@ export class LabelService {
       broken: result.broken,
       duplicates: result.duplicates,
       targets: pickable,
+      statementBases,
       used: [...new Set(references)],
     };
   }

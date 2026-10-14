@@ -1,3 +1,5 @@
+import { isHexColor, STATEMENT_KINDS } from "@marktwain/schema";
+
 /** Preferences of the editor, kept per user and not per project. */
 export type EditorPrefs = {
   /** Text size in the editor in pixels */
@@ -18,6 +20,10 @@ export type EditorPrefs = {
   previewPpi: number;
   /** Pause after a save before the preview rebuilds */
   previewDelayMs: number;
+  /** How definitions, lemmas and theorems look in the editor, the PDF is not affected */
+  statementStyle: "callout" | "colored";
+  /** Accent color of each kind in the colored style, written as #RRGGBB, a kind that is not here keeps its default */
+  statementColors: Record<string, string>;
 };
 
 export const DEFAULT_PREFS: EditorPrefs = {
@@ -32,6 +38,8 @@ export const DEFAULT_PREFS: EditorPrefs = {
   pasteMarkdown: true,
   previewPpi: 110,
   previewDelayMs: 700,
+  statementStyle: "callout",
+  statementColors: {},
 };
 
 export const PREF_LIMITS = {
@@ -54,6 +62,16 @@ export function sanitizePrefs(input: unknown, base: EditorPrefs = DEFAULT_PREFS)
   const pick = <T extends string>(value: unknown, allowed: readonly T[], fallback: T): T =>
     allowed.includes(value as T) ? (value as T) : fallback;
   const bool = (value: unknown, fallback: boolean) => (typeof value === "boolean" ? value : fallback);
+  // Only known kinds with a hex color are kept
+  const colors = (value: unknown, fallback: Record<string, string>): Record<string, string> => {
+    if (!value || typeof value !== "object") return fallback;
+    const out: Record<string, string> = {};
+    for (const kind of STATEMENT_KINDS) {
+      const color = (value as Record<string, unknown>)[kind.id];
+      if (typeof color === "string" && isHexColor(color)) out[kind.id] = color.toUpperCase();
+    }
+    return out;
+  };
   return {
     fontSize: Math.round(clamp(data.fontSize ?? base.fontSize, PREF_LIMITS.fontSize, base.fontSize)),
     lineHeight: Math.round(clamp(data.lineHeight ?? base.lineHeight, PREF_LIMITS.lineHeight, base.lineHeight) * 100) / 100,
@@ -66,5 +84,7 @@ export function sanitizePrefs(input: unknown, base: EditorPrefs = DEFAULT_PREFS)
     pasteMarkdown: bool(data.pasteMarkdown ?? base.pasteMarkdown, base.pasteMarkdown),
     previewPpi: Math.round(clamp(data.previewPpi ?? base.previewPpi, PREF_LIMITS.previewPpi, base.previewPpi)),
     previewDelayMs: Math.round(clamp(data.previewDelayMs ?? base.previewDelayMs, PREF_LIMITS.previewDelayMs, base.previewDelayMs)),
+    statementStyle: pick(data.statementStyle ?? base.statementStyle, ["callout", "colored"], base.statementStyle),
+    statementColors: colors(data.statementColors ?? base.statementColors, base.statementColors),
   };
 }

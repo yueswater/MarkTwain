@@ -7,23 +7,22 @@ export type StatementKind = {
   numbered: boolean;
   /** Names in the languages of the thesis */
   name: { zh: string; en: string };
-  /** Default colors, the accent of the bar and the tint of the box */
+  /** Default color of the colored style of the editor, written as #RRGGBB */
   accent: string;
-  background: string;
 };
 
 export const STATEMENT_KINDS: readonly StatementKind[] = [
-  { id: "definition", prefix: "def", numbered: true, name: { zh: "定義", en: "Definition" }, accent: "#448AFF", background: "#E5ECF8" },
-  { id: "lemma", prefix: "lem", numbered: true, name: { zh: "引理", en: "Lemma" }, accent: "#00B8D4", background: "#DEF1F4" },
-  { id: "auxlemma", prefix: "alm", numbered: true, name: { zh: "輔助引理", en: "Auxiliary lemma" }, accent: "#00BFA5", background: "#DEF1EF" },
-  { id: "theorem", prefix: "thm", numbered: true, name: { zh: "定理", en: "Theorem" }, accent: "#7C4DFF", background: "#EBE6F8" },
-  { id: "proposition", prefix: "prp", numbered: true, name: { zh: "命題", en: "Proposition" }, accent: "#01C853", background: "#DEF2E6" },
-  { id: "corollary", prefix: "cor", numbered: true, name: { zh: "推論", en: "Corollary" }, accent: "#FF9100", background: "#F8EDDE" },
-  { id: "case", prefix: "cas", numbered: true, name: { zh: "情況", en: "Case" }, accent: "#9E9E9E", background: "#EEEEEE" },
-  { id: "example", prefix: "exa", numbered: true, name: { zh: "範例", en: "Example" }, accent: "#64DD17", background: "#E8F5E0" },
-  { id: "remark", prefix: "rem", numbered: true, name: { zh: "註記", en: "Remark" }, accent: "#00B0FF", background: "#DEF0F8" },
+  { id: "definition", prefix: "def", numbered: true, name: { zh: "定義", en: "Definition" }, accent: "#448AFF" },
+  { id: "lemma", prefix: "lem", numbered: true, name: { zh: "引理", en: "Lemma" }, accent: "#00B8D4" },
+  { id: "auxlemma", prefix: "alm", numbered: true, name: { zh: "輔助引理", en: "Auxiliary lemma" }, accent: "#00BFA5" },
+  { id: "theorem", prefix: "thm", numbered: true, name: { zh: "定理", en: "Theorem" }, accent: "#7C4DFF" },
+  { id: "proposition", prefix: "prp", numbered: true, name: { zh: "命題", en: "Proposition" }, accent: "#01C853" },
+  { id: "corollary", prefix: "cor", numbered: true, name: { zh: "推論", en: "Corollary" }, accent: "#FF9100" },
+  { id: "case", prefix: "cas", numbered: true, name: { zh: "情況", en: "Case" }, accent: "#9E9E9E" },
+  { id: "example", prefix: "exa", numbered: true, name: { zh: "範例", en: "Example" }, accent: "#64DD17" },
+  { id: "remark", prefix: "rem", numbered: true, name: { zh: "註記", en: "Remark" }, accent: "#00B0FF" },
   // A proof has no number and is not referred to, it ends with a mark
-  { id: "proof", prefix: "prf", numbered: false, name: { zh: "證明", en: "Proof" }, accent: "#616161", background: "#F2F2F2" },
+  { id: "proof", prefix: "prf", numbered: false, name: { zh: "證明", en: "Proof" }, accent: "#616161" },
 ];
 
 export const STATEMENT_PREFIXES = STATEMENT_KINDS.filter((kind) => kind.numbered).map((kind) => kind.prefix);
@@ -58,13 +57,6 @@ export type StatementStyle = {
   /** Name of every kind in the thesis, the one the author wrote or the default of the language */
   names: Record<string, string>;
 };
-
-/** A light tint of a color, for a background that follows an accent the author chose. */
-export function tintOf(accent: string, mix = 0.12): string {
-  const n = parseInt(accent.slice(1), 16);
-  const channel = (shift: number) => Math.round(255 - (255 - ((n >> shift) & 255)) * mix);
-  return `#${[16, 8, 0].map((shift) => channel(shift).toString(16).padStart(2, "0")).join("").toUpperCase()}`;
-}
 
 /** The names of the blocks from the settings of a thesis, an empty name is left out. The colors belong to the editor only. */
 export function resolveStatementStyle(statements: unknown, language: "zh" | "en"): StatementStyle {

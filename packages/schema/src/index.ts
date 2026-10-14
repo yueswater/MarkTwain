@@ -87,7 +87,6 @@ export {
   statementKind,
   statementKindOfPrefix,
   statementOfClasses,
-  tintOf,
   type StatementKind,
   type StatementStyle,
 } from "./statements/kinds";

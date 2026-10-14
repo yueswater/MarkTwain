@@ -35,7 +35,8 @@
     "addDefinition": "Add term",
     "image": "Insert image",
     "codeLanguage": "Code language",
-    "plainText": "Plain text"
+    "plainText": "Plain text",
+    "statement": "Theorem blocks"
   },
   "math": {
     "insertTitle": "Insert math",
@@ -90,7 +91,16 @@
       "fig": "Figure",
       "tbl": "Table",
       "eq": "Equation",
-      "lst": "Listing"
+      "lst": "Listing",
+      "def": "Definition",
+      "lem": "Lemma",
+      "alm": "Auxiliary lemma",
+      "thm": "Theorem",
+      "prp": "Proposition",
+      "cor": "Corollary",
+      "cas": "Case",
+      "exa": "Example",
+      "rem": "Remark"
     },
     "broken": "Missing target",
     "chooseHint": "Choose what to refer to.",
@@ -104,7 +114,8 @@
       "figure": "Figure",
       "table": "Table",
       "formula": "Formula",
-      "code": "Code block"
+      "code": "Code block",
+      "statement": "Theorem blocks"
     }
   },
   "atom": {
@@ -221,7 +232,8 @@
     "preview": "What the block looks like",
     "groups": {
       "basic": "Basic blocks",
-      "thesis": "Thesis blocks"
+      "thesis": "Thesis blocks",
+      "statement": "Theorem blocks"
     },
     "items": {
       "text": {
@@ -291,6 +303,46 @@
       "crossRef": {
         "name": "Cross-reference",
         "description": "A link to a figure, a table, a formula or a heading."
+      },
+      "statement_definition": {
+        "name": "Definition",
+        "description": "The exact meaning of a term or symbol."
+      },
+      "statement_lemma": {
+        "name": "Lemma",
+        "description": "A small result that helps prove a theorem."
+      },
+      "statement_auxlemma": {
+        "name": "Auxiliary lemma",
+        "description": "A lemma made for one proof."
+      },
+      "statement_theorem": {
+        "name": "Theorem",
+        "description": "A main result that is proved."
+      },
+      "statement_proposition": {
+        "name": "Proposition",
+        "description": "A proved result of less weight than a theorem."
+      },
+      "statement_corollary": {
+        "name": "Corollary",
+        "description": "A result that follows from a theorem."
+      },
+      "statement_case": {
+        "name": "Case",
+        "description": "One case of a proof by cases."
+      },
+      "statement_example": {
+        "name": "Example",
+        "description": "A concrete example."
+      },
+      "statement_remark": {
+        "name": "Remark",
+        "description": "A side note outside the main line."
+      },
+      "statement_proof": {
+        "name": "Proof",
+        "description": "Not numbered, ends with a box."
       }
     },
     "sample": {
@@ -323,5 +375,25 @@
     "broken": "This reference points to nothing.",
     "goTo": "Go to",
     "moreRows": "…more rows"
+  },
+  "statement": {
+    "editTitle": "Edit block",
+    "kind": "Kind",
+    "titleLabel": "Title (optional)",
+    "titleHint": "Shown after the number, such as Definition 1 (Norm).",
+    "save": "Save",
+    "unwrap": "Remove the block",
+    "kinds": {
+      "definition": "Definition",
+      "lemma": "Lemma",
+      "auxlemma": "Auxiliary lemma",
+      "theorem": "Theorem",
+      "proposition": "Proposition",
+      "corollary": "Corollary",
+      "case": "Case",
+      "example": "Example",
+      "remark": "Remark",
+      "proof": "Proof"
+    }
   }
 }
