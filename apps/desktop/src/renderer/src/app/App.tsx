@@ -1,10 +1,16 @@
+import Alert from "@mui/material/Alert";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Chip from "@mui/material/Chip";
+import Typography from "@mui/material/Typography";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { IpcChannel } from "../../../shared/enums/ipc-channel.enum";
-import { Locale, SUPPORTED_LOCALES } from "../../../shared/enums/locale.enum";
+import type { Locale } from "../../../shared/enums/locale.enum";
 import type { AppInfo } from "../../../shared/ipc";
 import { api } from "../shared/api";
 import { errorMessage } from "../shared/error-message";
+import { AppShell } from "./AppShell";
 
 export function App() {
   const { t, i18n } = useTranslation();
@@ -30,24 +36,23 @@ export function App() {
   }
 
   return (
-    <main style={{ padding: 32 }}>
-      <h1>{t("app.name")}</h1>
-      <p>{t("app.tagline")}</p>
-      {info && <p>{t("app.version", { version: info.version, platform: info.platform })}</p>}
-      <label>
-        {t("settings.language")}{" "}
-        <select
-          value={i18n.language}
-          onChange={(event) => void changeLocale(event.target.value as Locale)}
-        >
-          {SUPPORTED_LOCALES.map((locale) => (
-            <option key={locale} value={locale}>
-              {t(`settings.locale.${locale}`)}
-            </option>
-          ))}
-        </select>
-      </label>
-      {error && <p role="alert">{error}</p>}
-    </main>
+    <AppShell onLocaleChange={(locale) => void changeLocale(locale)}>
+      <Card variant="outlined">
+        <CardContent sx={{ display: "grid", gap: 2 }}>
+          <Typography variant="h2" component="h2">
+            {t("app.tagline")}
+          </Typography>
+          {info && (
+            <div>
+              <Chip
+                label={t("app.version", { version: info.version, platform: info.platform })}
+                sx={{ bgcolor: "tertiary.container", color: "tertiary.onContainer" }}
+              />
+            </div>
+          )}
+          {error && <Alert severity="error">{error}</Alert>}
+        </CardContent>
+      </Card>
+    </AppShell>
   );
 }
