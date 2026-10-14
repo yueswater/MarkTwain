@@ -51,7 +51,8 @@
     "bibliography": "References",
     "outline": "Table of contents",
     "watermark": "Watermark",
-    "statements": "Theorem block names"
+    "statements": "Theorem block names",
+    "placement": "Floating"
   },
   "advancedHint": "Empty fields follow the school format. Changing a value overrides it for this thesis only.",
   "noProject": "Open a project to change the format of its thesis.",
@@ -132,6 +133,10 @@
         "remark": "Name: Remark",
         "proof": "Name: Proof"
       }
+    },
+    "placement": {
+      "figure": "Figure placement",
+      "table": "Table placement"
     }
   },
   "hint": {
@@ -148,6 +153,10 @@
       "font-cjk": "Separate several fonts with commas.",
       "par-spacing": "Empty keeps paragraphs on the line grid.",
       "first-line-indent": "Empty picks 2 for Chinese and 1.5 for English."
+    },
+    "placement": {
+      "figure": "Where a figure goes when it names no place.",
+      "table": "Where a table goes when it names no place. A long table is best kept here."
     }
   },
   "option": {
@@ -164,7 +173,15 @@
     "A": "A, B, C",
     "i": "i, ii, iii",
     "I": "I, II, III",
-    "*": "* † ‡"
+    "*": "* † ‡",
+    "placement": {
+      "auto": "Automatic",
+      "near": "Near the text",
+      "top": "Top of a page",
+      "bottom": "Bottom of a page",
+      "page": "Own page",
+      "here": "Exactly here"
+    }
   },
   "units": {
     "pt": "pt",

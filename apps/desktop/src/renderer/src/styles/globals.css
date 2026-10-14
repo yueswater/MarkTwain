@@ -290,6 +290,16 @@
 .ProseMirror div[data-statement][data-statement-style="colored"] { border-color: transparent; border-left: 4px solid var(--st-accent); border-radius: 0.25rem 0.5rem 0.5rem 0.25rem; background: color-mix(in oklab, var(--st-accent) 13%, var(--background)); }
 .ProseMirror div[data-statement][data-statement-style="colored"] .statement-head { color: color-mix(in oklab, var(--st-accent) 80%, var(--foreground)); }
 
+/* A figure or a table with a placement of its own carries a small sign at its corner */
+.ProseMirror [data-placement-mark] { position: relative; }
+.ProseMirror [data-placement-mark]::after { position: absolute; top: 0.25rem; right: 0.25rem; z-index: 1; padding: 0 0.3rem; border-radius: 0.25rem; background: color-mix(in oklab, var(--muted) 85%, transparent); color: var(--muted-foreground); font-size: 0.7rem; line-height: 1.2rem; pointer-events: none; }
+.ProseMirror [data-placement-mark="auto"]::after { content: "⇅"; }
+.ProseMirror [data-placement-mark="near"]::after { content: "≈"; }
+.ProseMirror [data-placement-mark="top"]::after { content: "⤒"; }
+.ProseMirror [data-placement-mark="bottom"]::after { content: "⤓"; }
+.ProseMirror [data-placement-mark="page"]::after { content: "▭"; }
+.ProseMirror [data-placement-mark="here"]::after { content: "⚓"; }
+
 /* A resizable edge shows a line that thickens under the pointer */
 .resize-handle::after { content: ""; position: absolute; top: 0; bottom: 0; left: 50%; width: 1px; transform: translateX(-50%); border-radius: 2px; background: transparent; transition: width 120ms, background-color 120ms; }
 .resize-handle:hover::after, .resize-handle:focus-visible::after, .resize-handle:active::after { width: 4px; background: color-mix(in oklab, var(--foreground) 35%, transparent); }

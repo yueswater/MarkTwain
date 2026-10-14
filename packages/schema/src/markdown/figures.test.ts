@@ -8,14 +8,14 @@ const p = (...content: unknown[]) => ({ type: "paragraph", content });
 const doc = (...content: unknown[]) => ({ type: "doc" as const, content });
 const figure = (src: string, caption = "", label: string | null = null, width: string | null = null) => ({
   type: "figure",
-  attrs: { src, caption, label, width },
+  attrs: { src, caption, label, width, placement: null },
 });
 const group = (
   children: unknown[],
   attrs: Partial<{ label: string | null; caption: string; layout: string; columns: string | null }> = {},
 ) => ({
   type: "figureGroup",
-  attrs: { label: null, caption: "", layout: "row", columns: null, ...attrs },
+  attrs: { label: null, caption: "", layout: "row", columns: null, placement: null, ...attrs },
   content: children,
 });
 const div = (classes: string[], children: unknown[], id: string | null = null, props: Record<string, string> = {}) => ({
@@ -158,5 +158,37 @@ describe("往返", () => {
       }),
       { numRuns: 400 },
     );
+  });
+});
+
+describe("placement", () => {
+  it("figures, groups and tables keep a placement through parse and write, unknown ones are dropped", () => {
+    const md = [
+      "![圖](a.png){#fig:a width=60% placement=top}",
+      "",
+      "::: {#fig:g .figrow placement=bottom}",
+      "![一](a.png)",
+      "",
+      "![二](b.png)",
+      "",
+      "並排",
+      ":::",
+      "",
+      "| a |",
+      "|---|",
+      "| 1 |",
+      "",
+      ": 表 {#tbl:t placement=here}",
+      "",
+      "![圖](c.png){placement=sideways}",
+    ].join("\n");
+    const doc = parseMarkdown(md);
+    expect((doc.content as { attrs?: { placement?: unknown } }[]).map((n) => n.attrs?.placement)).toEqual(["top", "bottom", "here", null]);
+    const out = serializeMarkdown(doc);
+    expect(out).toContain("placement=top");
+    expect(out).toContain("placement=bottom");
+    expect(out).toContain("placement=here");
+    expect(out).not.toContain("sideways");
+    expect(serializeMarkdown(parseMarkdown(out))).toBe(out);
   });
 });

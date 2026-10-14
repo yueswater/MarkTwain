@@ -130,6 +130,50 @@ maybe("buildTypst with the real template", () => {
     }
   }, 120_000);
 
+  it("floats figures and tables where they ask to, and follows the default of the thesis", async () => {
+    const work = mkdtempSync(join(tmpdir(), "marktwain 浮動 "));
+    try {
+      const result = await buildTypst(
+        input(work, {
+          config: `${config}placement:\n  figure: auto\n  table: bottom\n`,
+          documents: [
+            {
+              id: "c1",
+              kind: "chapter",
+              text: [
+                "# 緒論",
+                "",
+                "![頂端](images/a.png){#fig:a placement=top}",
+                "",
+                "![預設](images/a.png){#fig:b}",
+                "",
+                "![固定](images/a.png){#fig:c placement=here}",
+                "",
+                "| 甲 | 乙 |",
+                "|:--|--:|",
+                "| 1 | 2 |",
+                "",
+                ": 表一 {#tbl:t placement=top}",
+                "",
+                "| 甲 | 乙 |",
+                "|:--|--:|",
+                "| 1 | 2 |",
+                "",
+                ": 表二 {#tbl:u style=grid}",
+                "",
+                "見 @fig:a 與 @tbl:t。",
+              ].join("\n"),
+            },
+          ],
+        }),
+      );
+      expect(result.diagnostics.filter((d) => d.severity === "error")).toEqual([]);
+      expect(result.ok).toBe(true);
+    } finally {
+      rmSync(work, { recursive: true, force: true });
+    }
+  }, 120_000);
+
   it("reports a typst error against the source block", async () => {
     const work = mkdtempSync(join(tmpdir(), "marktwain 錯誤 "));
     try {

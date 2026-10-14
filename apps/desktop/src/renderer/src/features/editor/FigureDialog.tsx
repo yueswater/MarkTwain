@@ -19,6 +19,8 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { assetUrl } from "./extensions/nodes/figure";
+import { PlacementPicker } from "./PlacementPicker";
+import type { Placement } from "@marktwain/schema";
 
 export type FigureTarget = {
   /** Position when editing an existing figure, null when inserting */
@@ -26,6 +28,7 @@ export type FigureTarget = {
   src: string;
   caption: string;
   width: string | null;
+  placement?: Placement | null;
 };
 
 const WIDTHS = ["100%", "80%", "60%", "40%"] as const;
@@ -33,7 +36,7 @@ const AUTO = "auto";
 
 type Props = {
   target: FigureTarget;
-  onSubmit: (values: { caption: string; width: string | null }) => void;
+  onSubmit: (values: { caption: string; width: string | null; placement: Placement | null }) => void;
   onRemove: () => void;
   onClose: () => void;
   onRestoreFocus: () => void;
@@ -43,6 +46,7 @@ export function FigureDialog({ target, onSubmit, onRemove, onClose, onRestoreFoc
   const { t } = useTranslation("editor");
   const [caption, setCaption] = useState(target.caption);
   const [width, setWidth] = useState(target.width ?? AUTO);
+  const [placement, setPlacement] = useState<Placement | null>(target.placement ?? null);
   const editing = target.pos !== null;
 
   return (
@@ -57,7 +61,7 @@ export function FigureDialog({ target, onSubmit, onRemove, onClose, onRestoreFoc
           className="grid gap-4"
           onSubmit={(event) => {
             event.preventDefault();
-            onSubmit({ caption: caption.trim(), width: width === AUTO ? null : width });
+            onSubmit({ caption: caption.trim(), width: width === AUTO ? null : width, placement });
             onClose();
           }}
         >
@@ -94,6 +98,11 @@ export function FigureDialog({ target, onSubmit, onRemove, onClose, onRestoreFoc
                 ))}
               </SelectContent>
             </Select>
+          </div>
+          <div className="grid gap-2">
+            <Label>{t("placement.label")}</Label>
+            <PlacementPicker value={placement} onChange={setPlacement} />
+            <p className="text-xs text-muted-foreground">{t("placement.followDefault")}</p>
           </div>
           <DialogFooter>
             {editing && (

@@ -19,7 +19,7 @@ const table = (
   attrs: Partial<{ label: string | null; caption: string; notes: string; style: string; widths: string }> = {},
 ) => ({
   type: "table",
-  attrs: { label: null, caption: "", notes: "", style: "three-line", widths: "", ...attrs },
+  attrs: { label: null, caption: "", notes: "", style: "three-line", widths: "", placement: null, ...attrs },
   content: rows,
 });
 

@@ -28,6 +28,7 @@ export const GlobalAttributes = Extension.create({
           notes: text("notes", ""),
           style: text("style", "three-line"),
           widths: text("widths", ""),
+          placement: text("placement"),
         },
       },
       {

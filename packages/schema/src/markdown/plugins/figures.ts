@@ -37,6 +37,7 @@ function promoteFigures(state: CoreState): void {
         src: only.attrGet("src") ?? "",
         id: only.attrGet("id"),
         width: only.attrGet("width"),
+        placement: only.attrGet("placement"),
       };
       promoted.push(figure);
       i += 2;
@@ -103,6 +104,7 @@ function groupFigures(tokens: Token[], state: CoreState): Token[] {
       id: meta.id ?? null,
       layout: classes.includes("figgrid") ? "grid" : "row",
       columns: meta.props?.columns ?? null,
+      placement: meta.props?.placement ?? null,
       caption: hasCaption ? (inner[figures + 1]?.content ?? "") : "",
     };
     result.push(open, ...inner.slice(0, figures));

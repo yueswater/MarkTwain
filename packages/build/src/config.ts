@@ -14,6 +14,8 @@ export type CompletedConfig = {
   missing: string[];
   /** The statements section, which the template does not know and rejects, so it is taken out of text */
   statements: unknown;
+  /** The placement section, taken out for the same reason */
+  placement: unknown;
   language: "chinese" | "english" | null;
 };
 
@@ -48,12 +50,15 @@ export function completeConfig(text: string, today: string): CompletedConfig {
   // The settings keep "none" for a thesis without a watermark, the template reads a null for that
   if (doc.getIn(["watermark", "image"]) === "none") doc.setIn(["watermark", "image"], null);
   const statements = doc.has("statements") ? (doc.get("statements", true) as { toJSON?: () => unknown } | null)?.toJSON?.() : undefined;
+  const placement = doc.has("placement") ? (doc.get("placement", true) as { toJSON?: () => unknown } | null)?.toJSON?.() : undefined;
   doc.delete("statements");
+  doc.delete("placement");
   const language = doc.getIn(["layout", "language"]);
   return {
     text: doc.toString({ lineWidth: 0 }),
     missing,
     statements,
+    placement,
     language: language === "english" || language === "chinese" ? language : null,
   };
 }

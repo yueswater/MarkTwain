@@ -79,6 +79,7 @@ export {
   type ImportResult,
   type ImportedEntry,
 } from "./bibliography/import";
+export { DEFAULT_PLACEMENT, PLACEMENTS, effectivePlacement, isPlacement, resolvePlacementDefaults, typstPlacement, type Placement } from "./placement";
 export {
   STATEMENT_KINDS,
   STATEMENT_PREFIXES,

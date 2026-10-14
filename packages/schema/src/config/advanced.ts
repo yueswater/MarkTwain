@@ -1,4 +1,5 @@
 import { Document, parseDocument } from "yaml";
+import { DEFAULT_PLACEMENT, PLACEMENTS } from "../placement";
 import { STATEMENT_KINDS } from "../statements/kinds";
 
 /**
@@ -18,7 +19,7 @@ export type AdvancedKind =
   /** Four choices, one for each heading level */
   | "select4";
 
-export type AdvancedGroup = "page" | "text" | "numbering" | "captions" | "headings" | "pageNumber" | "crossRef" | "bibliography" | "outline" | "watermark" | "statements";
+export type AdvancedGroup = "page" | "text" | "numbering" | "captions" | "headings" | "pageNumber" | "crossRef" | "bibliography" | "outline" | "watermark" | "statements" | "placement";
 
 export type AdvancedField = {
   path: string;
@@ -78,6 +79,10 @@ export const ADVANCED_FIELDS: readonly AdvancedField[] = [
   { path: "watermark.image", group: "watermark", kind: "text" },
   { path: "watermark.width", group: "watermark", kind: "number", min: 10, max: 100, unit: "%" },
   { path: "watermark.opacity", group: "watermark", kind: "number", min: 5, max: 100, unit: "%" },
+
+  // Where figures and tables float when they say nothing, the template does not know these and they are taken out of the config before a build
+  { path: "placement.figure", group: "placement", kind: "select", options: PLACEMENTS },
+  { path: "placement.table", group: "placement", kind: "select", options: PLACEMENTS },
 
   // Theorem like blocks, the name of each kind, a kind that is not set keeps the default of the language
   ...STATEMENT_KINDS.map<AdvancedField>((kind) => ({ path: `statements.name.${kind.id}`, group: "statements", kind: "text" })),
@@ -198,7 +203,7 @@ export function getPath(data: unknown, path: string): unknown {
 /** What each advanced field would be without an override: the template defaults, then the school preset. */
 export function inheritedValues(defaultText: string, schoolText: string | null): AdvancedValues {
   const layers = [defaultText, schoolText ?? ""].map((text) => toPlain(parseDocument(text).toJSON()));
-  const merged = mergeConfigs(...layers);
+  const merged = mergeConfigs({ placement: DEFAULT_PLACEMENT }, ...layers);
   const out: AdvancedValues = {};
   for (const field of ADVANCED_FIELDS) {
     const value = getPath(merged, field.path);

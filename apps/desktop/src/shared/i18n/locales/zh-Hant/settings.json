@@ -51,7 +51,8 @@
     "bibliography": "參考文獻",
     "outline": "目次",
     "watermark": "浮水印",
-    "statements": "定理區塊名稱"
+    "statements": "定理區塊名稱",
+    "placement": "浮動位置"
   },
   "advancedHint": "留空表示跟隨學校格式。修改後只會覆蓋這份論文。",
   "noProject": "開啟專案後才能調整論文格式。",
@@ -132,6 +133,10 @@
         "remark": "名稱：註記",
         "proof": "名稱：證明"
       }
+    },
+    "placement": {
+      "figure": "圖的位置",
+      "table": "表的位置"
     }
   },
   "hint": {
@@ -148,6 +153,10 @@
       "font-cjk": "多個字型以逗號分隔。",
       "par-spacing": "留空則讓段落對齊行格。",
       "first-line-indent": "留空時中文為 2、英文為 1.5。"
+    },
+    "placement": {
+      "figure": "沒有指定位置的圖，預設放在哪裡。",
+      "table": "沒有指定位置的表，預設放在哪裡。長表格建議固定在此。"
     }
   },
   "option": {
@@ -164,7 +173,15 @@
     "A": "A, B, C",
     "i": "i, ii, iii",
     "I": "I, II, III",
-    "*": "* † ‡"
+    "*": "* † ‡",
+    "placement": {
+      "auto": "自動",
+      "near": "靠近文字",
+      "top": "頁面頂端",
+      "bottom": "頁面底端",
+      "page": "獨立一頁",
+      "here": "固定在此"
+    }
   },
   "units": {
     "pt": "pt",

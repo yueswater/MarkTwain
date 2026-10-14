@@ -395,5 +395,33 @@
       "remark": "Remark",
       "proof": "Proof"
     }
+  },
+  "placement": {
+    "label": "Placement",
+    "followDefault": "With none chosen, the setting of the thesis applies.",
+    "auto": {
+      "name": "Automatic",
+      "hint": "The layout picks the top or the bottom of a page."
+    },
+    "near": {
+      "name": "Near the text",
+      "hint": "As close to the text as it can. Typst has no such choice, so the PDF treats it as automatic."
+    },
+    "top": {
+      "name": "Top of the page",
+      "hint": "At the top of a page."
+    },
+    "bottom": {
+      "name": "Bottom of the page",
+      "hint": "At the bottom of a page."
+    },
+    "page": {
+      "name": "Own page",
+      "hint": "On a page of its own. Typst has no such choice, so the PDF puts it at the top of a page."
+    },
+    "here": {
+      "name": "Exactly here",
+      "hint": "Does not float, stays where it is in the text."
+    }
   }
 }
