@@ -17,7 +17,8 @@ const CHAPTER_LIKE: readonly string[] = [DocumentKind.Chapter, DocumentKind.Appe
 export class LabelService {
   constructor(
     private readonly documents: DocumentService,
-    private readonly options: NumberingOptions = DEFAULT_NUMBERING,
+    /** The numbering rules, or a function that reads them from the settings of the project each time */
+    private readonly options: NumberingOptions | (() => NumberingOptions) = DEFAULT_NUMBERING,
   ) {}
 
   resolve(): LabelIndex {
@@ -40,7 +41,7 @@ export class LabelService {
       references.push(...collected.references);
     }
 
-    const result = resolveNumbers(targets, references, this.options);
+    const result = resolveNumbers(targets, references, typeof this.options === "function" ? this.options() : this.options);
     const pickable: LabelTarget[] = [];
     for (const target of targets) {
       const kind = labelKind(target.label);

@@ -24,6 +24,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { modKeyLabel } from "@/lib/platform";
 import { autoScrollStep, dropTarget, type DropTarget, type RowBox } from "@/lib/row-drag";
 import {
   DOCUMENT_KIND_ORDER,
@@ -279,7 +280,7 @@ export function DocumentSidebar({
           variant="ghost"
           size="icon-sm"
           aria-label={t(collapsed ? "workspace.expand" : "workspace.collapse")}
-          title={t(collapsed ? "workspace.expand" : "workspace.collapse")}
+          title={`${t(collapsed ? "workspace.expand" : "workspace.collapse")} (${modKeyLabel()}\\)`}
           aria-expanded={!collapsed}
           onClick={onToggleCollapsed}
         >

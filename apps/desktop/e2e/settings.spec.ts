@@ -34,8 +34,10 @@ test("editor preferences apply at once and survive a restart, thesis format is k
     await dialog.getByLabel("Text size", { exact: true }).press("Enter");
     await expect(editor).toHaveCSS("font-size", "20px");
     await dialog.getByRole("button", { name: "Writing", exact: true }).click();
-    await dialog.getByRole("switch", { name: "Block numbers" }).click();
-    await expect(page.locator("[data-line-numbers='true']")).toHaveCount(1);
+    // Line numbers are on by default, the switch turns them off
+    await expect(page.getByTestId("line-gutter")).toHaveCount(1);
+    await dialog.getByRole("switch", { name: "Line numbers" }).click();
+    await expect(page.getByTestId("line-gutter")).toHaveCount(0);
     // A value that is out of range is refused and the editor keeps the old size
     await dialog.getByRole("button", { name: "Appearance", exact: true }).click();
     await dialog.getByLabel("Text size", { exact: true }).fill("99");
@@ -77,7 +79,7 @@ test("editor preferences apply at once and survive a restart, thesis format is k
     const second = await launch();
     const page2 = await second.firstWindow();
     await expect(page2.locator(".ProseMirror")).toHaveCSS("font-size", "20px");
-    await expect(page2.locator("[data-line-numbers='true']")).toHaveCount(1);
+    await expect(page2.getByTestId("line-gutter")).toHaveCount(0);
     await second.close();
   } finally {
     rmSync(dir, { recursive: true, force: true });
