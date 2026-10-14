@@ -104,6 +104,29 @@ describe("往返的屬性測試", () => {
     );
   });
 
+  it("標記的內容以中文標點開頭或結尾、緊貼前後文字也能原樣往返（#71）", () => {
+    const cjk = fc.constantFrom(..."說明文字中「」『』（）［］，。、；：！？…—a1");
+    const edgeText = fc
+      .string({ unit: cjk, minLength: 1, maxLength: 10 })
+      .filter((s) => s === s.trim());
+    const markSets: Mark[][] = [[{ type: "bold" }], [{ type: "italic" }], [{ type: "strike" }]];
+    // 前面緊貼拉丁字母（例如 `a**「x」**`）仍不成立：markdown-it-cjk-friendly 只放寬 CJK 相鄰的情形
+    fc.assert(
+      fc.property(edgeText, fc.constantFrom(...markSets), fc.constantFrom("說", "，", "「"), (text, marks, before) =>
+        roundTrips(
+          doc(
+            paragraph(
+              { type: "text", text: before },
+              { type: "text", text, marks },
+              { type: "text", text: "後" },
+            ),
+          ),
+        ),
+      ),
+      { numRuns: 2000 },
+    );
+  });
+
   it("任何文字在行內程式碼裡都能原樣往返", () => {
     fc.assert(
       fc.property(safeText, (text) =>
