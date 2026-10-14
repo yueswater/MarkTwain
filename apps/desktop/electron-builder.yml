@@ -2,13 +2,18 @@ appId: tw.marktwain.app
 productName: MarkTwain
 directories:
   output: dist
+  buildResources: build
 files:
   - out/**
   - package.json
 mac:
+  icon: build/icon.icns
   # Development and CI builds are not signed. Signing and notarization are
   # decided with the release workflow (design spec section 12, item 13).
   identity: null
+win:
+  icon: build/icon.ico
 linux:
   # Without this the executable is named after the scoped package name.
   executableName: marktwain
+  icon: build/icons
