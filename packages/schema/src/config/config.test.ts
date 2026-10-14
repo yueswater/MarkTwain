@@ -92,3 +92,24 @@ describe("SCHOOLS", () => {
     expect(isKnownSchool("default")).toBe(false);
   });
 });
+
+describe("language and citation style live in nested sections", () => {
+  it("reads and writes layout.language and bibliography.style and keeps other keys of the section", () => {
+    const text = "layout:\n  font-size: 12\n  language: english\nbibliography:\n  style: ieee\n  full: true\n";
+    const fields = readConfig(text);
+    expect(fields).toMatchObject({ language: "english", citationStyle: "ieee" });
+    const out = writeConfig(text, { ...fields, language: "chinese", citationStyle: "mla" });
+    expect(out).toContain("font-size: 12");
+    expect(out).toContain("full: true");
+    expect(readConfig(out)).toMatchObject({ language: "chinese", citationStyle: "mla" });
+  });
+
+  it("creates the sections when missing and drops them again when emptied", () => {
+    const out = writeConfig("", { ...defaultFields(), language: "english", citationStyle: "apa" });
+    expect(out).toContain("layout:");
+    expect(out).toContain("language: english");
+    const cleared = writeConfig(out, { ...defaultFields() });
+    expect(cleared).not.toContain("layout");
+    expect(cleared).not.toContain("bibliography");
+  });
+});
