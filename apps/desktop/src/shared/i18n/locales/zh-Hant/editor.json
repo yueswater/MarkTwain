@@ -213,5 +213,109 @@
     "hint": "有名稱的公式會編號，也能被引用。",
     "numbered": "編號 {{number}}",
     "perChapter": "依章節編號，(3.1) 而不是 (1)"
+  },
+  "slash": {
+    "title": "插入區塊",
+    "none": "沒有符合的區塊。",
+    "close": "關閉選單",
+    "preview": "區塊的樣子",
+    "groups": {
+      "basic": "基本區塊",
+      "thesis": "論文區塊"
+    },
+    "items": {
+      "text": {
+        "name": "文字",
+        "description": "一般的文字，內文預設的區塊。"
+      },
+      "heading1": {
+        "name": "標題 1",
+        "description": "一章的標題。"
+      },
+      "heading2": {
+        "name": "標題 2",
+        "description": "章裡一節的標題。"
+      },
+      "heading3": {
+        "name": "標題 3",
+        "description": "一小節的標題。"
+      },
+      "heading4": {
+        "name": "標題 4",
+        "description": "小節底下較小的標題。"
+      },
+      "bulletList": {
+        "name": "項目清單",
+        "description": "沒有順序的要點。"
+      },
+      "orderedList": {
+        "name": "編號清單",
+        "description": "需要計數的步驟或要點。"
+      },
+      "quote": {
+        "name": "引文",
+        "description": "摘自其他著作的段落。"
+      },
+      "rule": {
+        "name": "分隔線",
+        "description": "用一條細線把前後兩段文字隔開。"
+      },
+      "displayMath": {
+        "name": "獨立公式",
+        "description": "單獨成行的公式，取了名稱就會編號。"
+      },
+      "inlineMath": {
+        "name": "行內公式",
+        "description": "夾在文字行中的短公式。"
+      },
+      "figure": {
+        "name": "圖",
+        "description": "含圖說的圖片，從電腦上選檔案。"
+      },
+      "table": {
+        "name": "表格",
+        "description": "列與欄，可加表題與附註。"
+      },
+      "codeBlock": {
+        "name": "程式碼區塊",
+        "description": "框起來的程式文字，依語言上色。"
+      },
+      "footnote": {
+        "name": "腳註",
+        "description": "在頁面底部補充說明，內文裡留下標記。"
+      },
+      "citation": {
+        "name": "文獻引用",
+        "description": "引用書目裡的一筆文獻。"
+      },
+      "crossRef": {
+        "name": "交叉引用",
+        "description": "連到圖、表、公式或標題。"
+      }
+    },
+    "sample": {
+      "heading": "研究設計",
+      "list": {
+        "0": "蒐集資料",
+        "1": "估計模型",
+        "2": "報告結果"
+      },
+      "quote": "掌握最多資訊的一方，才能在競賽中先行一步。",
+      "inlineBefore": "相關係數",
+      "inlineAfter": "衡量雙方評價的相似程度。",
+      "figure": "圖 1  均衡區域",
+      "tableHead": {
+        "0": "設定",
+        "1": "比例"
+      },
+      "tableRow": {
+        "0": "獨立",
+        "1": "相關"
+      },
+      "footnote": "此結果在任何正的成本下成立",
+      "citationBefore": "此處沿用先前的模型",
+      "crossRefBefore": "各區域畫在",
+      "crossRefTarget": "圖 1"
+    }
   }
 }
