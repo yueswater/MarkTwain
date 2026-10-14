@@ -31,7 +31,14 @@
     "previewPpiHint": "The sharpness of the page pictures of the preview. A sharper picture takes longer to build.",
     "previewDelay": "Rebuild the preview after a save",
     "previewDelayHint": "Slide to the right to rebuild the preview sooner after a save.",
-    "codeSample": "print(\"hello\")"
+    "codeSample": "print(\"hello\")",
+    "statementStyle": "Style",
+    "statementStyleHint": "Callout is a plain box, colored paints each kind.",
+    "statementCallout": "Callout",
+    "statementColored": "Colored",
+    "statementColor": "Color",
+    "statementColorReset": "Reset color",
+    "statementHex": "Hex code"
   },
   "group": {
     "page": "Page",
@@ -43,7 +50,8 @@
     "crossRef": "Cross-references",
     "bibliography": "References",
     "outline": "Table of contents",
-    "watermark": "Watermark"
+    "watermark": "Watermark",
+    "statements": "Theorem block names"
   },
   "advancedHint": "Empty fields follow the school format. Changing a value overrides it for this thesis only.",
   "noProject": "Open a project to change the format of its thesis.",
@@ -110,6 +118,20 @@
       "image": "Watermark image",
       "width": "Watermark width",
       "opacity": "Watermark opacity"
+    },
+    "statements": {
+      "name": {
+        "definition": "Name: Definition",
+        "lemma": "Name: Lemma",
+        "auxlemma": "Name: Auxiliary lemma",
+        "theorem": "Name: Theorem",
+        "proposition": "Name: Proposition",
+        "corollary": "Name: Corollary",
+        "case": "Name: Case",
+        "example": "Name: Example",
+        "remark": "Name: Remark",
+        "proof": "Name: Proof"
+      }
     }
   },
   "hint": {
@@ -201,6 +223,10 @@
     "editorProfile": {
       "title": "About you",
       "description": "What is true of you in every thesis. A new project starts with it."
+    },
+    "editorStatements": {
+      "title": "Theorem blocks",
+      "description": "How definitions, lemmas and theorems look in the editor. The PDF is not affected."
     }
   },
   "search": {

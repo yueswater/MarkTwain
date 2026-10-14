@@ -18,7 +18,7 @@ export function resolveNumbers(
   const duplicates: string[] = [];
 
   let chapter = 0;
-  const counters: Record<CountedTarget["kind"], number> = { fig: 0, tbl: 0, eq: 0, lst: 0 };
+  const counters: Record<CountedTarget["kind"], number> = {};
 
   for (const target of targets) {
     if (defined.has(target.label)) {
@@ -39,8 +39,8 @@ export function resolveNumbers(
 
     if (target.kind === "eq" && options.equationNumbering === "none") continue;
 
-    counters[target.kind] += 1;
-    const n = counters[target.kind];
+    const n = (counters[target.kind] ?? 0) + 1;
+    counters[target.kind] = n;
     numbers.set(target.label, target.kind === "eq" && options.numberPerChapter ? `${chapter}.${n}` : String(n));
   }
 

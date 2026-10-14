@@ -1,4 +1,5 @@
 import { Document, parseDocument } from "yaml";
+import { STATEMENT_KINDS } from "../statements/kinds";
 
 /**
  * Thesis format settings beyond the basic form: layout, numbering, captions, headings,
@@ -17,7 +18,7 @@ export type AdvancedKind =
   /** Four choices, one for each heading level */
   | "select4";
 
-export type AdvancedGroup = "page" | "text" | "numbering" | "captions" | "headings" | "pageNumber" | "crossRef" | "bibliography" | "outline" | "watermark";
+export type AdvancedGroup = "page" | "text" | "numbering" | "captions" | "headings" | "pageNumber" | "crossRef" | "bibliography" | "outline" | "watermark" | "statements";
 
 export type AdvancedField = {
   path: string;
@@ -77,6 +78,9 @@ export const ADVANCED_FIELDS: readonly AdvancedField[] = [
   { path: "watermark.image", group: "watermark", kind: "text" },
   { path: "watermark.width", group: "watermark", kind: "number", min: 10, max: 100, unit: "%" },
   { path: "watermark.opacity", group: "watermark", kind: "number", min: 5, max: 100, unit: "%" },
+
+  // Theorem like blocks, the name of each kind, a kind that is not set keeps the default of the language
+  ...STATEMENT_KINDS.map<AdvancedField>((kind) => ({ path: `statements.name.${kind.id}`, group: "statements", kind: "text" })),
 
   { path: "bibliography.title", group: "bibliography", kind: "text" },
   { path: "bibliography.full", group: "bibliography", kind: "bool" },

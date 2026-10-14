@@ -1,5 +1,6 @@
 import type { DocJson } from "../markdown/parse";
 import { labelKind } from "../labels/labels";
+import { statementOfClasses } from "../statements/kinds";
 import type { CountedTarget, Target } from "./types";
 
 type JsonNode = {
@@ -80,6 +81,17 @@ export function collectTargets(doc: DocJson, scope: string): CollectedTargets {
       case "codeBlock":
         if (labelOf(node) || node.attrs?.caption) counted("lst", node);
         return;
+      // A block of a mathematical thesis always takes a number, a proof does not
+      case "div": {
+        const classes = node.attrs?.classes;
+        const statement = Array.isArray(classes) ? statementOfClasses(classes.filter((c): c is string => typeof c === "string")) : null;
+        const id = node.attrs?.id;
+        if (statement?.numbered) {
+          synthetic += 1;
+          targets.push({ kind: statement.prefix, label: typeof id === "string" && id !== "" ? id : syntheticLabel(statement.prefix, scope, synthetic) });
+        }
+        break;
+      }
       case "crossRef": {
         const label = labelOf(node);
         if (label) references.push(label);

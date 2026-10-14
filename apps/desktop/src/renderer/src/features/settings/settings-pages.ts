@@ -10,6 +10,7 @@ import {
   PencilRulerIcon,
   TypeIcon,
   UserRoundIcon,
+  SquareSigmaIcon,
   EyeIcon,
   type LucideIcon,
 } from "lucide-react";
@@ -20,6 +21,7 @@ export type SettingsSectionId = "editor" | "thesis";
 export type SettingsPageId =
   | "editorAppearance"
   | "editorWriting"
+  | "editorStatements"
   | "editorPreview"
   | "editorProfile"
   | "thesisSchool"
@@ -46,6 +48,7 @@ export const SETTINGS_SECTIONS: readonly SettingsSectionId[] = ["editor", "thesi
 export const SETTINGS_PAGES: readonly SettingsPage[] = [
   { id: "editorAppearance", section: "editor", icon: PenLineIcon, needsProject: false, groups: [] },
   { id: "editorWriting", section: "editor", icon: PencilRulerIcon, needsProject: false, groups: [] },
+  { id: "editorStatements", section: "editor", icon: SquareSigmaIcon, needsProject: false, groups: [] },
   { id: "editorPreview", section: "editor", icon: EyeIcon, needsProject: false, groups: [] },
   { id: "editorProfile", section: "editor", icon: IdCardIcon, needsProject: false, groups: [] },
   { id: "thesisSchool", section: "thesis", icon: GraduationCapIcon, needsProject: true, groups: ["watermark"] },
@@ -53,7 +56,7 @@ export const SETTINGS_PAGES: readonly SettingsPage[] = [
   { id: "thesisPage", section: "thesis", icon: LayoutIcon, needsProject: true, groups: ["page"] },
   { id: "thesisText", section: "thesis", icon: TypeIcon, needsProject: true, groups: ["text"] },
   { id: "thesisHeadings", section: "thesis", icon: HashIcon, needsProject: true, groups: ["headings", "numbering"] },
-  { id: "thesisCaptions", section: "thesis", icon: ImageIcon, needsProject: true, groups: ["captions", "crossRef"] },
+  { id: "thesisCaptions", section: "thesis", icon: ImageIcon, needsProject: true, groups: ["captions", "crossRef", "statements"] },
   { id: "thesisPageNumber", section: "thesis", icon: ListOrderedIcon, needsProject: true, groups: ["pageNumber", "outline"] },
   { id: "thesisBibliography", section: "thesis", icon: BookOpenIcon, needsProject: true, groups: ["bibliography"] },
 ];
@@ -86,6 +89,7 @@ const EDITOR_ENTRIES: readonly [SettingsPageId, string][] = [
   ["editorWriting", "codeFontSize"],
   ["editorWriting", "pasteMarkdown"],
   ["editorWriting", "autosaveDelay"],
+  ["editorStatements", "statementStyle"],
   ["editorPreview", "previewPpi"],
   ["editorPreview", "previewDelay"],
 ];

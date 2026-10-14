@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Switch } from "@/components/ui/switch";
 import {
@@ -8,6 +9,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { usePrefs } from "@/lib/prefs";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { isHexColor, STATEMENT_KINDS } from "@marktwain/schema";
 import { PREF_LIMITS } from "../../../../shared/prefs";
 import { NumberField, SettingsRow } from "./fields";
 import { LevelPicker, StepSlider } from "./SettingsControls";
@@ -179,6 +183,93 @@ export function EditorPreviewSettings() {
           />
         }
       />
+    </div>
+  );
+}
+
+/** A color picker with a field for the hex code, the code is taken when it is complete. */
+function ColorField({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) {
+  const { t } = useTranslation("settings");
+  const [text, setText] = useState(value);
+  useEffect(() => setText(value), [value]);
+  return (
+    <div className="flex items-center gap-2">
+      <input
+        type="color"
+        aria-label={label}
+        value={value}
+        className="h-8 w-10 cursor-pointer rounded border bg-transparent p-0.5"
+        onChange={(event) => onChange(event.target.value.toUpperCase())}
+      />
+      <Input
+        aria-label={`${label} ${t("editor.statementHex")}`}
+        value={text}
+        maxLength={7}
+        className="h-8 w-24 font-mono text-xs"
+        aria-invalid={!isHexColor(text)}
+        onChange={(event) => {
+          setText(event.target.value);
+          if (isHexColor(event.target.value)) onChange(event.target.value.toUpperCase());
+        }}
+      />
+    </div>
+  );
+}
+
+/** How definitions, lemmas and theorems look in the editor, a plain callout or one color for each kind. The PDF does not change. */
+export function EditorStatementSettings() {
+  const { t } = useTranslation("settings");
+  const { t: tEditor } = useTranslation("editor");
+  const { prefs, setPrefs } = usePrefs();
+  return (
+    <div>
+      <SettingsRow
+        id="setting-editor-statementStyle"
+        label={t("editor.statementStyle")}
+        hint={t("editor.statementStyleHint")}
+        control={
+          <Choice
+            label={t("editor.statementStyle")}
+            value={prefs.statementStyle}
+            options={[
+              { value: "callout", label: t("editor.statementCallout") },
+              { value: "colored", label: t("editor.statementColored") },
+            ]}
+            onChange={(statementStyle) => setPrefs({ statementStyle })}
+          />
+        }
+      />
+      {prefs.statementStyle === "colored" &&
+        STATEMENT_KINDS.map((kind) => {
+          const label = `${t("editor.statementColor")} ${tEditor(`statement.kinds.${kind.id}`)}`;
+          const custom = prefs.statementColors[kind.id];
+          return (
+            <SettingsRow
+              key={kind.id}
+              id={`setting-editor-statementColor-${kind.id}`}
+              label={tEditor(`statement.kinds.${kind.id}`)}
+              control={
+                <div className="flex items-center gap-2">
+                  {custom && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        const { [kind.id]: _removed, ...rest } = prefs.statementColors;
+                        void _removed;
+                        setPrefs({ statementColors: rest });
+                      }}
+                    >
+                      {t("editor.statementColorReset")}
+                    </Button>
+                  )}
+                  <ColorField label={label} value={custom ?? kind.accent} onChange={(color) => setPrefs({ statementColors: { ...prefs.statementColors, [kind.id]: color } })} />
+                </div>
+              }
+            />
+          );
+        })}
     </div>
   );
 }

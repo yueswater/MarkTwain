@@ -12,7 +12,7 @@ function render(md: string, kind: TypstKind = "chapter", labels: string[] = []) 
     imagePath: (src) => `/figures/${src}`,
     onMathFailure: (latex) => failures.push(latex),
   });
-  return { ...file, failures, body: file.text.replace(/^#import.*\n\n/, "") };
+  return { ...file, failures, body: file.text.replace(/^(?:#import.*\n)+\n/, "") };
 }
 
 describe("跳脫", () => {
@@ -211,6 +211,18 @@ describe("文件種類", () => {
     const { blockLines, text } = render("# 標題\n\n段落一\n\n段落二\n");
     const lines = text.split("\n");
     expect(blockLines.map((n) => lines[(n ?? 1) - 1])).toEqual(["= 標題", "段落一", "段落二"]);
+  });
+});
+
+describe("statements", () => {
+  it("writes a block of a mathematical thesis with its kind, label and title", () => {
+    const out = render('::: {.lemma #lem:ss title="Sum"}\n內容\n:::\n').body;
+    expect(out).toBe('#statement("lemma", id: "lem:ss", title: "Sum")[\n  內容\n]\n');
+  });
+
+  it("gives a proof no label and refers to a block through the statement helper", () => {
+    expect(render("::: {.proof #prf:a}\n證\n:::\n").body).toBe('#statement("proof")[\n  證\n]\n');
+    expect(render("見 @lem:ss\n", "chapter", ["lem:ss"]).body).toBe("見 #statement-ref(<lem:ss>)\n");
   });
 });
 

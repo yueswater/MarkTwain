@@ -35,7 +35,8 @@
     "addDefinition": "新增詞條",
     "image": "插入圖片",
     "codeLanguage": "程式語言",
-    "plainText": "純文字"
+    "plainText": "純文字",
+    "statement": "定理區塊"
   },
   "math": {
     "insertTitle": "插入公式",
@@ -90,7 +91,16 @@
       "fig": "圖",
       "tbl": "表",
       "eq": "式",
-      "lst": "程式"
+      "lst": "程式",
+      "def": "定義",
+      "lem": "引理",
+      "alm": "輔助引理",
+      "thm": "定理",
+      "prp": "命題",
+      "cor": "推論",
+      "cas": "情況",
+      "exa": "範例",
+      "rem": "註記"
     },
     "broken": "找不到目標",
     "chooseHint": "選擇要引用的目標。",
@@ -104,7 +114,8 @@
       "figure": "圖",
       "table": "表",
       "formula": "公式",
-      "code": "程式碼區塊"
+      "code": "程式碼區塊",
+      "statement": "定理區塊"
     }
   },
   "atom": {
@@ -221,7 +232,8 @@
     "preview": "區塊的樣子",
     "groups": {
       "basic": "基本區塊",
-      "thesis": "論文區塊"
+      "thesis": "論文區塊",
+      "statement": "定理區塊"
     },
     "items": {
       "text": {
@@ -291,6 +303,46 @@
       "crossRef": {
         "name": "交叉引用",
         "description": "連到圖、表、公式或標題。"
+      },
+      "statement_definition": {
+        "name": "定義",
+        "description": "一個詞或符號的精確意義。"
+      },
+      "statement_lemma": {
+        "name": "引理",
+        "description": "用來證明定理的小結果。"
+      },
+      "statement_auxlemma": {
+        "name": "輔助引理",
+        "description": "只為某個證明準備的引理。"
+      },
+      "statement_theorem": {
+        "name": "定理",
+        "description": "論文中主要的已證明結果。"
+      },
+      "statement_proposition": {
+        "name": "命題",
+        "description": "比定理次要的已證明結果。"
+      },
+      "statement_corollary": {
+        "name": "推論",
+        "description": "直接由定理推出的結果。"
+      },
+      "statement_case": {
+        "name": "情況",
+        "description": "證明中分情形討論的一種。"
+      },
+      "statement_example": {
+        "name": "範例",
+        "description": "用具體例子說明。"
+      },
+      "statement_remark": {
+        "name": "註記",
+        "description": "補充說明，不屬於主線。"
+      },
+      "statement_proof": {
+        "name": "證明",
+        "description": "不編號，結尾加方框。"
       }
     },
     "sample": {
@@ -323,5 +375,25 @@
     "broken": "這個引用找不到目標。",
     "goTo": "前往",
     "moreRows": "…還有更多列"
+  },
+  "statement": {
+    "editTitle": "編輯區塊",
+    "kind": "種類",
+    "titleLabel": "標題（選填）",
+    "titleHint": "顯示在編號後面，例如 定義 1（範數）。",
+    "save": "儲存",
+    "unwrap": "移除區塊外框",
+    "kinds": {
+      "definition": "定義",
+      "lemma": "引理",
+      "auxlemma": "輔助引理",
+      "theorem": "定理",
+      "proposition": "命題",
+      "corollary": "推論",
+      "case": "情況",
+      "example": "範例",
+      "remark": "註記",
+      "proof": "證明"
+    }
   }
 }

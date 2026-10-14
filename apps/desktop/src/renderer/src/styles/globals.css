@@ -279,6 +279,17 @@
 .ProseMirror [data-type="block-math"][data-eq-number] { position: relative; }
 .ProseMirror [data-type="block-math"][data-eq-number]::after { content: "(" attr(data-eq-number) ")"; position: absolute; right: 0; top: 50%; transform: translateY(-50%); font-size: 0.9em; }
 
+/* Definitions, lemmas and theorems, a callout with a head, colored only in the editor and never in the PDF */
+.ProseMirror div[data-statement] { position: relative; margin: 1rem 0; padding: 0.25rem 1rem 0.5rem; border: 1px solid var(--border); border-radius: 0.5rem; background: color-mix(in oklab, var(--muted) 45%, transparent); }
+.ProseMirror div[data-statement] > p { margin: 0.4rem 0; }
+.ProseMirror .statement-head { font-weight: 600; font-size: 0.95em; padding: 0.4rem 0 0.1rem; cursor: pointer; user-select: none; }
+.ProseMirror .statement-head:hover { text-decoration: underline; text-underline-offset: 3px; }
+.ProseMirror div[data-statement="proof"] { border-style: dashed; background: transparent; }
+.ProseMirror div[data-statement="proof"] .statement-head { font-style: italic; font-weight: 500; }
+.ProseMirror div[data-statement="proof"]::after { content: "□"; display: block; text-align: right; line-height: 1; padding-bottom: 0.1rem; color: var(--muted-foreground); }
+.ProseMirror div[data-statement][data-statement-style="colored"] { border-color: transparent; border-left: 4px solid var(--st-accent); border-radius: 0.25rem 0.5rem 0.5rem 0.25rem; background: color-mix(in oklab, var(--st-accent) 13%, var(--background)); }
+.ProseMirror div[data-statement][data-statement-style="colored"] .statement-head { color: color-mix(in oklab, var(--st-accent) 80%, var(--foreground)); }
+
 /* A resizable edge shows a line that thickens under the pointer */
 .resize-handle::after { content: ""; position: absolute; top: 0; bottom: 0; left: 50%; width: 1px; transform: translateX(-50%); border-radius: 2px; background: transparent; transition: width 120ms, background-color 120ms; }
 .resize-handle:hover::after, .resize-handle:focus-visible::after, .resize-handle:active::after { width: 4px; background: color-mix(in oklab, var(--foreground) 35%, transparent); }

@@ -9,7 +9,13 @@ const LIST_FIELDS = ["keywords", "keywords-en"];
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
-export type CompletedConfig = { text: string; missing: string[] };
+export type CompletedConfig = {
+  text: string;
+  missing: string[];
+  /** The statements section, which the template does not know and rejects, so it is taken out of text */
+  statements: unknown;
+  language: "chinese" | "english" | null;
+};
 
 /**
  * The template reads every metadata field and fails when one is absent.
@@ -41,5 +47,13 @@ export function completeConfig(text: string, today: string): CompletedConfig {
   }
   // The settings keep "none" for a thesis without a watermark, the template reads a null for that
   if (doc.getIn(["watermark", "image"]) === "none") doc.setIn(["watermark", "image"], null);
-  return { text: doc.toString({ lineWidth: 0 }), missing };
+  const statements = doc.has("statements") ? (doc.get("statements", true) as { toJSON?: () => unknown } | null)?.toJSON?.() : undefined;
+  doc.delete("statements");
+  const language = doc.getIn(["layout", "language"]);
+  return {
+    text: doc.toString({ lineWidth: 0 }),
+    missing,
+    statements,
+    language: language === "english" || language === "chinese" ? language : null,
+  };
 }
