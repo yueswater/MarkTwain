@@ -1,0 +1,11 @@
+appId: tw.marktwain.app
+productName: MarkTwain
+directories:
+  output: dist
+files:
+  - out/**
+  - package.json
+mac:
+  # Development and CI builds are not signed. Signing and notarization are
+  # decided with the release workflow (design spec section 12, item 13).
+  identity: null

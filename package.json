@@ -10,7 +10,9 @@
     "test": "pnpm -r test",
     "typecheck": "pnpm -r typecheck",
     "lint": "eslint .",
-    "templates:fetch": "pnpm --filter @marktwain/fetch-templates start"
+    "templates:fetch": "pnpm --filter @marktwain/fetch-templates start",
+    "build:unpacked": "pnpm --filter @marktwain/desktop build:unpacked",
+    "e2e": "pnpm --filter @marktwain/desktop e2e"
   },
   "devDependencies": {
     "@jest/globals": "^30.0.0",
