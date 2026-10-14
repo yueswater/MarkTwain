@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import { IpcChannel } from "../../../../shared/enums/ipc-channel.enum";
 import type { AdvancedState } from "../../../../shared/ipc";
+import { LABELS_CHANGED } from "../editor/use-label-index";
 import { api } from "../../shared/api";
 import { errorMessage } from "../../shared/error-message";
 import { NumberField, SettingsHeading, SettingsRow } from "./fields";
@@ -50,6 +51,8 @@ export function useAdvancedState(enabled: boolean, onSaved?: () => void) {
     try {
       setError(null);
       setState(await api.invoke(IpcChannel.ConfigSetAdvanced, { values: { [path]: value } }));
+      // The editor draws captions and numbers from these settings
+      window.dispatchEvent(new Event(LABELS_CHANGED));
       onSaved?.();
     } catch (e) {
       setError(errorMessage(tRoot, e));

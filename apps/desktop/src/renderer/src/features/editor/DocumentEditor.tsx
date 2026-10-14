@@ -43,6 +43,9 @@ import type { SlashHandlers } from "./slash/slash-items";
 import { EquationShortcut } from "./extensions/equation-shortcut";
 import type { Placement } from "@marktwain/schema";
 import { TableBorders } from "./extensions/table-borders";
+import { TableCaptions } from "./extensions/table-captions";
+import { TableLayout } from "./extensions/table-layout";
+import { useTableLayout } from "./use-table-layout";
 import { PlacementMarks } from "./extensions/placement-marks";
 import { StatementDecorations, STATEMENTS_CHANGED } from "./extensions/statement-decorations";
 import { StatementDialog, type StatementTarget } from "./StatementDialog";
@@ -141,6 +144,9 @@ function EditorSurface({
   const [statement, setStatement] = useState<StatementTarget | null>(null);
 
   const labels = useLabelIndex(status);
+  const tableLayout = useTableLayout();
+  const tableLayoutRef = useRef(tableLayout);
+  tableLayoutRef.current = tableLayout;
   const { view: bibliography } = useBibliography();
   const citations = useMemo(
     () => Object.fromEntries(bibliography.items.map((item): [string, CitationInfo] => [item.key, { author: item.author, year: item.year }])),
@@ -198,8 +204,15 @@ function EditorSurface({
         Placeholder.configure({ placeholder: t("placeholder") }),
         PlacementMarks,
         TableBorders,
+        TableLayout,
+        TableCaptions.configure({
+          getBase: () => labelsRef.current.bases[doc.id]?.tbl ?? 0,
+          getPosition: () => tableLayoutRef.current.position,
+          getPrefix: () => tableLayoutRef.current.prefix,
+          getNotesLabel: () => tRef.current("table.notesLabel"),
+        }),
         StatementDecorations.configure({
-          getBase: () => labelsRef.current.statementBases[doc.id] ?? {},
+          getBase: () => labelsRef.current.bases[doc.id] ?? {},
           nameOf: (kind) => tRef.current(`statement.kinds.${kind.id}`),
           getStyle: () => prefsRef.current.statementStyle,
           colorOf: (kind) => prefsRef.current.statementColors[kind.id] ?? kind.accent,
@@ -281,7 +294,7 @@ function EditorSurface({
   useEffect(() => {
     if (!editor || editor.isDestroyed) return;
     editor.view.dispatch(editor.state.tr.setMeta(STATEMENTS_CHANGED, true));
-  }, [editor, labels, prefs.statementStyle, prefs.statementColors]);
+  }, [editor, labels, prefs.statementStyle, prefs.statementColors, tableLayout]);
 
   // Save pending changes before switching documents, closing the project or closing the window
   useEffect(() => {

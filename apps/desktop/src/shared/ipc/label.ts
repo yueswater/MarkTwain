@@ -18,8 +18,8 @@ export type LabelIndex = {
   /** Labels defined more than once */
   duplicates: string[];
   targets: LabelTarget[];
-  /** How many blocks of each kind of a mathematical thesis come before each document, so the editor can number blocks that have no label */
-  statementBases: Record<string, Record<string, number>>;
+  /** How many figures, tables, listings and blocks of a mathematical thesis come before each document, by label prefix, so the editor can number what has no label */
+  bases: Record<string, Record<string, number>>;
   /** Labels that some document refers to, a name that is used cannot be changed or removed without breaking it */
   used: string[];
 };

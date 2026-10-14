@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { buildTypst } from "./build-typst";
 import { renderThumbnail } from "./thumbnail";
+import { decodeGray, verticalLines } from "./test-png";
 import type { BuildInput } from "./types";
 
 const templateDir = resolve(__dirname, "../../../resources/templates/typ");
@@ -206,6 +207,38 @@ maybe("buildTypst with the real template", () => {
       );
       expect(result.diagnostics.filter((d) => d.severity === "error")).toEqual([]);
       expect(result.ok).toBe(true);
+    } finally {
+      rmSync(work, { recursive: true, force: true });
+    }
+  }, 120_000);
+
+  it("draws the columns of a table in the shares that its widths say", async () => {
+    const work = mkdtempSync(join(tmpdir(), "marktwain 欄寬 "));
+    try {
+      const result = await buildTypst({
+        ...input(work, {
+          documents: [
+            {
+              id: "c1",
+              kind: "chapter",
+              text: ["# 表", "", "| 甲 | 乙 | 丙 |", "|---|---|---|", "| 1 | 2 | 3 |", "| 4 | 5 | 6 |", "", ": 欄寬 {#tbl:w style=grid widths=\"20%,30%,50%\"}"].join("\n"),
+            },
+          ],
+        }),
+        format: "png",
+        ppi: 110,
+      });
+      expect(result.ok).toBe(true);
+      if (!result.ok) return;
+      const lines = verticalLines(decodeGray(result.pages.at(-1) as Uint8Array), 60);
+      expect(lines).toHaveLength(4);
+      const total = (lines[3] as number) - (lines[0] as number);
+      const shares = [1, 2, 3].map((i) => ((lines[i] as number) - (lines[i - 1] as number)) / total);
+      expect(shares[0]).toBeCloseTo(0.2, 1);
+      expect(shares[1]).toBeCloseTo(0.3, 1);
+      expect(shares[2]).toBeCloseTo(0.5, 1);
+      // The table is as wide as the text, 21 cm paper with 3 cm margins is 15 cm of 21
+      expect(total / decodeGray(result.pages.at(-1) as Uint8Array).width).toBeCloseTo(15 / 21, 1);
     } finally {
       rmSync(work, { recursive: true, force: true });
     }

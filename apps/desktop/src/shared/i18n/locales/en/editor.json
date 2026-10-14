@@ -162,7 +162,8 @@
     "auto": "auto",
     "percent": "%",
     "dragWidth": "Column width {{value}}%",
-    "dragHeight": "Row height {{value}} pt"
+    "dragHeight": "Row height {{value}} pt",
+    "notesLabel": "註："
   },
   "caption": {
     "tableTitle": "Table caption",
