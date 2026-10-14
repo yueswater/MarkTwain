@@ -509,3 +509,39 @@ test("selecting text shows a floating menu with the marks", async () => {
     rmSync(dir, { recursive: true, force: true });
   }
 });
+
+test("code blocks take a language, are highlighted, and keep it in the Markdown", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "marktwain 程式碼 "));
+  const file = join(dir, "論文.marktwain");
+  const args = [`--user-data-dir=${join(dir, "userData")}`, "--lang=en-US"];
+  if (process.platform === "linux") args.push("--no-sandbox");
+  const app = await electron.launch({
+    executablePath: findPackagedExecutable(dist),
+    args,
+    env: { ...process.env, MARKTWAIN_TEST_DIALOG_PATH: file },
+  });
+  try {
+    const page = await app.firstWindow();
+    await page.getByRole("button", { name: "New project" }).click();
+    const editor = page.locator(".ProseMirror");
+    await editor.click();
+    await page.getByRole("button", { name: "Code block" }).click();
+    await page.getByRole("combobox", { name: "Code language" }).click();
+    await page.getByRole("option", { name: "Python" }).click();
+    await page.keyboard.type('def hello():\n    return "hi"');
+    await expect(editor.locator("pre code .hljs-keyword").first()).toHaveText("def");
+    await expect(editor.locator("pre code .hljs-string")).toHaveCount(1);
+    await expect(page.getByRole("status")).toHaveText("Saved");
+    const text = await page.evaluate(async () => {
+      const list = await window.marktwain.invoke("document:list");
+      if (!list.ok) return "";
+      const chapter = list.data.find((d) => d.kind === "chapter");
+      const doc = chapter && (await window.marktwain.invoke("document:get", { id: chapter.id }));
+      return doc && doc.ok ? doc.data.text : "";
+    });
+    expect(text).toBe('```python\ndef hello():\n    return "hi"\n```\n');
+  } finally {
+    await app.close();
+    rmSync(dir, { recursive: true, force: true });
+  }
+});

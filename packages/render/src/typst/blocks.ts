@@ -130,6 +130,14 @@ function renderTable(block: TableBlock, ctx: BlockContext): string[] {
   ];
 }
 
+/** Names of the editor languages that Typst spells differently. */
+const TYPST_LANGUAGE: Record<string, string> = { shell: "bash", csharp: "cs", xml: "html", markdown: "md", plaintext: "" };
+
+function typstLanguage(language: string | null): string {
+  if (!language) return "";
+  return TYPST_LANGUAGE[language] ?? language;
+}
+
 const label = (value: string | null) => (value ? ` <${value}>` : "");
 const str = (value: string) => `"${escapeString(value)}"`;
 const content = (nodes: Inline[], ctx: BlockContext) => `[${renderInline(nodes, ctx)}]`;
@@ -166,7 +174,7 @@ export function renderBlock(block: Block, ctx: BlockContext): string[] {
 
     case "code": {
       const fence = fenceFor(block.text);
-      const raw = `${fence}${block.language ?? ""}\n${block.text}\n${fence}`.split("\n");
+      const raw = `${fence}${typstLanguage(block.language)}\n${block.text}\n${fence}`.split("\n");
       // A code block with no caption is not a listing, so it gets no number and no label
       if (block.caption.length === 0) return raw;
       const caption = `caption: ${content(block.caption, ctx)}`;

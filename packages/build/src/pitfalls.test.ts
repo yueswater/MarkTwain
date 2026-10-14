@@ -58,6 +58,8 @@ const CASES: Record<string, string> = {
     '| a | b | c |\n|:--|:-:|--:|\n| 1 |   |   |\n| 2 | 3 | 4 |\n| 5 | 6 | 7 |\n\n: Merged {#tbl:m style=grid widths="20%,auto,30%" heights="2:24pt" cells="2.1:colspan=3;3.2:rowspan=2,valign=top" notes="source"}',
   "a three line table with merged cells and notes":
     '| a | b |\n| --- | --- |\n| 1 |   |\n| 2 | 3 |\n\n: Three line {#tbl:n cells="2.1:colspan=2" notes="note"}',
+  "code blocks in several languages":
+    ["python", "r", "shell", "cpp", "csharp", "sql", "latex", "javascript", "typescript", "matlab", "xml", "markdown"].map((l) => "```" + l + "\nx\n```").join("\n\n"),
   "headings up to four levels": "# 一\n\n## 二\n\n### 三\n\n#### 四\n\n正文。",
   "quotes and rules": "> 引言\n> 第二行\n\n---\n\n後文。",
   "links with special characters": "[連結](https://example.com/a?b=1&c=2#d)",

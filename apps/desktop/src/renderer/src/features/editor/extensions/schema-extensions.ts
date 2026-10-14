@@ -1,7 +1,9 @@
 import type { Extensions } from "@tiptap/core";
 import { Mathematics } from "@tiptap/extension-mathematics";
 import { Table, TableCell, TableHeader, TableRow } from "@tiptap/extension-table";
+import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import StarterKit from "@tiptap/starter-kit";
+import { lowlight } from "../code-languages";
 import { GlobalAttributes } from "./global-attributes";
 import { Citation } from "./nodes/citation";
 import { CrossRef } from "./nodes/cross-ref";
@@ -28,6 +30,8 @@ export function createSchemaExtensions(options: SchemaExtensionOptions = {}): Ex
   return [
     StarterKit.configure({
       heading: { levels: [1, 2, 3, 4] },
+      // Code blocks come from the lowlight extension below so they are highlighted
+      codeBlock: false,
       // Replaced with versions whose input rules work for Chinese, see marks.ts
       bold: false,
       italic: false,
@@ -39,6 +43,7 @@ export function createSchemaExtensions(options: SchemaExtensionOptions = {}): Ex
     CjkBold,
     CjkItalic,
     CjkStrike,
+    CodeBlockLowlight.configure({ lowlight, defaultLanguage: null }),
     GlobalAttributes,
     Mathematics.configure({
       inlineOptions: onMathClick ? { onClick: (node, pos) => onMathClick("inline", node.attrs.latex, pos) } : undefined,
