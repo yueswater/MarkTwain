@@ -1,4 +1,4 @@
-/** 介面語言。以 `as const` 物件定義，不用 TypeScript 的 `enum`（規格 3.1 節）。 */
+/** Interface language. Defined as an as const object and not a TypeScript enum, see section 3.1 of the spec. */
 export const Locale = {
   ZhHant: "zh-Hant",
   En: "en",

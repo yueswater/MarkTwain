@@ -5,14 +5,17 @@ import { LOCK_FILE, OUTPUT_DIR, TEMPLATE_NAMES } from "./config";
 import { parseLock } from "./lock";
 import { fetchTemplate } from "./run";
 
-// 此檔位於 tools/fetch-templates/src/，往上三層是 repo 根目錄。
+// This file is in tools/fetch-templates/src/, three levels up is the repo root.
 const root = fileURLToPath(new URL("../../../", import.meta.url));
 
 try {
   const lock = parseLock(readFileSync(join(root, LOCK_FILE), "utf8"));
   const templatesDir = join(root, ...OUTPUT_DIR);
 
-  for (const name of TEMPLATE_NAMES) {
+  // Optional arguments select templates, for example `pnpm templates:fetch typ`.
+  const wanted = process.argv.slice(2);
+  const names = wanted.length > 0 ? TEMPLATE_NAMES.filter((n) => wanted.includes(n)) : TEMPLATE_NAMES;
+  for (const name of names) {
     const entry = lock.templates[name];
     const result = fetchTemplate(name, entry, templatesDir);
     console.log(`${name}: ${result}（${entry.repo}@${entry.tag}）`);

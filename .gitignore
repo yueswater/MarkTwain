@@ -7,7 +7,7 @@ node_modules/
 # build output
 dist/
 out/
-build/
+/build/
 release/
 coverage/
 *.tsbuildinfo
@@ -69,3 +69,6 @@ npm-debug.log*
 docs/
 .superpowers/
 .claude/
+
+# load test output
+tools/bench/out/

@@ -1,0 +1,125 @@
+import { describe, expect, it } from "@jest/globals";
+import { execFileSync } from "node:child_process";
+import { existsSync, mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join, resolve } from "node:path";
+import { buildTypst } from "./build-typst";
+import type { BuildInput } from "./types";
+
+const templateDir = resolve(__dirname, "../../../resources/templates/typ");
+
+function findTypst(): string | null {
+  const configured = process.env.MARKTWAIN_TYPST;
+  if (configured) return configured;
+  try {
+    execFileSync("typst", ["--version"], { stdio: "ignore" });
+    return "typst";
+  } catch {
+    return null;
+  }
+}
+
+const typst = findTypst();
+const available = typst !== null && existsSync(templateDir);
+const maybe = available ? describe : describe.skip;
+
+import { PNG } from "./fixtures";
+
+const config = 'title: "測試論文"\nauthor: "王小明"\nkeywords: ["甲", "乙"]\nkeywords-en: ["a", "b"]\n';
+
+function input(workDir: string, overrides: Partial<BuildInput>): BuildInput {
+  return {
+    templateDir,
+    workDir,
+    typst: typst as string,
+    config,
+    documents: [],
+    files: [{ path: "images/a.png", data: PNG }],
+    bibliography: [],
+    ...overrides,
+  };
+}
+
+maybe("buildTypst with the real template", () => {
+  it("builds a PDF from every kind of document", async () => {
+    const work = mkdtempSync(join(tmpdir(), "marktwain 建置 "));
+    try {
+      const result = await buildTypst(
+        input(work, {
+          documents: [
+            { id: "k", kind: "acknowledgement", text: "感謝大家。\n" },
+            { id: "a", kind: "abstract", text: "::: {.abstract-zh}\n中文摘要。\n:::\n\n::: {.abstract-en}\nEnglish abstract.\n:::\n" },
+            { id: "n", kind: "denotation", text: "PDF\n: 文件格式\n\n$E$\n: 能量\n" },
+            {
+              id: "c1",
+              kind: "chapter",
+              text: [
+                "# 緒論 {#cha:intro}",
+                "",
+                "這是**重點**，公式 $\\frac{a}{b}$，腳註[^1]，見 @fig:a 與 @tbl:t 與 @eq:e。",
+                "",
+                "[^1]: 腳註內容",
+                "",
+                "![架構圖](images/a.png){#fig:a width=60%}",
+                "",
+                "| 甲 | 乙 |",
+                "|:--|--:|",
+                "| 1 | 2 |",
+                "",
+                ": 範例表 {#tbl:t notes=\"資料來源\"}",
+                "",
+                "$$",
+                "\\sum_{i=1}^{n} i",
+                "$$ {#eq:e}",
+                "",
+                "- 項目一",
+                "- 項目二",
+                "",
+                "```python {caption=\"範例\"}",
+                "print(1)",
+                "```",
+              ].join("\n"),
+            },
+            { id: "c2", kind: "chapter", text: "# 方法\n\n第二章。\n" },
+            { id: "x", kind: "appendix", text: "# 附錄\n\n附錄內容。\n" },
+          ],
+        }),
+      );
+      expect(result.diagnostics.filter((d) => d.severity === "error")).toEqual([]);
+      expect(result.ok).toBe(true);
+      if (result.ok) expect(Buffer.from(result.pdf.slice(0, 5)).toString()).toBe("%PDF-");
+    } finally {
+      rmSync(work, { recursive: true, force: true });
+    }
+  }, 120_000);
+
+  it("reports a typst error against the source block", async () => {
+    const work = mkdtempSync(join(tmpdir(), "marktwain 錯誤 "));
+    try {
+      const result = await buildTypst(
+        input(work, {
+          documents: [{ id: "c1", kind: "chapter", text: "# 標題\n\n正常段落。\n\n![缺圖](images/missing.png)\n" }],
+        }),
+      );
+      expect(result.ok).toBe(false);
+      const error = result.diagnostics.find((d) => d.severity === "error");
+      if (!error?.source) throw new Error(JSON.stringify(result.diagnostics));
+      expect(error.source).toEqual({ documentId: "c1", block: 2 });
+    } finally {
+      rmSync(work, { recursive: true, force: true });
+    }
+  }, 120_000);
+
+  it("falls back to source text for a formula that does not convert", async () => {
+    const work = mkdtempSync(join(tmpdir(), "marktwain 公式 "));
+    try {
+      const result = await buildTypst(
+        input(work, { documents: [{ id: "c1", kind: "chapter", text: "# 標題\n\n壞公式 $\\frac{a$ 仍可編譯。\n" }] }),
+      );
+      expect(result.ok).toBe(true);
+      expect(result.mathFailures).toEqual(["\\frac{a"]);
+    } finally {
+      rmSync(work, { recursive: true, force: true });
+    }
+  }, 120_000);
+});

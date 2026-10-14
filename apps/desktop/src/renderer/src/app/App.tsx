@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { MenuCommand } from "../../../shared/ipc/menu";
 import { IpcChannel } from "../../../shared/enums/ipc-channel.enum";
 import type { Locale } from "../../../shared/enums/locale.enum";
+import { useBuild } from "../features/build/use-build";
 import { useProject } from "../features/project/use-project";
 import { WelcomeScreen } from "../features/project/WelcomeScreen";
 import { Workspace } from "../features/project/Workspace";
@@ -13,6 +14,8 @@ import { AppShell } from "./AppShell";
 export function App() {
   const { t, i18n } = useTranslation();
   const state = useProject();
+  const build = useBuild();
+  const [previewOpen, setPreviewOpen] = useState(false);
   const [localeError, setLocaleError] = useState<string | null>(null);
 
   async function changeLocale(locale: Locale): Promise<void> {
@@ -25,7 +28,7 @@ export function App() {
     }
   }
 
-  // 原生選單的「檔案」指令；每次渲染都用最新的 state，所以用 ref 避免重複訂閱
+  // Native menu File commands, a ref keeps the latest state so the subscription is not repeated on every render
   const stateRef = useRef(state);
   stateRef.current = state;
   useEffect(
@@ -44,7 +47,13 @@ export function App() {
   return (
     <AppShell
       projectName={state.project?.name ?? null}
-      onCloseProject={() => void state.closeProject()}
+      onCloseProject={() => {
+        setPreviewOpen(false);
+        build.reset();
+        void state.closeProject();
+      }}
+      onTogglePreview={state.project ? () => setPreviewOpen((open) => !open) : null}
+      previewOpen={previewOpen}
       onLocaleChange={(locale) => void changeLocale(locale)}
     >
       {error && (
@@ -54,7 +63,7 @@ export function App() {
       )}
       <div className="min-h-0 flex-1">
         {state.loading ? null : state.project ? (
-          <Workspace state={state} />
+          <Workspace state={state} build={build} previewOpen={previewOpen} onClosePreview={() => setPreviewOpen(false)} />
         ) : (
           <WelcomeScreen
             onCreate={(name) => void state.createProject(name)}

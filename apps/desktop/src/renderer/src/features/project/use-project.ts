@@ -7,7 +7,7 @@ import { api } from "../../shared/api";
 import { errorMessage } from "../../shared/error-message";
 import { projectNameFromPath } from "./document-title";
 
-/** 目前開啟的專案與所有會改變它的動作；錯誤統一轉成目前語言的文字。 */
+/** The open project and every action that changes it, errors become text in the current language. */
 export function useProject() {
   const { t } = useTranslation();
   const [project, setProject] = useState<ProjectInfo | null>(null);
@@ -32,7 +32,7 @@ export function useProject() {
 
   useEffect(() => {
     void run(refresh).finally(() => setLoading(false));
-    // 只在載入時取得一次
+    // Fetch once on load
   }, []);
 
   const createProject = (suggestedName: string) =>

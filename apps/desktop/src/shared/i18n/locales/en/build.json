@@ -1,0 +1,20 @@
+{
+  "preview": "Preview",
+  "build": "Build PDF",
+  "building": "Building…",
+  "empty": "Build the PDF to see how the thesis looks.",
+  "close": "Close preview",
+  "failed": "The build failed.",
+  "errors": "Errors",
+  "warnings": "Warnings",
+  "goTo": "Go to the source",
+  "previewTitle": "PDF preview",
+  "configMissing": "Not filled in the project settings: {{field}}",
+  "mathFailed": "This formula could not be converted and is shown as source text: {{latex}}",
+  "noSource": "No source location",
+  "citationNoBibliography": "No bibliography yet, shown as plain text: {{keys}}",
+  "export": "Export",
+  "exportPdf": "Export PDF…",
+  "exportProject": "Export Typst project…",
+  "exported": "Exported to {{path}}"
+}

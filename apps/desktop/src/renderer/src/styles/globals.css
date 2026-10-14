@@ -125,7 +125,7 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  /* Geist for Latin, Noto Sans TC (思源黑體) for CJK; both are bundled. */
+  /* Geist for Latin, Noto Sans TC for CJK; both are bundled. */
   --font-sans: "Geist Variable", "Noto Sans TC Variable", sans-serif;
   --font-mono: "Geist Mono Variable", ui-monospace, monospace;
 }
@@ -142,7 +142,7 @@
 }
 
 /* ---------------------------------------------------------------------------
- * 編輯區（ProseMirror）：沉靜、偏文章的黑白灰排版，沿用 anvilnote。
+ * Editor surface, calm editorial black white and gray typography from anvilnote.
  * ------------------------------------------------------------------------- */
 .ProseMirror {
   outline: none;
@@ -177,13 +177,13 @@
   pointer-events: none;
 }
 
-/* 公式：點擊可編輯；語法錯誤時顯示原文 */
+/* Formulas are clickable to edit and show source text on a syntax error */
 .tiptap-mathematics-render { cursor: pointer; border-radius: 0.25rem; }
 .tiptap-mathematics-render:hover { background: var(--muted); }
 .tiptap-mathematics-render[data-type="block-math"] { display: block; text-align: center; padding: 0.5rem 0; margin: 0.75rem 0; overflow-x: auto; }
 .inline-math-error { color: var(--destructive); font-family: "Geist Mono Variable", ui-monospace, monospace; }
 
-/* 腳註、文獻引用、交叉引用：顯示文字由 ref-decorations 放在 data 屬性，這裡呈現 */
+/* Footnotes, citations and cross-references, display text comes from ref-decorations in data attributes */
 
 .ProseMirror sup[data-footnote] { cursor: pointer; color: var(--foreground); font-size: 0.75em; padding: 0 0.1em; border-radius: 0.25rem; }
 .ProseMirror sup[data-footnote]::after { content: "[" attr(data-n) "]"; }
@@ -195,8 +195,28 @@
 .ProseMirror span[data-cross-ref][data-broken] { color: var(--destructive); }
 .ProseMirror .ProseMirror-selectednode[data-footnote], .ProseMirror .ProseMirror-selectednode[data-citation], .ProseMirror .ProseMirror-selectednode[data-cross-ref] { outline: 2px solid var(--ring); outline-offset: 1px; }
 
-/* 圖 */
+/* Figures */
 .ProseMirror figure { margin: 1rem 0; text-align: center; cursor: pointer; }
 .ProseMirror figure img { display: inline-block; max-width: 100%; height: auto; border-radius: 0.25rem; }
 .ProseMirror figcaption { margin-top: 0.5rem; font-size: 0.875rem; color: var(--muted-foreground); }
 .ProseMirror figure.ProseMirror-selectednode { outline: 2px solid var(--ring); outline-offset: 2px; }
+
+/* Tables, three-line draws only the top, header and bottom rules and grid draws every line */
+.ProseMirror .tableWrapper { overflow-x: auto; margin: 0.75rem 0; }
+.ProseMirror .tableWrapper table { margin: 0; }
+.ProseMirror .tableWrapper[data-table-style="three-line"] th,
+.ProseMirror .tableWrapper[data-table-style="three-line"] td { border: none; }
+.ProseMirror .tableWrapper[data-table-style="three-line"] table { border-top: 2px solid var(--foreground); border-bottom: 2px solid var(--foreground); }
+.ProseMirror .tableWrapper[data-table-style="three-line"] tr:first-child th,
+.ProseMirror .tableWrapper[data-table-style="three-line"] tr:first-child td { background: transparent; border-bottom: 1px solid var(--foreground); }
+.ProseMirror table td[style*="valign"], .ProseMirror table th[style*="valign"] { vertical-align: middle; }
+.ProseMirror td[data-valign="top"], .ProseMirror th[data-valign="top"] { vertical-align: top; }
+.ProseMirror td[data-valign="middle"], .ProseMirror th[data-valign="middle"] { vertical-align: middle; }
+.ProseMirror td[data-valign="bottom"], .ProseMirror th[data-valign="bottom"] { vertical-align: bottom; }
+.ProseMirror td[data-align="left"], .ProseMirror th[data-align="left"] { text-align: left; }
+.ProseMirror td[data-align="center"], .ProseMirror th[data-align="center"] { text-align: center; }
+.ProseMirror td[data-align="right"], .ProseMirror th[data-align="right"] { text-align: right; }
+.ProseMirror .column-resize-handle { position: absolute; right: -2px; top: 0; bottom: 0; width: 4px; background: var(--ring); pointer-events: none; }
+.ProseMirror.resize-cursor { cursor: col-resize; }
+.ProseMirror .selectedCell::after { content: ""; position: absolute; inset: 0; background: color-mix(in oklab, var(--ring) 20%, transparent); pointer-events: none; }
+.ProseMirror td, .ProseMirror th { position: relative; }

@@ -22,7 +22,7 @@ test("project settings are filled in, validated, saved and restored", async () =
     await page.getByRole("button", { name: "新增專案" }).click();
     await page.getByRole("button", { name: "專案設定" }).click();
 
-    // 題目預設是專案名稱；作者還沒填，但一開始不顯示紅字
+    // The title defaults to the project name, no red text before the author is filled in
     await expect(page.getByLabel("論文題目（中文）")).toHaveValue("我的論文");
     await expect(page.getByRole("alert")).toHaveCount(0);
 
@@ -32,14 +32,14 @@ test("project settings are filled in, validated, saved and restored", async () =
     await page.getByRole("combobox", { name: "學校格式" }).click();
     await page.getByRole("option", { name: "國立臺灣大學" }).click();
 
-    // 日期格式錯誤會顯示在欄位下方，修正後消失
+    // A bad date shows below the field and disappears once fixed
     await page.getByLabel("口試日期").fill("2026/06/15");
     await expect(page.getByRole("alert")).toHaveText("請使用 YYYY-MM-DD 格式。");
     await page.getByLabel("口試日期").fill("2026-06-15");
     await expect(page.getByRole("alert")).toHaveCount(0);
     await expect(page.getByRole("status")).toHaveText("已儲存");
 
-    // 關閉再開啟專案：設定仍在
+    // Close and reopen the project, the settings are still there
     await page.getByRole("button", { name: "關閉專案" }).click();
     await page.getByRole("button", { name: "開啟專案" }).click();
     await page.getByRole("button", { name: "專案設定" }).click();

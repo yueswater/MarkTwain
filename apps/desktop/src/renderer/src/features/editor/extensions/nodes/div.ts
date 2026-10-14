@@ -1,6 +1,6 @@
 import { mergeAttributes, Node } from "@tiptap/core";
 
-/** 一般的圍欄 div（摘要的 .abstract-zh 等）。 */
+/** Plain fenced div, for example .abstract-zh of an abstract. */
 export const Div = Node.create({
   name: "div",
   group: "block",

@@ -7,7 +7,7 @@ import { ensureDir, readJsonSafe, writeJson } from "./fs.util";
 let dir: string;
 
 beforeEach(() => {
-  // 路徑刻意含空白與中文：台灣的 Windows 使用者名稱常是中文（規格 9.1 節規則 2）
+  // Path deliberately contains a space and Chinese characters, Windows user names in Taiwan are often Chinese
   dir = mkdtempSync(join(tmpdir(), "marktwain 工具 "));
 });
 

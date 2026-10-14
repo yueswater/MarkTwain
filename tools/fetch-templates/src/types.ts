@@ -10,5 +10,5 @@ export type TemplateLock = {
   templates: Record<TemplateName, TemplateEntry>;
 };
 
-/** 寫在抓取結果根目錄的標記檔內容，記錄這份內容對應鎖定檔的哪個版本。 */
+/** Content of the marker file in the root of a fetched template, it records which version of the lock file this content matches. */
 export type Marker = { tag: string; commit: string };

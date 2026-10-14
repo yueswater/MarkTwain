@@ -24,7 +24,7 @@ const NO_SCHOOL = "none";
 
 type TextField = Exclude<keyof ConfigFields, "keywords" | "keywordsEn" | "school">;
 
-/** 邊填邊存的專案設定表單（config.yml 的欄位）。 */
+/** Project settings form that saves while typing, fields of config.yml. */
 export function ConfigForm() {
   const { t, i18n } = useTranslation("config");
   const [state, setState] = useState<ConfigState | null>(null);
@@ -37,7 +37,7 @@ export function ConfigForm() {
       new Autosaver(
         async (json) => {
           const next = await api.invoke(IpcChannel.ConfigSet, { fields: JSON.parse(json) as ConfigFields });
-          // 只更新驗證結果；欄位內容以使用者正在輸入的為準
+          // Only the validation result is updated, field values follow what the user is typing
           setState((current) => (current ? { ...current, issues: next.issues } : current));
         },
         setStatus,
@@ -58,7 +58,7 @@ export function ConfigForm() {
       .catch((e: unknown) => !cancelled && setError(errorMessage(i18n.t.bind(i18n), e)));
     return () => {
       cancelled = true;
-      void autosaver.flush(); // 離開設定頁前存下最後的變更
+      void autosaver.flush(); // Save the last changes before leaving the settings page
     };
   }, [autosaver, i18n]);
 
@@ -84,7 +84,7 @@ export function ConfigForm() {
 
   const text = (field: TextField, extra?: { hint?: string; placeholder?: string }) => {
     const issue = issueFor(field);
-    // 必填欄位在使用者還沒填之前不顯示錯誤，以免一開啟就滿版紅字
+    // Do not show errors on required fields before the user filled them, to avoid a page of red text on open
     const showIssue = issue && !(issue.code === "required" && fields[field] === "" && status === "idle");
     return (
       <Field

@@ -6,7 +6,7 @@ function parseHex(hex: string): [number, number, number] {
   return [0, 2, 4].map((i) => parseInt(full.slice(i, i + 2), 16)) as [number, number, number];
 }
 
-/** WCAG 2 的相對亮度。 */
+/** Relative luminance of WCAG 2. */
 export function relativeLuminance(hex: string): number {
   const [r, g, b] = parseHex(hex).map((channel) => {
     const value = channel / 255;
@@ -15,7 +15,7 @@ export function relativeLuminance(hex: string): number {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
-/** WCAG 2 的對比度，與兩色的順序無關。 */
+/** Contrast ratio of WCAG 2, independent of the order of the two colors. */
 export function contrastRatio(a: string, b: string): number {
   const [light, dark] = [relativeLuminance(a), relativeLuminance(b)].sort((x, y) => y - x) as [number, number];
   return (light + 0.05) / (dark + 0.05);

@@ -1,3 +1,3 @@
-// 這些套件沒有附型別宣告。
+// These packages ship no type declarations.
 declare module "markdown-it-attrs";
 declare module "markdown-it-footnote";

@@ -1,6 +1,6 @@
 /**
- * 傳給前端的錯誤代碼。值同時是訊息目錄 `diagnostics` 命名空間裡
- * `error.<代碼>` 的鍵（規格 3.5 節）：新增代碼時，兩個語言都要加訊息。
+ * Error codes sent to the renderer. The value is also the key error.<code> in the diagnostics namespace
+ * of the message catalog, so add messages in both languages when adding a code.
  */
 export const ErrorCode = {
   Unknown: "app.unknown",
@@ -12,6 +12,11 @@ export const ErrorCode = {
   ProjectNoneOpen: "project.none-open",
   DocumentNotFound: "document.not-found",
   DocumentSingleton: "document.singleton",
+  BuildBusy: "build.busy",
+  BuildTypstMissing: "build.typst-missing",
+  BuildTemplateMissing: "build.template-missing",
+  ExportNoPdf: "export.no-pdf",
+  ExportFailed: "export.failed",
   ConfigInvalid: "config.invalid",
   AssetUnsupported: "asset.unsupported",
   AssetTooLarge: "asset.too-large",

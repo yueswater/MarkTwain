@@ -34,6 +34,11 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - uses: typst-community/setup-typst@v4
+      - name: Fetch the pinned templates
+        run: pnpm templates:fetch typ
+        env:
+          GH_TOKEN: ${{ github.token }}
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm test
@@ -54,6 +59,11 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - uses: typst-community/setup-typst@v4
+      - name: Fetch the pinned templates
+        run: pnpm templates:fetch typ
+        env:
+          GH_TOKEN: ${{ github.token }}
       - run: pnpm build:unpacked
       - name: End-to-end tests (Linux needs a virtual display)
         if: runner.os == 'Linux'

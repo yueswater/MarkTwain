@@ -2,8 +2,8 @@ import { contextBridge, ipcRenderer } from "electron";
 import type { MarkTwainApi } from "../shared/ipc";
 import { MENU_COMMAND_CHANNEL, type MenuCommand } from "../shared/ipc/menu";
 
-// 參數用寬鬆型別：型別檢查由 MarkTwainApi 的契約負責（呼叫端），
-// 這裡只是把第一個參數轉送給 main。
+// Loose types for the arguments, the contract in MarkTwainApi checks types on the caller side.
+// This only forwards the first argument to main.
 const api: MarkTwainApi = {
   invoke: (channel: string, ...args: unknown[]) => ipcRenderer.invoke(channel, args[0]),
   onMenuCommand: (listener: (command: MenuCommand) => void) => {

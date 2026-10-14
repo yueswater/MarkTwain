@@ -4,12 +4,12 @@ export function isValidLabel(label: string): boolean {
   return LABEL_PATTERN.test(label);
 }
 
-/** 標籤的前綴；不是有效標籤時回傳 null。 */
+/** Prefix of the label, null when it is not a valid label. */
 export function labelKind(label: string): LabelKind | null {
   return isValidLabel(label) ? (label.slice(0, label.indexOf(":")) as LabelKind) : null;
 }
 
-/** 出現不只一次的標籤，每個只列一次，依第一次重複出現的順序。 */
+/** Labels that appear more than once, each listed once in order of the first repeat. */
 export function findDuplicateLabels(labels: string[]): string[] {
   const seen = new Set<string>();
   const duplicates: string[] = [];
@@ -20,7 +20,7 @@ export function findDuplicateLabels(labels: string[]): string[] {
   return duplicates;
 }
 
-/** 產生不與既有標籤衝突的短標籤，例如 `fig:a3f9`。 */
+/** Creates a short label that does not collide with existing ones, for example fig:a3f9. */
 export function createLabel(
   kind: LabelKind,
   existing: ReadonlySet<string>,

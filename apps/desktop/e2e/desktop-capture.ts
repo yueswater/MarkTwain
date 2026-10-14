@@ -1,9 +1,9 @@
 import { execFileSync } from "node:child_process";
 
 /**
- * 擷取整個桌面（含視窗標題列與系統外框），用來檢查 Windows 上的實際外觀。
- * Playwright 的 `page.screenshot` 只拍網頁內容。目前只實作 Windows（以 PowerShell 的
- * System.Drawing）；其他平台回傳 false。失敗不會讓測試失敗，只回傳 false。
+ * Captures the whole desktop including the title bar and window frame.
+ * Playwright page.screenshot only captures the page. Implemented for Windows only, using PowerShell
+ * and System.Drawing. Other platforms return false, and a failure returns false instead of failing the test.
  */
 export function captureDesktop(file: string): boolean {
   if (process.platform !== "win32") return false;

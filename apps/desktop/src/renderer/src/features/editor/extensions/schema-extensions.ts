@@ -10,15 +10,16 @@ import { Div } from "./nodes/div";
 import { FigureGroup } from "./nodes/figure-group";
 import { Figure } from "./nodes/figure";
 import { MathInputRules } from "./math-input";
+import { TableExtras } from "./table-extras";
 import { Footnote } from "./nodes/footnote";
 import { CjkBold, CjkItalic, CjkStrike } from "./marks";
 
 /**
- * 編輯器的 schema：只包含 `@marktwain/schema` 認得的節點與標記（對等測試會驗證）。
- * 不含任何畫面相關的程式（NodeView、工具列），所以可以在沒有 DOM 的測試裡使用。
+ * Schema of the editor, only nodes and marks known to @marktwain/schema, checked by the parity test.
+ * It holds no view code such as node views or toolbars, so it can run in tests without a DOM.
  */
 export type SchemaExtensionOptions = {
-  /** 點擊公式時呼叫（編輯器的畫面層用來開啟編輯對話框）；測試與純 schema 用途不需要 */
+  /** Called when a formula is clicked, the view layer uses it to open the edit dialog. Not needed in tests or pure schema use. */
   onMathClick?: (kind: "inline" | "block", latex: string, pos: number) => void;
 };
 
@@ -27,11 +28,11 @@ export function createSchemaExtensions(options: SchemaExtensionOptions = {}): Ex
   return [
     StarterKit.configure({
       heading: { levels: [1, 2, 3, 4] },
-      // 換成輸入規則適用中文的版本（見 marks.ts）
+      // Replaced with versions whose input rules work for Chinese, see marks.ts
       bold: false,
       italic: false,
       strike: false,
-      // 我們的 schema 沒有底線；連結不自動偵測、不在點擊時開啟（離線編輯器）
+      // Our schema has no underline, links are not detected automatically and do not open on click, since the editor is offline
       underline: false,
       link: { openOnClick: false, autolink: false, linkOnPaste: false },
     }),
@@ -44,9 +45,11 @@ export function createSchemaExtensions(options: SchemaExtensionOptions = {}): Ex
       blockOptions: onMathClick ? { onClick: (node, pos) => onMathClick("block", node.attrs.latex, pos) } : undefined,
     }),
     MathInputRules,
-    Table.configure({ resizable: false }),
+    // Columns can be dragged, TableExtras copies the widths into the document
+    Table.configure({ resizable: true, allowTableNodeSelection: true }),
+    TableExtras,
     TableRow,
-    // 儲存格只有一個段落（管線表格沒有多段儲存格）
+    // A cell holds a single paragraph, pipe tables have no multi paragraph cells
     TableHeader.extend({ content: "paragraph" }),
     TableCell.extend({ content: "paragraph" }),
     Footnote,

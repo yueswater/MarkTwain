@@ -6,7 +6,7 @@ packages:
 # pnpm 12 does not run dependency install scripts unless they are allowed here.
 # Electron needs its postinstall to download the binary; @swc/core and esbuild
 # ship native binaries. The others do not need to build anything
-# (electron-winstaller is for Squirrel installers; we use NSIS).
+# electron-winstaller is for Squirrel installers and we use NSIS.
 allowBuilds:
   "@swc/core": true
   electron: true

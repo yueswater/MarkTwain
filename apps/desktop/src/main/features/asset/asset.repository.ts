@@ -1,6 +1,6 @@
 import type { Database } from "../../infra/db";
 
-/** files 資料表的讀寫：專案內的二進位檔（圖片等）。 */
+/** Read and write of the files table, binary files of a project such as images. */
 export class AssetRepository {
   constructor(private readonly db: Database) {}
 
@@ -9,6 +9,11 @@ export class AssetRepository {
       "INSERT INTO files (path, data, updated_at) VALUES (?, ?, ?) ON CONFLICT(path) DO UPDATE SET data = excluded.data, updated_at = excluded.updated_at",
       [path, data, updatedAt],
     );
+  }
+
+  /** Every stored file, used to place images in a build directory. */
+  list(): { path: string; data: Uint8Array }[] {
+    return this.db.all<{ path: string; data: Uint8Array }>("SELECT path, data FROM files WHERE path != 'config.yml'");
   }
 
   get(path: string): Uint8Array | undefined {

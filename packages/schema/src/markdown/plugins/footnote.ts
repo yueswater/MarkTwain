@@ -4,9 +4,9 @@ type CoreState = InstanceType<MarkdownItInstance["core"]["State"]>;
 type Token = CoreState["tokens"][number];
 
 /**
- * markdown-it-footnote 把定義放在文件結尾的獨立區塊，與引用分開。
- * 我們的模型把腳註內容放在引用節點上，所以在它之後把定義的原文塞回引用，
- * 並移除定義區塊。
+ * markdown-it-footnote puts definitions in a separate block at the end of the document, apart from references.
+ * Our model keeps the footnote content on the reference node, so after it runs the source of each definition is put back into its reference
+ * and the definition block is removed.
  */
 function resolveFootnotes(state: CoreState): void {
   const notes = new Map<number, string>();

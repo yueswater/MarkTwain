@@ -9,10 +9,19 @@
   },
   "filter": {
     "project": "MarkTwain project",
-    "image": "Images"
+    "image": "Images",
+    "pdf": "PDF document"
   },
   "openImage": {
     "title": "Choose an image",
     "button": "Insert"
+  },
+  "savePdf": {
+    "title": "Export PDF",
+    "button": "Export"
+  },
+  "exportFolder": {
+    "title": "Choose where to export the project",
+    "button": "Export here"
   }
 }

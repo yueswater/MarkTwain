@@ -4,7 +4,7 @@ import type { MarkdownItInstance } from "../markdown-it";
 
 type StateBlock = InstanceType<MarkdownItInstance["block"]["State"]>;
 
-/** 開頭的圍欄：三個以上的冒號，後面接屬性或一個單字。 */
+/** Opening fence, three or more colons followed by attributes or one word. */
 const OPENING = /^(:{3,})\s*(\S.*)$/;
 const CLOSING = /^:{3,}\s*$/;
 
@@ -20,14 +20,14 @@ function parseOpening(rest: string): Attributes | null {
 }
 
 /**
- * 圍欄 div：
+ * Fenced div:
  *
  *     ::: {#fig:row .figrow}
- *     …內容…
+ *     …content…
  *     :::
  *
- * 可以巢狀（以開頭與結尾的行數配對）；程式碼圍欄裡的 `:::` 不算。
- * 沒有結尾時不是 div。與 `splitBlocks` 的規則一致。
+ * It may nest, matched by opening and closing lines, and a ::: inside a code fence does not count.
+ * Without a closing line it is not a div. Same rule as splitBlocks.
  */
 function div(state: StateBlock, startLine: number, endLine: number, silent: boolean): boolean {
   if ((state.sCount[startLine] ?? 0) - state.blkIndent >= 4) return false;

@@ -4,9 +4,9 @@ import { Italic } from "@tiptap/extension-italic";
 import { Strike } from "@tiptap/extension-strike";
 
 /**
- * 中文與日文沒有空白分詞，所以「這是**重點**內文」的 `**` 前面是文字而不是空白。
- * TipTap 預設的強調輸入規則要求前面是行首或空白，在中文裡幾乎不會觸發；
- * 這裡去掉那個條件，改用 lookbehind 避免 `**` 的第一個 `*` 被當成斜體；內容的頭尾不能是空白（`2 * 3 * `不是斜體）。
+ * Chinese and Japanese have no spaces between words, so the ** in text followed by bold and more text is preceded by a character and not a space.
+ * The default emphasis input rules of TipTap need a line start or a space before the marker and almost never fire in Chinese.
+ * The prefix condition is dropped and a lookbehind keeps the first star of ** from becoming italic. The content may not start or end with a space.
  */
 export const BOLD_INPUT = /(\*\*(?!\s)([^*]*[^*\s])\*\*)$/;
 export const ITALIC_INPUT = /((?<!\*)\*(?![\s*])([^*]*[^*\s])\*)$/;

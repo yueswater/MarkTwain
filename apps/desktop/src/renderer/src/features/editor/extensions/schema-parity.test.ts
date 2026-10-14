@@ -6,8 +6,8 @@ import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
 import { createSchemaExtensions } from "./schema-extensions";
 
-// 編輯器（TipTap）的 schema 與 `@marktwain/schema` 必須對得上：
-// 存檔時編輯器的 JSON 會交給 serializeMarkdown，載入時 parseMarkdown 的 JSON 會交給編輯器。
+// The schema of the editor in TipTap must match @marktwain/schema.
+// On save the JSON of the editor goes to serializeMarkdown, and on load the JSON from parseMarkdown goes to the editor.
 const tiptapSchema = getSchema(createSchemaExtensions());
 
 const schemaDir = dirname(createRequire(__filename).resolve("@marktwain/schema/package.json"));

@@ -1,23 +1,23 @@
-/** 依序編號的目標：圖、表、公式、程式碼。 */
+/** Targets numbered in sequence, figures, tables, equations and listings. */
 export type CountedTarget = { kind: "fig" | "tbl" | "eq" | "lst"; label: string };
 
-/** 引用時顯示標題文字的目標：章與節。 */
+/** Targets whose title is shown when referenced, chapters and sections. */
 export type HeadingTarget = { kind: "cha" | "sec"; label: string; text: string };
 
 export type Target = CountedTarget | HeadingTarget;
 
 export type NumberingOptions = {
-  /** 公式是否編號，對應 config.yml 的 layout.equation-numbering */
+  /** Whether equations are numbered, matches layout.equation-numbering of config.yml */
   equationNumbering: "all" | "none";
-  /** 編號是否逐章重編，對應 layout.equation-per-chapter 一類的設定 */
+  /** Whether numbers restart per chapter, matches settings such as layout.equation-per-chapter */
   numberPerChapter: boolean;
 };
 
 export type NumberingResult = {
-  /** 標籤對應的顯示文字（編號或標題） */
+  /** Display text of a label, a number or a title */
   numbers: Map<string, string>;
-  /** 被引用但不存在的標籤 */
+  /** Labels that are referenced but do not exist */
   broken: string[];
-  /** 定義了不只一次的標籤 */
+  /** Labels defined more than once */
   duplicates: string[];
 };

@@ -1,7 +1,7 @@
 import { existsSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
-/** 找出 `electron-builder --dir` 產生的可執行檔；各平台與架構的資料夾名稱不同。 */
+/** Finds the executable made by electron-builder --dir, folder names differ per platform and architecture. */
 export function findPackagedExecutable(distDir: string): string {
   const candidates: string[] = [];
 

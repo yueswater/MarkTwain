@@ -25,8 +25,8 @@ export class AssetService {
   ) {}
 
   /**
-   * 把磁碟上的圖片存進專案，路徑由內容的雜湊決定（同一張圖只存一份），
-   * 所以專案可以整個搬走，文件裡的路徑仍然有效。
+   * Stores an image from disk in the project, the path comes from a hash of the content so one image is stored once.
+   * That makes a project movable while paths in documents stay valid.
    */
   importImage(filePath: string): string {
     const ext = extname(filePath).slice(1).toLowerCase();
@@ -49,7 +49,7 @@ export class AssetService {
     return path;
   }
 
-  /** 讀取專案內的檔案；沒有開啟的專案或找不到時回傳 null（給協定處理器用，不丟例外）。 */
+  /** Reads a project file, returns null instead of throwing when no project is open or the file is missing, for the protocol handler. */
   read(path: string): { data: Uint8Array; mime: string } | null {
     if (!this.session.isOpen) return null;
     const data = new AssetRepository(this.session.db).get(path);

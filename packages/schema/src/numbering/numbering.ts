@@ -5,8 +5,8 @@ function isHeading(target: Target): target is Extract<Target, { text: string }> 
 }
 
 /**
- * 依文件順序算出每個目標的顯示編號，並找出失效的引用與重複的標籤。
- * 編號只用於編輯器預覽；匯出時引用文字由模板產生（規格 4.4 節）。
+ * Computes the display number of every target in document order and finds broken references and duplicate labels.
+ * Numbers are only for the editor preview, on export the reference text comes from the template, see section 4.4 of the spec.
  */
 export function resolveNumbers(
   targets: Target[],

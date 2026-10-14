@@ -2,7 +2,7 @@ import { isLocale } from "../../../shared/i18n/locale";
 import { readJsonSafe, writeJson } from "../../utils/fs.util";
 import { DEFAULT_SETTINGS, type AppSettings } from "./settings.types";
 
-/** 設定檔的讀寫；整個功能裡唯一碰檔案的地方。 */
+/** Read and write of the settings file, the only place in this feature that touches files. */
 export class SettingsRepository {
   constructor(private readonly file: string) {}
 

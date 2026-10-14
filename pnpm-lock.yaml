@@ -202,6 +202,12 @@ importers:
       '@fontsource-variable/noto-sans-tc':
         specifier: ^5.3.1
         version: 5.3.1
+      '@marktwain/build':
+        specifier: workspace:*
+        version: link:../../packages/build
+      '@marktwain/render':
+        specifier: workspace:*
+        version: link:../../packages/render
       '@marktwain/schema':
         specifier: workspace:*
         version: link:../../packages/schema
@@ -305,6 +311,35 @@ importers:
         specifier: ^7.3.7
         version: 7.3.7(@types/node@22.20.5)(jiti@2.7.0)(lightningcss@1.33.0)(tsx@4.23.15)(yaml@2.9.1)
 
+  packages/build:
+    dependencies:
+      '@marktwain/render':
+        specifier: workspace:*
+        version: link:../render
+      '@marktwain/schema':
+        specifier: workspace:*
+        version: link:../schema
+      yaml:
+        specifier: ^2.9.1
+        version: 2.9.1
+    devDependencies:
+      '@types/node':
+        specifier: ^22.20.5
+        version: 22.20.5
+
+  packages/render:
+    dependencies:
+      '@marktwain/schema':
+        specifier: workspace:*
+        version: link:../schema
+      tex2typst:
+        specifier: ^0.6.2
+        version: 0.6.2
+    devDependencies:
+      '@types/node':
+        specifier: ^22.20.5
+        version: 22.20.5
+
   packages/schema:
     dependencies:
       markdown-it:
@@ -338,6 +373,22 @@ importers:
       fast-check:
         specifier: ^4.10.2
         version: 4.10.2
+
+  tools/bench:
+    dependencies:
+      '@marktwain/build':
+        specifier: workspace:*
+        version: link:../../packages/build
+      '@marktwain/schema':
+        specifier: workspace:*
+        version: link:../../packages/schema
+    devDependencies:
+      '@types/node':
+        specifier: ^22.0.0
+        version: 22.20.5
+      tsx:
+        specifier: ^4.20.0
+        version: 4.23.15
 
   tools/fetch-templates:
     devDependencies:
@@ -4732,6 +4783,9 @@ packages:
   test-exclude@7.0.2:
     resolution: {integrity: sha512-u9E6A+ZDYdp7a4WnarkXPZOx8Ilz46+kby6p1yZ8zsGTz9gYa6FIS7lj2oezzNKmtdyyJNNmmXDppga5GB7kSw==}
     engines: {node: '>=18'}
+
+  tex2typst@0.6.2:
+    resolution: {integrity: sha512-KQwpKUZ3kWI/cBEChFhVPJJV5/61R2Eb0epL6AGlQTKdto4OZer9wX4F2mbTsThVJPeLP4Ax0CkUk23IdcgnGQ==}
 
   tiny-async-pool@1.3.0:
     resolution: {integrity: sha512-01EAw5EDrcVrdgyCLgoSPvqznC0sVxDSVeiOz09FUpjh71G79VCqneOr+xvt7T1r76CF6ZZfPjHorN2+d+3mqA==}
@@ -9676,6 +9730,8 @@ snapshots:
       '@istanbuljs/schema': 0.1.6
       glob: 10.5.0
       minimatch: 10.2.6
+
+  tex2typst@0.6.2: {}
 
   tiny-async-pool@1.3.0:
     dependencies:

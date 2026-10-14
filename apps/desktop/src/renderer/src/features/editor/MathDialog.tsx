@@ -16,7 +16,7 @@ import { Textarea } from "@/components/ui/textarea";
 export type MathTarget = {
   kind: "inline" | "block";
   latex: string;
-  /** 編輯既有公式時的位置；新增時為 null */
+  /** Position when editing an existing formula, null when inserting */
   pos: number | null;
 };
 
@@ -28,7 +28,7 @@ type Props = {
   onRestoreFocus: () => void;
 };
 
-/** 以 KaTeX 渲染；語法錯誤時回傳 null。 */
+/** Renders with KaTeX, returns null on a syntax error. */
 export function renderLatex(latex: string, displayMode: boolean): string | null {
   try {
     return katex.renderToString(latex, { displayMode, throwOnError: true, output: "htmlAndMathml" });

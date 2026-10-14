@@ -6,10 +6,10 @@ import { findPackagedExecutable } from "./find-app";
 
 const dist = resolve(__dirname, "../dist");
 
-// 在打包後的程式裡，經由真正的 IPC 建立、儲存、關閉、重新開啟專案。
-// 這同時驗證 `node:sqlite` 在每個平台的 Electron 裡可用（規格第 3 節）。
+// Runs inside the packaged app through real IPC, creating, saving, closing and reopening a project.
+// This also checks that node:sqlite works in Electron on every platform.
 test("a project survives being created, saved, closed, and reopened", async () => {
-  // 路徑含空白與中文（規格 9.1 節規則 2）
+  // Path contains a space and Chinese characters
   const dir = mkdtempSync(join(tmpdir(), "marktwain 專案 "));
   const file = join(dir, "我的論文.marktwain");
   const args = [`--user-data-dir=${join(dir, "userData")}`, "--lang=en-US"];

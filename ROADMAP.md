@@ -2,13 +2,13 @@
 
 MarkTwain is developed against version milestones. Each version maps to a [GitHub Milestone](../../milestones), and the work items are tracked as issues.
 
-Current version: v0.2.0.
+Current version: v0.3.0.
 
 | Version | Theme | Status |
 |---|---|---|
 | [v0.1.0](#v010--foundation) | Foundation | Released |
 | [v0.2.0](#v020--editor) | Editor | Released |
-| [v0.3.0](#v030--typst-output) | Typst output | Not started |
+| [v0.3.0](#v030--typst-output) | Typst output | Released |
 | [v0.4.0](#v040--version-control) | Version control | Not started |
 | [v0.5.0](#v050--latex-output) | LaTeX output | Not started |
 | [v0.6.0](#v060--thesis-features) | Thesis features | Not started |
@@ -57,6 +57,8 @@ The first version that produces a PDF.
 - PDF preview and structured errors that point back to the source block
 - A formula that fails to convert falls back to its source text instead of aborting the build
 - Load-test foundation: a bench server and Locust scenarios (long-thesis compile, concurrent compile), a baseline report, and performance budgets
+- Export: the PDF, and the whole Typst project as a one way copy that compiles without MarkTwain
+- Word-like tables: three-line or grid style, merged cells, column widths, row heights, horizontal and vertical alignment
 
 **Done when:** a sample thesis builds a PDF for every supported school.
 

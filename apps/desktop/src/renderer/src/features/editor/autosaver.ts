@@ -1,8 +1,8 @@
 export type SaveStatus = "idle" | "dirty" | "saving" | "saved" | "error";
 
 /**
- * 防抖儲存：編輯後等一小段時間再存，切換文件或關閉前可立即 `flush`。
- * 與 React 無關，方便測試；儲存一律依序進行，後面的內容不會被前面的覆蓋。
+ * Debounced saving, waits a short time after an edit and flushes at once when switching documents or closing.
+ * Independent of React for easy testing. Saves run in order so later content is never overwritten by earlier content.
  */
 export class Autosaver {
   private timer: ReturnType<typeof setTimeout> | null = null;
@@ -15,7 +15,7 @@ export class Autosaver {
     private readonly delayMs = 800,
   ) {}
 
-  /** 標記有未存的變更；`read` 會在真正儲存時才呼叫，取得當下最新的文字。 */
+  /** Marks unsaved changes, read is called only when saving to get the latest text. */
   schedule(read: () => string): void {
     this.pending = read;
     this.onStatus("dirty");
@@ -23,7 +23,7 @@ export class Autosaver {
     this.timer = setTimeout(() => void this.flush(), this.delayMs);
   }
 
-  /** 立刻儲存未存的變更；等到所有進行中的儲存都結束才回傳。 */
+  /** Saves pending changes at once and resolves when all running saves are done. */
   flush(): Promise<void> {
     if (this.timer) {
       clearTimeout(this.timer);
@@ -39,7 +39,7 @@ export class Autosaver {
         await this.save(read());
         if (!this.pending) this.onStatus("saved");
       } catch {
-        // 保留這次的內容，下一次 flush 會重試（除非已有更新的內容）
+        // Keep this content and retry on the next flush, unless newer content exists
         this.pending ??= read;
         this.onStatus("error");
       }

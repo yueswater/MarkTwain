@@ -1,4 +1,4 @@
-/** 論文裡的文件種類（規格 4.1 節與 5 節的檔案對應）。 */
+/** Kinds of documents in a thesis, see the file mapping in sections 4.1 and 5 of the spec. */
 export const DocumentKind = {
   Abstract: "abstract",
   Acknowledgement: "acknowledgement",
@@ -9,14 +9,14 @@ export const DocumentKind = {
 
 export type DocumentKind = (typeof DocumentKind)[keyof typeof DocumentKind];
 
-/** 每個專案最多只能有一份的種類。 */
+/** Kinds that a project may have at most once. */
 export const SINGLETON_KINDS: readonly DocumentKind[] = [
   DocumentKind.Abstract,
   DocumentKind.Acknowledgement,
   DocumentKind.Denotation,
 ];
 
-/** 輸出時的順序：前置（摘要、誌謝、符號說明）、各章、附錄。 */
+/** Output order, front matter such as abstract, acknowledgements and notation, then chapters, then appendices. */
 export const DOCUMENT_KIND_ORDER: readonly DocumentKind[] = [
   DocumentKind.Abstract,
   DocumentKind.Acknowledgement,

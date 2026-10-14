@@ -19,6 +19,8 @@ import {
 } from "./AtomDialogs";
 import { CaptionDialog, type CaptionTarget } from "./CaptionDialog";
 import { FigureDialog, type FigureTarget } from "./FigureDialog";
+import { RowHeightDialog } from "./RowHeightDialog";
+import { currentRowHeight, setRowHeight } from "./table-commands";
 import { MathDialog, type MathTarget } from "./MathDialog";
 import { MarkdownPaste } from "./extensions/markdown-paste";
 import { RefDecorations, REFS_CHANGED } from "./extensions/ref-decorations";
@@ -26,10 +28,10 @@ import { useLabelIndex } from "./use-label-index";
 import { findUnlabeledTargets, newLabel, type UnlabeledTarget } from "./unlabeled-targets";
 import { Toolbar } from "./Toolbar";
 
-type Props = { documentId: string };
+type Props = { documentId: string; scrollTo?: { block: number; nonce: number } | null };
 
-/** 載入一份文件；換文件時由呼叫端以 `key` 重新掛載，讓每份文件有獨立的編輯器與復原紀錄。 */
-export function DocumentEditor({ documentId }: Props) {
+/** Loads one document. The caller remounts with key when the document changes, so each document has its own editor and undo history. */
+export function DocumentEditor({ documentId, scrollTo }: Props) {
   const { t } = useTranslation();
   const [doc, setDoc] = useState<DocumentData | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -43,7 +45,7 @@ export function DocumentEditor({ documentId }: Props) {
     return () => {
       cancelled = true;
     };
-    // 文件 id 改變就重新載入；t 的變動不需要
+    // Reload when the document id changes, a change of t does not matter
   }, [documentId]);
 
   if (error) {
@@ -54,18 +56,19 @@ export function DocumentEditor({ documentId }: Props) {
     );
   }
   if (!doc) return null;
-  return <EditorSurface doc={doc} />;
+  return <EditorSurface doc={doc} scrollTo={scrollTo ?? null} />;
 }
 
 const ATOM_TYPES = new Set(["footnote", "citation", "crossRef"]);
 
-function EditorSurface({ doc }: { doc: DocumentData }) {
+function EditorSurface({ doc, scrollTo }: { doc: DocumentData; scrollTo: { block: number; nonce: number } | null }) {
   const { t } = useTranslation("editor");
   const { t: tCommon } = useTranslation();
   const [status, setStatus] = useState<SaveStatus>("idle");
   const [math, setMath] = useState<MathTarget | null>(null);
   const [atom, setAtom] = useState<AtomTarget | null>(null);
   const [caption, setCaption] = useState<CaptionTarget | null>(null);
+  const [rowHeight, setRowHeightState] = useState<string | null>(null);
   const [figure, setFigure] = useState<FigureTarget | null>(null);
   const [importError, setImportError] = useState<string | null>(null);
   const [unlabeled, setUnlabeled] = useState<UnlabeledTarget[]>([]);
@@ -105,7 +108,7 @@ function EditorSurface({ doc }: { doc: DocumentData }) {
       onUpdate: ({ editor: e }) => autosaver.schedule(() => serializeMarkdown(e.getJSON())),
       editorProps: {
         attributes: { "aria-label": doc.title || doc.kind, spellcheck: "false" },
-        // 點到腳註、引用、交叉引用時開啟編輯對話框
+        // Open the edit dialog when a footnote, citation or cross-reference is clicked
         handleClickOn: (_view, _pos, node, nodePos, _event, direct) => {
           if (direct && node.type.name === "figure") {
             setFigure({
@@ -137,16 +140,29 @@ function EditorSurface({ doc }: { doc: DocumentData }) {
     [doc.id],
   );
 
-  // 編號改變時，通知編輯器重算交叉引用的顯示文字
+  // Move the cursor to the top level block named by a build error
+  useEffect(() => {
+    if (!editor || editor.isDestroyed || !scrollTo) return;
+    let pos = 0;
+    editor.state.doc.forEach((_node, offset, index) => {
+      if (index === scrollTo.block) pos = offset;
+    });
+    const node = editor.state.doc.nodeAt(pos);
+    const chain = editor.chain().focus();
+    // Atom blocks such as figures have no text, so select the whole node
+    (node?.isAtom ? chain.setNodeSelection(pos) : chain.setTextSelection(Math.min(pos + 1, editor.state.doc.content.size))).scrollIntoView().run();
+  }, [editor, scrollTo]);
+
+  // Tell the editor to recompute the display text of cross-references when numbers change
   useEffect(() => {
     if (!editor || editor.isDestroyed) return;
     editor.view.dispatch(editor.state.tr.setMeta(REFS_CHANGED, true));
   }, [editor, labels]);
 
-  // 切換文件、關閉專案或關閉視窗前，把未存的變更存下來
+  // Save pending changes before switching documents, closing the project or closing the window
   useEffect(() => {
     const flush = () => void flushRef.current.flush();
-    // Ctrl／⌘ + S：立刻存檔（平常是停手後自動存）
+    // Ctrl or Cmd plus S saves at once, normally saving happens after typing stops
     const onKeyDown = (event: KeyboardEvent) => {
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "s") {
         event.preventDefault();
@@ -173,7 +189,7 @@ function EditorSurface({ doc }: { doc: DocumentData }) {
     }
   };
 
-  /** 新增（pos 為 null）或更新既有的原子節點。 */
+  /** Adds a new atom node, or updates an existing one when pos is set. */
   const writeAtom = (name: string, attrs: Record<string, unknown>, pos: number | null) => {
     const chain = editor.chain().focus();
     if (pos === null) chain.insertContent({ type: name, attrs }).run();
@@ -197,7 +213,7 @@ function EditorSurface({ doc }: { doc: DocumentData }) {
     let label: string;
     if (choice.kind === "existing") label = choice.label;
     else {
-      // 替還沒有標籤的目標加上標籤；位置不會因此改變，接著再寫入引用
+      // Add a label to a target that has none, positions do not change, then write the reference
       label = newLabel(
         choice.labelKind,
         editor.state.doc,
@@ -223,6 +239,7 @@ function EditorSurface({ doc }: { doc: DocumentData }) {
         editor={editor}
         onInsertMath={(kind) => setMath({ kind, latex: "", pos: null })}
         onInsertAtom={openAtom}
+        onEditRowHeight={() => setRowHeightState(currentRowHeight(editor))}
         onInsertImage={() => {
           setImportError(null);
           api
@@ -282,6 +299,14 @@ function EditorSurface({ doc }: { doc: DocumentData }) {
             ).run();
           }}
           onClose={() => setMath(null)}
+          onRestoreFocus={() => editor.commands.focus()}
+        />
+      )}
+      {rowHeight !== null && (
+        <RowHeightDialog
+          initial={rowHeight}
+          onSubmit={(height) => setRowHeight(editor, height)}
+          onClose={() => setRowHeightState(null)}
           onRestoreFocus={() => editor.commands.focus()}
         />
       )}

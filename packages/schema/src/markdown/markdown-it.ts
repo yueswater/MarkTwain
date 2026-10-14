@@ -12,20 +12,20 @@ import { mathPlugin } from "./plugins/math";
 import { tablesPlugin } from "./plugins/tables";
 
 /**
- * 方言的 markdown-it 實例（規格 4.3 節）。後續的小節會在這裡加入腳註、
- * 定義清單與自寫的外掛。關閉原始 HTML 與自動連結：內容一律當作文字。
+ * The markdown-it instance of the dialect, see section 4.3 of the spec. Later sections add footnotes,
+ * definition lists and the hand written plugins here. Raw HTML and auto links are off, content is always text.
  */
 export type MarkdownItInstance = InstanceType<typeof MarkdownIt>;
 
 export function createMarkdownIt(): MarkdownItInstance {
   const md = new MarkdownIt({ html: false, linkify: false, typographer: false, breaks: false });
-  // 路徑與網址保持原樣：預設會把非 ASCII 字元百分比編碼（`圖.png` 變成 `%E5%9C%96.png`），
-  // 專案裡的圖片路徑要原樣保存與寫回。
+  // Paths and URLs stay as they are, by default non ASCII characters are percent encoded,
+  // and image paths in a project must be stored and written back unchanged.
   md.normalizeLink = (url) => url;
   md.normalizeLinkText = (url) => url;
 
   return md
-    .use(cjkFriendly) // 說**「重點」**：中文標點緊貼強調符號時仍成立（#71）
+    .use(cjkFriendly) // Chinese punctuation next to emphasis markers still works, see #71
     .use(attrs)
     .use(footnote)
     .use(deflistPlugin)

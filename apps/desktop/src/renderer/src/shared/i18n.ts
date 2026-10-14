@@ -10,6 +10,6 @@ export async function initI18n(locale: Locale): Promise<void> {
     lng: locale,
     fallbackLng: DEFAULT_LOCALE,
     defaultNS: DEFAULT_NAMESPACE,
-    interpolation: { escapeValue: false }, // React 已經處理跳脫
+    interpolation: { escapeValue: false }, // React already escapes
   });
 }

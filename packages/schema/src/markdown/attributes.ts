@@ -1,4 +1,4 @@
-/** pandoc 風格的屬性：`{#id .class key=value key="含 空白"}`（規格 4.3 節）。 */
+/** Attributes in pandoc style, {#id .class key=value key="with space"}, see section 4.3 of the spec. */
 export type Attributes = {
   id: string | null;
   classes: string[];
@@ -9,8 +9,8 @@ const KEY = /^[A-Za-z_][A-Za-z0-9_-]*$/;
 const BARE_VALUE = /^[^\s"{}\\]+$/;
 
 /**
- * 解析大括號內的內容（不含大括號本身）。格式錯誤時回傳 null，
- * 讓呼叫端把整段當成一般文字，而不是丟出例外。
+ * Parses the content between braces, without the braces themselves. Returns null on bad format,
+ * so the caller can treat the whole text as plain text instead of throwing.
  */
 export function parseAttributes(inner: string): Attributes | null {
   const result: Attributes = { id: null, classes: [], props: {} };
@@ -85,7 +85,7 @@ function formatValue(value: string): string {
   return `"${value.replace(/\\/g, "\\\\").replace(/"/g, '\\"')}"`;
 }
 
-/** 規範形式：id、class（依序）、key=value（key 依字母順序）。沒有屬性時回傳空字串。 */
+/** Canonical form, id, then classes in order, then key=value with keys sorted alphabetically. Returns an empty string when there are no attributes. */
 export function formatAttributes(attributes: Attributes): string {
   const parts: string[] = [];
   if (attributes.id !== null) parts.push(`#${attributes.id}`);

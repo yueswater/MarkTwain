@@ -4,7 +4,7 @@ import { createLabel, isValidLabel, type LabelKind } from "@marktwain/schema";
 export type UnlabeledTarget = {
   pos: number;
   kind: LabelKind;
-  /** 給人看的簡短說明（標題文字、圖說、公式原文…） */
+  /** Short description for people, such as heading text, caption or formula source */
   text: string;
 };
 
@@ -34,7 +34,7 @@ function describe(node: PmNode): string {
   return text.replace(/\s+/g, " ").trim().slice(0, 60);
 }
 
-/** 文件裡可以被引用、但還沒有標籤的目標（引用它時才自動加上標籤）。 */
+/** Targets in the document that can be referenced but have no label yet, a label is added when one is referenced. */
 export function findUnlabeledTargets(doc: PmNode): UnlabeledTarget[] {
   const found: UnlabeledTarget[] = [];
   doc.descendants((node, pos) => {
@@ -42,12 +42,12 @@ export function findUnlabeledTargets(doc: PmNode): UnlabeledTarget[] {
     if (kind && !isValidLabel(String(node.attrs.label ?? ""))) {
       found.push({ pos, kind, text: describe(node) });
     }
-    return node.type.name !== "figureGroup"; // 子圖不能單獨引用
+    return node.type.name !== "figureGroup"; // Sub figures cannot be referenced on their own
   });
   return found;
 }
 
-/** 文件裡所有已存在的標籤（含尚未儲存的），用來避免新標籤重複。 */
+/** All labels that exist in the document, including unsaved ones, to keep new labels unique. */
 export function existingLabels(doc: PmNode, others: readonly string[]): Set<string> {
   const labels = new Set<string>(others);
   doc.descendants((node) => {

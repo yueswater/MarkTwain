@@ -26,7 +26,7 @@ describe("LabelService.resolve", () => {
   });
 
   it("圖表公式逐章編號，沒標籤的也佔編號；章標題顯示標題文字", () => {
-    documents.seedDefaults(); // id-2 = 第 1 章
+    documents.seedDefaults(); // id-2 is chapter 1
     documents.save("id-2", "# 緒論 {#cha:intro}\n\n![一](a.png){#fig:a}\n\n![二](b.png)\n\n![三](c.png){#fig:c}\n");
     const second = documents.create("chapter");
     documents.save(second.id, "# 方法\n\n![四](d.png){#fig:d}\n");

@@ -7,7 +7,7 @@ import { SettingsRepository } from "./settings.repository";
 let dir: string;
 
 beforeEach(() => {
-  // 路徑刻意含空白與中文（規格 9.1 節規則 2）
+  // Path deliberately contains a space and Chinese characters
   dir = mkdtempSync(join(tmpdir(), "marktwain 設定 "));
 });
 

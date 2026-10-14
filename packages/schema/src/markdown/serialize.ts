@@ -2,11 +2,12 @@ import { Node } from "prosemirror-model";
 import { MarkdownSerializer, type MarkdownSerializerState } from "prosemirror-markdown";
 import { formatAttributes } from "./attributes";
 import { escapeLineStart, escapeText } from "./escape";
+import { formatCells, formatHeights, normalizeWidths, type CellExtra } from "./table-extras";
 import { MarkName, NodeName } from "../model/names";
 import { schema } from "../model/schema";
 import type { DocJson } from "./parse";
 
-/** 圍欄要比內容裡最長的反引號序列再長一個。 */
+/** A fence is one longer than the longest backtick run in the content. */
 function fenceFor(content: string): string {
   const runs = content.match(/`{3,}/g);
   if (!runs) return "```";
@@ -25,9 +26,9 @@ function backticksFor(node: Node, side: -1 | 1): string {
 }
 
 /**
- * 清單是否可以用緊湊格式（項目之間不空行）：每個項目只有一個段落，
- * 後面最多接巢狀清單。有多段的項目必須用鬆散格式，否則重新解析時
- * 第二段會被併進第一段。
+ * Whether a list can use the compact format with no blank line between items, every item has a single paragraph
+ * followed at most by a nested list. Items with several paragraphs need the loose format, otherwise the second paragraph
+ * is merged into the first when parsed again.
  */
 function isTight(list: Node): boolean {
   let tight = true;
@@ -41,10 +42,10 @@ function isTight(list: Node): boolean {
   return tight;
 }
 
-/** 行內公式的內容：修剪、換行變空白、把沒跳脫的 `$` 跳脫（否則會提前結束公式）。 */
+/** Content of an inline formula, trimmed, newlines become spaces, and a $ that is not escaped is escaped, otherwise it would end the formula early. */
 function inlineLatex(latex: string): string {
   let flat = latex.replace(/\s*\n\s*/g, " ").trim();
-  // 儲存格裡的 `|` 會被當成欄位分隔；改寫成等價的 \vert{}
+  // A | inside a cell is a column separator, rewrite it as the equivalent \vert{}
   if (inTableCell) flat = flat.replace(/\|/g, "\\vert{}");
   let out = "";
   for (let i = 0; i < flat.length; i += 1) {
@@ -61,17 +62,17 @@ function inlineLatex(latex: string): string {
 
 const SIMPLE_KEY = /^[A-Za-z0-9_](?:[A-Za-z0-9_]|[:.\-/+](?=[A-Za-z0-9_]))*$/;
 
-/** 正在輸出表格儲存格：`|` 要跳脫、硬換行改成空白、公式裡的 `|` 改寫。 */
+/** Writing a table cell now, | must be escaped, hard breaks become spaces and | in formulas is rewritten. */
 let inTableCell = false;
 
-/** 腳註在這次序列化中的內容，依出現順序；序列化是同步的，所以模組層級的暫存是安全的。 */
+/** Footnote content of this serialization in order of appearance, serializing is synchronous so module level storage is safe. */
 let footnotes: string[] = [];
 
 function keyToken(key: string, forceBraces: boolean): string {
   return forceBraces || !SIMPLE_KEY.test(key) ? `@{${key}}` : `@${key}`;
 }
 
-/** 前一個與後一個兄弟節點的文字邊界，用來決定敘述式引用要不要加大括號。 */
+/** Text edges of the previous and next sibling, to decide whether a narrative citation needs braces. */
 function neighbors(parent: Node, index: number): { previousWord: boolean; nextConflicts: boolean } {
   const previous = index > 0 ? parent.child(index - 1) : null;
   const next = index + 1 < parent.childCount ? parent.child(index + 1) : null;
@@ -80,24 +81,23 @@ function neighbors(parent: Node, index: number): { previousWord: boolean; nextCo
   return { previousWord, nextConflicts };
 }
 
-/** 圖片的目的地：含空白或括號時用 `<…>`。 */
+/** Destination of an image, <…> is used when it contains spaces or parentheses. */
 function destination(src: string): string {
   return /[\s()<>]/.test(src) ? `<${src}>` : src;
 }
 
-/** 圖的標題：單行、修剪、跳脫中括號（`![…]` 裡的括號要成對）。 */
+/** Caption of a figure, one line, trimmed, with brackets escaped since brackets inside ![…] must be paired. */
 function figureCaption(caption: string): string {
   return caption.replace(/\s*\n\s*/g, " ").trim().replace(/([[\]])/g, "\\$1");
 }
 
-/** 讓目前的區塊在下一次寫入前只換一行（而不是空一行）；prosemirror-markdown 的型別沒有公開它。 */
+/** Makes the current block break only one line before the next write, not leave a blank line. The types of prosemirror-markdown do not expose it. */
 function endLine(state: MarkdownSerializerState): void {
   (state as unknown as { flushClose(size: number): void }).flushClose(1);
 }
 
-type CellText = { text: string; align: string | null };
 
-/** 把一個儲存格的段落輸出成單行文字；借用 state 的輸出緩衝，結束後還原。 */
+/** Writes the paragraph of a cell as one line of text, borrowing the output buffer of state and restoring it afterwards. */
 function renderCell(state: MarkdownSerializerState, paragraph: Node | null): string {
   if (!paragraph) return "";
   const internal = state as unknown as { out: string; delim: string; closed: unknown; atBlockStart: boolean };
@@ -198,27 +198,59 @@ const serializer = new MarkdownSerializer(
     },
 
     [NodeName.Table](state, node) {
-      const rows: CellText[][] = [];
-      node.forEach((tableRow) => {
-        const cells: CellText[] = [];
+      type Slot = { text: string; align: string | null; real: boolean };
+      const grid: (Slot | undefined)[][] = [];
+      const extras = new Map<string, CellExtra>();
+      const heights = new Map<number, string>();
+
+      node.forEach((tableRow, _offset, rowIndex) => {
+        const r = rowIndex + 1;
+        grid[rowIndex] ??= [];
+        const height = tableRow.attrs.height as string | null;
+        if (height) heights.set(r, height);
+        let c = 0;
         tableRow.forEach((cell) => {
-          cells.push({ text: renderCell(state, cell.firstChild), align: (cell.attrs.align as string | null) ?? null });
+          while (grid[rowIndex]?.[c]) c += 1;
+          const colspan = Math.max(1, Number(cell.attrs.colspan) || 1);
+          const rowspan = Math.max(1, Number(cell.attrs.rowspan) || 1);
+          const align = (cell.attrs.align as string | null) ?? null;
+          const valign = (cell.attrs.valign as string | null) ?? null;
+          for (let dr = 0; dr < rowspan; dr += 1) {
+            grid[rowIndex + dr] ??= [];
+            for (let dc = 0; dc < colspan; dc += 1) {
+              (grid[rowIndex + dr] as Slot[])[c + dc] =
+                dr === 0 && dc === 0 ? { text: renderCell(state, cell.firstChild), align, real: true } : { text: "", align: null, real: false };
+            }
+          }
+          const extra: CellExtra = {};
+          if (colspan > 1) extra.colspan = colspan;
+          if (rowspan > 1) extra.rowspan = rowspan;
+          if (valign) extra.valign = valign as CellExtra["valign"];
+          if (r > 1 && align) extra.align = align as CellExtra["align"];
+          if (Object.keys(extra).length > 0) extras.set(`${r}.${c + 1}`, extra);
+          c += colspan;
         });
-        rows.push(cells);
       });
 
-      const width = Math.max(1, ...rows.map((cells) => cells.length));
-      const pad = (cells: CellText[]): CellText[] => [
-        ...cells,
-        ...Array.from({ length: width - cells.length }, () => ({ text: "", align: null })),
-      ];
-      const line = (cells: CellText[]) => `| ${pad(cells).map((c) => c.text).join(" | ")} |`;
+      const width = Math.max(1, ...grid.map((cells) => cells.length));
+      const slot = (cells: (Slot | undefined)[], c: number): Slot => cells[c] ?? { text: "", align: null, real: false };
+      const line = (cells: (Slot | undefined)[]) =>
+        `| ${Array.from({ length: width }, (_, c) => slot(cells, c).text).join(" | ")} |`;
 
-      const header = pad(rows[0] ?? []);
+      const header = grid[0] ?? [];
+      const columnAlign = Array.from({ length: width }, (_, c) => slot(header, c).align);
+      // A body cell only needs its own entry when it differs from the column.
+      for (const [position, extra] of extras) {
+        const c = Number(position.split(".")[1]);
+        if (extra.align && extra.align === (columnAlign[c - 1] ?? null)) {
+          delete extra.align;
+          if (Object.keys(extra).length === 0) extras.delete(position);
+        }
+      }
       const lines = [
         line(header),
-        `| ${header.map((cell) => alignMarker(cell.align)).join(" | ")} |`,
-        ...rows.slice(1).map(line),
+        `| ${columnAlign.map((align) => alignMarker(align)).join(" | ")} |`,
+        ...grid.slice(1).map(line),
       ];
       state.text(lines.join("\n"), false);
       state.closeBlock(node);
@@ -226,7 +258,14 @@ const serializer = new MarkdownSerializer(
       const caption = String(node.attrs.caption).replace(/\s*\n\s*/g, " ").trim();
       const notes = String(node.attrs.notes).replace(/\s*\n\s*/g, " ").trim();
       const label = node.attrs.label as string | null;
-      const attributes = formatAttributes({ id: label, classes: [], props: notes ? { notes } : {} });
+      const props: Record<string, string> = {};
+      if (notes) props.notes = notes;
+      if (node.attrs.style === "grid") props.style = "grid";
+      const widths = normalizeWidths(String(node.attrs.widths ?? ""));
+      if (widths) props.widths = widths;
+      if (heights.size > 0) props.heights = formatHeights(heights);
+      if (extras.size > 0) props.cells = formatCells(extras);
+      const attributes = formatAttributes({ id: label, classes: [], props });
       if (caption || attributes) {
         state.write(`: ${[caption, attributes].filter(Boolean).join(" ")}`);
         state.closeBlock(node);
@@ -243,7 +282,7 @@ const serializer = new MarkdownSerializer(
     },
 
     [NodeName.DefinitionDescription](state, node) {
-      endLine(state); // 詞與說明之間只換一行
+      endLine(state); // Only one line between a term and its description
       state.wrapBlock("  ", ": ", node, () => state.renderContent(node));
     },
 
@@ -325,7 +364,7 @@ const serializer = new MarkdownSerializer(
         state.write(" ");
         return;
       }
-      // 段落結尾的換行沒有意義，不輸出
+      // A newline at the end of a paragraph is meaningless, not written
       for (let i = index + 1; i < parent.childCount; i += 1) {
         if (parent.child(i).type !== node.type) {
           state.write("\\\n");
@@ -335,7 +374,7 @@ const serializer = new MarkdownSerializer(
     },
 
     [NodeName.Text](state: MarkdownSerializerState, node, parent) {
-      // 這兩個成員在執行時存在，但 prosemirror-markdown 的型別宣告把它們標為內部
+      // These two members exist at run time but the type declaration of prosemirror-markdown marks them as internal
       const internal = state as unknown as { atBlockStart: boolean; atBlank(): boolean };
       const startOfLine = internal.atBlockStart || internal.atBlank();
       const inHeading = parent.type.name === NodeName.Heading;
@@ -366,7 +405,7 @@ const serializer = new MarkdownSerializer(
   },
 );
 
-/** 把 ProseMirror／TipTap 的 JSON 序列化成規範形式的 Markdown。文件結尾有一個換行。 */
+/** Serializes ProseMirror or TipTap JSON into Markdown in canonical form. The document ends with one newline. */
 export function serializeMarkdown(doc: DocJson): string {
   footnotes = [];
   const body = serializer.serialize(Node.fromJSON(schema, doc));

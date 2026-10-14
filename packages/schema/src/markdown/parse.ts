@@ -4,13 +4,26 @@ import { MarkName, NodeName } from "../model/names";
 import { schema } from "../model/schema";
 import { createMarkdownIt } from "./markdown-it";
 
-/** 欄位對齊：markdown-it 把 `:---:` 變成儲存格的 style 屬性。 */
-function cellAttrs(token: Token): { align: string | null } {
+/** Cell attributes, column alignment comes from the style attribute that markdown-it sets, the rest from the caption line. */
+function cellAttrs(token: Token): {
+  align: string | null;
+  valign: string | null;
+  colspan: number;
+  rowspan: number;
+  colwidth: number[] | null;
+} {
   const match = /text-align:\s*(left|center|right)/.exec(String(token.attrGet("style") ?? ""));
-  return { align: match?.[1] ?? null };
+  const meta = (token.meta ?? {}) as Partial<{ colspan: number; rowspan: number; align: string | null; valign: string | null; colwidth: number[] | null }>;
+  return {
+    align: meta.align ?? match?.[1] ?? null,
+    valign: meta.valign ?? null,
+    colspan: meta.colspan ?? 1,
+    rowspan: meta.rowspan ?? 1,
+    colwidth: meta.colwidth ?? null,
+  };
 }
 
-/** 圖的標題在 `![…]` 裡跳脫了中括號，還原回來。 */
+/** The caption of a figure has its brackets escaped inside ![…], restore them. */
 function unescapeBrackets(text: string): string {
   return text.replace(/\\([[\]])/g, "$1").trim();
 }
@@ -19,8 +32,8 @@ function infoLanguage(token: Token): string | null {
   return token.info.trim().split(/\s+/)[0] || null;
 }
 
-// prosemirror-markdown 的型別依賴 @types/markdown-it 14，而 markdown-it 15 自帶另一份
-// 結構相同的型別宣告；兩者在執行時是同一個東西，所以只在這裡轉型一次。
+// The types of prosemirror-markdown depend on @types/markdown-it 14 while markdown-it 15 ships another
+// declaration of the same shape. They are the same thing at run time, so cast once here.
 type Tokenizer = ConstructorParameters<typeof MarkdownParser>[1];
 
 const markdownParser = new MarkdownParser(schema, createMarkdownIt() as unknown as Tokenizer, {
@@ -89,11 +102,13 @@ const markdownParser = new MarkdownParser(schema, createMarkdownIt() as unknown 
       label: token.meta?.label ?? null,
       caption: String(token.meta?.caption ?? ""),
       notes: String(token.meta?.notes ?? ""),
+      style: token.meta?.style === "grid" ? "grid" : "three-line",
+      widths: String(token.meta?.widths ?? ""),
     }),
   },
   thead: { ignore: true },
   tbody: { ignore: true },
-  tr: { block: NodeName.TableRow },
+  tr: { block: NodeName.TableRow, getAttrs: (token) => ({ height: token.meta?.height ?? null }) },
   th: { block: NodeName.TableHeader, getAttrs: cellAttrs },
   td: { block: NodeName.TableCell, getAttrs: cellAttrs },
   dl: { block: NodeName.DefinitionList },
@@ -116,9 +131,15 @@ const markdownParser = new MarkdownParser(schema, createMarkdownIt() as unknown 
 
 export type DocJson = { type: "doc"; content: unknown[] };
 
-/** 把方言的 Markdown 解析成 ProseMirror／TipTap 的 JSON。純函式，不需要 DOM。 */
+/** Parses the Markdown of the dialect into ProseMirror or TipTap JSON. A pure function that needs no DOM. */
 export function parseMarkdown(text: string): DocJson {
   const json = markdownParser.parse(text.replace(/\r\n?/g, "\n")).toJSON() as Partial<DocJson>;
-  // 空文件沒有任何區塊；編輯器的文件至少要有一個段落
+  // An empty document has no blocks, but a document of the editor needs at least one paragraph
   return { type: "doc", content: json.content ?? [{ type: NodeName.Paragraph }] };
+}
+
+/** Parses inline Markdown such as captions, footnotes and table notes into inline nodes, the content is a single paragraph. */
+export function parseInlineMarkdown(text: string): unknown[] {
+  const first = parseMarkdown(text).content[0] as { type?: string; content?: unknown[] } | undefined;
+  return first?.type === "paragraph" ? (first.content ?? []) : [];
 }

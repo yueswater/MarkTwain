@@ -1,4 +1,4 @@
-/** 所有 IPC channel 的名稱；契約型別以這裡的值當鍵，避免打錯字串。 */
+/** Names of all IPC channels, the contract types use these values as keys to avoid typos. */
 export const IpcChannel = {
   AppInfo: "app:info",
   SettingsGetLocale: "settings:get-locale",
@@ -7,6 +7,9 @@ export const IpcChannel = {
   ProjectOpen: "project:open",
   ProjectCurrent: "project:current",
   ProjectClose: "project:close",
+  BuildTypst: "build:typst",
+  ExportPdf: "export:pdf",
+  ExportProject: "export:project",
   ConfigGet: "config:get",
   ConfigSet: "config:set",
   AssetImportImage: "asset:import-image",

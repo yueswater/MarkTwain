@@ -13,6 +13,15 @@
       "none-open": "目前沒有開啟的專案。",
       "exists": "這個位置已經有檔案了，不能覆蓋。"
     },
+    "build": {
+      "busy": "已經有一個建置正在進行。",
+      "typst-missing": "找不到 Typst。請先安裝，或以 MARKTWAIN_TYPST 指定路徑。",
+      "template-missing": "找不到論文模板。請執行 pnpm templates:fetch。"
+    },
+    "export": {
+      "no-pdf": "請先建置 PDF 再匯出。",
+      "failed": "無法匯出專案：{{reason}}"
+    },
     "config": {
       "invalid": "專案設定（config.yml）不是有效的 YAML。"
     },

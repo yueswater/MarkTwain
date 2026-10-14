@@ -21,7 +21,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { assetUrl } from "./extensions/nodes/figure";
 
 export type FigureTarget = {
-  /** 編輯既有的圖時的位置；新增時為 null */
+  /** Position when editing an existing figure, null when inserting */
   pos: number | null;
   src: string;
   caption: string;

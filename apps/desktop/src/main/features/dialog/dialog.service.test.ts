@@ -9,6 +9,7 @@ function fakePort(save: string | null, open: string | null) {
   const port: DialogPort = {
     showSave: async (o) => (calls.push(o), save),
     showOpen: async (o) => (calls.push(o), open),
+    showFolder: async (o) => (calls.push(o), open),
   };
   return { port, calls };
 }
@@ -65,5 +66,19 @@ describe("DialogService", () => {
     const forced = new DialogService(port, t(Locale.En), () => undefined, () => "/forced.png");
     expect(await forced.chooseImage()).toBe("/forced.png");
     expect(calls).toHaveLength(1);
+  });
+
+  it("export dialogs translate, and the test hook skips them", async () => {
+    const { port, calls } = fakePort("/x/t.pdf", "/x/out");
+    const service = new DialogService(port, t(Locale.ZhHant));
+    expect(await service.choosePdfPath("論文")).toBe("/x/t.pdf");
+    expect(calls[0]).toMatchObject({ title: "匯出 PDF", defaultPath: "論文.pdf", filters: [{ name: "PDF 文件", extensions: ["pdf"] }] });
+    expect(await service.chooseExportFolder()).toBe("/x/out");
+    expect(calls[1]).toMatchObject({ title: "選擇匯出專案的位置" });
+
+    const forced = new DialogService(port, t(Locale.En), () => undefined, () => undefined, () => "/forced");
+    expect(await forced.choosePdfPath("a")).toBe("/forced");
+    expect(await forced.chooseExportFolder()).toBe("/forced");
+    expect(calls).toHaveLength(2);
   });
 });
