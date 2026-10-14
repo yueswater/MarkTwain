@@ -160,7 +160,7 @@
     },
     "thesisPage": {
       "title": "Page",
-      "description": "Paper size and margins. Leave a field empty to follow the school format."
+      "description": "Paper size and margins."
     },
     "thesisText": {
       "title": "Text",
@@ -189,5 +189,35 @@
     "results": "Search results",
     "none": "No setting matches."
   },
-  "changedDot": "This page has settings that differ from the school format"
+  "changedDot": "This page has settings that differ from the school format",
+  "diagram": {
+    "page": "The page with its margins",
+    "noRoom": "The margins leave no room for text.",
+    "headings": "Sample headings",
+    "sampleHeading": {
+      "1": "Chapter heading",
+      "2": "Section heading",
+      "3": "Subsection heading",
+      "4": "Sub-subsection heading"
+    },
+    "outline": "A table of contents",
+    "outlineLine": {
+      "1": "Chapter",
+      "2": "Section",
+      "3": "Subsection",
+      "4": "Sub-subsection"
+    },
+    "printedAs": "Printed as",
+    "tildeHint": "A tilde (~) adds space between characters.",
+    "uncited": "Entries that are listed",
+    "listCited": "Only cited",
+    "listAll": "All entries",
+    "placeholder": {
+      "C": "Chapter number",
+      "S": "Section number",
+      "B": "Subsection number"
+    },
+    "example": "Example:",
+    "badPattern": "{{problem}} is not a placeholder that can be used. Use {C}, {S} and {B}."
+  }
 }

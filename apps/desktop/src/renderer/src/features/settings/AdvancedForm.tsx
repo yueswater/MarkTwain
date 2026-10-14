@@ -17,6 +17,8 @@ import type { AdvancedState } from "../../../../shared/ipc";
 import { api } from "../../shared/api";
 import { errorMessage } from "../../shared/error-message";
 import { NumberField, SettingsHeading, SettingsRow } from "./fields";
+import { CaptionPicker, HeadingsPreview, OutlinePreview, PageDiagram, PatternInput, TitlePreview, UncitedPreview, WithExample } from "./SettingsIllustrations";
+import { perChapterExample, type Margins } from "./settings-previews";
 
 const FOLLOW = "__follow__";
 
@@ -72,9 +74,36 @@ export function AdvancedForm({ groups, state, error, onSave }: Props) {
   }
   if (!state) return null;
   const { values, inherited } = state;
+  /** The value that applies, the setting of the thesis or the one it inherits */
+  const effective = (path: string): AdvancedValue | undefined => values[path] ?? inherited[path];
+  const effectiveNumber = (path: string, fallback: number): number => {
+    const value = effective(path);
+    return typeof value === "number" ? value : fallback;
+  };
+  const effectiveText = (path: string, fallback: string): string => {
+    const value = effective(path);
+    return typeof value === "string" ? value : fallback;
+  };
 
   function control(field: AdvancedField, current: AdvancedValue | undefined, fallback: AdvancedValue | undefined, label: string): React.ReactNode {
     const set = (value: AdvancedValue | null) => void save(field.path, value);
+    // Settings that look like something get a picture or an example, the others are plain controls
+    if (field.path.startsWith("layout.caption-position.")) {
+      return <CaptionPicker value={(current ?? fallback) === "top" ? "top" : "bottom"} label={label} onChange={(value) => set(value)} />;
+    }
+    if (field.path.startsWith("cross-ref.")) {
+      return <PatternInput label={label} value={typeof current === "string" ? current : ""} placeholder={display(fallback)} onCommit={(v) => set(v === "" ? null : v)} />;
+    }
+    if (field.path === "layout.footnote-per-chapter" || field.path === "layout.equation-per-chapter") {
+      const kind = field.path === "layout.footnote-per-chapter" ? "footnote" : "equation";
+      const on = typeof current === "boolean" ? current : fallback === true;
+      const style = effectiveText(kind === "footnote" ? "layout.footnote-numbering" : "layout.equation-numbering", "1");
+      return (
+        <WithExample example={perChapterExample(kind, on, style)}>
+          <Switch aria-label={label} checked={on} onCheckedChange={(checked) => set(checked)} />
+        </WithExample>
+      );
+    }
     switch (field.kind) {
       case "number":
         return (
@@ -187,16 +216,27 @@ export function AdvancedForm({ groups, state, error, onSave }: Props) {
       {groups.map((group) => (
         <Fragment key={group}>
           <SettingsHeading>{t(`group.${group}`)}</SettingsHeading>
-          {ADVANCED_FIELDS.filter((field) => field.group === group).map((field) => {
+          {group === "headings" && (
+            <HeadingsPreview
+              sizes={(Array.isArray(effective("layout.heading.size")) ? effective("layout.heading.size") : [18, 16, 14, 12]) as number[]}
+              aligns={(Array.isArray(effective("layout.heading.align")) ? effective("layout.heading.align") : ["center", "center", "left", "left"]) as string[]}
+              lineHeight={effectiveNumber("layout.heading.line-height", 1.2)}
+            />
+          )}
+          {group === "outline" && <OutlinePreview depth={effectiveNumber("outline.depth", 3)} />}
+          {ADVANCED_FIELDS.filter((field) => field.group === group && !field.path.startsWith("layout.margin.")).map((field) => {
             const label = t(`field.${field.path}`);
             const hint = t(`hint.${field.path}`, { defaultValue: "" });
             const current = values[field.path];
-            return (
+            const row = (
               <SettingsRow
                 key={field.path}
                 id={`setting-${field.path}`}
                 label={label}
                 hint={hint || undefined}
+                below={
+                  field.path === "bibliography.title" ? <TitlePreview title={effectiveText("bibliography.title", "")} /> : field.path === "bibliography.full" ? <UncitedPreview listAll={effective("bibliography.full") === true} /> : undefined
+                }
                 control={
                   <span className="flex items-center gap-1.5">
                     {control(field, current, inherited[field.path], label)}
@@ -213,6 +253,26 @@ export function AdvancedForm({ groups, state, error, onSave }: Props) {
                   </span>
                 }
               />
+            );
+            // The drawing of the page comes right after the paper size, its fields are the four margins
+            if (field.path !== "layout.paper") return row;
+            const margins: Margins = {
+              top: effectiveNumber("layout.margin.top", 2.54),
+              bottom: effectiveNumber("layout.margin.bottom", 2.54),
+              left: effectiveNumber("layout.margin.left", 3.18),
+              right: effectiveNumber("layout.margin.right", 3.18),
+            };
+            return (
+              <Fragment key={field.path}>
+                {row}
+                <PageDiagram
+                  paper={effectiveText("layout.paper", "a4")}
+                  margins={margins}
+                  overridden={new Set((["top", "bottom", "left", "right"] as const).filter((side) => values[`layout.margin.${side}`] !== undefined))}
+                  onCommit={(side, value) => void save(`layout.margin.${side}`, value)}
+                  label={(side) => t(`field.layout.margin.${side}`)}
+                />
+              </Fragment>
             );
           })}
         </Fragment>

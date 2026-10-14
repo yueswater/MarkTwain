@@ -160,7 +160,7 @@
     },
     "thesisPage": {
       "title": "頁面",
-      "description": "紙張大小與邊界。留空表示跟隨學校格式。"
+      "description": "紙張大小與邊界。"
     },
     "thesisText": {
       "title": "文字",
@@ -189,5 +189,35 @@
     "results": "搜尋結果",
     "none": "沒有符合的設定。"
   },
-  "changedDot": "這一頁有和學校格式不同的設定"
+  "changedDot": "這一頁有和學校格式不同的設定",
+  "diagram": {
+    "page": "頁面與邊界",
+    "noRoom": "邊界太大，沒有空間放文字。",
+    "headings": "標題範例",
+    "sampleHeading": {
+      "1": "章標題",
+      "2": "節標題",
+      "3": "小節標題",
+      "4": "小小節標題"
+    },
+    "outline": "目次",
+    "outlineLine": {
+      "1": "章",
+      "2": "節",
+      "3": "小節",
+      "4": "小小節"
+    },
+    "printedAs": "印出來是",
+    "tildeHint": "波浪號（~）會在字與字之間加上空白。",
+    "uncited": "列出的條目",
+    "listCited": "只列被引用的",
+    "listAll": "全部條目",
+    "placeholder": {
+      "C": "章號",
+      "S": "節號",
+      "B": "小節號"
+    },
+    "example": "範例：",
+    "badPattern": "{{problem}} 不是可以使用的代號，請用 {C}、{S}、{B}。"
+  }
 }
