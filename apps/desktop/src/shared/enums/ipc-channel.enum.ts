@@ -25,6 +25,7 @@ export const IpcChannel = {
   DocumentCreate: "document:create",
   DocumentDelete: "document:delete",
   DocumentMove: "document:move",
+  DocumentReorder: "document:reorder",
   DocumentRename: "document:rename",
 } as const;
 

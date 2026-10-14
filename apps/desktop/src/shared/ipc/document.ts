@@ -20,5 +20,7 @@ export type DocumentContract = {
   [IpcChannel.DocumentDelete]: { req: { id: string }; res: void };
   /** Moves up by -1 or down by 1 within the same kind, nothing happens at the edge */
   [IpcChannel.DocumentMove]: { req: { id: string; delta: -1 | 1 }; res: void };
+  /** Moves a document next to another one of the same kind, used by drag and drop */
+  [IpcChannel.DocumentReorder]: { req: { id: string; targetId: string; placement: "before" | "after" }; res: void };
   [IpcChannel.DocumentRename]: { req: { id: string; title: string }; res: void };
 };

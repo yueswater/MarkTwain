@@ -96,6 +96,12 @@ export function useProject() {
       await refresh();
     });
 
+  const reorderDocument = (id: string, targetId: string, placement: "before" | "after") =>
+    run(async () => {
+      await api.invoke(IpcChannel.DocumentReorder, { id, targetId, placement });
+      await refresh();
+    });
+
   const renameDocument = (id: string, title: string) =>
     run(async () => {
       await api.invoke(IpcChannel.DocumentRename, { id, title });
@@ -116,6 +122,7 @@ export function useProject() {
     removeDocument,
     moveDocument,
     renameDocument,
+    reorderDocument,
   };
 }
 
