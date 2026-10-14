@@ -42,7 +42,7 @@ type Prepared = {
 };
 
 /** Template entries that never belong in a generated project. */
-const NOT_COPIED = new Set([".git", "docs", "tests", "contents", "figures", "node_modules", "config.yml", "main.typ", "main.en.typ", "main.pdf", "main.en.pdf"]);
+const NOT_COPIED = new Set([".git", ".github", ".gitignore", ".marktwain-template.json", "docs", "tests", "contents", "figures", "node_modules", "config.yml", "main.typ", "main.en.typ", "main.pdf", "main.en.pdf"]);
 
 /**
  * Writes config, contents, figures and main.typ into root.
