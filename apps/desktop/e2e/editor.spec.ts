@@ -531,9 +531,29 @@ test("code blocks take a language, are highlighted, and keep it in the Markdown"
     const editor = page.locator(".ProseMirror");
     await editor.click();
     await page.getByRole("button", { name: "Code block" }).click();
+    // The language selector is on the block, hidden until the mouse moves over it
+    const selector = page.getByTestId("code-language");
+    await page.mouse.move(5, 5);
+    await expect(selector).toHaveCSS("opacity", "0");
+    await editor.locator(".code-block").hover();
+    await expect(selector).toHaveCSS("opacity", "1");
     await page.getByRole("combobox", { name: "Code language" }).click();
     await page.getByRole("option", { name: "Python" }).click();
+    await expect(page.getByRole("listbox")).toBeHidden();
+    await expect(editor).toBeFocused();
+    // The cursor is back in the block, and while typing the selector stays hidden even under the pointer
     await page.keyboard.type('def hello():\n    return "hi"');
+    await expect(selector).toHaveCSS("opacity", "0");
+    // Moving the mouse shows it again
+    await page.mouse.move(60, 400);
+    await editor.locator(".code-block").hover();
+    await expect(selector).toHaveCSS("opacity", "1");
+    await expect(page.getByRole("combobox", { name: "Code language" })).toContainText("Python");
+    // The shortcut opens the list for the block that holds the cursor
+    await editor.locator("pre code").click();
+    await page.keyboard.press("ControlOrMeta+Alt+l");
+    await expect(page.getByRole("option", { name: "Plain text" })).toBeVisible();
+    await page.keyboard.press("Escape");
     await expect(editor.locator("pre code .hljs-keyword").first()).toHaveText("def");
     await expect(editor.locator("pre code .hljs-string")).toHaveCount(1);
     await expect(page.getByRole("status")).toHaveText("Saved");

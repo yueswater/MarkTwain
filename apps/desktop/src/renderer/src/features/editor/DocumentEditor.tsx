@@ -34,6 +34,7 @@ import { useBibliography } from "../bibliography/bibliography-context";
 import type { CitationInfo } from "./ref-display";
 import { findUnlabeledTargets, newLabel, type UnlabeledTarget } from "./unlabeled-targets";
 import { Toolbar } from "./Toolbar";
+import { CodeBlockWithLanguage } from "./extensions/nodes/code-block-view";
 
 type Props = {
   documentId: string;
@@ -143,6 +144,7 @@ function EditorSurface({
     {
       extensions: [
         ...createSchemaExtensions({
+          codeBlock: CodeBlockWithLanguage,
           onMathClick: (kind, latex, pos) => setMath({ kind, latex, pos }),
           figureLabel: (percent) => tRef.current("figure.dragWidth", { value: percent }),
           resizeLabels: {
