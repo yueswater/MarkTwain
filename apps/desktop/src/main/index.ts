@@ -1,6 +1,20 @@
 import { bootstrap } from "./core/bootstrap";
+import { DatabaseSession } from "./core/database-session";
 import { registerAppController } from "./features/app/app.controller";
+import { registerDocumentController } from "./features/document/document.controller";
+import { DocumentService } from "./features/document/document.service";
+import { registerProjectController } from "./features/project/project.controller";
+import { ProjectService } from "./features/project/project.service";
 import { registerSettingsController } from "./features/settings/settings.controller";
 
-// 組合根：新增 feature 時，在這裡加入它的 controller。
-bootstrap([registerAppController, registerSettingsController]);
+// 組合根：在這裡建立共用的物件，並把各 feature 的 controller 傳給 bootstrap。
+const session = new DatabaseSession();
+const documents = new DocumentService(session);
+const projects = new ProjectService(session, documents);
+
+bootstrap([
+  registerAppController,
+  registerSettingsController,
+  () => registerProjectController(projects),
+  () => registerDocumentController(documents),
+]);

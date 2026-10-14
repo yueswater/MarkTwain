@@ -3,6 +3,13 @@ export const IpcChannel = {
   AppInfo: "app:info",
   SettingsGetLocale: "settings:get-locale",
   SettingsSetLocale: "settings:set-locale",
+  ProjectCreate: "project:create",
+  ProjectOpen: "project:open",
+  ProjectCurrent: "project:current",
+  ProjectClose: "project:close",
+  DocumentList: "document:list",
+  DocumentGet: "document:get",
+  DocumentSave: "document:save",
 } as const;
 
 export type IpcChannel = (typeof IpcChannel)[keyof typeof IpcChannel];
