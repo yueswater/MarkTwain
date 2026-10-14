@@ -162,7 +162,8 @@
     "auto": "自動",
     "percent": "%",
     "dragWidth": "欄寬 {{value}}%",
-    "dragHeight": "列高 {{value}} pt"
+    "dragHeight": "列高 {{value}} pt",
+    "notesLabel": "註："
   },
   "caption": {
     "tableTitle": "表格標題",

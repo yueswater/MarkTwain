@@ -7,7 +7,7 @@ import type { SaveStatus } from "./autosaver";
 /** Sent on the window when the numbers have to be read again. */
 export const LABELS_CHANGED = "marktwain:labels-changed";
 
-const EMPTY: LabelIndex = { numbers: {}, broken: [], duplicates: [], targets: [], statementBases: {}, used: [] };
+const EMPTY: LabelIndex = { numbers: {}, broken: [], duplicates: [], targets: [], bases: {}, used: [] };
 
 /** Labels and numbers of the project, updated on load and after every save. The back end scans saved documents. */
 export function useLabelIndex(status: SaveStatus): LabelIndex {

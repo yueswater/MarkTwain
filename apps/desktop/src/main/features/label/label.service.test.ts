@@ -24,7 +24,7 @@ describe("LabelService.resolve", () => {
     documents.seedDefaults();
     const index = labels.resolve();
     expect(index).toMatchObject({ numbers: {}, broken: [], duplicates: [], targets: [], used: [] });
-    expect(Object.values(index.statementBases).every((base) => Object.keys(base).length === 0)).toBe(true);
+    expect(Object.values(index.bases).every((base) => Object.keys(base).length === 0)).toBe(true);
   });
 
   it("定理區塊每種類各自編號，後面的文件從前面的數量接續", () => {
@@ -36,7 +36,7 @@ describe("LabelService.resolve", () => {
     const index = labels.resolve();
     expect(index.numbers).toMatchObject({ "lem:a": "1", "lem:c": "3", "def:d": "1" });
     expect(index.targets.map((t) => [t.label, t.kind])).toEqual(expect.arrayContaining([["lem:a", "lem"], ["def:d", "def"]]));
-    expect(index.statementBases[second.id]).toEqual({ lem: 2 });
+    expect(index.bases[second.id]).toEqual({ lem: 2 });
   });
 
   it("圖整篇連續編號，沒標籤的也佔編號；章標題顯示標題文字", () => {

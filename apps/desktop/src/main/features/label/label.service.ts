@@ -13,6 +13,9 @@ import { DEFAULT_NUMBERING } from "../../config/numbering.config";
 import { findPreview } from "./label-preview";
 import type { DocumentService } from "../document/document.service";
 
+/** Kinds that run through the whole thesis, equations restart in a chapter when the setting says so and are left out */
+const COUNTED: readonly string[] = ["fig", "tbl", "lst", ...STATEMENT_PREFIXES];
+
 const CHAPTER_LIKE: readonly string[] = [DocumentKind.Chapter, DocumentKind.Appendix];
 
 /** Scans every document of the project and computes referable labels, display numbers and broken references. */
@@ -38,7 +41,7 @@ export class LabelService {
     const targets: Target[] = [];
     const references: string[] = [];
     const owners = new Map<string, string>();
-    const statementBases: Record<string, Record<string, number>> = {};
+    const bases: Record<string, Record<string, number>> = {};
     const running: Record<string, number> = {};
 
     for (const summary of this.documents.list()) {
@@ -52,9 +55,9 @@ export class LabelService {
       for (const target of collected.targets) {
         if (!owners.has(target.label)) owners.set(target.label, summary.id);
       }
-      statementBases[summary.id] = { ...running };
+      bases[summary.id] = { ...running };
       for (const target of collected.targets) {
-        if (STATEMENT_PREFIXES.includes(target.kind)) running[target.kind] = (running[target.kind] ?? 0) + 1;
+        if (COUNTED.includes(target.kind)) running[target.kind] = (running[target.kind] ?? 0) + 1;
       }
       targets.push(...collected.targets);
       references.push(...collected.references);
@@ -77,7 +80,7 @@ export class LabelService {
       broken: result.broken,
       duplicates: result.duplicates,
       targets: pickable,
-      statementBases,
+      bases,
       used: [...new Set(references)],
     };
   }

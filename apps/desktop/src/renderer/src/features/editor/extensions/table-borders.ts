@@ -9,7 +9,8 @@ const PX_PER_PT = 4 / 3;
 /** One side of a cell as CSS, a double line needs room for both strokes. */
 export function sideCss(side: "top" | "right" | "bottom" | "left", edge: Edge): string {
   if (!edge) return `border-${side}: none;`;
-  const width = Math.max(1, Math.round(edge.width * PX_PER_PT * 10) / 10);
+  // A line thinner than a pixel is still drawn, the screen decides how thin it can be
+  const width = Math.max(0.5, Math.round(edge.width * PX_PER_PT * 10) / 10);
   const style = edge.style === "double" ? "double" : edge.style;
   const px = edge.style === "double" ? Math.max(3, width) : width;
   return `border-${side}: ${px}px ${style} ${edge.color ?? "var(--foreground)"};`;
@@ -27,8 +28,8 @@ function diagonalCss(down: Edge, up: Edge): string {
 }
 
 /**
- * Draws the lines of a table that has borders of its own, the same lines as in the PDF, on the cells themselves. A table that follows
- * its preset is drawn by the stylesheet. The document is not changed.
+ * Draws the lines of every table, the same lines as in the PDF, on the cells themselves: the preset, three-line or grid, and the
+ * borders of the table on top. The document is not changed.
  */
 export const TableBorders = Extension.create({
   name: "tableBorders",
@@ -41,7 +42,6 @@ export const TableBorders = Extension.create({
             const decorations: Decoration[] = [];
             state.doc.descendants((node, pos) => {
               if (node.type.name !== "table") return true;
-              if (String(node.attrs.borders ?? "") === "") return false;
               const { grid, edges, map } = edgesOf(node);
               const start = pos + 1;
               const seen = new Set<number>();
