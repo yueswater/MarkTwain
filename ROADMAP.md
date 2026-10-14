@@ -2,7 +2,7 @@
 
 MarkTwain is developed against version milestones. Each version maps to a [GitHub Milestone](../../milestones), and the work items are tracked as issues.
 
-Current version: v0.3.4.
+Current version: v0.3.5.
 
 | Version | Theme | Status |
 |---|---|---|
@@ -12,6 +12,7 @@ Current version: v0.3.4.
 | [v0.3.2](#v032--editor-and-bibliography-polish) | Editor and bibliography polish | Released |
 | [v0.3.3](#v033--editor-fixes) | Editor fixes | Released |
 | [v0.3.4](#v034--settings-and-watermark) | Settings and watermark | Released |
+| [v0.3.5](#v035--blocks-and-tables) | Blocks and tables | Released |
 | [v0.4.0](#v040--version-control) | Version control | Not started |
 | [v0.5.0](#v050--latex-output) | LaTeX output | Not started |
 | [v0.6.0](#v060--thesis-features) | Thesis features | Not started |
@@ -98,6 +99,16 @@ The settings window and the small things around it.
 - A new project asks for the basic thesis information, can be skipped, and what is about the author is remembered
 - The preview keeps its place, the header is simpler, and the bibliography source is colored and numbered
 - Line numbers count the lines of ordinary text, code blocks and formulas are numbered on their own, and Cmd/Ctrl+B is bold again
+
+## v0.3.5 · Blocks and Tables
+
+Writing mathematics, and tables that look like the page.
+
+- Definitions, lemmas, theorems and proofs are blocks that are numbered by kind, cross-referenced, and drawn as a plain callout or in a color for each kind, the colors are in the editor only and the PDF stays plain
+- A slash menu lists the blocks with a description or a drawing of the highlighted one, formulas open a small box at their place, and a reference or a footnote opens a card with what it points to when hovered
+- A figure or a table is given a place to float with icons, written as `placement=top` and mapped to Typst as far as Typst goes, with a default for the thesis
+- The borders menu of a table works like the one of a word processor, with a width, a style and a color for each line, diagonals included, and one step of undo for each choice
+- A table in the editor has the width, the column shares, the lines, the number, the caption and the notes of the table in the PDF, and a test compares the columns of both
 
 ## v0.4.0 · Version Control
 
