@@ -1,5 +1,5 @@
-import { AlertTriangleIcon, DownloadIcon, EyeIcon, RefreshCwIcon, XIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { AlertTriangleIcon, DownloadIcon, EyeIcon, RefreshCwIcon, StampIcon, XIcon } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,6 +26,15 @@ type Props = {
 };
 
 const WATCH_KEY = "marktwain.preview.watch";
+const WATERMARK_KEY = "marktwain.preview.watermark";
+
+function readWatermark(): boolean {
+  try {
+    return localStorage.getItem(WATERMARK_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
 
 function readWatch(): boolean {
   try {
@@ -40,6 +49,8 @@ export function PreviewPanel({ build, saveTick, onClose, onJump }: Props) {
   const { t: tRoot } = useTranslation();
   const [exportNote, setExportNote] = useState<{ ok: boolean; text: string } | null>(null);
   const [watch, setWatch] = useState(readWatch);
+  const [watermark, setWatermark] = useState(readWatermark);
+  const started = useRef(false);
   const { outcome, building, error, run } = build;
   const { prefs } = usePrefs();
   const { width, separator } = useResizableWidth("marktwain.preview.width", 520, 320, 0.7);
@@ -55,6 +66,20 @@ export function PreviewPanel({ build, saveTick, onClose, onJump }: Props) {
     // The outcome only decides the first delay, it must not retrigger the build
   }, [watch, saveTick, run]);
 
+  // The builds of the preview draw the watermark only while the switch is on, a change builds again
+  useEffect(() => {
+    void api.invoke(IpcChannel.BuildSetWatermark, { on: watermark }).then(() => {
+      if (started.current) void run();
+      started.current = true;
+    });
+    try {
+      localStorage.setItem(WATERMARK_KEY, watermark ? "1" : "0");
+    } catch {
+      // The choice is only a convenience
+    }
+    // Only the switch matters, run is stable
+  }, [watermark]);
+
   function toggleWatch(): void {
     setWatch((value) => {
       try {
@@ -66,7 +91,7 @@ export function PreviewPanel({ build, saveTick, onClose, onJump }: Props) {
     });
   }
 
-  async function exportTo(channel: typeof IpcChannel.ExportPdf | typeof IpcChannel.ExportProject): Promise<void> {
+  async function exportTo(channel: typeof IpcChannel.ExportPdf | typeof IpcChannel.ExportFinalPdf | typeof IpcChannel.ExportProject): Promise<void> {
     try {
       const result = await api.invoke(channel);
       setExportNote(result ? { ok: true, text: t("exported", { path: result.path }) } : null);
@@ -99,6 +124,16 @@ export function PreviewPanel({ build, saveTick, onClose, onJump }: Props) {
             <EyeIcon aria-hidden="true" />
             {t("watch")}
           </Button>
+          <Button
+            variant={watermark ? "secondary" : "outline"}
+            size="sm"
+            aria-pressed={watermark}
+            title={t("watermarkHint")}
+            onClick={() => setWatermark((value) => !value)}
+          >
+            <StampIcon aria-hidden="true" />
+            {t("watermark")}
+          </Button>
           {!watch && (
             <Button size="sm" onClick={() => void run()} disabled={building}>
               {building ? t("building") : t("build")}
@@ -113,6 +148,7 @@ export function PreviewPanel({ build, saveTick, onClose, onJump }: Props) {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem onSelect={() => void exportTo(IpcChannel.ExportPdf)}>{t("exportPdf")}</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => void exportTo(IpcChannel.ExportFinalPdf)}>{t("exportFinalPdf")}</DropdownMenuItem>
               <DropdownMenuItem onSelect={() => void exportTo(IpcChannel.ExportProject)}>{t("exportProject")}</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

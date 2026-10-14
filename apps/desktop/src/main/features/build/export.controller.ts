@@ -11,6 +11,13 @@ export function registerExportController(build: BuildService, dialogs: DialogSer
     return { path };
   });
 
+  handle(IpcChannel.ExportFinalPdf, async () => {
+    const path = await dialogs.choosePdfPath(`${build.suggestedName()}`);
+    if (!path) return null;
+    await build.savePdf(path, true);
+    return { path };
+  });
+
   handle(IpcChannel.ExportProject, async () => {
     const parent = await dialogs.chooseExportFolder();
     return parent ? { path: build.exportProject(parent) } : null;

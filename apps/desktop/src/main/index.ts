@@ -4,6 +4,8 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { bootstrap } from "./core/bootstrap";
 import { DatabaseSession } from "./core/database-session";
+import { registerWatermarkController } from "./features/watermark/watermark.controller";
+import { WatermarkService } from "./features/watermark/watermark.service";
 import { registerBibliographyController } from "./features/bibliography/bibliography.controller";
 import { BibliographyService } from "./features/bibliography/bibliography.service";
 import { registerAssetController } from "./features/asset/asset.controller";
@@ -49,7 +51,8 @@ const config = new ConfigService(session, undefined, (path) => {
 const settingsRepository = new SettingsRepository(settingsFilePath());
 const recent = new RecentService(settingsRepository);
 const prefs = new PrefsService(settingsRepository);
-const build = new BuildService(session, documents, config, resolveBuildPaths, undefined, undefined, undefined, () => prefs.get().previewPpi, bibliography);
+const watermarks = new WatermarkService(session, config, resolveBuildPaths);
+const build = new BuildService(session, documents, config, resolveBuildPaths, undefined, undefined, undefined, () => prefs.get().previewPpi, bibliography, watermarks);
 let dialogs: DialogService;
 
 // The custom protocol must be declared before app ready
@@ -71,6 +74,7 @@ bootstrap([
   () => registerPrefsController(prefs),
   () => registerSearchController(search),
   () => registerBibliographyController(bibliography),
+  () => registerWatermarkController(watermarks, dialogs),
   () => registerBuildController(build),
   () => registerExportController(build, dialogs),
 ]);

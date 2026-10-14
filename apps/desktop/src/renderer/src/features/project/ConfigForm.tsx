@@ -31,7 +31,7 @@ const NO_SCHOOL = "none";
 type TextField = Exclude<keyof ConfigFields, "keywords" | "keywordsEn" | "school">;
 
 /** Project settings form that saves while typing, fields of config.yml. */
-export function ConfigForm({ onSaved, embedded = false, part = "all" }: { onSaved?: () => void; embedded?: boolean; part?: "all" | "school" | "info" }) {
+export function ConfigForm({ onSaved, embedded = false, part = "all", afterSchool }: { onSaved?: () => void; embedded?: boolean; part?: "all" | "school" | "info"; afterSchool?: ReactNode }) {
   // The settings window shows the school part and the information part as two pages
   const showSchool = part !== "info";
   const showInfo = part !== "school";
@@ -139,7 +139,7 @@ export function ConfigForm({ onSaved, embedded = false, part = "all" }: { onSave
       <form className={embedded ? "flex flex-col gap-8" : "mx-auto flex max-w-2xl flex-col gap-8 p-8"} onSubmit={(event) => event.preventDefault()}>
         <header className="flex flex-col gap-1">
           {!embedded && <h2 className="text-2xl font-semibold tracking-tight">{t("title")}</h2>}
-          <p className="text-sm text-muted-foreground">{t("description")}</p>
+          {!embedded && <p className="text-sm text-muted-foreground">{t("description")}</p>}
           <p role="status" className="h-4 text-xs text-muted-foreground" data-status={status}>
             {status === "idle" ? "" : t(`save.${status}`)}
           </p>
@@ -167,6 +167,7 @@ export function ConfigForm({ onSaved, embedded = false, part = "all" }: { onSave
             </Field>
           </Section>
         )}
+        {showSchool && afterSchool}
 
         {showInfo && (
           <Section title={t("section.thesis")}>

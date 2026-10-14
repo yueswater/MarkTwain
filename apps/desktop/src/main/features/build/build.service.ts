@@ -8,6 +8,7 @@ import type { DatabaseSession } from "../../core/database-session";
 import { AppError } from "../../core/errors";
 import { AssetRepository } from "../asset/asset.repository";
 import type { BibliographyService } from "../bibliography/bibliography.service";
+import type { WatermarkService } from "../watermark/watermark.service";
 import type { ConfigService } from "../config/config.service";
 import type { DocumentService } from "../document/document.service";
 
@@ -20,6 +21,8 @@ type Exporter = typeof exportTypstProject;
 export class BuildService {
   private running = false;
   private revision = 0;
+  /** Whether the builds of the preview draw the watermark */
+  private previewWatermark = false;
   private pages: Uint8Array[] = [];
 
   constructor(
@@ -32,6 +35,7 @@ export class BuildService {
     private readonly exporter: Exporter = exportTypstProject,
     private readonly previewPpi: () => number = () => 110,
     private readonly bibliography?: Pick<BibliographyService, "buildFiles">,
+    private readonly watermarks?: Pick<WatermarkService, "files">,
   ) {}
 
   /** A page image of the latest successful build, for the preview protocol. */
@@ -55,7 +59,12 @@ export class BuildService {
       documents,
       files: new AssetRepository(this.session.db).list(),
       bibliography: this.bibliography?.buildFiles() ?? [],
+      watermarkFiles: this.watermarks?.files() ?? [],
     };
+  }
+
+  setWatermark(on: boolean): void {
+    this.previewWatermark = on;
   }
 
   /** Name for suggested file names, the project title or a fallback. */
@@ -64,8 +73,8 @@ export class BuildService {
   }
 
   /** Builds the PDF now, so exporting never depends on an earlier preview, and saves it. */
-  async savePdf(path: string): Promise<void> {
-    const result = await this.run({ ...this.input(), format: "pdf" });
+  async savePdf(path: string, final = false): Promise<void> {
+    const result = await this.run({ ...this.input(), format: "pdf", watermark: final });
     if (!result.ok) {
       const first = result.diagnostics.find((d) => d.severity === "error");
       throw new AppError(ErrorCode.ExportFailed, { reason: first?.message ?? "build failed" });
@@ -91,7 +100,7 @@ export class BuildService {
 
     this.running = true;
     try {
-      const result: BuildResult = await this.run({ ...input, format: "png", ppi: this.previewPpi() });
+      const result: BuildResult = await this.run({ ...input, format: "png", ppi: this.previewPpi(), watermark: this.previewWatermark });
 
       if (!result.ok && result.diagnostics.some((d) => /ENOENT/.test(d.message))) {
         throw new AppError(ErrorCode.BuildTypstMissing);

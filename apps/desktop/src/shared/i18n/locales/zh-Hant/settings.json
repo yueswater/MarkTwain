@@ -41,7 +41,8 @@
     "pageNumber": "頁碼",
     "crossRef": "交叉引用",
     "bibliography": "參考文獻",
-    "outline": "目次"
+    "outline": "目次",
+    "watermark": "浮水印"
   },
   "advancedHint": "留空表示跟隨學校格式。修改後只會覆蓋這份論文。",
   "noProject": "開啟專案後才能調整論文格式。",
@@ -94,6 +95,11 @@
     "bibliography": {
       "title": "參考文獻標題",
       "full": "也列出未引用的條目"
+    },
+    "watermark": {
+      "image": "浮水印圖片",
+      "width": "浮水印寬度",
+      "opacity": "浮水印深淺"
     }
   },
   "hint": {
@@ -219,5 +225,21 @@
     },
     "example": "範例：",
     "badPattern": "{{problem}} 不是可以使用的代號，請用 {C}、{S}、{B}。"
+  },
+  "watermark": {
+    "title": "浮水印",
+    "hint": "畫在定稿正文頁上，開啟預覽中的浮水印開關時預覽也會顯示。",
+    "school": "跟隨學校",
+    "schoolHas": "學校的浮水印：{{name}}",
+    "schoolNone": "這間學校的模板沒有附浮水印。",
+    "none": "不使用浮水印",
+    "noneBody": "論文建置時不加浮水印。",
+    "custom": "自己的圖片",
+    "customBody": "從電腦選擇 PNG、JPEG、SVG 或 PDF。",
+    "choose": "選擇檔案",
+    "preview": "浮水印在頁面上的樣子",
+    "noPicture": "沒有圖片",
+    "rule": "論文是否需要浮水印，依學校規定。",
+    "replace": "更換檔案"
   }
 }

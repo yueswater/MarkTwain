@@ -14,7 +14,7 @@
   "noSource": "No source location",
   "citationNoBibliography": "No bibliography yet, shown as plain text: {{keys}}",
   "export": "Export",
-  "exportPdf": "Export PDF…",
+  "exportPdf": "Export draft PDF…",
   "exportProject": "Export Typst project…",
   "exported": "Exported to {{path}}",
   "watch": "Auto update",
@@ -22,5 +22,8 @@
   "page": "Page {{n}}",
   "pages": "{{count}} pages",
   "resize": "Resize the preview",
-  "fontMissing": "Font not found: {{font}}. Another font is used instead, check the font names in the thesis settings."
+  "fontMissing": "Font not found: {{font}}. Another font is used instead, check the font names in the thesis settings.",
+  "watermark": "Watermark",
+  "watermarkHint": "Show the watermark of the thesis in the preview",
+  "exportFinalPdf": "Export final PDF with watermark"
 }

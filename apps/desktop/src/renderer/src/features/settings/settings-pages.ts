@@ -45,7 +45,7 @@ export const SETTINGS_PAGES: readonly SettingsPage[] = [
   { id: "editorAppearance", section: "editor", icon: PenLineIcon, needsProject: false, groups: [] },
   { id: "editorWriting", section: "editor", icon: PencilRulerIcon, needsProject: false, groups: [] },
   { id: "editorPreview", section: "editor", icon: EyeIcon, needsProject: false, groups: [] },
-  { id: "thesisSchool", section: "thesis", icon: GraduationCapIcon, needsProject: true, groups: [] },
+  { id: "thesisSchool", section: "thesis", icon: GraduationCapIcon, needsProject: true, groups: ["watermark"] },
   { id: "thesisInfo", section: "thesis", icon: UserRoundIcon, needsProject: true, groups: [] },
   { id: "thesisPage", section: "thesis", icon: LayoutIcon, needsProject: true, groups: ["page"] },
   { id: "thesisText", section: "thesis", icon: TypeIcon, needsProject: true, groups: ["text"] },

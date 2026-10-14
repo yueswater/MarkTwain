@@ -1,5 +1,5 @@
 import { _electron as electron, expect, test } from "@playwright/test";
-import { mkdtempSync, rmSync } from "node:fs";
+import { mkdtempSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { findPackagedExecutable } from "./find-app";
@@ -158,6 +158,81 @@ test("layout settings are shown as small drawings and examples that follow the v
     await expect(dialog.getByTestId("title-preview")).toBeVisible();
     await dialog.getByRole("switch", { name: "List uncited entries too" }).click();
     await expect.poll(async () => (await values())?.["bibliography.full"]).toBe(true);
+  } finally {
+    await app.close();
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("the school's watermark is shown, an image of your own can replace it, and the final copy carries it", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "marktwain 浮水印 "));
+  const file = join(dir, "論文.marktwain");
+  const pdf = join(dir, "out.pdf");
+  const image = join(dir, "mine.png");
+  // A small PNG, 1x1
+  writeFileSync(image, Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==", "base64"));
+  const args = [`--user-data-dir=${join(dir, "userData")}`, "--lang=en-US"];
+  if (process.platform === "linux") args.push("--no-sandbox");
+  const app = await electron.launch({
+    executablePath: findPackagedExecutable(dist),
+    args,
+    env: {
+      ...process.env,
+      MARKTWAIN_TEST_DIALOG_PATH: file,
+      MARKTWAIN_TEST_IMAGE_PATH: image,
+      MARKTWAIN_TEST_EXPORT_PATH: pdf,
+      MARKTWAIN_TEMPLATE_DIR: resolve(__dirname, "../../../resources/templates/typ"),
+    },
+  });
+  try {
+    const page = await app.firstWindow();
+    await page.getByRole("button", { name: "New project" }).click();
+    await page.keyboard.press("ControlOrMeta+,");
+    const dialog = page.getByRole("dialog", { name: "Settings" });
+    await dialog.getByRole("button", { name: "School and format", exact: true }).click();
+    const section = dialog.getByTestId("watermark-settings");
+
+    // Without a school there is nothing to follow
+    await expect(section).toContainText("This school has no watermark");
+    await dialog.getByRole("combobox", { name: "School preset", exact: true }).click();
+    await page.getByRole("option", { name: "National Chengchi University" }).click();
+    await expect(section).toContainText("The school's watermark: nccu.pdf");
+    await expect(dialog.getByTestId("watermark-preview").locator("img")).toBeVisible();
+
+    // An image of your own is stored in the project and named in the settings
+    await section.getByRole("radio", { name: /My own image/ }).click();
+    await expect(section.getByRole("radio", { name: /My own image/ })).toHaveAttribute("aria-checked", "true");
+    await expect(section).toContainText("mine.png");
+    const values = () =>
+      page.evaluate(async () => {
+        const r = await window.marktwain.invoke("config:get-advanced");
+        return r.ok ? r.data.values : null;
+      });
+    expect(await values()).toMatchObject({ "watermark.image": "/assets/watermarks/mine.png" });
+    await section.getByLabel("Watermark opacity").fill("40");
+    await section.getByLabel("Watermark opacity").press("Enter");
+    await expect.poll(async () => (await values())?.["watermark.opacity"]).toBe(40);
+
+    // Back to the school's own, and no watermark at all
+    await section.getByRole("radio", { name: /Follow the school/ }).click();
+    await expect.poll(async () => (await values())?.["watermark.image"]).toBeUndefined();
+    await section.getByRole("radio", { name: /No watermark/ }).click();
+    await expect.poll(async () => (await values())?.["watermark.image"]).toBe("none");
+    await section.getByRole("radio", { name: /Follow the school/ }).click();
+    await page.keyboard.press("Escape");
+
+    // The draft has no watermark, the final copy has, so it is larger
+    const size = async (channel: "export:pdf" | "export:final-pdf") => {
+      const done = await page.evaluate(async (c) => {
+        const r = await window.marktwain.invoke(c as "export:pdf");
+        return r.ok;
+      }, channel);
+      expect(done).toBe(true);
+      return statSync(pdf).size;
+    };
+    const draft = await size("export:pdf");
+    const final = await size("export:final-pdf");
+    expect(final).toBeGreaterThan(draft);
   } finally {
     await app.close();
     rmSync(dir, { recursive: true, force: true });

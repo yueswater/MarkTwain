@@ -39,5 +39,7 @@ export function completeConfig(text: string, today: string): CompletedConfig {
       doc.set(key, []);
     }
   }
+  // The settings keep "none" for a thesis without a watermark, the template reads a null for that
+  if (doc.getIn(["watermark", "image"]) === "none") doc.setIn(["watermark", "image"], null);
   return { text: doc.toString({ lineWidth: 0 }), missing };
 }

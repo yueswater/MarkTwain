@@ -14,6 +14,10 @@ export const PROJECT_EXTENSION = "marktwain";
 
 /** Image limits, allowed extensions without the dot and the size cap. */
 export const IMAGE_EXTENSIONS = ["png", "jpg", "jpeg", "svg"] as const;
+
+/** Files that can be a watermark, a PDF is allowed for the logos that schools give as vector files. */
+export const WATERMARK_EXTENSIONS = ["png", "jpg", "jpeg", "svg", "pdf"] as const;
+export const WATERMARK_MAX_BYTES = 10 * 1024 * 1024;
 export const IMAGE_MAX_BYTES = 25 * 1024 * 1024;
 
 /** Custom protocol that serves project files to the editor, see core/asset-protocol. */

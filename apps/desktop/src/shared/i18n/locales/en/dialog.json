@@ -10,7 +10,8 @@
   "filter": {
     "project": "MarkTwain project",
     "image": "Images",
-    "pdf": "PDF document"
+    "pdf": "PDF document",
+    "watermark": "Images and PDF"
   },
   "openImage": {
     "title": "Choose an image",
@@ -23,5 +24,9 @@
   "exportFolder": {
     "title": "Choose where to export the project",
     "button": "Export here"
+  },
+  "openWatermark": {
+    "title": "Choose a watermark",
+    "button": "Use"
   }
 }

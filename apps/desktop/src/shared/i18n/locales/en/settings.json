@@ -41,7 +41,8 @@
     "pageNumber": "Page numbers",
     "crossRef": "Cross-references",
     "bibliography": "References",
-    "outline": "Table of contents"
+    "outline": "Table of contents",
+    "watermark": "Watermark"
   },
   "advancedHint": "Empty fields follow the school format. Changing a value overrides it for this thesis only.",
   "noProject": "Open a project to change the format of its thesis.",
@@ -94,6 +95,11 @@
     "bibliography": {
       "title": "References title",
       "full": "List uncited entries too"
+    },
+    "watermark": {
+      "image": "Watermark image",
+      "width": "Watermark width",
+      "opacity": "Watermark opacity"
     }
   },
   "hint": {
@@ -219,5 +225,21 @@
     },
     "example": "Example:",
     "badPattern": "{{problem}} is not a placeholder that can be used. Use {C}, {S} and {B}."
+  },
+  "watermark": {
+    "title": "Watermark",
+    "hint": "Drawn on the body pages of a final copy, and in the preview when you turn it on there.",
+    "school": "Follow the school",
+    "schoolHas": "The school's watermark: {{name}}",
+    "schoolNone": "This school has no watermark in the template.",
+    "none": "No watermark",
+    "noneBody": "The thesis is built without one.",
+    "custom": "My own image",
+    "customBody": "Choose a PNG, JPEG, SVG or PDF from your computer.",
+    "choose": "Choose a file",
+    "preview": "Preview of the watermark on a page",
+    "noPicture": "No picture",
+    "rule": "Whether a thesis needs a watermark depends on the school.",
+    "replace": "Replace file"
   }
 }
