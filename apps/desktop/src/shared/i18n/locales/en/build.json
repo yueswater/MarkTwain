@@ -21,5 +21,6 @@
   "watchHint": "Rebuild after every save",
   "page": "Page {{n}}",
   "pages": "{{count}} pages",
-  "resize": "Resize the preview"
+  "resize": "Resize the preview",
+  "fontMissing": "Font not found: {{font}}. Another font is used instead, check the font names in the thesis settings."
 }
