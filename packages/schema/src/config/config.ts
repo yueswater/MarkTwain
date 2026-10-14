@@ -26,6 +26,10 @@ export type ConfigFields = {
   oralDate: string;
   keywords: string[];
   keywordsEn: string[];
+  /** chinese or english, empty follows the school preset */
+  language: string;
+  /** CSL style name, empty follows the school preset */
+  citationStyle: string;
 };
 
 type StringField = {
@@ -54,6 +58,9 @@ const YAML_KEYS: Record<keyof ConfigFields, string> = {
   oralDate: "oral-date",
   keywords: "keywords",
   keywordsEn: "keywords-en",
+  // These two live in nested sections of config.yml
+  language: "layout.language",
+  citationStyle: "bibliography.style",
 };
 
 const STRING_FIELDS: readonly StringField[] = [
@@ -75,6 +82,8 @@ const STRING_FIELDS: readonly StringField[] = [
   "typeEn",
   "date",
   "oralDate",
+  "language",
+  "citationStyle",
 ];
 
 export function defaultFields(): ConfigFields {
@@ -99,7 +108,35 @@ export function defaultFields(): ConfigFields {
     oralDate: "",
     keywords: [],
     keywordsEn: [],
+    language: "",
+    citationStyle: "",
   };
+}
+
+/** Sets a value in a nested section, creating the section first when it is missing. */
+function setAt(doc: Document, path: string[], value: unknown): void {
+  const [section] = path;
+  if (section === undefined) return;
+  if (path.length === 1) {
+    doc.set(section, value);
+    return;
+  }
+  if (!doc.has(section) || doc.get(section) === null) doc.set(section, doc.createNode({}));
+  doc.setIn(path, value);
+}
+
+/** Removes a value in a nested section, and the section too when nothing else is left in it. */
+function removeAt(doc: Document, path: string[]): void {
+  const [section] = path;
+  if (section === undefined) return;
+  if (path.length === 1) {
+    doc.delete(section);
+    return;
+  }
+  if (!doc.hasIn(path)) return;
+  doc.deleteIn(path);
+  const rest = doc.get(section, true) as { items?: unknown[] } | null;
+  if (rest && Array.isArray(rest.items) && rest.items.length === 0) doc.delete(section);
 }
 
 export class ConfigParseError extends Error {}
@@ -120,7 +157,7 @@ export function readConfig(text: string): ConfigFields {
   const doc = parse(text);
   const fields = defaultFields();
   for (const name of STRING_FIELDS) {
-    const value = doc.get(YAML_KEYS[name]);
+    const value = doc.hasIn(YAML_KEYS[name].split(".")) ? doc.getIn(YAML_KEYS[name].split(".")) : undefined;
     if (value !== undefined && value !== null) fields[name] = asString(value);
   }
   for (const name of ["keywords", "keywordsEn"] as const) {
@@ -141,8 +178,9 @@ export function writeConfig(text: string, fields: ConfigFields): string {
   const doc = text.trim() === "" ? new Document({}) : parse(text);
   for (const name of STRING_FIELDS) {
     const value = fields[name].trim();
-    if (value === "") doc.delete(YAML_KEYS[name]);
-    else doc.set(YAML_KEYS[name], value);
+    const path = YAML_KEYS[name].split(".");
+    if (value === "") removeAt(doc, path);
+    else setAt(doc, path, value);
   }
   for (const name of ["keywords", "keywordsEn"] as const) {
     const items = fields[name].map((item) => item.trim()).filter(Boolean);

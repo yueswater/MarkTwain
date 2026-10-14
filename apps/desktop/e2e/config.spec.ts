@@ -32,6 +32,16 @@ test("project settings are filled in, validated, saved and restored", async () =
     await page.getByRole("combobox", { name: "學校格式" }).click();
     await page.getByRole("option", { name: "國立臺灣大學" }).click();
 
+    // College and department come from lists of the chosen school and fill the English names too
+    await page.getByRole("combobox", { name: "學院", exact: true }).click();
+    await page.getByRole("option").first().click();
+    await page.getByRole("combobox", { name: "系所", exact: true }).click();
+    await page.getByRole("option").first().click();
+    await page.getByRole("combobox", { name: "學位（中文）" }).click();
+    await page.getByRole("option", { name: "博士" }).click();
+    await page.getByRole("combobox", { name: "論文語言" }).click();
+    await page.getByRole("option", { name: "英文" }).click();
+
     // A bad date shows below the field and disappears once fixed
     await page.getByLabel("口試日期").fill("2026/06/15");
     await expect(page.getByRole("alert")).toHaveText("請使用 YYYY-MM-DD 格式。");
@@ -54,6 +64,10 @@ test("project settings are filled in, validated, saved and restored", async () =
       return result.ok ? result.data : null;
     });
     expect(state?.issues).toEqual([]);
+    expect(state?.fields.college).not.toBe("");
+    expect({ c: state?.fields.college, e: state?.fields.collegeEn }).toEqual({ c: expect.any(String), e: expect.stringMatching(/./) });
+    expect(state?.fields.institute).not.toBe("");
+    expect(state?.fields).toMatchObject({ degree: "博士", degreeEn: "Doctor", language: "english" });
     expect(state?.fields.keywords).toEqual(["機器學習", "自然語言處理", "論文"]);
   } finally {
     await app.close();

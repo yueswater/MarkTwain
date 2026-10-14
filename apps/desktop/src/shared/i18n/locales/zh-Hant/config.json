@@ -15,7 +15,8 @@
     "department": "系所",
     "degree": "學位",
     "dates": "日期",
-    "keywords": "關鍵字"
+    "keywords": "關鍵字",
+    "language": "語言與引用"
   },
   "field": {
     "school": "學校格式",
@@ -37,7 +38,11 @@
     "date": "出版日期",
     "oralDate": "口試日期",
     "keywords": "關鍵字（中文）",
-    "keywordsEn": "關鍵字（英文）"
+    "keywordsEn": "關鍵字（英文）",
+    "language": "論文語言",
+    "citationStyle": "引用格式",
+    "collegePick": "學院",
+    "institutePick": "系所"
   },
   "hint": {
     "date": "YYYY-MM-DD",
@@ -50,5 +55,28 @@
     "date-format": "請使用 YYYY-MM-DD 格式。",
     "unknown-school": "沒有這所學校。"
   },
-  "open": "專案設定"
+  "open": "專案設定",
+  "followPreset": "跟隨學校預設",
+  "custom": "其他，自行輸入",
+  "chooseCollege": "選擇學院",
+  "chooseDepartment": "選擇系所",
+  "chooseSchoolFirst": "先選擇學校，就能從清單挑學院與系所。",
+  "customZh": "中文名稱",
+  "customEn": "英文名稱",
+  "degreeName": {
+    "碩士": "碩士",
+    "博士": "博士"
+  },
+  "lang": {
+    "chinese": "中文",
+    "english": "英文"
+  },
+  "style": {
+    "apa": "APA，心理、教育、社會科學",
+    "harvard-cite-them-right": "Harvard，商管、社會科學",
+    "chicago-author-date": "Chicago，歷史、人文",
+    "mla": "MLA，文學、語言、藝術",
+    "ieee": "IEEE，資工、電機、工程",
+    "vancouver": "Vancouver，醫學、護理"
+  }
 }
