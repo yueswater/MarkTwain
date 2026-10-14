@@ -38,6 +38,11 @@ resources/templates/
 .env*
 !.env.example
 
+# end-to-end test output
+e2e-output/
+playwright-report/
+test-results/
+
 # logs
 *.log
 npm-debug.log*

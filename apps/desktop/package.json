@@ -8,23 +8,25 @@
     "build": "electron-vite build",
     "preview": "electron-vite preview",
     "test": "jest",
-    "typecheck": "tsc --noEmit"
-  },
-  "dependencies": {
-    "@fontsource-variable/noto-sans-tc": "^5.3.1",
-    "@marktwain/schema": "workspace:*",
-    "i18next": "^26.4.4",
-    "react": "^19.3.0",
-    "react-dom": "^19.3.0",
-    "react-i18next": "^17.0.16"
+    "typecheck": "tsc --noEmit",
+    "build:unpacked": "electron-vite build && electron-builder --dir",
+    "e2e": "playwright test --config e2e/playwright.config.ts"
   },
   "devDependencies": {
+    "@fontsource-variable/noto-sans-tc": "^5.3.1",
+    "@marktwain/schema": "workspace:*",
+    "@playwright/test": "^1.64.0",
     "@types/node": "^22.0.0",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^5.2.0",
     "electron": "^38.0.0",
+    "electron-builder": "^26.15.3",
     "electron-vite": "^5.0.0",
+    "i18next": "^26.4.4",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "react-i18next": "^17.0.16",
     "vite": "^7.3.7"
   }
 }
