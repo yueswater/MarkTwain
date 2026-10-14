@@ -142,6 +142,7 @@ function WorkspaceBody({ state, build, previewOpen, onClosePreview, onOpenSettin
         <PreviewPanel
           build={build}
           saveTick={saveTick}
+          placeKey={project.path}
           onClose={onClosePreview}
           onJump={(documentId, block) => {
             setShowBibliography(false);

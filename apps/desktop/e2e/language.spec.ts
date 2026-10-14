@@ -20,8 +20,7 @@ test("switching the language takes effect at once and is remembered", async () =
       const page = await first.firstWindow();
       await expect(page.locator("main")).toContainText("離線撰寫你的論文。");
 
-      await page.getByRole("combobox").click();
-      await page.getByRole("option", { name: "English" }).click();
+      await page.getByTestId("language-toggle").click();
       await expect(page.locator("main")).toContainText("Write your thesis, offline.");
     } finally {
       await first.close();

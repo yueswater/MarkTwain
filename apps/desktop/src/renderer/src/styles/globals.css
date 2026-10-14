@@ -278,3 +278,7 @@
 /* The number of a display formula, at the right edge of the formula */
 .ProseMirror [data-type="block-math"][data-eq-number] { position: relative; }
 .ProseMirror [data-type="block-math"][data-eq-number]::after { content: "(" attr(data-eq-number) ")"; position: absolute; right: 0; top: 50%; transform: translateY(-50%); font-size: 0.9em; }
+
+/* A resizable edge shows a line that thickens under the pointer */
+.resize-handle::after { content: ""; position: absolute; top: 0; bottom: 0; left: 50%; width: 1px; transform: translateX(-50%); border-radius: 2px; background: transparent; transition: width 120ms, background-color 120ms; }
+.resize-handle:hover::after, .resize-handle:focus-visible::after, .resize-handle:active::after { width: 4px; background: color-mix(in oklab, var(--foreground) 35%, transparent); }
