@@ -1,0 +1,43 @@
+{
+  "welcome": {
+    "heading": "Write your thesis, offline.",
+    "description": "Create a new project, or open an existing .marktwain file.",
+    "new": "New project",
+    "open": "Open project",
+    "defaultName": "My thesis"
+  },
+  "workspace": {
+    "documents": "Documents",
+    "close": "Close project",
+    "add": "Add document",
+    "empty": "Select a document to start writing."
+  },
+  "kind": {
+    "title": {
+      "abstract": "Abstract",
+      "acknowledgement": "Acknowledgements",
+      "denotation": "Notation",
+      "chapter": "Chapter {{n}}",
+      "appendix": "Appendix {{n}}"
+    },
+    "name": {
+      "abstract": "Abstract",
+      "acknowledgement": "Acknowledgements",
+      "denotation": "Notation",
+      "chapter": "Chapter",
+      "appendix": "Appendix"
+    }
+  },
+  "document": {
+    "actions": "Actions for {{title}}",
+    "rename": "Rename",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "delete": "Delete",
+    "renameTitle": "Rename document",
+    "titleLabel": "Title",
+    "titleHint": "Leave empty to use the default title.",
+    "deleteTitle": "Delete this document?",
+    "deleteBody": "“{{title}}” and its content will be permanently deleted. This cannot be undone."
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "welcome": {
+    "heading": "離線撰寫你的論文。",
+    "description": "建立新專案，或開啟既有的 .marktwain 檔案。",
+    "new": "新增專案",
+    "open": "開啟專案",
+    "defaultName": "我的論文"
+  },
+  "workspace": {
+    "documents": "文件",
+    "close": "關閉專案",
+    "add": "新增文件",
+    "empty": "選擇一份文件開始撰寫。"
+  },
+  "kind": {
+    "title": {
+      "abstract": "摘要",
+      "acknowledgement": "誌謝",
+      "denotation": "符號說明",
+      "chapter": "第 {{n}} 章",
+      "appendix": "附錄 {{n}}"
+    },
+    "name": {
+      "abstract": "摘要",
+      "acknowledgement": "誌謝",
+      "denotation": "符號說明",
+      "chapter": "章",
+      "appendix": "附錄"
+    }
+  },
+  "document": {
+    "actions": "「{{title}}」的操作",
+    "rename": "重新命名",
+    "moveUp": "上移",
+    "moveDown": "下移",
+    "delete": "刪除",
+    "renameTitle": "重新命名文件",
+    "titleLabel": "標題",
+    "titleHint": "留空則使用預設標題。",
+    "deleteTitle": "要刪除這份文件嗎？",
+    "deleteBody": "「{{title}}」與其內容會被永久刪除，無法復原。"
+  }
+}
