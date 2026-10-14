@@ -12,6 +12,10 @@ export const IpcChannel = {
   DocumentList: "document:list",
   DocumentGet: "document:get",
   DocumentSave: "document:save",
+  DocumentCreate: "document:create",
+  DocumentDelete: "document:delete",
+  DocumentMove: "document:move",
+  DocumentRename: "document:rename",
 } as const;
 
 export type IpcChannel = (typeof IpcChannel)[keyof typeof IpcChannel];

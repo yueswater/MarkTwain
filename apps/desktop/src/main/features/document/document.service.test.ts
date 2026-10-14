@@ -102,3 +102,51 @@ describe("沒有開啟的專案", () => {
     expect(codeOf(() => service.save("x", ""))).toBe("project.none-open");
   });
 });
+
+describe("create / remove / move / rename", () => {
+  const ids = () => service.list().map((d) => `${d.kind}${d.position}:${d.id}`);
+
+  it("章與附錄可以有多份，位置接在後面", () => {
+    service.seedDefaults();
+    const second = service.create("chapter");
+    expect(second).toMatchObject({ kind: "chapter", position: 2, title: "" });
+    expect(service.create("appendix").position).toBe(1);
+  });
+
+  it("摘要、誌謝、符號說明各只能有一份", () => {
+    service.seedDefaults();
+    expect(codeOf(() => service.create("abstract"))).toBe("document.singleton");
+    service.create("acknowledgement");
+    expect(codeOf(() => service.create("acknowledgement"))).toBe("document.singleton");
+  });
+
+  it("刪除後同種類重新編號", () => {
+    service.seedDefaults(); // id-1 abstract, id-2 chapter1
+    service.create("chapter"); // id-3
+    service.create("chapter"); // id-4
+    service.remove("id-3");
+    expect(ids()).toEqual(["abstract1:id-1", "chapter1:id-2", "chapter2:id-4"]);
+    expect(codeOf(() => service.get("id-3"))).toBe("document.not-found");
+    expect(codeOf(() => service.remove("id-3"))).toBe("document.not-found");
+  });
+
+  it("上移與下移在同種類內交換，邊界不動", () => {
+    service.seedDefaults();
+    service.create("chapter"); // id-3 at 2
+    service.move("id-3", -1);
+    expect(ids()).toEqual(["abstract1:id-1", "chapter1:id-3", "chapter2:id-2"]);
+    service.move("id-3", -1);
+    service.move("id-2", 1);
+    expect(ids()).toEqual(["abstract1:id-1", "chapter1:id-3", "chapter2:id-2"]);
+    expect(codeOf(() => service.move("nope", 1))).toBe("document.not-found");
+  });
+
+  it("重新命名會去掉前後空白，空字串表示用預設標題", () => {
+    service.seedDefaults();
+    service.rename("id-2", "  緒論  ");
+    expect(service.get("id-2").title).toBe("緒論");
+    service.rename("id-2", "");
+    expect(service.get("id-2").title).toBe("");
+    expect(codeOf(() => service.rename("nope", "x"))).toBe("document.not-found");
+  });
+});

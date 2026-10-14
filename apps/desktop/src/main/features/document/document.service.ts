@@ -1,4 +1,4 @@
-import { DOCUMENT_KIND_ORDER, DocumentKind } from "../../../shared/enums/document-kind.enum";
+import { DOCUMENT_KIND_ORDER, DocumentKind, SINGLETON_KINDS } from "../../../shared/enums/document-kind.enum";
 import { ErrorCode } from "../../../shared/enums/error-code.enum";
 import type { DocumentData, DocumentSummary } from "../../../shared/ipc";
 import type { DatabaseSession } from "../../core/database-session";
@@ -71,5 +71,55 @@ export class DocumentService {
       this.now().getTime(),
     );
     if (!updated) throw new AppError(ErrorCode.DocumentNotFound);
+  }
+
+  create(kind: DocumentKind): DocumentSummary {
+    const repository = this.repository();
+    const existing = repository.listByKind(kind);
+    if (SINGLETON_KINDS.includes(kind) && existing.length > 0) {
+      throw new AppError(ErrorCode.DocumentSingleton);
+    }
+    const row: DocumentRow = {
+      id: this.newId(),
+      kind,
+      position: existing.length + 1,
+      title: "",
+      text: "",
+      updated_at: this.now().getTime(),
+    };
+    repository.insert(row);
+    return toSummary(row);
+  }
+
+  /** 刪除後，同種類剩下的文件重新編號為 1…n。 */
+  remove(id: string): void {
+    this.session.db.transaction(() => {
+      const repository = this.repository();
+      const row = repository.get(id);
+      if (!row || !repository.delete(id)) throw new AppError(ErrorCode.DocumentNotFound);
+      repository.listByKind(row.kind).forEach((doc, index) => {
+        if (doc.position !== index + 1) repository.updatePosition(doc.id, index + 1);
+      });
+    });
+  }
+
+  move(id: string, delta: -1 | 1): void {
+    this.session.db.transaction(() => {
+      const repository = this.repository();
+      const row = repository.get(id);
+      if (!row) throw new AppError(ErrorCode.DocumentNotFound);
+      const siblings = repository.listByKind(row.kind);
+      const index = siblings.findIndex((doc) => doc.id === id);
+      const other = siblings[index + delta];
+      if (!other) return;
+      repository.updatePosition(row.id, other.position);
+      repository.updatePosition(other.id, row.position);
+    });
+  }
+
+  rename(id: string, title: string): void {
+    if (!this.repository().updateTitle(id, title.trim())) {
+      throw new AppError(ErrorCode.DocumentNotFound);
+    }
   }
 }

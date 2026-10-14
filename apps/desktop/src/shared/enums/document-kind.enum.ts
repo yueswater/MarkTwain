@@ -9,6 +9,13 @@ export const DocumentKind = {
 
 export type DocumentKind = (typeof DocumentKind)[keyof typeof DocumentKind];
 
+/** 每個專案最多只能有一份的種類。 */
+export const SINGLETON_KINDS: readonly DocumentKind[] = [
+  DocumentKind.Abstract,
+  DocumentKind.Acknowledgement,
+  DocumentKind.Denotation,
+];
+
 /** 輸出時的順序：前置（摘要、誌謝、符號說明）、各章、附錄。 */
 export const DOCUMENT_KIND_ORDER: readonly DocumentKind[] = [
   DocumentKind.Abstract,

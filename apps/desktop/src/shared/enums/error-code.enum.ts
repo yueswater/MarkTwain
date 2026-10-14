@@ -11,6 +11,7 @@ export const ErrorCode = {
   ProjectTooNew: "project.too-new",
   ProjectNoneOpen: "project.none-open",
   DocumentNotFound: "document.not-found",
+  DocumentSingleton: "document.singleton",
 } as const;
 
 export type ErrorCode = (typeof ErrorCode)[keyof typeof ErrorCode];
