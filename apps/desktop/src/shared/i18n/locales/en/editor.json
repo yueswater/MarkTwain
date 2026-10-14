@@ -145,5 +145,11 @@
     "width": "Width",
     "widthAuto": "Original size",
     "captionPlaceholder": "Figure caption, optional"
+  },
+  "bubble": {
+    "label": "Selection tools",
+    "merge": "Merge",
+    "mergeHint": "Merge the selected cells",
+    "sizeHint": "Pick a size"
   }
 }
