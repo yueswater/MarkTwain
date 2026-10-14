@@ -63,6 +63,18 @@ describe("parseDiagnostics", () => {
     ]);
   });
 
+  it("handles Windows paths with the extended prefix, backslashes and spaces", () => {
+    const root = "C:\\Users\\me\\Temp\\marktwain 錯誤\\mt-build-x";
+    const stderr = [
+      `error: file not found (searched at \\\\?\\${root}\\figures\\a.png)`,
+      `   ┌─ \\\\?\\${root}\\helper\\figure.typ:11:8`,
+      `  while calling \`fig\` at \\\\?\\${root}\\contents\\chapter01.typ:7:1`,
+    ].join("\n");
+    const [d] = parseDiagnostics(stderr, map, root);
+    expect(d).toMatchObject({ file: "contents/chapter01.typ", line: 7, source: { documentId: "c1", block: 1 } });
+    expect(d?.message).toBe("file not found (searched at figures/a.png)");
+  });
+
   it("returns null for lines before the first block or in unknown files", () => {
     expect(locate(map, "contents/chapter01.typ", 1)).toBeNull();
     expect(locate(map, "main.typ", 5)).toBeNull();
