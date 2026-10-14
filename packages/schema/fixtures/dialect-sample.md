@@ -41,6 +41,14 @@ print("hello")
 
 : 實驗結果 {#tbl:result notes=資料來源：自行整理}
 
+| 項目 | 數值 | 備註 |
+| :--- | :---: | ---: |
+| 合併 |  |  |
+| 甲 | 乙 | 丙 |
+|  | 己 | 戊 |
+
+: 合併儲存格與版面 {#tbl:layout cells=2.1:colspan=3;3.1:rowspan=2,valign=top heights=2:24pt style=grid widths=20%,auto,30%}
+
 ::: {.abstract-zh}
 摘要內容。
 :::

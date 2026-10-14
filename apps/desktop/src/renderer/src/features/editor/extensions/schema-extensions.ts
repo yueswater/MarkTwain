@@ -10,6 +10,7 @@ import { Div } from "./nodes/div";
 import { FigureGroup } from "./nodes/figure-group";
 import { Figure } from "./nodes/figure";
 import { MathInputRules } from "./math-input";
+import { TableExtras } from "./table-extras";
 import { Footnote } from "./nodes/footnote";
 import { CjkBold, CjkItalic, CjkStrike } from "./marks";
 
@@ -44,7 +45,9 @@ export function createSchemaExtensions(options: SchemaExtensionOptions = {}): Ex
       blockOptions: onMathClick ? { onClick: (node, pos) => onMathClick("block", node.attrs.latex, pos) } : undefined,
     }),
     MathInputRules,
-    Table.configure({ resizable: false }),
+    // Columns can be dragged, TableExtras copies the widths into the document
+    Table.configure({ resizable: true, allowTableNodeSelection: true }),
+    TableExtras,
     TableRow,
     // A cell holds a single paragraph, pipe tables have no multi paragraph cells
     TableHeader.extend({ content: "paragraph" }),

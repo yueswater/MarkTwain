@@ -232,3 +232,12 @@ describe("tables with style, widths, heights and merged cells", () => {
     expect(serializeMarkdown(parseMarkdown(md))).toBe("| a | b |\n| --- | --- |\n| 1 | 2 |\n");
   });
 });
+
+describe("spans are clamped to the table", () => {
+  it("a rowspan or colspan past the edge is shortened", () => {
+    const md = "| a | b |\n| --- | --- |\n| 1 | 2 |\n\n: {cells=2.1:colspan=5,rowspan=4}\n";
+    const parsed = parseMarkdown(md).content[0] as { content: { content: { attrs: Record<string, unknown> }[] }[] };
+    expect(parsed.content[1]?.content[0]?.attrs).toMatchObject({ colspan: 2, rowspan: 1 });
+    expect(parsed.content).toHaveLength(2);
+  });
+});

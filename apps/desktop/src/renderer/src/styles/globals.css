@@ -200,3 +200,23 @@
 .ProseMirror figure img { display: inline-block; max-width: 100%; height: auto; border-radius: 0.25rem; }
 .ProseMirror figcaption { margin-top: 0.5rem; font-size: 0.875rem; color: var(--muted-foreground); }
 .ProseMirror figure.ProseMirror-selectednode { outline: 2px solid var(--ring); outline-offset: 2px; }
+
+/* Tables, three-line draws only the top, header and bottom rules and grid draws every line */
+.ProseMirror .tableWrapper { overflow-x: auto; margin: 0.75rem 0; }
+.ProseMirror .tableWrapper table { margin: 0; }
+.ProseMirror .tableWrapper[data-table-style="three-line"] th,
+.ProseMirror .tableWrapper[data-table-style="three-line"] td { border: none; }
+.ProseMirror .tableWrapper[data-table-style="three-line"] table { border-top: 2px solid var(--foreground); border-bottom: 2px solid var(--foreground); }
+.ProseMirror .tableWrapper[data-table-style="three-line"] tr:first-child th,
+.ProseMirror .tableWrapper[data-table-style="three-line"] tr:first-child td { background: transparent; border-bottom: 1px solid var(--foreground); }
+.ProseMirror table td[style*="valign"], .ProseMirror table th[style*="valign"] { vertical-align: middle; }
+.ProseMirror td[data-valign="top"], .ProseMirror th[data-valign="top"] { vertical-align: top; }
+.ProseMirror td[data-valign="middle"], .ProseMirror th[data-valign="middle"] { vertical-align: middle; }
+.ProseMirror td[data-valign="bottom"], .ProseMirror th[data-valign="bottom"] { vertical-align: bottom; }
+.ProseMirror td[data-align="left"], .ProseMirror th[data-align="left"] { text-align: left; }
+.ProseMirror td[data-align="center"], .ProseMirror th[data-align="center"] { text-align: center; }
+.ProseMirror td[data-align="right"], .ProseMirror th[data-align="right"] { text-align: right; }
+.ProseMirror .column-resize-handle { position: absolute; right: -2px; top: 0; bottom: 0; width: 4px; background: var(--ring); pointer-events: none; }
+.ProseMirror.resize-cursor { cursor: col-resize; }
+.ProseMirror .selectedCell::after { content: ""; position: absolute; inset: 0; background: color-mix(in oklab, var(--ring) 20%, transparent); pointer-events: none; }
+.ProseMirror td, .ProseMirror th { position: relative; }

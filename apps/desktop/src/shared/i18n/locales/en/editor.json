@@ -100,7 +100,22 @@
     "alignLeft": "Align left",
     "alignCenter": "Align center",
     "alignRight": "Align right",
-    "caption": "Table caption and notes"
+    "caption": "Table caption and notes",
+    "merge": "Merge cells",
+    "split": "Split cell",
+    "styleThreeLine": "Switch to grid lines",
+    "styleGrid": "Switch to three-line style",
+    "valignTop": "Align to top",
+    "valignMiddle": "Align to middle",
+    "valignBottom": "Align to bottom",
+    "rowHeight": "Row height",
+    "rowHeightTitle": "Row height",
+    "rowHeightLabel": "Height",
+    "rowHeightHint": "A length such as 30pt, 1cm or 2em. Leave empty for automatic height.",
+    "rowHeightInvalid": "Use a number with a unit such as pt, cm, mm, in or em.",
+    "alignColumnLeft": "Align column left",
+    "alignColumnCenter": "Align column center",
+    "alignColumnRight": "Align column right"
   },
   "caption": {
     "tableTitle": "Table caption",

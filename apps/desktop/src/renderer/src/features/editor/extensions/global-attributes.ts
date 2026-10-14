@@ -22,9 +22,28 @@ export const GlobalAttributes = Extension.create({
       { types: ["link"], attributes: { title: text("title") } },
       {
         types: ["table"],
-        attributes: { label: text("label"), caption: text("caption", ""), notes: text("notes", "") },
+        attributes: {
+          label: text("label"),
+          caption: text("caption", ""),
+          notes: text("notes", ""),
+          style: text("style", "three-line"),
+          widths: text("widths", ""),
+        },
       },
-      { types: ["tableHeader", "tableCell"], attributes: { align: text("align") } },
+      {
+        types: ["tableRow"],
+        attributes: {
+          height: {
+            default: null,
+            parseHTML: (element: HTMLElement) => element.getAttribute("data-height"),
+            renderHTML: (attributes: Record<string, unknown>) =>
+              attributes.height
+                ? { "data-height": String(attributes.height), style: `height: ${String(attributes.height)}` }
+                : {},
+          },
+        },
+      },
+      { types: ["tableHeader", "tableCell"], attributes: { align: text("align"), valign: text("valign") } },
       { types: ["blockMath"], attributes: { label: text("label") } },
     ];
   },
