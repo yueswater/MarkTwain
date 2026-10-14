@@ -3,6 +3,7 @@ import { Plugin, PluginKey } from "@tiptap/pm/state";
 import { columnResizingPluginKey } from "@tiptap/pm/tables";
 import type { EditorView } from "@tiptap/pm/view";
 import { EDITOR_TABLE_PX } from "../table-commands";
+import { createValueTip } from "./value-tip";
 
 /** Pixels to points, a CSS pixel is 0.75 point. */
 export const PX_TO_PT = 0.75;
@@ -62,21 +63,12 @@ export const TableResize = Extension.create<{ labels: ResizeLabels }>({
         key,
         view(view) {
           const doc = view.dom.ownerDocument;
-          const tip = doc.createElement("div");
-          tip.setAttribute("aria-live", "polite");
-          tip.setAttribute("data-testid", "resize-value");
-          tip.className = "pointer-events-none fixed z-50 hidden rounded-md bg-foreground px-2 py-1 text-xs font-medium text-background shadow-md tabular-nums";
-          doc.body.appendChild(tip);
+          const tip = createValueTip(doc);
           let drag: RowDrag | null = null;
           let pointer = { x: 0, y: 0 };
 
-          const show = (text: string) => {
-            tip.textContent = text;
-            tip.classList.remove("hidden");
-            tip.style.left = `${pointer.x + 14}px`;
-            tip.style.top = `${pointer.y + 14}px`;
-          };
-          const hide = () => tip.classList.add("hidden");
+          const show = (text: string) => tip.show(text, pointer.x, pointer.y);
+          const hide = () => tip.hide();
 
           const onMove = (event: MouseEvent) => {
             pointer = { x: event.clientX, y: event.clientY };
@@ -119,7 +111,7 @@ export const TableResize = Extension.create<{ labels: ResizeLabels }>({
               view.dom.removeEventListener("mousedown", onDown, true);
               doc.removeEventListener("mousemove", onMove);
               doc.removeEventListener("mouseup", onUp);
-              tip.remove();
+              tip.destroy();
             },
           };
         },

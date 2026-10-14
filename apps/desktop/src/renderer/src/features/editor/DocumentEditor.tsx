@@ -22,6 +22,7 @@ import {
 } from "./AtomDialogs";
 import { CaptionDialog, type CaptionTarget } from "./CaptionDialog";
 import { FigureDialog, type FigureTarget } from "./FigureDialog";
+import { CropDialog } from "./CropDialog";
 import { EditorBubbleMenu } from "./EditorBubbleMenu";
 import { TableInsertDialog } from "./TableInsertDialog";
 import { MathDialog, type MathTarget } from "./MathDialog";
@@ -90,6 +91,7 @@ function EditorSurface({
   const [atom, setAtom] = useState<AtomTarget | null>(null);
   const [caption, setCaption] = useState<CaptionTarget | null>(null);
   const [tableDialog, setTableDialog] = useState(false);
+  const [crop, setCrop] = useState<{ pos: number; src: string } | null>(null);
   const [figure, setFigure] = useState<FigureTarget | null>(null);
   const [importError, setImportError] = useState<string | null>(null);
   const [unlabeled, setUnlabeled] = useState<UnlabeledTarget[]>([]);
@@ -122,6 +124,7 @@ function EditorSurface({
       extensions: [
         ...createSchemaExtensions({
           onMathClick: (kind, latex, pos) => setMath({ kind, latex, pos }),
+          figureLabel: (percent) => tRef.current("figure.dragWidth", { value: percent }),
           resizeLabels: {
             width: (percent) => tRef.current("table.dragWidth", { value: percent }),
             height: (points) => tRef.current("table.dragHeight", { value: points }),
@@ -139,17 +142,14 @@ function EditorSurface({
       onUpdate: ({ editor: e }) => autosaver.schedule(() => serializeMarkdown(e.getJSON())),
       editorProps: {
         attributes: { "aria-label": doc.title || doc.kind, spellcheck: "false" },
+        // A double click on a figure edits its caption, a single click only selects it
+        handleDoubleClickOn: (_view, _pos, node, nodePos) => {
+          if (node.type.name !== "figure") return false;
+          setFigure({ pos: nodePos, src: String(node.attrs.src), caption: String(node.attrs.caption ?? ""), width: (node.attrs.width as string | null) ?? null });
+          return true;
+        },
         // Open the edit dialog when a footnote, citation or cross-reference is clicked
         handleClickOn: (_view, _pos, node, nodePos, _event, direct) => {
-          if (direct && node.type.name === "figure") {
-            setFigure({
-              pos: nodePos,
-              src: String(node.attrs.src),
-              caption: String(node.attrs.caption ?? ""),
-              width: (node.attrs.width as string | null) ?? null,
-            });
-            return true;
-          }
           if (!direct || !ATOM_TYPES.has(node.type.name)) return false;
           if (node.type.name === "footnote") {
             setAtom({ type: "footnote", pos: nodePos, text: String(node.attrs.text) });
@@ -293,7 +293,14 @@ function EditorSurface({
           });
         }}
       />
-      <EditorBubbleMenu editor={editor} onInsertMath={() => setMath({ kind: "inline", latex: "", pos: null })} />
+      <EditorBubbleMenu
+        editor={editor}
+        onInsertMath={() => setMath({ kind: "inline", latex: "", pos: null })}
+        onEditFigure={(pos, attrs) =>
+          setFigure({ pos, src: String(attrs.src), caption: String(attrs.caption ?? ""), width: (attrs.width as string | null) ?? null })
+        }
+        onCropFigure={(pos, src) => setCrop({ pos, src })}
+      />
       <div className="min-h-0 flex-1 overflow-y-auto">
         <EditorContent
           editor={editor}
@@ -364,6 +371,18 @@ function EditorSurface({
             if (caption) editor.chain().updateAttributes("table", { caption }).run();
           }}
           onClose={() => setTableDialog(false)}
+          onRestoreFocus={() => editor.commands.focus()}
+        />
+      )}
+      {crop && (
+        <CropDialog
+          src={crop.src}
+          onCrop={async (png) => {
+            const { src } = await api.invoke(IpcChannel.AssetStoreImage, { data: png });
+            const node = editor.state.doc.nodeAt(crop.pos);
+            if (node) editor.view.dispatch(editor.state.tr.setNodeMarkup(crop.pos, undefined, { ...node.attrs, src }));
+          }}
+          onClose={() => setCrop(null)}
           onRestoreFocus={() => editor.commands.focus()}
         />
       )}

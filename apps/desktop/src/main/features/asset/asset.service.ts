@@ -49,6 +49,18 @@ export class AssetService {
     return path;
   }
 
+  /** Stores PNG bytes from the editor, the path comes from the hash like it does for imported images. */
+  storePng(data: Uint8Array): string {
+    const png = Buffer.from(data);
+    const isPng = png.length > 8 && png.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]));
+    if (!isPng) throw new AppError(ErrorCode.AssetUnsupported);
+    if (png.length > IMAGE_MAX_BYTES) throw new AppError(ErrorCode.AssetTooLarge, { max: String(IMAGE_MAX_BYTES / 1024 / 1024) });
+    const hash = createHash("sha256").update(png).digest("hex").slice(0, 16);
+    const path = `images/${hash}.png`;
+    new AssetRepository(this.session.db).put(path, png, this.now().getTime());
+    return path;
+  }
+
   /** Reads a project file, returns null instead of throwing when no project is open or the file is missing, for the protocol handler. */
   read(path: string): { data: Uint8Array; mime: string } | null {
     if (!this.session.isOpen) return null;

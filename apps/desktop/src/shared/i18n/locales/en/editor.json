@@ -149,12 +149,27 @@
     "captionHint": "Inline Markdown is allowed. Without a caption the image has no number.",
     "width": "Width",
     "widthAuto": "Original size",
-    "captionPlaceholder": "Figure caption, optional"
+    "captionPlaceholder": "Figure caption, optional",
+    "dragWidth": "Width {{value}}%"
   },
   "bubble": {
     "label": "Selection tools",
     "merge": "Merge",
     "mergeHint": "Merge the selected cells",
     "sizeHint": "Pick a size"
+  },
+  "crop": {
+    "title": "Crop the picture",
+    "hint": "Drag the frame or its corners. The original picture stays in the project.",
+    "apply": "Crop",
+    "reset": "Whole picture",
+    "failed": "The picture could not be cropped."
+  },
+  "figureMenu": {
+    "label": "Picture tools",
+    "edit": "Edit caption",
+    "crop": "Crop",
+    "width": "Width {{value}}",
+    "remove": "Remove the picture"
   }
 }
