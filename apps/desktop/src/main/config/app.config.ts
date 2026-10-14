@@ -31,3 +31,6 @@ export const TEMPLATE_DIR_ENV = "MARKTWAIN_TEMPLATE_DIR";
 export const PREVIEW_SCHEME = "marktwain-preview";
 
 export const TEST_DIALOG_PATH_ENV = "MARKTWAIN_TEST_DIALOG_PATH";
+
+/** Test hook: when set, export dialogs are skipped and this path is used. */
+export const TEST_EXPORT_PATH_ENV = "MARKTWAIN_TEST_EXPORT_PATH";

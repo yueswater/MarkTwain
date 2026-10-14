@@ -9,10 +9,19 @@
   },
   "filter": {
     "project": "MarkTwain 專案",
-    "image": "圖片"
+    "image": "圖片",
+    "pdf": "PDF 文件"
   },
   "openImage": {
     "title": "選擇圖片",
     "button": "插入"
+  },
+  "savePdf": {
+    "title": "匯出 PDF",
+    "button": "匯出"
+  },
+  "exportFolder": {
+    "title": "選擇匯出專案的位置",
+    "button": "匯出到這裡"
   }
 }

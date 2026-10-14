@@ -1,6 +1,6 @@
 import { spawn } from "node:child_process";
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync, existsSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import { basename, dirname, join } from "node:path";
 import { collectTargets, parseMarkdown } from "@marktwain/schema";
 import { renderTypstFile, toIr } from "@marktwain/render";
 import { completeConfig } from "./config";
@@ -34,54 +34,94 @@ function run(command: string, args: string[], cwd: string, timeoutMs: number): P
   });
 }
 
-/** Builds the thesis PDF from the project documents with the Typst template. */
-export async function buildTypst(input: BuildInput): Promise<BuildResult> {
-  const root = mkdtempSync(join(input.workDir, "mt-build-"));
+type Prepared = {
+  missing: string[];
+  lineMap: LineMap;
+  mathFailures: string[];
+  citationFallbacks: string[];
+};
+
+/** Template entries that never belong in a generated project. */
+const NOT_COPIED = new Set([".git", "docs", "tests", "contents", "figures", "node_modules", "config.yml", "main.typ", "main.en.typ", "main.pdf", "main.en.pdf"]);
+
+/**
+ * Writes config, contents, figures and main.typ into root.
+ * With link the template folders are linked, otherwise the whole template is copied.
+ */
+function prepare(input: BuildInput, root: string, link: boolean): Prepared {
   const mathFailures: string[] = [];
   const citationFallbacks: string[] = [];
-  try {
+
+  if (link) {
     // Junctions need no privileges on Windows and behave as symlinks elsewhere.
     for (const name of SHARED) {
       const source = join(input.templateDir, name);
       if (existsSync(source)) symlinkSync(source, join(root, name), "junction");
     }
-    const completed = completeConfig(input.config, new Date().toISOString().slice(0, 10));
-    writeText(root, "config.yml", completed.text);
-    for (const file of input.files) {
-      const target = join(root, "figures", file.path);
-      mkdirSync(dirname(target), { recursive: true });
-      writeFileSync(target, file.data);
+  } else {
+    for (const name of readdirSync(input.templateDir)) {
+      if (NOT_COPIED.has(name)) continue;
+      cpSync(join(input.templateDir, name), join(root, name), { recursive: true, dereference: true });
     }
-    for (const file of input.bibliography) {
-      const target = join(root, "contents/back", file.path);
-      mkdirSync(dirname(target), { recursive: true });
-      writeFileSync(target, file.data);
-    }
+  }
 
-    // Labels defined anywhere in the project, so references to missing targets degrade to text.
-    const parsed = input.documents.map((doc) => ({ doc, json: parseMarkdown(doc.text) }));
-    const knownLabels = new Set(parsed.flatMap(({ json, doc }) => collectTargets(json, doc.id).targets.map((t) => t.label)));
+  const completed = completeConfig(input.config, new Date().toISOString().slice(0, 10));
+  writeText(root, "config.yml", completed.text);
+  for (const file of input.files) {
+    const target = join(root, "figures", file.path);
+    mkdirSync(dirname(target), { recursive: true });
+    writeFileSync(target, file.data);
+  }
+  for (const file of input.bibliography) {
+    const target = join(root, "contents/back", file.path);
+    mkdirSync(dirname(target), { recursive: true });
+    writeFileSync(target, file.data);
+  }
 
-    const paths = assignPaths(input.documents);
-    const lineMap: LineMap = new Map();
-    let firstAppendix = true;
-    for (const { doc, json } of parsed) {
-      const path = paths.get(doc.id) as string;
-      const { document } = toIr(json, { documentId: doc.id, knownLabels });
-      const file = renderTypstFile(document, {
-        kind: doc.kind,
-        firstAppendix: doc.kind === "appendix" ? firstAppendix : undefined,
-        imagePath: (src) => `/figures/${src}`,
-        onMathFailure: (latex) => mathFailures.push(latex),
-        hasBibliography: input.bibliography.length > 0,
-        onCitationFallback: (keys) => citationFallbacks.push(...keys),
-      });
-      if (doc.kind === "appendix") firstAppendix = false;
-      writeText(root, path, file.text);
-      lineMap.set(path, { documentId: doc.id, blockLines: file.blockLines });
-    }
-    writeText(root, "main.typ", renderMain(input.documents, paths, input.bibliography.length > 0));
+  // Labels defined anywhere in the project, so references to missing targets degrade to text.
+  const parsed = input.documents.map((doc) => ({ doc, json: parseMarkdown(doc.text) }));
+  const knownLabels = new Set(parsed.flatMap(({ json, doc }) => collectTargets(json, doc.id).targets.map((t) => t.label)));
 
+  const paths = assignPaths(input.documents);
+  const lineMap: LineMap = new Map();
+  let firstAppendix = true;
+  for (const { doc, json } of parsed) {
+    const path = paths.get(doc.id) as string;
+    const { document } = toIr(json, { documentId: doc.id, knownLabels });
+    const file = renderTypstFile(document, {
+      kind: doc.kind,
+      firstAppendix: doc.kind === "appendix" ? firstAppendix : undefined,
+      imagePath: (src) => `/figures/${src}`,
+      onMathFailure: (latex) => mathFailures.push(latex),
+      hasBibliography: input.bibliography.length > 0,
+      onCitationFallback: (keys) => citationFallbacks.push(...keys),
+    });
+    if (doc.kind === "appendix") firstAppendix = false;
+    writeText(root, path, file.text);
+    lineMap.set(path, { documentId: doc.id, blockLines: file.blockLines });
+  }
+  writeText(root, "main.typ", renderMain(input.documents, paths, input.bibliography.length > 0));
+  return { missing: completed.missing, lineMap, mathFailures, citationFallbacks };
+}
+
+function warnings(prepared: Prepared): Diagnostic[] {
+  const empty = { file: null, line: null, column: null, source: null };
+  return [
+    ...prepared.missing.map<Diagnostic>((field) => ({ severity: "warning", code: "config-missing", message: field, ...empty })),
+    ...[...new Set(prepared.citationFallbacks)].map<Diagnostic>((key) => ({
+      severity: "warning",
+      code: "citation-no-bibliography",
+      message: key,
+      ...empty,
+    })),
+  ];
+}
+
+/** Builds the thesis PDF from the project documents with the Typst template. */
+export async function buildTypst(input: BuildInput): Promise<BuildResult> {
+  const root = mkdtempSync(join(input.workDir, "mt-build-"));
+  try {
+    const prepared = prepare(input, root, true);
     const fonts = join(input.templateDir, "fonts");
     const { code, stderr } = await run(
       input.typst,
@@ -89,27 +129,8 @@ export async function buildTypst(input: BuildInput): Promise<BuildResult> {
       root,
       input.timeoutMs ?? 120_000,
     );
-    const diagnostics = [
-      ...completed.missing.map<Diagnostic>((field) => ({
-        severity: "warning",
-        code: "config-missing",
-        message: field,
-        file: null,
-        line: null,
-        column: null,
-        source: null,
-      })),
-      ...[...new Set(citationFallbacks)].map<Diagnostic>((key) => ({
-        severity: "warning",
-        code: "citation-no-bibliography",
-        message: key,
-        file: null,
-        line: null,
-        column: null,
-        source: null,
-      })),
-      ...parseDiagnostics(stderr, lineMap, root),
-    ];
+    const diagnostics = [...warnings(prepared), ...parseDiagnostics(stderr, prepared.lineMap, root)];
+    const mathFailures = prepared.mathFailures;
     if (code === 0 && existsSync(join(root, "out.pdf"))) {
       return { ok: true, pdf: readFileSync(join(root, "out.pdf")), diagnostics, mathFailures };
     }
@@ -127,4 +148,17 @@ export async function buildTypst(input: BuildInput): Promise<BuildResult> {
   } finally {
     if (!input.keep) rmSync(root, { recursive: true, force: true });
   }
+}
+
+/**
+ * Writes the complete Typst project, template included, into a new folder.
+ * It compiles on its own with `typst compile main.typ`, no MarkTwain needed.
+ */
+export function exportTypstProject(input: BuildInput, destination: string): { diagnostics: Diagnostic[]; mathFailures: string[] } {
+  if (existsSync(destination) && readdirSync(destination).length > 0) {
+    throw new Error(`${basename(destination)} is not empty`);
+  }
+  mkdirSync(destination, { recursive: true });
+  const prepared = prepare(input, destination, false);
+  return { diagnostics: warnings(prepared), mathFailures: prepared.mathFailures };
 }

@@ -1,7 +1,17 @@
-import { AlertTriangleIcon, XIcon } from "lucide-react";
+import { AlertTriangleIcon, DownloadIcon, XIcon } from "lucide-react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { IpcChannel } from "../../../../shared/enums/ipc-channel.enum";
 import type { BuildDiagnostic } from "../../../../shared/ipc";
+import { api } from "../../shared/api";
+import { errorMessage } from "../../shared/error-message";
 import type { BuildState } from "./use-build";
 
 type Props = {
@@ -16,12 +26,23 @@ function message(d: BuildDiagnostic): string {
 
 export function PreviewPanel({ build, onClose, onJump }: Props) {
   const { t } = useTranslation("build");
+  const { t: tRoot } = useTranslation();
+  const [exportNote, setExportNote] = useState<{ ok: boolean; text: string } | null>(null);
   const { outcome, building, error } = build;
   const errors = outcome?.diagnostics.filter((d) => d.severity === "error") ?? [];
   const warnings = outcome?.diagnostics.filter((d) => d.severity === "warning") ?? [];
   // One line for all unfilled settings, not one per field
   const uncited = warnings.filter((d) => d.code === "citation-no-bibliography").map((d) => d.message);
   const missingFields = warnings.filter((d) => d.code === "config-missing").map((d) => d.message);
+
+  async function exportTo(channel: typeof IpcChannel.ExportPdf | typeof IpcChannel.ExportProject): Promise<void> {
+    try {
+      const result = await api.invoke(channel);
+      setExportNote(result ? { ok: true, text: t("exported", { path: result.path }) } : null);
+    } catch (e) {
+      setExportNote({ ok: false, text: errorMessage(tRoot, e) });
+    }
+  }
 
   return (
     <aside className="flex w-[44%] min-w-80 shrink-0 flex-col border-l" aria-label={t("preview")}>
@@ -31,6 +52,22 @@ export function PreviewPanel({ build, onClose, onJump }: Props) {
           <Button size="sm" onClick={() => void build.run()} disabled={building}>
             {building ? t("building") : t("build")}
           </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm">
+                <DownloadIcon aria-hidden="true" />
+                {t("export")}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem disabled={!outcome?.previewUrl} onSelect={() => void exportTo(IpcChannel.ExportPdf)}>
+                {t("exportPdf")}
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => void exportTo(IpcChannel.ExportProject)}>
+                {t("exportProject")}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <Button variant="ghost" size="icon-sm" aria-label={t("close")} onClick={onClose}>
             <XIcon aria-hidden="true" />
           </Button>
@@ -40,6 +77,15 @@ export function PreviewPanel({ build, onClose, onJump }: Props) {
       {error && (
         <p role="alert" className="border-y bg-destructive/5 px-3 py-2 text-sm text-destructive select-text">
           {error}
+        </p>
+      )}
+
+      {exportNote && (
+        <p
+          role={exportNote.ok ? "status" : "alert"}
+          className={`border-y px-3 py-2 text-sm select-text ${exportNote.ok ? "text-muted-foreground" : "bg-destructive/5 text-destructive"}`}
+        >
+          {exportNote.text}
         </p>
       )}
 

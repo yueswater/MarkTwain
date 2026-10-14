@@ -18,6 +18,10 @@
       "typst-missing": "Typst was not found. Install it or set MARKTWAIN_TYPST to its path.",
       "template-missing": "The thesis template was not found. Run pnpm templates:fetch."
     },
+    "export": {
+      "no-pdf": "Build the PDF before exporting it.",
+      "failed": "The project could not be exported: {{reason}}"
+    },
     "config": {
       "invalid": "The project settings (config.yml) are not valid YAML."
     },

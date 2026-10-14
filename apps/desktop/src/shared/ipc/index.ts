@@ -1,5 +1,6 @@
 import type { AppContract } from "./app";
 import type { BuildContract } from "./build";
+import type { ExportContract } from "./export";
 import type { ConfigContract } from "./config";
 import type { DialogContract } from "./dialog";
 import type { DocumentContract } from "./document";
@@ -20,7 +21,7 @@ export type { ConfigState } from "./config";
 export type { LabelIndex, LabelTarget } from "./label";
 
 /** 所有功能的契約合併於此；新增 feature 時在這裡加 `& XxxContract`。 */
-export type IpcContract = AppContract & SettingsContract & ProjectContract & DocumentContract & DialogContract & LabelContract & AssetContract & ConfigContract & BuildContract;
+export type IpcContract = AppContract & SettingsContract & ProjectContract & DocumentContract & DialogContract & LabelContract & AssetContract & ConfigContract & BuildContract & ExportContract;
 
 export type IpcChannelName = keyof IpcContract;
 export type IpcRequest<C extends IpcChannelName> = IpcContract[C]["req"];

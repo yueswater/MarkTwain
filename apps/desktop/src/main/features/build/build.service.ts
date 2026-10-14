@@ -1,5 +1,6 @@
-import { buildTypst, type BuildResult } from "@marktwain/build";
-import { existsSync } from "node:fs";
+import { buildTypst, exportTypstProject, type BuildInput, type BuildResult } from "@marktwain/build";
+import { existsSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { ErrorCode } from "../../../shared/enums/error-code.enum";
 import type { BuildOutcome } from "../../../shared/ipc";
@@ -12,6 +13,7 @@ import type { DocumentService } from "../document/document.service";
 export type BuildPaths = { typst: string; templateDir: string };
 
 type Runner = typeof buildTypst;
+type Exporter = typeof exportTypstProject;
 
 /** Builds the thesis PDF and keeps the latest one for the preview. */
 export class BuildService {
@@ -26,6 +28,7 @@ export class BuildService {
     private readonly paths: () => BuildPaths,
     private readonly run: Runner = buildTypst,
     private readonly workDir: string = tmpdir(),
+    private readonly exporter: Exporter = exportTypstProject,
   ) {}
 
   /** PDF bytes of the latest successful build, for the preview protocol. */
@@ -33,27 +36,54 @@ export class BuildService {
     return this.latest;
   }
 
-  async build(): Promise<BuildOutcome> {
-    if (this.running) throw new AppError(ErrorCode.BuildBusy);
+  /** Everything the builder needs, read from the open project. */
+  private input(): BuildInput {
     const { typst, templateDir } = this.paths();
     if (!existsSync(templateDir)) throw new AppError(ErrorCode.BuildTemplateMissing);
+    const documents = this.documents.list().map((summary) => {
+      const doc = this.documents.get(summary.id);
+      return { id: doc.id, kind: doc.kind, text: doc.text };
+    });
+    return {
+      templateDir,
+      workDir: this.workDir,
+      typst,
+      config: this.config.text(),
+      documents,
+      files: new AssetRepository(this.session.db).list(),
+      bibliography: [],
+    };
+  }
+
+  /** Name for suggested file names, the project title or a fallback. */
+  suggestedName(): string {
+    return this.config.get().fields.title.trim() || "thesis";
+  }
+
+  savePdf(path: string): void {
+    if (!this.latest) throw new AppError(ErrorCode.ExportNoPdf);
+    writeFileSync(path, this.latest);
+  }
+
+  /** Writes the standalone Typst project into a new folder inside parent and returns its path. */
+  exportProject(parent: string): string {
+    const destination = join(parent, `${this.suggestedName()}-typst`);
+    try {
+      this.exporter(this.input(), destination);
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      throw new AppError(ErrorCode.ExportFailed, { reason: error instanceof Error ? error.message : String(error) });
+    }
+    return destination;
+  }
+
+  async build(): Promise<BuildOutcome> {
+    if (this.running) throw new AppError(ErrorCode.BuildBusy);
+    const input = this.input();
 
     this.running = true;
     try {
-      const documents = this.documents.list().map((summary) => {
-        const doc = this.documents.get(summary.id);
-        return { id: doc.id, kind: doc.kind, text: doc.text };
-      });
-      const files = new AssetRepository(this.session.db).list();
-      const result: BuildResult = await this.run({
-        templateDir,
-        workDir: this.workDir,
-        typst,
-        config: this.config.text(),
-        documents,
-        files,
-        bibliography: [],
-      });
+      const result: BuildResult = await this.run(input);
 
       if (!result.ok && result.diagnostics.some((d) => /ENOENT/.test(d.message))) {
         throw new AppError(ErrorCode.BuildTypstMissing);

@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "@jest/globals";
 import type { BuildInput, BuildResult } from "@marktwain/build";
-import { mkdtempSync } from "node:fs";
+import { mkdtempSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { DatabaseSession } from "../../core/database-session";
@@ -102,5 +102,33 @@ describe("BuildService", () => {
     expect(await code(() => missing.build())).toBe("build.template-missing");
     const noTypst = service({ ok: false, diagnostics: [{ severity: "error", message: "spawn typst ENOENT", file: null, line: null, column: null, source: null }], mathFailures: [] });
     expect(await code(() => noTypst.build())).toBe("build.typst-missing");
+  });
+
+  describe("export", () => {
+    it("saves the latest PDF and refuses when nothing was built", async () => {
+      const s = service({ ok: true, pdf: new Uint8Array([7, 8]), diagnostics: [], mathFailures: [] });
+      const target = join(templateDir, "out.pdf");
+      expect(await code(async () => s.savePdf(target))).toBe("export.no-pdf");
+      await s.build();
+      s.savePdf(target);
+      expect([...readFileSync(target)]).toEqual([7, 8]);
+    });
+
+    it("exports the project into a folder named after the title", () => {
+      const calls: string[] = [];
+      const s = new BuildService(session, documents, config, () => ({ typst: "typst", templateDir }), undefined, undefined, (_input, destination) => {
+        calls.push(destination);
+        return { diagnostics: [], mathFailures: [] };
+      });
+      expect(s.exportProject("/parent")).toBe(join("/parent", "我的論文-typst"));
+      expect(calls).toEqual([join("/parent", "我的論文-typst")]);
+    });
+
+    it("wraps exporter failures in a coded error", async () => {
+      const s = new BuildService(session, documents, config, () => ({ typst: "typst", templateDir }), undefined, undefined, () => {
+        throw new Error("not empty");
+      });
+      expect(await code(async () => s.exportProject("/parent"))).toBe("export.failed");
+    });
   });
 });
