@@ -7,6 +7,7 @@ export const ErrorCode = {
   InvalidLocale: "settings.invalid-locale",
   ProjectNotFound: "project.not-found",
   ProjectInvalid: "project.invalid",
+  ProjectExists: "project.exists",
   ProjectTooNew: "project.too-new",
   ProjectNoneOpen: "project.none-open",
   DocumentNotFound: "document.not-found",

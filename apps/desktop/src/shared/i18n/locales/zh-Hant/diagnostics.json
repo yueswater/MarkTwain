@@ -10,7 +10,8 @@
       "not-found": "找不到這個專案檔。",
       "invalid": "這不是有效的 MarkTwain 專案檔。",
       "too-new": "這個專案檔是由較新版本的 MarkTwain 建立的（檔案格式版本 {{found}}，目前支援到 {{supported}}）。請先更新 MarkTwain。",
-      "none-open": "目前沒有開啟的專案。"
+      "none-open": "目前沒有開啟的專案。",
+      "exists": "這個位置已經有檔案了，不能覆蓋。"
     },
     "document": {
       "not-found": "找不到這份文件。"

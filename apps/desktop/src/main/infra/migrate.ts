@@ -47,3 +47,12 @@ export function migrate(db: Database, migrations: Migration[]): MigrateResult {
   });
   return { from, to: migrations.length };
 }
+
+/** 資料庫裡沒有任何使用者建立的資料表（用來辨認「不是 MarkTwain 的檔案」）。 */
+export function isEmptyDatabase(db: Database): boolean {
+  return (
+    db.get<{ n: number }>(
+      "SELECT count(*) AS n FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%'",
+    )?.n === 0
+  );
+}

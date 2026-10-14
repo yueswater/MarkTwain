@@ -10,7 +10,8 @@
       "not-found": "The project file could not be found.",
       "invalid": "This is not a valid MarkTwain project file.",
       "too-new": "This project was created by a newer version of MarkTwain (file format version {{found}}; this version supports up to {{supported}}). Please update MarkTwain.",
-      "none-open": "No project is open."
+      "none-open": "No project is open.",
+      "exists": "A file already exists at that location and will not be overwritten."
     },
     "document": {
       "not-found": "The document could not be found."

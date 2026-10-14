@@ -25,6 +25,7 @@ export function openDatabase(path: string): Database {
   const db = new DatabaseSync(path);
   db.exec("PRAGMA foreign_keys = ON");
   let inTransaction = false;
+  let closed = false;
 
   return {
     exec: (sql) => db.exec(sql),
@@ -58,6 +59,10 @@ export function openDatabase(path: string): Database {
       }
     },
 
-    close: () => db.close(),
+    close() {
+      if (closed) return;
+      closed = true;
+      db.close();
+    },
   };
 }

@@ -1,0 +1,14 @@
+import type { Database } from "../../infra/db";
+
+/** project 資料表（只有一列）的讀寫。 */
+export class ProjectRepository {
+  constructor(private readonly db: Database) {}
+
+  insert(name: string, createdAt: number): void {
+    this.db.run("INSERT INTO project (id, name, created_at) VALUES (1, ?, ?)", [name, createdAt]);
+  }
+
+  get(): { name: string } | undefined {
+    return this.db.get<{ name: string }>("SELECT name FROM project WHERE id = 1");
+  }
+}

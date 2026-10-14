@@ -43,6 +43,14 @@ describe("openDatabase", () => {
   });
 });
 
+describe("close", () => {
+  it("可以重複呼叫", () => {
+    db = openDatabase(":memory:");
+    db.close();
+    expect(() => db!.close()).not.toThrow();
+  });
+});
+
 describe("run / get / all", () => {
   beforeEach(() => {
     db = openDatabase(":memory:");
