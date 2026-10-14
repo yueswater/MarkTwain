@@ -13,8 +13,13 @@
     "e2e": "playwright test --config e2e/playwright.config.ts"
   },
   "devDependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
     "@fontsource-variable/noto-sans-tc": "^5.3.1",
+    "@fontsource-variable/noto-serif-tc": "^5.3.1",
     "@marktwain/schema": "workspace:*",
+    "@mui/icons-material": "^9.5.0",
+    "@mui/material": "^9.5.0",
     "@playwright/test": "^1.64.0",
     "@types/node": "^22.0.0",
     "@types/react": "^19.3.0",
