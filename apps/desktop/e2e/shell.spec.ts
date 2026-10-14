@@ -8,8 +8,8 @@ const dist = resolve(__dirname, "../dist");
 const outDir = resolve(__dirname, "../e2e-output");
 
 const cases = [
-  { locale: "zh-Hant", lang: "zh-TW", tagline: "離線論文編輯器" },
-  { locale: "en", lang: "en-US", tagline: "Offline thesis editor" },
+  { locale: "zh-Hant", lang: "zh-TW", tagline: "離線撰寫你的論文。" },
+  { locale: "en", lang: "en-US", tagline: "Write your thesis, offline." },
 ] as const;
 
 for (const { locale, lang, tagline } of cases) {

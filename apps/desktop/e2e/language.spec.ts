@@ -18,11 +18,11 @@ test("switching the language takes effect at once and is remembered", async () =
     const first = await launch(userData);
     try {
       const page = await first.firstWindow();
-      await expect(page.locator("main")).toContainText("離線論文編輯器");
+      await expect(page.locator("main")).toContainText("離線撰寫你的論文。");
 
       await page.getByRole("combobox").click();
       await page.getByRole("option", { name: "English" }).click();
-      await expect(page.locator("main")).toContainText("Offline thesis editor");
+      await expect(page.locator("main")).toContainText("Write your thesis, offline.");
     } finally {
       await first.close();
     }
@@ -31,7 +31,7 @@ test("switching the language takes effect at once and is remembered", async () =
     const second = await launch(userData);
     try {
       const page = await second.firstWindow();
-      await expect(page.locator("main")).toContainText("Offline thesis editor");
+      await expect(page.locator("main")).toContainText("Write your thesis, offline.");
     } finally {
       await second.close();
     }
