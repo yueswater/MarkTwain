@@ -1,0 +1,65 @@
+# dependencies
+node_modules/
+.pnpm-store/
+.pnp
+.pnp.*
+
+# build output
+dist/
+out/
+build/
+release/
+coverage/
+*.tsbuildinfo
+.vite/
+.turbo/
+
+# desktop packaging (electron-builder)
+*.dmg
+*.exe
+*.AppImage
+*.deb
+*.zip
+
+# bundled binaries fetched at build time (typst, tectonic, fonts)
+resources/bin/
+resources/fonts/
+
+# local data: user documents and the version-control database
+*.sqlite
+*.sqlite-journal
+*.sqlite-wal
+*.sqlite-shm
+*.db
+.marktwain/
+
+# env files
+.env*
+!.env.example
+
+# logs
+*.log
+npm-debug.log*
+.pnpm-debug.log*
+
+# LaTeX / Typst intermediates
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.out
+*.synctex.gz
+*.toc
+*.xdv
+
+# editors and OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# local only: never pushed
+docs/
+.superpowers/
+.claude/
