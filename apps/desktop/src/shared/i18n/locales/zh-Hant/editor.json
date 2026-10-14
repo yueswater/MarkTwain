@@ -89,7 +89,18 @@
     },
     "broken": "找不到目標",
     "chooseHint": "選擇要引用的目標。",
-    "placeholder": "請選擇欲引用目標"
+    "placeholder": "請選擇欲引用目標",
+    "type": "種類",
+    "typePlaceholder": "選擇種類",
+    "chooseTypeFirst": "請先選擇種類",
+    "noneOfKind": "沒有",
+    "types": {
+      "heading": "標題",
+      "figure": "圖",
+      "table": "表",
+      "formula": "公式",
+      "code": "程式碼區塊"
+    }
   },
   "atom": {
     "insert": "插入",

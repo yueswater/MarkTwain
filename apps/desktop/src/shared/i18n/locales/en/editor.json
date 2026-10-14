@@ -89,7 +89,18 @@
     },
     "broken": "Missing target",
     "chooseHint": "Choose what to refer to.",
-    "placeholder": "Choose a target to refer to"
+    "placeholder": "Choose a target to refer to",
+    "type": "Type",
+    "typePlaceholder": "Choose a type",
+    "chooseTypeFirst": "Choose a type first",
+    "noneOfKind": "none",
+    "types": {
+      "heading": "Heading",
+      "figure": "Figure",
+      "table": "Table",
+      "formula": "Formula",
+      "code": "Code block"
+    }
   },
   "atom": {
     "insert": "Insert",

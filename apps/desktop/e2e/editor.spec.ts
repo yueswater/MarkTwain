@@ -151,6 +151,10 @@ test("footnotes, citations and cross-references can be inserted, shown, and save
 
     // Cross-reference, pick an unlabeled heading and a label is added automatically
     await page.getByRole("button", { name: "Cross-reference" }).click();
+    // The target list stays closed until a type is chosen, and then lists only that type
+    await expect(dialog.getByRole("combobox", { name: "Target" })).toBeDisabled();
+    await dialog.getByRole("combobox", { name: "Type" }).click();
+    await page.getByRole("option", { name: "Heading" }).click();
     await dialog.getByRole("combobox", { name: "Target" }).click();
     await page.getByRole("option", { name: "Section · Motivation" }).click();
     await dialog.getByRole("button", { name: "Insert" }).click();
