@@ -35,8 +35,10 @@ export function LineGutter({ editor, container, layoutKey }: Props) {
   useEffect(() => {
     if (!editor || editor.isDestroyed) return;
     editor.on("update", measure);
+    // The text moves when the window or the preview changes the room, also when its own size stays the same
     const observer = new ResizeObserver(measure);
     observer.observe(editor.view.dom);
+    if (container.current) observer.observe(container.current);
     // Images and fonts that load later change the heights
     window.addEventListener("load", measure);
     return () => {
@@ -45,7 +47,7 @@ export function LineGutter({ editor, container, layoutKey }: Props) {
       window.removeEventListener("load", measure);
       cancelAnimationFrame(frame.current);
     };
-  }, [editor, measure]);
+  }, [editor, measure, container]);
 
   return (
     <div aria-hidden="true" data-testid="line-gutter" className="pointer-events-none absolute inset-y-0 left-0 select-none">

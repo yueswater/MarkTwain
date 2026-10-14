@@ -820,6 +820,18 @@ test("Ctrl or Cmd with B makes text bold, and the sidebar folds with a backslash
     const first = await numbers.first().boundingBox();
     const text = await editor.boundingBox();
     expect(first && text && first.x + first.width <= text.x).toBe(true);
+
+    // With the preview open the editor is narrower, the numbers stay next to the text and inside the editor
+    await page.setViewportSize({ width: 1000, height: 700 });
+    await page.getByRole("button", { name: "Preview", exact: true }).click();
+    await expect(page.getByTestId("preview-pages")).toBeVisible();
+    await expect.poll(async () => {
+      const number = await numbers.first().boundingBox();
+      const box = await editor.boundingBox();
+      const aside = await sidebar.boundingBox();
+      return !!(number && box && aside && number.x >= aside.x + aside.width && number.x + number.width <= box.x + 1);
+    }).toBe(true);
+    await expect.poll(() => numbers.count()).toBeGreaterThan(4);
   } finally {
     await app.close();
     rmSync(dir, { recursive: true, force: true });

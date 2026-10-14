@@ -9,7 +9,7 @@ const dist = resolve(__dirname, "../dist");
 /** Opens the settings window on a page of the thesis section. */
 async function openThesisSettings(page: import("@playwright/test").Page, name = "基本資料"): Promise<void> {
   const dialog = page.getByRole("dialog");
-  if (!(await dialog.isVisible())) await page.locator("header").getByRole("button", { name: "設定" }).click();
+  if (!(await dialog.isVisible())) await page.getByRole("button", { name: "設定", exact: true }).click();
   await dialog.getByRole("button", { name, exact: true }).click();
 }
 

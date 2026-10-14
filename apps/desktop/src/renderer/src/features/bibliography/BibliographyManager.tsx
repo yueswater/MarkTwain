@@ -203,8 +203,14 @@ export function BibliographyManager({ documents, onOpenDocument, startKey, onSta
             {fieldsFor(draft.entry.type, draft.entry.fields).map((name) => (
               <div key={name} className="grid gap-2">
                 <Label htmlFor={`bib-field-${name}`}>
-                  {t(`fields.${name}`, { defaultValue: name })}
-                  {required.has(name) && <span className="ml-1 text-muted-foreground" title={t("form.required")}>*</span>}
+                  <span>
+                    {t(`fields.${name}`, { defaultValue: name })}
+                    {required.has(name) && (
+                      <span className="ml-0.5 text-muted-foreground" title={t("form.required")} aria-label={t("form.required")}>
+                        *
+                      </span>
+                    )}
+                  </span>
                 </Label>
                 <Input
                   id={`bib-field-${name}`}

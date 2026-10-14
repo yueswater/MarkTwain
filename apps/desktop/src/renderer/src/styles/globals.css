@@ -282,3 +282,12 @@
 /* A resizable edge shows a line that thickens under the pointer */
 .resize-handle::after { content: ""; position: absolute; top: 0; bottom: 0; left: 50%; width: 1px; transform: translateX(-50%); border-radius: 2px; background: transparent; transition: width 120ms, background-color 120ms; }
 .resize-handle:hover::after, .resize-handle:focus-visible::after, .resize-handle:active::after { width: 4px; background: color-mix(in oklab, var(--foreground) 35%, transparent); }
+
+/* BibTeX source, the colors follow the code colors of the editor */
+.bib-source .bib-type { color: #d73a49; }
+.bib-source .bib-key { color: #4b69c6; }
+.bib-source .bib-field { color: #1d6fa5; }
+.bib-source .bib-string { color: #298e0d; }
+.bib-source .bib-number { color: #b60157; }
+.bib-source .bib-comment { color: #8a8a8a; font-style: italic; }
+.bib-source .bib-punct { color: var(--muted-foreground); }
