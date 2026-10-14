@@ -3,13 +3,6 @@ import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import logo from "@/assets/logo.png";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { SUPPORTED_LOCALES, type Locale } from "../../../shared/enums/locale.enum";
 
 type Props = {
@@ -35,6 +28,8 @@ export function AppShell({
   onLocaleChange,
 }: Props) {
   const { t, i18n } = useTranslation();
+  // The languages are few, so one icon switches to the next one
+  const next = SUPPORTED_LOCALES[(SUPPORTED_LOCALES.indexOf(i18n.language as Locale) + 1) % SUPPORTED_LOCALES.length]!;
 
   return (
     <div className="flex h-screen flex-col bg-background">
@@ -53,29 +48,29 @@ export function AppShell({
             </Button>
           </>
         )}
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-1">
           {onTogglePreview && (
-            <Button variant={previewOpen ? "secondary" : "outline"} size="sm" aria-pressed={previewOpen} onClick={onTogglePreview}>
+            <Button variant={previewOpen ? "secondary" : "ghost"} size="sm" aria-pressed={previewOpen} onClick={onTogglePreview}>
               <FileTextIcon aria-hidden="true" />
               {t("preview", { ns: "build" })}
             </Button>
           )}
-          <Button variant="ghost" size="icon-sm" aria-label={t("open", { ns: "config" })} title={t("open", { ns: "config" })} onClick={onOpenSettings}>
-            <SettingsIcon aria-hidden="true" />
+          {/* With a project open the settings are at the bottom of the sidebar, without one this is the way in */}
+          {projectName === null && (
+            <Button variant="ghost" size="icon-sm" aria-label={t("open", { ns: "config" })} title={t("open", { ns: "config" })} onClick={onOpenSettings}>
+              <SettingsIcon aria-hidden="true" />
+            </Button>
+          )}
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            data-testid="language-toggle"
+            aria-label={`${t("settings.language")}: ${t(`settings.locale.${i18n.language}`)}`}
+            title={`${t("settings.language")}: ${t(`settings.locale.${i18n.language}`)} → ${t(`settings.locale.${next}`)}`}
+            onClick={() => onLocaleChange(next)}
+          >
+            <LanguagesIcon aria-hidden="true" />
           </Button>
-          <LanguagesIcon className="size-4 text-muted-foreground" aria-hidden="true" />
-          <Select value={i18n.language} onValueChange={(value) => onLocaleChange(value as Locale)}>
-            <SelectTrigger size="sm" aria-label={t("settings.language")}>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent align="end">
-              {SUPPORTED_LOCALES.map((locale) => (
-                <SelectItem key={locale} value={locale}>
-                  {t(`settings.locale.${locale}`)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
         </div>
       </header>
       <main className="flex min-h-0 flex-1 flex-col">{children}</main>
