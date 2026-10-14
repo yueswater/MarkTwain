@@ -38,6 +38,7 @@ function run(command: string, args: string[], cwd: string, timeoutMs: number): P
 export async function buildTypst(input: BuildInput): Promise<BuildResult> {
   const root = mkdtempSync(join(input.workDir, "mt-build-"));
   const mathFailures: string[] = [];
+  const citationFallbacks: string[] = [];
   try {
     // Junctions need no privileges on Windows and behave as symlinks elsewhere.
     for (const name of SHARED) {
@@ -72,6 +73,8 @@ export async function buildTypst(input: BuildInput): Promise<BuildResult> {
         firstAppendix: doc.kind === "appendix" ? firstAppendix : undefined,
         imagePath: (src) => `/figures/${src}`,
         onMathFailure: (latex) => mathFailures.push(latex),
+        hasBibliography: input.bibliography.length > 0,
+        onCitationFallback: (keys) => citationFallbacks.push(...keys),
       });
       if (doc.kind === "appendix") firstAppendix = false;
       writeText(root, path, file.text);
@@ -91,6 +94,15 @@ export async function buildTypst(input: BuildInput): Promise<BuildResult> {
         severity: "warning",
         code: "config-missing",
         message: field,
+        file: null,
+        line: null,
+        column: null,
+        source: null,
+      })),
+      ...[...new Set(citationFallbacks)].map<Diagnostic>((key) => ({
+        severity: "warning",
+        code: "citation-no-bibliography",
+        message: key,
         file: null,
         line: null,
         column: null,

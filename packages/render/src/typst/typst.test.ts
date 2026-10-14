@@ -58,6 +58,22 @@ describe("行內", () => {
   });
 });
 
+describe("citations without a bibliography", () => {
+  it("render as plain text and report the keys", () => {
+    const reported: string[][] = [];
+    const { document } = toIr(parseMarkdown("見 [@a; @b]\n"), { documentId: "d", knownLabels: new Set() });
+    const file = renderTypstFile(document, {
+      kind: "chapter",
+      imagePath: (s) => s,
+      onMathFailure: () => undefined,
+      hasBibliography: false,
+      onCitationFallback: (keys) => reported.push(keys),
+    });
+    expect(file.text).toContain("見 \\[a; b\\]");
+    expect(reported).toEqual([["a", "b"]]);
+  });
+});
+
 describe("區塊", () => {
   it("標題帶標籤，最多四層", () => {
     expect(render("# 緒論 {#cha:intro}\n\n## 動機\n").body).toBe("= 緒論 <cha:intro>\n\n== 動機\n");
@@ -104,6 +120,10 @@ describe("區塊", () => {
         "",
       ].join("\n"),
     );
+  });
+
+  it("figures and captioned blocks always get a caption, empty when absent", () => {
+    expect(render("![](images/a.png)\n").body).toBe('#fig("/figures/images/a.png", caption: [])\n');
   });
 
   it("定義清單", () => {
