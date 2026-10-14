@@ -5,6 +5,8 @@ import { registerAssetController } from "./features/asset/asset.controller";
 import { AssetService } from "./features/asset/asset.service";
 import { registerAppController } from "./features/app/app.controller";
 import type { DialogService } from "./features/dialog/dialog.service";
+import { registerBuildController, resolveBuildPaths } from "./features/build/build.controller";
+import { BuildService } from "./features/build/build.service";
 import { registerConfigController } from "./features/config/config.controller";
 import { ConfigService } from "./features/config/config.service";
 import { registerDialogController } from "./features/dialog/dialog.controller";
@@ -24,6 +26,7 @@ const projects = new ProjectService(session, documents);
 const labels = new LabelService(documents);
 const assets = new AssetService(session);
 const config = new ConfigService(session);
+const build = new BuildService(session, documents, config, resolveBuildPaths);
 let dialogs: DialogService;
 
 // 自訂協定必須在 app ready 之前宣告
@@ -42,4 +45,5 @@ bootstrap([
   () => registerDocumentController(documents),
   () => registerLabelController(labels),
   () => registerConfigController(config),
+  () => registerBuildController(build),
 ]);

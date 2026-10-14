@@ -1,4 +1,4 @@
-import { LanguagesIcon, XIcon } from "lucide-react";
+import { FileTextIcon, LanguagesIcon, XIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import logo from "@/assets/logo.png";
@@ -17,11 +17,21 @@ type Props = {
   /** 目前開啟的專案名稱；沒有專案時為 null */
   projectName: string | null;
   onCloseProject: () => void;
+  /** Shown only while a project is open */
+  onTogglePreview: (() => void) | null;
+  previewOpen: boolean;
   onLocaleChange: (locale: Locale) => void;
 };
 
 /** 頂部列（品牌、專案名稱、語言選單）加內容區。視覺沿用 anvilnote 的黑白灰設計語言。所有文字都走 i18n。 */
-export function AppShell({ children, projectName, onCloseProject, onLocaleChange }: Props) {
+export function AppShell({
+  children,
+  projectName,
+  onCloseProject,
+  onTogglePreview,
+  previewOpen,
+  onLocaleChange,
+}: Props) {
   const { t, i18n } = useTranslation();
 
   return (
@@ -42,6 +52,12 @@ export function AppShell({ children, projectName, onCloseProject, onLocaleChange
           </>
         )}
         <div className="ml-auto flex items-center gap-2">
+          {onTogglePreview && (
+            <Button variant={previewOpen ? "secondary" : "outline"} size="sm" aria-pressed={previewOpen} onClick={onTogglePreview}>
+              <FileTextIcon aria-hidden="true" />
+              {t("preview", { ns: "build" })}
+            </Button>
+          )}
           <LanguagesIcon className="size-4 text-muted-foreground" aria-hidden="true" />
           <Select value={i18n.language} onValueChange={(value) => onLocaleChange(value as Locale)}>
             <SelectTrigger size="sm" aria-label={t("settings.language")}>

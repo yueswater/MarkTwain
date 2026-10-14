@@ -7,6 +7,7 @@ export const IpcChannel = {
   ProjectOpen: "project:open",
   ProjectCurrent: "project:current",
   ProjectClose: "project:close",
+  BuildTypst: "build:typst",
   ConfigGet: "config:get",
   ConfigSet: "config:set",
   AssetImportImage: "asset:import-image",

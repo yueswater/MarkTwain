@@ -11,6 +11,11 @@ export class AssetRepository {
     );
   }
 
+  /** Every stored file, used to place images in a build directory. */
+  list(): { path: string; data: Uint8Array }[] {
+    return this.db.all<{ path: string; data: Uint8Array }>("SELECT path, data FROM files WHERE path != 'config.yml'");
+  }
+
   get(path: string): Uint8Array | undefined {
     return this.db.get<{ data: Uint8Array }>("SELECT data FROM files WHERE path = ?", [path])?.data;
   }

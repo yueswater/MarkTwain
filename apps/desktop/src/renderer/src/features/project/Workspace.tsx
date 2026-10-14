@@ -1,17 +1,25 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import type { BuildState } from "../build/use-build";
+import { PreviewPanel } from "../build/PreviewPanel";
 import type { ProjectState } from "./use-project";
 import { DocumentEditor } from "../editor/DocumentEditor";
 import { ConfigForm } from "./ConfigForm";
 import { DocumentSidebar } from "./DocumentSidebar";
 
-type Props = { state: ProjectState };
+type Props = {
+  state: ProjectState;
+  build: BuildState;
+  previewOpen: boolean;
+  onClosePreview: () => void;
+};
 
-export function Workspace({ state }: Props) {
+export function Workspace({ state, build, previewOpen, onClosePreview }: Props) {
   const { t } = useTranslation("project");
   const project = state.project;
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [settings, setSettings] = useState(false);
+  const [target, setTarget] = useState<{ block: number; nonce: number } | null>(null);
 
   const documents = project?.documents ?? [];
   const selected = documents.find((d) => d.id === selectedId) ?? null;
@@ -45,11 +53,22 @@ export function Workspace({ state }: Props) {
         {settings ? (
           <ConfigForm />
         ) : selected ? (
-          <DocumentEditor key={selected.id} documentId={selected.id} />
+          <DocumentEditor key={selected.id} documentId={selected.id} scrollTo={target} />
         ) : (
           <p className="p-8 text-sm text-muted-foreground">{t("workspace.empty")}</p>
         )}
       </section>
+      {previewOpen && (
+        <PreviewPanel
+          build={build}
+          onClose={onClosePreview}
+          onJump={(documentId, block) => {
+            setSettings(false);
+            setSelectedId(documentId);
+            setTarget({ block, nonce: Date.now() });
+          }}
+        />
+      )}
     </div>
   );
 }

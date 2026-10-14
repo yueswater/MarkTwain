@@ -20,6 +20,12 @@ export class ConfigService {
     private readonly now: () => Date = () => new Date(),
   ) {}
 
+  /** Raw config.yml text for the build, built from defaults when the project has none yet. */
+  text(): string {
+    const stored = new ConfigRepository(this.session.db).read();
+    return stored ?? writeConfig("", this.initialFields());
+  }
+
   get(): ConfigState {
     const text = new ConfigRepository(this.session.db).read();
     const fields = text === null ? this.initialFields() : this.parse(text);
