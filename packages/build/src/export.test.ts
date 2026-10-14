@@ -40,7 +40,6 @@ maybe("exportTypstProject", () => {
       );
       const entries = readdirSync(dest);
       const missing = ["main.typ", "config.yml", "contents", "figures", "lib", "helper", "fonts", "LICENSE"].filter((name) => !entries.includes(name));
-      if (missing.length > 0) throw new Error(JSON.stringify({ missing, entries, template: readdirSync(templateDir) }));
       expect(missing).toEqual([]);
       expect(entries).not.toContain("docs");
       expect(readFileSync(join(dest, "contents/chapter01.typ"), "utf8")).toContain("= 緒論 <cha:intro>");
