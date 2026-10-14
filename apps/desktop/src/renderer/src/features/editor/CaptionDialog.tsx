@@ -59,6 +59,7 @@ export function CaptionDialog({ target, onSubmit, onClose, onRestoreFocus }: Pro
               value={caption}
               autoFocus
               rows={2}
+              placeholder={t(target.kind === "table" ? "table.captionPlaceholder" : "caption.codeTitle")}
               onChange={(event) => setCaption(event.target.value)}
             />
           </div>

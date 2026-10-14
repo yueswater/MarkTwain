@@ -122,4 +122,23 @@ maybe("buildTypst with the real template", () => {
       rmSync(work, { recursive: true, force: true });
     }
   }, 120_000);
+
+  it("renders page images for the preview", async () => {
+    const work = mkdtempSync(join(tmpdir(), "marktwain 預覽 "));
+    try {
+      const result = await buildTypst({
+        ...input(work, { documents: [{ id: "c1", kind: "chapter", text: "# 標題\n\n內容。\n" }] }),
+        format: "png",
+        ppi: 60,
+      });
+      expect(result.ok).toBe(true);
+      if (result.ok) {
+        expect(result.pages.length).toBeGreaterThan(1);
+        expect(Buffer.from(result.pages[0]!.slice(1, 4)).toString()).toBe("PNG");
+        expect(result.pdf.length).toBe(0);
+      }
+    } finally {
+      rmSync(work, { recursive: true, force: true });
+    }
+  }, 120_000);
 });

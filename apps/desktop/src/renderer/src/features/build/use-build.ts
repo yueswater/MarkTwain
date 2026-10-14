@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { IpcChannel } from "../../../../shared/enums/ipc-channel.enum";
 import type { BuildOutcome } from "../../../../shared/ipc";
@@ -20,14 +20,29 @@ export function useBuild(): BuildState {
   const [outcome, setOutcome] = useState<BuildOutcome | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const running = useRef(false);
+  const again = useRef(false);
+
+  /** Builds now. A request that arrives during a build runs once more afterwards, so the last edit always shows. */
   const run = useCallback(async () => {
+    if (running.current) {
+      again.current = true;
+      return;
+    }
+    running.current = true;
     setBuilding(true);
-    setError(null);
     try {
-      setOutcome(await api.invoke(IpcChannel.BuildTypst));
-    } catch (e) {
-      setError(errorMessage(t, e));
+      do {
+        again.current = false;
+        setError(null);
+        try {
+          setOutcome(await api.invoke(IpcChannel.BuildTypst));
+        } catch (e) {
+          setError(errorMessage(t, e));
+        }
+      } while (again.current);
     } finally {
+      running.current = false;
       setBuilding(false);
     }
   }, [t]);

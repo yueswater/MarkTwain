@@ -4,13 +4,18 @@
     "description": "建立新專案，或開啟既有的 .marktwain 檔案。",
     "new": "新增專案",
     "open": "開啟專案",
-    "defaultName": "我的論文"
+    "defaultName": "我的論文",
+    "recent": "最近的專案",
+    "remove": "從清單移除",
+    "missing": "找不到檔案"
   },
   "workspace": {
     "documents": "文件",
     "close": "關閉專案",
     "add": "新增文件",
-    "empty": "選擇一份文件開始撰寫。"
+    "empty": "選擇一份文件開始撰寫。",
+    "collapse": "收合側邊欄",
+    "expand": "展開側邊欄"
   },
   "kind": {
     "title": {

@@ -24,4 +24,16 @@ export {
   type ConfigFields,
   type ConfigIssue,
 } from "./config/config";
+export {
+  CITATION_STYLES,
+  DEGREES,
+  DOCUMENT_TYPES,
+  LANGUAGES,
+  collegesOf,
+  departmentsOf,
+  findCollege,
+  findDepartment,
+  type College,
+  type Named,
+} from "./config/options";
 export { SCHOOLS, isKnownSchool, type School } from "./config/schools";

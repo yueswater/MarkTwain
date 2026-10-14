@@ -217,6 +217,9 @@ test("tables get rows, a caption and notes; definition lists keep term and descr
     };
 
     await page.getByRole("button", { name: "Insert table" }).click();
+    await page.getByRole("dialog").getByRole("button", { name: "Insert" }).click();
+    await expect(page.getByRole("dialog")).toBeHidden();
+    await expect(editor).toBeFocused();
     await page.keyboard.type("A");
     await page.keyboard.press("Tab");
     await page.keyboard.type("B");
@@ -373,6 +376,9 @@ test("tables can be merged, aligned, restyled and given a row height", async () 
     const dialog = page.getByRole("dialog");
 
     await page.getByRole("button", { name: "Insert table" }).click();
+    await page.getByRole("dialog").getByRole("button", { name: "Insert" }).click();
+    await expect(page.getByRole("dialog")).toBeHidden();
+    await expect(editor).toBeFocused();
     await page.keyboard.type("A");
     await page.keyboard.press("Tab");
     await page.keyboard.type("B");
@@ -385,21 +391,28 @@ test("tables can be merged, aligned, restyled and given a row height", async () 
     const row2 = editor.locator("tr").nth(1).locator("td");
     await row2.nth(0).click();
     await row2.nth(1).click({ modifiers: ["Shift"] });
-    await page.getByRole("button", { name: "Merge cells" }).click();
+    // Selecting two cells suggests merging them right next to the selection
+    await page.getByRole("button", { name: "Merge the selected cells" }).click();
     await expect(editor.locator("tr").nth(1).locator("td").first()).toHaveAttribute("colspan", "2");
 
     // Align the third column to the right, switch to grid lines and set the height of the second row
     await editor.locator("tr").nth(0).locator("th").nth(2).click();
-    await page.getByRole("button", { name: "Align column right" }).click();
+    await page.getByRole("toolbar", { name: "Table tools" }).getByRole("button", { name: "Align column right" }).click();
     await page.getByRole("button", { name: "Switch to grid lines" }).click();
     await expect(editor.locator(".tableWrapper")).toHaveAttribute("data-table-style", "grid");
 
     await row2.first().click();
-    await page.getByRole("button", { name: "Row height" }).click();
-    await dialog.getByLabel("Height").fill("2cm");
-    await dialog.getByRole("button", { name: "Save" }).click();
-    await expect(dialog).toBeHidden();
+    // The tools show where the cursor is and the size of its row and column, and let you type new values
+    await expect(page.getByTestId("table-readout")).toContainText("Row 2 of 3, column 1 of 3");
+    await page.getByLabel("Row height").fill("2cm");
+    await page.getByLabel("Row height").press("Enter");
     await expect(editor.locator("tr").nth(1)).toHaveAttribute("data-height", "2cm");
+    await row2.first().click();
+    await expect(page.getByLabel("Row height")).toHaveValue("2cm");
+    await page.getByLabel("Column width").fill("30");
+    await page.getByLabel("Column width").press("Enter");
+    await row2.first().click();
+    await expect(page.getByLabel("Column width")).toHaveValue("30");
     await expect(page.getByRole("status")).toHaveText("Saved");
 
     const text = await page.evaluate(async () => {
@@ -413,7 +426,84 @@ test("tables can be merged, aligned, restyled and given a row height", async () 
     expect(text).toContain("---:");
     expect(text).toContain("cells=2.1:colspan=2");
     expect(text).toContain("heights=2:2cm");
+    expect(text).toMatch(/widths=30%,/);
     expect(text).toContain("style=grid");
+  } finally {
+    await app.close();
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("a table or figure without a caption has no number, and an image never lands inside a table", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "marktwain 無標題 "));
+  const file = join(dir, "論文.marktwain");
+  const image = join(dir, "圖.png");
+  writeFileSync(image, PNG_1X1);
+  const args = [`--user-data-dir=${join(dir, "userData")}`, "--lang=en-US"];
+  if (process.platform === "linux") args.push("--no-sandbox");
+  const app = await electron.launch({
+    executablePath: findPackagedExecutable(dist),
+    args,
+    env: { ...process.env, MARKTWAIN_TEST_DIALOG_PATH: file, MARKTWAIN_TEST_IMAGE_PATH: image },
+  });
+  try {
+    const page = await app.firstWindow();
+    await page.getByRole("button", { name: "New project" }).click();
+    const editor = page.locator(".ProseMirror");
+    await editor.click();
+    const dialog = page.getByRole("dialog");
+
+    // The caption fields offer a placeholder and may stay empty
+    await page.getByRole("button", { name: "Insert table" }).click();
+    await expect(dialog.getByPlaceholder("Table caption, optional")).toBeVisible();
+    await dialog.getByRole("button", { name: "Insert" }).click();
+    await expect(dialog).toBeHidden();
+
+    // With the cursor still in the table, an image goes after it
+    await page.getByRole("button", { name: "Insert image" }).click();
+    await expect(dialog.getByPlaceholder("Figure caption, optional")).toBeVisible();
+    await dialog.getByRole("button", { name: "Insert" }).click();
+    await expect(dialog).toBeHidden();
+    await expect(editor.locator("td figure")).toHaveCount(0);
+    await expect(editor.locator("figure")).toHaveCount(1);
+    await expect(page.getByRole("status")).toHaveText("Saved");
+
+    const text = await page.evaluate(async () => {
+      const list = await window.marktwain.invoke("document:list");
+      if (!list.ok) return "";
+      const chapter = list.data.find((d) => d.kind === "chapter");
+      const doc = chapter && (await window.marktwain.invoke("document:get", { id: chapter.id }));
+      return doc && doc.ok ? doc.data.text : "";
+    });
+    expect(text).toMatch(/\|\n\n!\[\]\(images\/[0-9a-f]{16}\.png\)\n$/);
+    expect(text).not.toContain(": !");
+  } finally {
+    await app.close();
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("selecting text shows a floating menu with the marks", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "marktwain 浮動 "));
+  const file = join(dir, "論文.marktwain");
+  const args = [`--user-data-dir=${join(dir, "userData")}`, "--lang=en-US"];
+  if (process.platform === "linux") args.push("--no-sandbox");
+  const app = await electron.launch({
+    executablePath: findPackagedExecutable(dist),
+    args,
+    env: { ...process.env, MARKTWAIN_TEST_DIALOG_PATH: file },
+  });
+  try {
+    const page = await app.firstWindow();
+    await page.getByRole("button", { name: "New project" }).click();
+    const editor = page.locator(".ProseMirror");
+    await editor.click();
+    await page.keyboard.type("hello world");
+    await editor.getByText("hello world").dblclick();
+    const bubble = page.getByLabel("Selection tools");
+    await expect(bubble).toBeVisible();
+    await bubble.getByRole("button", { name: "Bold" }).click();
+    await expect(editor.locator("strong")).toHaveCount(1);
   } finally {
     await app.close();
     rmSync(dir, { recursive: true, force: true });

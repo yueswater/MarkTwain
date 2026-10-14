@@ -4,13 +4,18 @@
     "description": "Create a new project, or open an existing .marktwain file.",
     "new": "New project",
     "open": "Open project",
-    "defaultName": "My thesis"
+    "defaultName": "My thesis",
+    "recent": "Recent projects",
+    "remove": "Remove from the list",
+    "missing": "File not found"
   },
   "workspace": {
     "documents": "Documents",
     "close": "Close project",
     "add": "Add document",
-    "empty": "Select a document to start writing."
+    "empty": "Select a document to start writing.",
+    "collapse": "Collapse the sidebar",
+    "expand": "Expand the sidebar"
   },
   "kind": {
     "title": {

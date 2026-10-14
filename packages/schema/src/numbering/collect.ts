@@ -21,6 +21,11 @@ function plainText(node: JsonNode): string {
   return (node.content ?? []).map(plainText).join("");
 }
 
+function hasCaption(node: JsonNode): boolean {
+  const caption = node.attrs?.caption;
+  return typeof caption === "string" && caption.trim() !== "";
+}
+
 function labelOf(node: JsonNode): string | null {
   const label = node.attrs?.label;
   return typeof label === "string" && label !== "" ? label : null;
@@ -58,14 +63,15 @@ export function collectTargets(doc: DocJson, scope: string): CollectedTargets {
         }
         return;
       }
+      // Figures and tables without a caption are drawn bare and get no number
       case "figure":
-        counted("fig", node);
+        if (hasCaption(node)) counted("fig", node);
         return;
       case "figureGroup": // Sub figures get no number of their own
-        counted("fig", node);
+        if (hasCaption(node)) counted("fig", node);
         return;
       case "table":
-        counted("tbl", node);
+        if (hasCaption(node)) counted("tbl", node);
         return;
       case "blockMath":
         counted("eq", node);

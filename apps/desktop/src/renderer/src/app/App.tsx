@@ -66,6 +66,9 @@ export function App() {
           <Workspace state={state} build={build} previewOpen={previewOpen} onClosePreview={() => setPreviewOpen(false)} />
         ) : (
           <WelcomeScreen
+            recent={state.recent}
+            onOpenRecent={(path) => void state.openRecent(path)}
+            onRemoveRecent={(path) => void state.removeRecent(path)}
             onCreate={(name) => void state.createProject(name)}
             onOpen={() => void state.openProject()}
           />

@@ -1,4 +1,5 @@
 import type { JSONContent } from "@tiptap/core";
+import { findTable } from "@tiptap/pm/tables";
 import { EditorContent, useEditor } from "@tiptap/react";
 import Placeholder from "@tiptap/extension-placeholder";
 import { parseMarkdown, serializeMarkdown } from "@marktwain/schema";
@@ -19,8 +20,8 @@ import {
 } from "./AtomDialogs";
 import { CaptionDialog, type CaptionTarget } from "./CaptionDialog";
 import { FigureDialog, type FigureTarget } from "./FigureDialog";
-import { RowHeightDialog } from "./RowHeightDialog";
-import { currentRowHeight, setRowHeight } from "./table-commands";
+import { EditorBubbleMenu } from "./EditorBubbleMenu";
+import { TableInsertDialog } from "./TableInsertDialog";
 import { MathDialog, type MathTarget } from "./MathDialog";
 import { MarkdownPaste } from "./extensions/markdown-paste";
 import { RefDecorations, REFS_CHANGED } from "./extensions/ref-decorations";
@@ -28,10 +29,15 @@ import { useLabelIndex } from "./use-label-index";
 import { findUnlabeledTargets, newLabel, type UnlabeledTarget } from "./unlabeled-targets";
 import { Toolbar } from "./Toolbar";
 
-type Props = { documentId: string; scrollTo?: { block: number; nonce: number } | null };
+type Props = {
+  documentId: string;
+  scrollTo?: { block: number; nonce: number } | null;
+  /** Called every time the text has been saved */
+  onSaved?: () => void;
+};
 
 /** Loads one document. The caller remounts with key when the document changes, so each document has its own editor and undo history. */
-export function DocumentEditor({ documentId, scrollTo }: Props) {
+export function DocumentEditor({ documentId, scrollTo, onSaved }: Props) {
   const { t } = useTranslation();
   const [doc, setDoc] = useState<DocumentData | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -56,24 +62,37 @@ export function DocumentEditor({ documentId, scrollTo }: Props) {
     );
   }
   if (!doc) return null;
-  return <EditorSurface doc={doc} scrollTo={scrollTo ?? null} />;
+  return <EditorSurface doc={doc} scrollTo={scrollTo ?? null} onSaved={onSaved} />;
 }
 
 const ATOM_TYPES = new Set(["footnote", "citation", "crossRef"]);
 
-function EditorSurface({ doc, scrollTo }: { doc: DocumentData; scrollTo: { block: number; nonce: number } | null }) {
+function EditorSurface({
+  doc,
+  scrollTo,
+  onSaved,
+}: {
+  doc: DocumentData;
+  scrollTo: { block: number; nonce: number } | null;
+  onSaved?: () => void;
+}) {
   const { t } = useTranslation("editor");
   const { t: tCommon } = useTranslation();
   const [status, setStatus] = useState<SaveStatus>("idle");
   const [math, setMath] = useState<MathTarget | null>(null);
   const [atom, setAtom] = useState<AtomTarget | null>(null);
   const [caption, setCaption] = useState<CaptionTarget | null>(null);
-  const [rowHeight, setRowHeightState] = useState<string | null>(null);
+  const [tableDialog, setTableDialog] = useState(false);
   const [figure, setFigure] = useState<FigureTarget | null>(null);
   const [importError, setImportError] = useState<string | null>(null);
   const [unlabeled, setUnlabeled] = useState<UnlabeledTarget[]>([]);
 
   const labels = useLabelIndex(status);
+  const savedRef = useRef(onSaved);
+  savedRef.current = onSaved;
+  useEffect(() => {
+    if (status === "saved") savedRef.current?.();
+  }, [status]);
   const labelsRef = useRef(labels);
   labelsRef.current = labels;
   const tRef = useRef(t);
@@ -239,7 +258,7 @@ function EditorSurface({ doc, scrollTo }: { doc: DocumentData; scrollTo: { block
         editor={editor}
         onInsertMath={(kind) => setMath({ kind, latex: "", pos: null })}
         onInsertAtom={openAtom}
-        onEditRowHeight={() => setRowHeightState(currentRowHeight(editor))}
+        onInsertTable={() => setTableDialog(true)}
         onInsertImage={() => {
           setImportError(null);
           api
@@ -258,6 +277,7 @@ function EditorSurface({ doc, scrollTo }: { doc: DocumentData; scrollTo: { block
           });
         }}
       />
+      <EditorBubbleMenu editor={editor} onInsertMath={() => setMath({ kind: "inline", latex: "", pos: null })} />
       <div className="min-h-0 flex-1 overflow-y-auto">
         <EditorContent editor={editor} className="mx-auto max-w-3xl px-8 py-8" />
       </div>
@@ -302,11 +322,20 @@ function EditorSurface({ doc, scrollTo }: { doc: DocumentData; scrollTo: { block
           onRestoreFocus={() => editor.commands.focus()}
         />
       )}
-      {rowHeight !== null && (
-        <RowHeightDialog
-          initial={rowHeight}
-          onSubmit={(height) => setRowHeight(editor, height)}
-          onClose={() => setRowHeightState(null)}
+      {tableDialog && (
+        <TableInsertDialog
+          onSubmit={({ rows, columns, caption }) => {
+            const chain = editor.chain().focus();
+            // A table cannot hold another table, so a new one goes after the current one
+            const table = findTable(editor.state.selection.$from);
+            if (table) {
+              const after = table.pos + table.node.nodeSize;
+              chain.insertContentAt(after, { type: "paragraph" }).setTextSelection(after + 1);
+            }
+            chain.insertTable({ rows, cols: columns, withHeaderRow: true }).run();
+            if (caption) editor.chain().updateAttributes("table", { caption }).run();
+          }}
+          onClose={() => setTableDialog(false)}
           onRestoreFocus={() => editor.commands.focus()}
         />
       )}
@@ -315,7 +344,14 @@ function EditorSurface({ doc, scrollTo }: { doc: DocumentData; scrollTo: { block
           target={figure}
           onSubmit={({ caption: text, width }) => {
             const attrs = { src: figure.src, caption: text, width };
-            if (figure.pos === null) editor.chain().focus().insertContent({ type: "figure", attrs }).run();
+            if (figure.pos === null) {
+              // A figure cannot live inside a table cell, so it goes after the table
+              const table = findTable(editor.state.selection.$from);
+              const chain = editor.chain().focus();
+              if (table) chain.insertContentAt(table.pos + table.node.nodeSize, { type: "figure", attrs });
+              else chain.insertContent({ type: "figure", attrs });
+              chain.run();
+            }
             else {
               const pos = figure.pos;
               const node = editor.state.doc.nodeAt(pos);

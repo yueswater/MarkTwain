@@ -109,7 +109,7 @@ describe("區塊", () => {
       [
         "#tlt(",
         "  caption: [標題],",
-        "  columns: 2,",
+        "  columns: (1fr, 1fr,),",
         "  align: (left + horizon, right + horizon,),",
         "  header: ([甲], [乙],),",
         "  rows: (",
@@ -122,8 +122,17 @@ describe("區塊", () => {
     );
   });
 
-  it("figures and captioned blocks always get a caption, empty when absent", () => {
-    expect(render("![](images/a.png)\n").body).toBe('#fig("/figures/images/a.png", caption: [])\n');
+  it("figures, groups and tables without a caption are bare, so they get no number", () => {
+    expect(render("![](images/a.png)\n").body).toBe('#align(center, image("/figures/images/a.png"))\n');
+    expect(render("![](images/a.png){width=50%}\n").body).toBe('#align(center, image("/figures/images/a.png", width: 50%))\n');
+    const table = render("| a |\n| --- |\n| 1 |\n").body;
+    expect(table.startsWith("#{\n    table(")).toBe(true);
+    expect(table).not.toContain("#figure(");
+    expect(table).not.toContain("tlt");
+  });
+
+  it("a code block without a caption is a plain block", () => {
+    expect(render("```js {#lst:x}\nx\n```\n").body).toBe("```js\nx\n```\n");
   });
 
   it("complex tables are drawn as a figure with table cells, rows and column widths", () => {
@@ -158,8 +167,10 @@ describe("區塊", () => {
     expect(out).not.toContain("bottomrule");
   });
 
-  it("plain tables still use tlt", () => {
-    expect(render("| a |\n| --- |\n| 1 |\n").body).toContain("#tlt(");
+  it("plain captioned tables still use tlt, full width", () => {
+    const out = render("| a |\n| --- |\n| 1 |\n\n: Cap\n").body;
+    expect(out).toContain("#tlt(");
+    expect(out).toContain("columns: (1fr,),");
   });
 
   it("定義清單", () => {

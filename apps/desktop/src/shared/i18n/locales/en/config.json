@@ -15,7 +15,8 @@
     "department": "Department",
     "degree": "Degree",
     "dates": "Dates",
-    "keywords": "Keywords"
+    "keywords": "Keywords",
+    "language": "Language and citations"
   },
   "field": {
     "school": "School preset",
@@ -37,7 +38,11 @@
     "date": "Publication date",
     "oralDate": "Defense date",
     "keywords": "Keywords (Chinese)",
-    "keywordsEn": "Keywords (English)"
+    "keywordsEn": "Keywords (English)",
+    "language": "Language of the thesis",
+    "citationStyle": "Citation style",
+    "collegePick": "College",
+    "institutePick": "Department"
   },
   "hint": {
     "date": "YYYY-MM-DD",
@@ -50,5 +55,28 @@
     "date-format": "Use the format YYYY-MM-DD.",
     "unknown-school": "This school is not available."
   },
-  "open": "Project settings"
+  "open": "Project settings",
+  "followPreset": "Follow the school preset",
+  "custom": "Other, type it in",
+  "chooseCollege": "Choose a college",
+  "chooseDepartment": "Choose a department",
+  "chooseSchoolFirst": "Choose a school first for a list of colleges and departments.",
+  "customZh": "Name in Chinese",
+  "customEn": "Name in English",
+  "degreeName": {
+    "碩士": "Master",
+    "博士": "Doctor"
+  },
+  "lang": {
+    "chinese": "Chinese",
+    "english": "English"
+  },
+  "style": {
+    "apa": "APA, psychology, education and social sciences",
+    "harvard-cite-them-right": "Harvard, business and social sciences",
+    "chicago-author-date": "Chicago, history and humanities",
+    "mla": "MLA, literature, languages and the arts",
+    "ieee": "IEEE, computer science and engineering",
+    "vancouver": "Vancouver, medicine and nursing"
+  }
 }

@@ -1,4 +1,5 @@
 import { declareAssetScheme, handleAssetProtocol } from "./core/asset-protocol";
+import { settingsFilePath } from "./config/paths.config";
 import { bootstrap } from "./core/bootstrap";
 import { DatabaseSession } from "./core/database-session";
 import { registerAssetController } from "./features/asset/asset.controller";
@@ -18,6 +19,8 @@ import { LabelService } from "./features/label/label.service";
 import { applyAppMenu } from "./features/menu/menu.controller";
 import { registerProjectController } from "./features/project/project.controller";
 import { ProjectService } from "./features/project/project.service";
+import { RecentService } from "./features/recent/recent.service";
+import { SettingsRepository } from "./features/settings/settings.repository";
 import { registerSettingsController } from "./features/settings/settings.controller";
 
 // Composition root, creates the shared objects and passes each feature controller to bootstrap.
@@ -27,6 +30,7 @@ const projects = new ProjectService(session, documents);
 const labels = new LabelService(documents);
 const assets = new AssetService(session);
 const config = new ConfigService(session);
+const recent = new RecentService(new SettingsRepository(settingsFilePath()));
 const build = new BuildService(session, documents, config, resolveBuildPaths);
 let dialogs: DialogService;
 
@@ -42,7 +46,7 @@ bootstrap([
   },
   () => registerAssetController(assets, dialogs),
   () => handleAssetProtocol((path) => assets.read(path)),
-  () => registerProjectController(projects),
+  () => registerProjectController(projects, recent),
   () => registerDocumentController(documents),
   () => registerLabelController(labels),
   () => registerConfigController(config),

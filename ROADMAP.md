@@ -2,7 +2,7 @@
 
 MarkTwain is developed against version milestones. Each version maps to a [GitHub Milestone](../../milestones), and the work items are tracked as issues.
 
-Current version: v0.3.0.
+Current version: v0.3.1.
 
 | Version | Theme | Status |
 |---|---|---|

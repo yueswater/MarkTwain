@@ -1,5 +1,10 @@
 import {
+  CITATION_STYLES,
+  DEGREES,
+  LANGUAGES,
   SCHOOLS,
+  collegesOf,
+  departmentsOf,
   type ConfigFields,
   type ConfigIssue,
 } from "@marktwain/schema";
@@ -19,18 +24,24 @@ import type { ConfigState } from "../../../../shared/ipc";
 import { api } from "../../shared/api";
 import { errorMessage } from "../../shared/error-message";
 import { Autosaver, type SaveStatus } from "../editor/autosaver";
+import { OptionPicker } from "./OptionPicker";
 
 const NO_SCHOOL = "none";
 
 type TextField = Exclude<keyof ConfigFields, "keywords" | "keywordsEn" | "school">;
 
 /** Project settings form that saves while typing, fields of config.yml. */
-export function ConfigForm() {
+export function ConfigForm({ onSaved }: { onSaved?: () => void }) {
   const { t, i18n } = useTranslation("config");
   const [state, setState] = useState<ConfigState | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<SaveStatus>("idle");
   const fieldsRef = useRef<ConfigFields | null>(null);
+  const savedRef = useRef(onSaved);
+  savedRef.current = onSaved;
+  useEffect(() => {
+    if (status === "saved") savedRef.current?.();
+  }, [status]);
 
   const autosaver = useMemo(
     () =>
@@ -136,7 +147,7 @@ export function ConfigForm() {
               value={fields.school === "" ? NO_SCHOOL : fields.school}
               onValueChange={(value) => update({ school: value === NO_SCHOOL ? "" : value })}
             >
-              <SelectTrigger id="config-school" aria-label={t("field.school")}>
+              <SelectTrigger id="config-school" aria-label={t("field.school")} className="w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -165,16 +176,77 @@ export function ConfigForm() {
           {text("advisorEn")}
         </Section>
         <Section title={t("section.department")}>
-          {text("college")}
-          {text("collegeEn")}
-          {text("institute")}
-          {text("instituteEn")}
+          {fields.school === "" && <p className="text-xs text-muted-foreground">{t("chooseSchoolFirst")}</p>}
+          <OptionPicker
+            id="config-college"
+            label={t("field.collegePick")}
+            placeholder={t("chooseCollege")}
+            options={collegesOf(fields.school)}
+            zh={fields.college}
+            en={fields.collegeEn}
+            english={english}
+            onChange={(value) => update({ college: value.zh, collegeEn: value.en })}
+          />
+          <OptionPicker
+            id="config-institute"
+            label={t("field.institutePick")}
+            placeholder={t("chooseDepartment")}
+            options={departmentsOf(fields.school, fields.college)}
+            zh={fields.institute}
+            en={fields.instituteEn}
+            english={english}
+            onChange={(value) => update({ institute: value.zh, instituteEn: value.en })}
+          />
         </Section>
         <Section title={t("section.degree")}>
-          {text("degree")}
-          {text("degreeEn")}
-          {text("type")}
-          {text("typeEn")}
+          <OptionPicker
+            id="config-degree"
+            label={t("field.degree")}
+            placeholder={t("field.degree")}
+            options={[...DEGREES]}
+            zh={fields.degree}
+            en={fields.degreeEn}
+            english={english}
+            onChange={(value) => update({ degree: value.zh, degreeEn: value.en })}
+          />
+        </Section>
+        <Section title={t("section.language")}>
+          <Field id="config-language" label={t("field.language")}>
+            <Select
+              value={fields.language === "" ? NO_SCHOOL : fields.language}
+              onValueChange={(value) => update({ language: value === NO_SCHOOL ? "" : value })}
+            >
+              <SelectTrigger id="config-language" aria-label={t("field.language")} className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={NO_SCHOOL}>{t("followPreset")}</SelectItem>
+                {LANGUAGES.map((value) => (
+                  <SelectItem key={value} value={value}>
+                    {t(`lang.${value}`)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </Field>
+          <Field id="config-citation" label={t("field.citationStyle")}>
+            <Select
+              value={fields.citationStyle === "" ? NO_SCHOOL : fields.citationStyle}
+              onValueChange={(value) => update({ citationStyle: value === NO_SCHOOL ? "" : value })}
+            >
+              <SelectTrigger id="config-citation" aria-label={t("field.citationStyle")} className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={NO_SCHOOL}>{t("followPreset")}</SelectItem>
+                {CITATION_STYLES.map((value) => (
+                  <SelectItem key={value} value={value}>
+                    {t(`style.${value}`)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </Field>
         </Section>
         <Section title={t("section.dates")}>
           {text("date", { hint: t("hint.date"), placeholder: "2026-06-30" })}
@@ -191,10 +263,10 @@ export function ConfigForm() {
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <fieldset className="flex flex-col gap-4">
-      <legend className="mb-1 text-sm font-medium">{title}</legend>
+    <section className="flex flex-col gap-4">
+      <h3 className="text-sm font-medium">{title}</h3>
       {children}
-    </fieldset>
+    </section>
   );
 }
 

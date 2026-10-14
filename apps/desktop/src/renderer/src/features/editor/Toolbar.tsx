@@ -42,7 +42,7 @@ type Props = {
   onInsertAtom: (type: "footnote" | "citation" | "crossRef") => void;
   onEditCaption: () => void;
   onInsertImage: () => void;
-  onEditRowHeight: () => void;
+  onInsertTable: () => void;
 };
 
 const BLOCKS = ["paragraph", "heading1", "heading2", "heading3", "heading4"] as const;
@@ -98,7 +98,7 @@ function insertDefinition(editor: Editor, inList: boolean): void {
     .run();
 }
 
-export function Toolbar({ editor, onInsertMath, onInsertAtom, onEditCaption, onInsertImage, onEditRowHeight }: Props) {
+export function Toolbar({ editor, onInsertMath, onInsertAtom, onEditCaption, onInsertImage, onInsertTable }: Props) {
   const { t } = useTranslation("editor");
 
   // Recompute button state when the selection or content changes
@@ -149,7 +149,7 @@ export function Toolbar({ editor, onInsertMath, onInsertAtom, onEditCaption, onI
     <div
       role="toolbar"
       aria-label={t("toolbar.label")}
-      className="flex shrink-0 flex-wrap items-center gap-0.5 border-b px-3 py-1.5"
+      className="flex shrink-0 items-center gap-0.5 overflow-x-auto border-b px-3 py-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
     >
       {button(t("toolbar.undo"), Undo2Icon, () => editor.chain().focus().undo().run(), {
         disabled: !state.canUndo,
@@ -221,12 +221,10 @@ export function Toolbar({ editor, onInsertMath, onInsertAtom, onEditCaption, onI
       <span className="mx-1 h-5 w-px bg-border" aria-hidden="true" />
       {button(t("toolbar.rule"), MinusIcon, () => editor.chain().focus().setHorizontalRule().run())}
       {button(t("toolbar.image"), ImageIcon, onInsertImage)}
-      {button(t("toolbar.table"), TableIcon, () =>
-        editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run(),
-      )}
+      {button(t("toolbar.table"), TableIcon, onInsertTable)}
       {button(t("toolbar.definitionList"), BookAIcon, () => insertDefinition(editor, state.inDefinitionList))}
     </div>
-    {state.inTable && <TableTools editor={editor} onEditCaption={onEditCaption} onEditRowHeight={onEditRowHeight} />}
+    {state.inTable && <TableTools editor={editor} onEditCaption={onEditCaption} />}
     </>
   );
 }

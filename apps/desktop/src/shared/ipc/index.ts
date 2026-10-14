@@ -8,6 +8,7 @@ import type { MenuCommand } from "./menu";
 import type { AssetContract } from "./asset";
 import type { LabelContract } from "./label";
 import type { ProjectContract } from "./project";
+import type { RecentContract } from "./recent";
 import type { IpcResult } from "./result";
 import type { SettingsContract } from "./settings";
 
@@ -16,12 +17,13 @@ export type { IpcErrorPayload, IpcResult } from "./result";
 export type { LocaleView } from "./settings";
 export type { DocumentData, DocumentSummary } from "./document";
 export type { ProjectInfo } from "./project";
+export type { RecentProject } from "./recent";
 export type { BuildDiagnostic, BuildOutcome } from "./build";
 export type { ConfigState } from "./config";
 export type { LabelIndex, LabelTarget } from "./label";
 
 /** Contracts of all features are merged here, add & XxxContract when adding a feature. */
-export type IpcContract = AppContract & SettingsContract & ProjectContract & DocumentContract & DialogContract & LabelContract & AssetContract & ConfigContract & BuildContract & ExportContract;
+export type IpcContract = AppContract & SettingsContract & ProjectContract & DocumentContract & DialogContract & LabelContract & AssetContract & ConfigContract & BuildContract & ExportContract & RecentContract;
 
 export type IpcChannelName = keyof IpcContract;
 export type IpcRequest<C extends IpcChannelName> = IpcContract[C]["req"];

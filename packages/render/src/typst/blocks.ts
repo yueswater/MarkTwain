@@ -50,16 +50,17 @@ function renderTable(block: TableBlock, ctx: BlockContext): string[] {
   const columns = block.columns;
   const first: Cell[] = block.header ?? block.rows[0] ?? [];
   const columnAlign = Array.from({ length: columns }, (_, i) => first[i]?.align ?? "center");
+  const captioned = block.caption.length > 0;
   const caption = `caption: ${content(block.caption, ctx)}`;
   const notes = block.notes.length > 0 ? content(block.notes, ctx) : null;
 
-  if (isPlain(block)) {
+  if (isPlain(block) && captioned) {
     const row = (cells: Cell[]) =>
       `(${Array.from({ length: columns }, (_, i) => content(cells[i]?.content ?? [], ctx)).join(", ")},)`;
     return [
       "#tlt(",
       `  ${caption},`,
-      `  columns: ${columns},`,
+      `  columns: (${Array.from({ length: columns }, () => "1fr").join(", ")},),`,
       `  align: (${columnAlign.map((a) => ALIGN[a]).join(", ")},),`,
       ...(block.header ? [`  header: ${row(block.header)},`] : []),
       "  rows: (",
@@ -92,11 +93,9 @@ function renderTable(block: TableBlock, ctx: BlockContext): string[] {
   const rowCount = (block.header ? 1 : 0) + block.rows.length;
   const heights = block.heights.some((h) => h !== null) ? Array.from({ length: rowCount }, (_, i) => block.heights[i] ?? "auto") : null;
 
-  return [
-    "#figure(",
-    "  {",
+  const inner = [
     "    table(",
-    `      columns: ${widths ? `(${widths.join(", ")},)` : columns},`,
+    `      columns: (${(widths ?? Array.from({ length: columns }, () => "1fr")).join(", ")},),`,
     ...(heights ? [`      rows: (${heights.join(", ")},),`] : []),
     `      align: (${columnAlign.map((a) => ALIGN[a]).join(", ")},),`,
     `      stroke: ${grid ? "0.5pt" : "none"},`,
@@ -114,6 +113,15 @@ function renderTable(block: TableBlock, ctx: BlockContext): string[] {
     ...(grid ? [] : ["      bottomrule,"]),
     "    )",
     ...(notes ? [`    block(width: 100%, above: 0.5em, std.align(left, text(size: 0.9em, [註：] + ${notes})))`] : []),
+  ];
+
+  // Without a caption there is no table number, so the table is placed bare
+  if (!captioned) return ["#{", ...inner, "}"];
+
+  return [
+    "#figure(",
+    "  {",
+    ...inner,
     "  },",
     `  ${caption},`,
     "  kind: table,",
@@ -159,7 +167,8 @@ export function renderBlock(block: Block, ctx: BlockContext): string[] {
     case "code": {
       const fence = fenceFor(block.text);
       const raw = `${fence}${block.language ?? ""}\n${block.text}\n${fence}`.split("\n");
-      if (block.caption.length === 0 && !block.label) return raw;
+      // A code block with no caption is not a listing, so it gets no number and no label
+      if (block.caption.length === 0) return raw;
       const caption = `caption: ${content(block.caption, ctx)}`;
       return [`#code(${caption})[`, ...raw, `]${label(block.label)}`];
     }
@@ -174,15 +183,21 @@ export function renderBlock(block: Block, ctx: BlockContext): string[] {
     }
 
     case "figure": {
-      const args = [str(ctx.imagePath(block.src))];
-      // The template reads the caption unconditionally, so an empty one is passed.
-      args.push(`caption: ${content(block.caption, ctx)}`);
       const width = safeLength(block.width);
+      if (block.caption.length === 0) {
+        // No caption means no figure number, so the image is placed bare
+        return [`#align(center, image(${str(ctx.imagePath(block.src))}${width ? `, width: ${width}` : ""}))`];
+      }
+      const args = [str(ctx.imagePath(block.src)), `caption: ${content(block.caption, ctx)}`];
       if (width) args.push(`width: ${width}`);
       return [`#fig(${args.join(", ")})${label(block.label)}`];
     }
 
     case "figureGroup": {
+      if (block.caption.length === 0) {
+        const images = block.items.map((item) => `image(${str(ctx.imagePath(item.src))}, width: 100%)`);
+        return [`#align(center, grid(columns: (1fr,) * ${Math.max(block.items.length, 1)}, column-gutter: 1em, ${images.join(", ")}))`];
+      }
       const items = block.items.map((item) =>
         item.caption.length > 0
           ? `(${str(ctx.imagePath(item.src))}, ${content(item.caption, ctx)})`

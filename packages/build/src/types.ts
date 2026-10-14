@@ -23,6 +23,10 @@ export type BuildInput = {
   bibliography: BuildFile[];
   /** Kill typst after this many milliseconds */
   timeoutMs?: number;
+  /** pdf for the final file, png for page images used by the preview, pdf when omitted */
+  format?: "pdf" | "png";
+  /** Resolution of the page images */
+  ppi?: number;
   /** Keep the build directory, useful for debugging */
   keep?: boolean;
 };
@@ -43,5 +47,5 @@ export type Diagnostic = {
 };
 
 export type BuildResult =
-  | { ok: true; pdf: Uint8Array; diagnostics: Diagnostic[]; mathFailures: string[] }
+  | { ok: true; pdf: Uint8Array; pages: Uint8Array[]; diagnostics: Diagnostic[]; mathFailures: string[] }
   | { ok: false; diagnostics: Diagnostic[]; mathFailures: string[] };
