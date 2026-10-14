@@ -59,3 +59,64 @@ test("typing in the editor is saved as Markdown and survives a reopen", async ()
     rmSync(dir, { recursive: true, force: true });
   }
 });
+
+test("math can be inserted from the dialog, typed with $…$, edited, and saved as Markdown", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "marktwain 公式 "));
+  const file = join(dir, "論文.marktwain");
+  const args = [`--user-data-dir=${join(dir, "userData")}`, "--lang=en-US"];
+  if (process.platform === "linux") args.push("--no-sandbox");
+
+  const app = await electron.launch({
+    executablePath: findPackagedExecutable(dist),
+    args,
+    env: { ...process.env, MARKTWAIN_TEST_DIALOG_PATH: file },
+  });
+  try {
+    const page = await app.firstWindow();
+    await page.getByRole("button", { name: "New project" }).click();
+    const editor = page.locator(".ProseMirror");
+    await editor.click();
+
+    // 從對話框插入：先看預覽，語法錯誤時不能送出
+    await page.getByRole("button", { name: "Inline math" }).click();
+    const dialog = page.getByRole("dialog");
+    await dialog.getByLabel("LaTeX").fill("\\frac{a");
+    await expect(dialog.getByRole("alert")).toHaveText("This formula has a syntax error.");
+    await expect(dialog.getByRole("button", { name: "Insert" })).toBeDisabled();
+    await dialog.getByLabel("LaTeX").fill("x^2");
+    await expect(dialog.getByTestId("math-preview")).toBeVisible();
+    await dialog.getByRole("button", { name: "Insert" }).click();
+    await expect(editor.locator(".katex")).toHaveCount(1);
+
+    // 中文後面直接輸入 $…$ 也能變成公式
+    await page.keyboard.type("，且設$y=1$");
+    await expect(editor.locator(".katex")).toHaveCount(2);
+
+    // 點擊公式編輯
+    await editor.locator("[data-type='inline-math'] .katex-html").first().click();
+    await page.getByRole("dialog").getByLabel("LaTeX").fill("z^3");
+    await page.getByRole("dialog").getByRole("button", { name: "Update" }).click();
+    await expect(editor.locator("[data-type='inline-math']").first()).toHaveAttribute("data-latex", "z^3");
+
+    // 獨立公式
+    await page.keyboard.press("Enter");
+    await page.getByRole("button", { name: "Math block" }).click();
+    await page.getByRole("dialog").getByLabel("LaTeX").fill("E=mc^2");
+    await page.getByRole("dialog").getByRole("button", { name: "Insert" }).click();
+    await expect(editor.locator("[data-type='block-math']")).toHaveCount(1);
+    await expect(page.getByRole("status")).toHaveText("Saved");
+
+    const text = await page.evaluate(async () => {
+      const list = await window.marktwain.invoke("document:list");
+      if (!list.ok) return "";
+      const chapter = list.data.find((d) => d.kind === "chapter");
+      const doc = chapter && (await window.marktwain.invoke("document:get", { id: chapter.id }));
+      return doc && doc.ok ? doc.data.text : "";
+    });
+    expect(text).toContain("$z^3$，且設$y=1$");
+    expect(text).toContain("$$\nE=mc^2\n$$");
+  } finally {
+    await app.close();
+    rmSync(dir, { recursive: true, force: true });
+  }
+});

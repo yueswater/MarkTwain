@@ -25,6 +25,20 @@
     "blockquote": "Quote",
     "codeBlock": "Code block",
     "rule": "Horizontal rule",
-    "table": "Insert table"
+    "table": "Insert table",
+    "inlineMath": "Inline math",
+    "blockMath": "Math block"
+  },
+  "math": {
+    "insertTitle": "Insert math",
+    "editTitle": "Edit math",
+    "latex": "LaTeX",
+    "preview": "Preview",
+    "empty": "Type LaTeX to see a preview.",
+    "invalid": "This formula has a syntax error.",
+    "insert": "Insert",
+    "update": "Update",
+    "remove": "Remove",
+    "hint": "Example: \\frac{a}{b} or \\sum_{i=1}^{n} x_i"
   }
 }

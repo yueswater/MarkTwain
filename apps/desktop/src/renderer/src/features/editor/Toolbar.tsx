@@ -9,6 +9,8 @@ import {
   ListOrderedIcon,
   MinusIcon,
   QuoteIcon,
+  RadicalIcon,
+  SigmaIcon,
   Redo2Icon,
   StrikethroughIcon,
   TableIcon,
@@ -26,7 +28,10 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
-type Props = { editor: Editor };
+type Props = {
+  editor: Editor;
+  onInsertMath: (kind: "inline" | "block") => void;
+};
 
 const BLOCKS = ["paragraph", "heading1", "heading2", "heading3", "heading4"] as const;
 type Block = (typeof BLOCKS)[number];
@@ -44,7 +49,7 @@ function setBlock(editor: Editor, block: Block): void {
   else chain.setHeading({ level: Number(block.slice(-1)) as 1 | 2 | 3 | 4 }).run();
 }
 
-export function Toolbar({ editor }: Props) {
+export function Toolbar({ editor, onInsertMath }: Props) {
   const { t } = useTranslation("editor");
 
   // 選取範圍或內容改變時重新計算按鈕狀態
@@ -155,6 +160,8 @@ export function Toolbar({ editor }: Props) {
         { active: state.codeBlock },
       )}
       <span className="mx-1 h-5 w-px bg-border" aria-hidden="true" />
+      {button(t("toolbar.inlineMath"), SigmaIcon, () => onInsertMath("inline"))}
+      {button(t("toolbar.blockMath"), RadicalIcon, () => onInsertMath("block"))}
       {button(t("toolbar.rule"), MinusIcon, () => editor.chain().focus().setHorizontalRule().run())}
       {button(t("toolbar.table"), TableIcon, () =>
         editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run(),

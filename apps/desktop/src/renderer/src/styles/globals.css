@@ -176,3 +176,9 @@
   height: 0;
   pointer-events: none;
 }
+
+/* 公式：點擊可編輯；語法錯誤時顯示原文 */
+.tiptap-mathematics-render { cursor: pointer; border-radius: 0.25rem; }
+.tiptap-mathematics-render:hover { background: var(--muted); }
+.tiptap-mathematics-render[data-type="block-math"] { display: block; text-align: center; padding: 0.5rem 0; margin: 0.75rem 0; overflow-x: auto; }
+.inline-math-error { color: var(--destructive); font-family: "Geist Mono Variable", ui-monospace, monospace; }
