@@ -39,7 +39,8 @@ maybe("exportTypstProject", () => {
         dest,
       );
       const entries = readdirSync(dest);
-      expect(entries).toEqual(expect.arrayContaining(["main.typ", "config.yml", "contents", "figures", "lib", "helper", "fonts", "LICENSE"]));
+      const missing = ["main.typ", "config.yml", "contents", "figures", "lib", "helper", "fonts", "LICENSE"].filter((name) => !entries.includes(name));
+      expect(missing).toEqual([]);
       expect(entries).not.toContain("docs");
       expect(readFileSync(join(dest, "contents/chapter01.typ"), "utf8")).toContain("= 緒論 <cha:intro>");
       execFileSync(typst as string, ["compile", "main.typ", "out.pdf", "--font-path", "fonts"], { cwd: dest, stdio: "ignore" });
