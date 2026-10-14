@@ -9,7 +9,12 @@
     "jsx": "react-jsx",
     "types": [
       "node"
-    ]
+    ],
+    "paths": {
+      "@/*": [
+        "./src/renderer/src/*"
+      ]
+    }
   },
   "include": [
     "src",

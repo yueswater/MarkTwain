@@ -43,7 +43,7 @@ Create a project, write the thesis, and save it.
 - TipTap Markdown editor (the document is Markdown) with the v1 node set: headings, lists, tables, images, math, code, footnotes, cross-references
 - Numbering and resolution of cross-references for figures, tables, equations, and chapters
 - Create and open projects (`.marktwain`), stored in SQLite (Node's built-in `node:sqlite`) with versioned migrations
-- A Material Design 3 interface: primary color `#5820F0` with a mint accent, a cream surface on a warm pink background, and a serif display font for headings
+- An interface that follows AnvilNote's design language: strict monochrome (Notion-style), Tailwind CSS with shadcn/ui-style components, Geist and Noto Sans TC fonts; the brand colors live only in the logo and app icon
 - `config.yml` form: title, author, advisor, college, degree, keywords, and so on
 
 **Done when:** content that uses every node survives closing and reopening the project, numbering updates immediately when figures or tables are added or removed, and Chinese input (Zhuyin, Cangjie) works on Windows and macOS.

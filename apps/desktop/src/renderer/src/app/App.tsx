@@ -1,10 +1,7 @@
-import Alert from "@mui/material/Alert";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import Chip from "@mui/material/Chip";
-import Typography from "@mui/material/Typography";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { IpcChannel } from "../../../shared/enums/ipc-channel.enum";
 import type { Locale } from "../../../shared/enums/locale.enum";
 import type { AppInfo } from "../../../shared/ipc";
@@ -37,20 +34,23 @@ export function App() {
 
   return (
     <AppShell onLocaleChange={(locale) => void changeLocale(locale)}>
-      <Card variant="outlined">
-        <CardContent sx={{ display: "grid", gap: 2 }}>
-          <Typography variant="h2" component="h2">
-            {t("app.tagline")}
-          </Typography>
+      <Card>
+        <CardHeader>
+          <h2 className="text-2xl font-semibold tracking-tight">{t("app.tagline")}</h2>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-3">
           {info && (
             <div>
-              <Chip
-                label={t("app.version", { version: info.version, platform: info.platform })}
-                sx={{ bgcolor: "tertiary.container", color: "tertiary.onContainer" }}
-              />
+              <Badge variant="secondary">
+                {t("app.version", { version: info.version, platform: info.platform })}
+              </Badge>
             </div>
           )}
-          {error && <Alert severity="error">{error}</Alert>}
+          {error && (
+            <p role="alert" className="text-sm text-destructive select-text">
+              {error}
+            </p>
+          )}
         </CardContent>
       </Card>
     </AppShell>
