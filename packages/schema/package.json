@@ -1,6 +1,6 @@
 {
   "name": "@marktwain/schema",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "main": "src/index.ts",
@@ -8,5 +8,19 @@
   "scripts": {
     "test": "jest",
     "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "markdown-it": "^15.0.2",
+    "markdown-it-attrs": "^5.0.1",
+    "markdown-it-cjk-friendly": "^3.0.0",
+    "markdown-it-footnote": "^4.0.0",
+    "prosemirror-markdown": "^1.13.8",
+    "prosemirror-model": "^1.25.12",
+    "yaml": "^2.9.1"
+  },
+  "devDependencies": {
+    "@types/markdown-it": "^14.2.0",
+    "@types/node": "^22.20.5",
+    "fast-check": "^4.10.2"
   }
 }

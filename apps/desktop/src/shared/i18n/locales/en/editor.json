@@ -1,0 +1,122 @@
+{
+  "save": {
+    "dirty": "Unsaved changes",
+    "saving": "Saving…",
+    "saved": "Saved",
+    "error": "Could not save"
+  },
+  "placeholder": "Start writing…",
+  "toolbar": {
+    "label": "Formatting",
+    "undo": "Undo",
+    "redo": "Redo",
+    "block": "Text style",
+    "paragraph": "Paragraph",
+    "heading1": "Heading 1",
+    "heading2": "Heading 2",
+    "heading3": "Heading 3",
+    "heading4": "Heading 4",
+    "bold": "Bold",
+    "italic": "Italic",
+    "strike": "Strikethrough",
+    "code": "Inline code",
+    "bulletList": "Bulleted list",
+    "orderedList": "Numbered list",
+    "blockquote": "Quote",
+    "codeBlock": "Code block",
+    "rule": "Horizontal rule",
+    "table": "Insert table",
+    "inlineMath": "Inline math",
+    "blockMath": "Math block",
+    "footnote": "Footnote",
+    "citation": "Citation",
+    "crossRef": "Cross-reference",
+    "definitionList": "Definition list",
+    "addDefinition": "Add term",
+    "image": "Insert image"
+  },
+  "math": {
+    "insertTitle": "Insert math",
+    "editTitle": "Edit math",
+    "latex": "LaTeX",
+    "preview": "Preview",
+    "empty": "Type LaTeX to see a preview.",
+    "invalid": "This formula has a syntax error.",
+    "insert": "Insert",
+    "update": "Update",
+    "remove": "Remove",
+    "hint": "Example: \\frac{a}{b} or \\sum_{i=1}^{n} x_i"
+  },
+  "footnote": {
+    "insertTitle": "Insert footnote",
+    "editTitle": "Edit footnote",
+    "text": "Footnote text",
+    "hint": "Inline Markdown is allowed, for example **bold** or $x^2$."
+  },
+  "citation": {
+    "insertTitle": "Insert citation",
+    "editTitle": "Edit citation",
+    "keys": "Bibliography keys",
+    "keysHint": "Separate several keys with commas, for example wang2020, lee2019.",
+    "form": "Style",
+    "forms": {
+      "paren": "(Author, Year)",
+      "prose": "Author (Year)",
+      "year": "Year only",
+      "author": "Author only"
+    }
+  },
+  "crossRef": {
+    "insertTitle": "Insert cross-reference",
+    "editTitle": "Edit cross-reference",
+    "target": "Target",
+    "labeled": "Labeled",
+    "unlabeled": "Not labeled yet (a label is added automatically)",
+    "none": "There is nothing to refer to yet. Add a labeled heading, figure, table or equation first.",
+    "kind": {
+      "cha": "Chapter",
+      "sec": "Section",
+      "fig": "Figure",
+      "tbl": "Table",
+      "eq": "Equation",
+      "lst": "Listing"
+    },
+    "broken": "Missing target",
+    "chooseHint": "Choose what to refer to."
+  },
+  "atom": {
+    "insert": "Insert",
+    "update": "Update",
+    "remove": "Remove"
+  },
+  "table": {
+    "label": "Table tools",
+    "addRow": "Add row below",
+    "addColumn": "Add column right",
+    "deleteRow": "Delete row",
+    "deleteColumn": "Delete column",
+    "toggleHeader": "Toggle header row",
+    "deleteTable": "Delete table",
+    "alignLeft": "Align left",
+    "alignCenter": "Align center",
+    "alignRight": "Align right",
+    "caption": "Table caption and notes"
+  },
+  "caption": {
+    "tableTitle": "Table caption",
+    "codeTitle": "Listing caption",
+    "captionLabel": "Caption",
+    "captionHint": "Inline Markdown is allowed. Leave empty for no caption.",
+    "notes": "Notes",
+    "notesHint": "Shown below the table, for example the source of the data.",
+    "save": "Save"
+  },
+  "figure": {
+    "insertTitle": "Insert image",
+    "editTitle": "Edit image",
+    "caption": "Caption",
+    "captionHint": "Inline Markdown is allowed. Leave empty for no caption.",
+    "width": "Width",
+    "widthAuto": "Original size"
+  }
+}

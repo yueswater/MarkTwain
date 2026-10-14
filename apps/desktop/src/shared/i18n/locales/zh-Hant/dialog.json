@@ -1,0 +1,18 @@
+{
+  "newProject": {
+    "title": "建立專案",
+    "button": "建立"
+  },
+  "openProject": {
+    "title": "開啟專案",
+    "button": "開啟"
+  },
+  "filter": {
+    "project": "MarkTwain 專案",
+    "image": "圖片"
+  },
+  "openImage": {
+    "title": "選擇圖片",
+    "button": "插入"
+  }
+}

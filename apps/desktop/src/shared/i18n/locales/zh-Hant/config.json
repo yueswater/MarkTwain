@@ -1,0 +1,54 @@
+{
+  "title": "專案設定",
+  "description": "這些資料會用在封面與題名頁。變更會自動儲存。",
+  "save": {
+    "dirty": "尚未儲存",
+    "saving": "儲存中…",
+    "saved": "已儲存",
+    "error": "無法儲存"
+  },
+  "section": {
+    "school": "學校",
+    "thesis": "論文",
+    "author": "作者",
+    "advisor": "指導教授",
+    "department": "系所",
+    "degree": "學位",
+    "dates": "日期",
+    "keywords": "關鍵字"
+  },
+  "field": {
+    "school": "學校格式",
+    "title": "論文題目（中文）",
+    "titleEn": "論文題目（英文）",
+    "author": "作者（中文）",
+    "authorEn": "作者（英文）",
+    "id": "學號",
+    "advisor": "指導教授（中文）",
+    "advisorEn": "指導教授（英文）",
+    "college": "學院（中文）",
+    "collegeEn": "學院（英文）",
+    "institute": "系所（中文）",
+    "instituteEn": "系所（英文）",
+    "degree": "學位（中文）",
+    "degreeEn": "學位（英文）",
+    "type": "論文類別（中文）",
+    "typeEn": "論文類別（英文）",
+    "date": "出版日期",
+    "oralDate": "口試日期",
+    "keywords": "關鍵字（中文）",
+    "keywordsEn": "關鍵字（英文）"
+  },
+  "hint": {
+    "date": "YYYY-MM-DD",
+    "keywords": "以逗號分隔。",
+    "school": "套用所選學校的論文格式規定。留空則使用預設格式。"
+  },
+  "noSchool": "不套用學校格式（預設格式）",
+  "issue": {
+    "required": "這個欄位必填。",
+    "date-format": "請使用 YYYY-MM-DD 格式。",
+    "unknown-school": "沒有這所學校。"
+  },
+  "open": "專案設定"
+}

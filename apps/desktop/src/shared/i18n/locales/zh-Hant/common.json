@@ -10,5 +10,11 @@
       "zh-Hant": "繁體中文",
       "en": "English"
     }
+  },
+  "action": {
+    "close": "關閉",
+    "cancel": "取消",
+    "save": "儲存",
+    "delete": "刪除"
   }
 }

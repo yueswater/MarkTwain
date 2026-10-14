@@ -1,53 +1,67 @@
-import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { MenuCommand } from "../../../shared/ipc/menu";
 import { IpcChannel } from "../../../shared/enums/ipc-channel.enum";
-import { Locale, SUPPORTED_LOCALES } from "../../../shared/enums/locale.enum";
-import type { AppInfo } from "../../../shared/ipc";
+import type { Locale } from "../../../shared/enums/locale.enum";
+import { useProject } from "../features/project/use-project";
+import { WelcomeScreen } from "../features/project/WelcomeScreen";
+import { Workspace } from "../features/project/Workspace";
 import { api } from "../shared/api";
 import { errorMessage } from "../shared/error-message";
+import { useEffect, useRef, useState } from "react";
+import { AppShell } from "./AppShell";
 
 export function App() {
   const { t, i18n } = useTranslation();
-  const [info, setInfo] = useState<AppInfo | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    api
-      .invoke(IpcChannel.AppInfo)
-      .then(setInfo)
-      .catch((e: unknown) => setError(errorMessage(t, e)));
-    // 只在載入時取得一次
-  }, []);
+  const state = useProject();
+  const [localeError, setLocaleError] = useState<string | null>(null);
 
   async function changeLocale(locale: Locale): Promise<void> {
     try {
       const { effective } = await api.invoke(IpcChannel.SettingsSetLocale, { setting: locale });
       await i18n.changeLanguage(effective);
-      setError(null);
+      setLocaleError(null);
     } catch (e) {
-      setError(errorMessage(t, e));
+      setLocaleError(errorMessage(t, e));
     }
   }
 
+  // 原生選單的「檔案」指令；每次渲染都用最新的 state，所以用 ref 避免重複訂閱
+  const stateRef = useRef(state);
+  stateRef.current = state;
+  useEffect(
+    () =>
+      window.marktwain.onMenuCommand((command) => {
+        const current = stateRef.current;
+        if (command === MenuCommand.NewProject) void current.createProject(t("welcome.defaultName", { ns: "project" }));
+        else if (command === MenuCommand.OpenProject) void current.openProject();
+        else if (command === MenuCommand.CloseProject) void current.closeProject();
+      }),
+    [t],
+  );
+
+  const error = state.error ?? localeError;
+
   return (
-    <main style={{ padding: 32 }}>
-      <h1>{t("app.name")}</h1>
-      <p>{t("app.tagline")}</p>
-      {info && <p>{t("app.version", { version: info.version, platform: info.platform })}</p>}
-      <label>
-        {t("settings.language")}{" "}
-        <select
-          value={i18n.language}
-          onChange={(event) => void changeLocale(event.target.value as Locale)}
-        >
-          {SUPPORTED_LOCALES.map((locale) => (
-            <option key={locale} value={locale}>
-              {t(`settings.locale.${locale}`)}
-            </option>
-          ))}
-        </select>
-      </label>
-      {error && <p role="alert">{error}</p>}
-    </main>
+    <AppShell
+      projectName={state.project?.name ?? null}
+      onCloseProject={() => void state.closeProject()}
+      onLocaleChange={(locale) => void changeLocale(locale)}
+    >
+      {error && (
+        <p role="alert" className="border-b bg-destructive/5 px-4 py-2 text-sm text-destructive select-text">
+          {error}
+        </p>
+      )}
+      <div className="min-h-0 flex-1">
+        {state.loading ? null : state.project ? (
+          <Workspace state={state} />
+        ) : (
+          <WelcomeScreen
+            onCreate={(name) => void state.createProject(name)}
+            onOpen={() => void state.openProject()}
+          />
+        )}
+      </div>
+    </AppShell>
   );
 }

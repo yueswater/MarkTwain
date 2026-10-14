@@ -1,0 +1,122 @@
+{
+  "save": {
+    "dirty": "尚未儲存",
+    "saving": "儲存中…",
+    "saved": "已儲存",
+    "error": "無法儲存"
+  },
+  "placeholder": "開始撰寫…",
+  "toolbar": {
+    "label": "格式",
+    "undo": "復原",
+    "redo": "重做",
+    "block": "文字樣式",
+    "paragraph": "內文",
+    "heading1": "標題 1",
+    "heading2": "標題 2",
+    "heading3": "標題 3",
+    "heading4": "標題 4",
+    "bold": "粗體",
+    "italic": "斜體",
+    "strike": "刪除線",
+    "code": "行內程式碼",
+    "bulletList": "項目清單",
+    "orderedList": "編號清單",
+    "blockquote": "引言",
+    "codeBlock": "程式碼區塊",
+    "rule": "分隔線",
+    "table": "插入表格",
+    "inlineMath": "行內公式",
+    "blockMath": "獨立公式",
+    "footnote": "腳註",
+    "citation": "文獻引用",
+    "crossRef": "交叉引用",
+    "definitionList": "定義清單",
+    "addDefinition": "新增詞條",
+    "image": "插入圖片"
+  },
+  "math": {
+    "insertTitle": "插入公式",
+    "editTitle": "編輯公式",
+    "latex": "LaTeX",
+    "preview": "預覽",
+    "empty": "輸入 LaTeX 即可預覽。",
+    "invalid": "這個公式有語法錯誤。",
+    "insert": "插入",
+    "update": "更新",
+    "remove": "移除",
+    "hint": "例如：\\frac{a}{b} 或 \\sum_{i=1}^{n} x_i"
+  },
+  "footnote": {
+    "insertTitle": "插入腳註",
+    "editTitle": "編輯腳註",
+    "text": "腳註內容",
+    "hint": "可以使用行內 Markdown，例如 **粗體** 或 $x^2$。"
+  },
+  "citation": {
+    "insertTitle": "插入文獻引用",
+    "editTitle": "編輯文獻引用",
+    "keys": "書目代號",
+    "keysHint": "多個代號以逗號分隔，例如 wang2020, lee2019。",
+    "form": "樣式",
+    "forms": {
+      "paren": "（作者，年份）",
+      "prose": "作者（年份）",
+      "year": "只有年份",
+      "author": "只有作者"
+    }
+  },
+  "crossRef": {
+    "insertTitle": "插入交叉引用",
+    "editTitle": "編輯交叉引用",
+    "target": "目標",
+    "labeled": "已有標籤",
+    "unlabeled": "尚未加標籤（會自動加上）",
+    "none": "目前沒有可以引用的目標。請先加入有標籤的標題、圖、表或公式。",
+    "kind": {
+      "cha": "章",
+      "sec": "節",
+      "fig": "圖",
+      "tbl": "表",
+      "eq": "式",
+      "lst": "程式"
+    },
+    "broken": "找不到目標",
+    "chooseHint": "選擇要引用的目標。"
+  },
+  "atom": {
+    "insert": "插入",
+    "update": "更新",
+    "remove": "移除"
+  },
+  "table": {
+    "label": "表格工具",
+    "addRow": "在下方新增列",
+    "addColumn": "在右方新增欄",
+    "deleteRow": "刪除列",
+    "deleteColumn": "刪除欄",
+    "toggleHeader": "切換標題列",
+    "deleteTable": "刪除表格",
+    "alignLeft": "靠左",
+    "alignCenter": "置中",
+    "alignRight": "靠右",
+    "caption": "表格標題與附註"
+  },
+  "caption": {
+    "tableTitle": "表格標題",
+    "codeTitle": "程式碼標題",
+    "captionLabel": "標題",
+    "captionHint": "可以使用行內 Markdown。留空表示沒有標題。",
+    "notes": "附註",
+    "notesHint": "顯示在表格下方，例如資料來源。",
+    "save": "儲存"
+  },
+  "figure": {
+    "insertTitle": "插入圖片",
+    "editTitle": "編輯圖片",
+    "caption": "圖說",
+    "captionHint": "可以使用行內 Markdown。留空表示沒有圖說。",
+    "width": "寬度",
+    "widthAuto": "原始大小"
+  }
+}

@@ -1,0 +1,226 @@
+import {
+  SCHOOLS,
+  type ConfigFields,
+  type ConfigIssue,
+} from "@marktwain/schema";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useTranslation } from "react-i18next";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { IpcChannel } from "../../../../shared/enums/ipc-channel.enum";
+import type { ConfigState } from "../../../../shared/ipc";
+import { api } from "../../shared/api";
+import { errorMessage } from "../../shared/error-message";
+import { Autosaver, type SaveStatus } from "../editor/autosaver";
+
+const NO_SCHOOL = "none";
+
+type TextField = Exclude<keyof ConfigFields, "keywords" | "keywordsEn" | "school">;
+
+/** 邊填邊存的專案設定表單（config.yml 的欄位）。 */
+export function ConfigForm() {
+  const { t, i18n } = useTranslation("config");
+  const [state, setState] = useState<ConfigState | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [status, setStatus] = useState<SaveStatus>("idle");
+  const fieldsRef = useRef<ConfigFields | null>(null);
+
+  const autosaver = useMemo(
+    () =>
+      new Autosaver(
+        async (json) => {
+          const next = await api.invoke(IpcChannel.ConfigSet, { fields: JSON.parse(json) as ConfigFields });
+          // 只更新驗證結果；欄位內容以使用者正在輸入的為準
+          setState((current) => (current ? { ...current, issues: next.issues } : current));
+        },
+        setStatus,
+        600,
+      ),
+    [],
+  );
+
+  useEffect(() => {
+    let cancelled = false;
+    api
+      .invoke(IpcChannel.ConfigGet)
+      .then((loaded) => {
+        if (cancelled) return;
+        fieldsRef.current = loaded.fields;
+        setState(loaded);
+      })
+      .catch((e: unknown) => !cancelled && setError(errorMessage(i18n.t.bind(i18n), e)));
+    return () => {
+      cancelled = true;
+      void autosaver.flush(); // 離開設定頁前存下最後的變更
+    };
+  }, [autosaver, i18n]);
+
+  if (error) {
+    return (
+      <p role="alert" className="p-8 text-sm text-destructive select-text">
+        {error}
+      </p>
+    );
+  }
+  if (!state) return null;
+  const fields = state.fields;
+
+  function update(patch: Partial<ConfigFields>): void {
+    const next = { ...(fieldsRef.current as ConfigFields), ...patch };
+    fieldsRef.current = next;
+    setState((current) => (current ? { ...current, fields: next } : current));
+    autosaver.schedule(() => JSON.stringify(next));
+  }
+
+  const issueFor = (field: keyof ConfigFields): ConfigIssue | undefined =>
+    state.issues.find((issue) => issue.field === field);
+
+  const text = (field: TextField, extra?: { hint?: string; placeholder?: string }) => {
+    const issue = issueFor(field);
+    // 必填欄位在使用者還沒填之前不顯示錯誤，以免一開啟就滿版紅字
+    const showIssue = issue && !(issue.code === "required" && fields[field] === "" && status === "idle");
+    return (
+      <Field
+        key={field}
+        id={`config-${field}`}
+        label={t(`field.${field}`)}
+        hint={extra?.hint}
+        error={showIssue ? t(`issue.${issue.code}`) : undefined}
+      >
+        <Input
+          id={`config-${field}`}
+          value={fields[field]}
+          placeholder={extra?.placeholder}
+          aria-invalid={showIssue ? true : undefined}
+          onChange={(event) => update({ [field]: event.target.value })}
+        />
+      </Field>
+    );
+  };
+
+  const keywords = (field: "keywords" | "keywordsEn") => (
+    <Field key={field} id={`config-${field}`} label={t(`field.${field}`)} hint={t("hint.keywords")}>
+      <Input
+        id={`config-${field}`}
+        defaultValue={fields[field].join(", ")}
+        onChange={(event) =>
+          update({ [field]: event.target.value.split(/[,，、]+/).map((item) => item.trim()).filter(Boolean) })
+        }
+      />
+    </Field>
+  );
+
+  const english = i18n.language === "en";
+
+  return (
+    <div className="h-full overflow-y-auto">
+      <form className="mx-auto flex max-w-2xl flex-col gap-8 p-8" onSubmit={(event) => event.preventDefault()}>
+        <header className="flex flex-col gap-1">
+          <h2 className="text-2xl font-semibold tracking-tight">{t("title")}</h2>
+          <p className="text-sm text-muted-foreground">{t("description")}</p>
+          <p role="status" className="h-4 text-xs text-muted-foreground" data-status={status}>
+            {status === "idle" ? "" : t(`save.${status}`)}
+          </p>
+        </header>
+
+        <Section title={t("section.school")}>
+          <Field id="config-school" label={t("field.school")} hint={t("hint.school")}>
+            <Select
+              value={fields.school === "" ? NO_SCHOOL : fields.school}
+              onValueChange={(value) => update({ school: value === NO_SCHOOL ? "" : value })}
+            >
+              <SelectTrigger id="config-school" aria-label={t("field.school")}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={NO_SCHOOL}>{t("noSchool")}</SelectItem>
+                {SCHOOLS.map((school) => (
+                  <SelectItem key={school.code} value={school.code}>
+                    {english ? school.nameEn : school.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </Field>
+        </Section>
+
+        <Section title={t("section.thesis")}>
+          {text("title")}
+          {text("titleEn")}
+        </Section>
+        <Section title={t("section.author")}>
+          {text("author")}
+          {text("authorEn")}
+          {text("id")}
+        </Section>
+        <Section title={t("section.advisor")}>
+          {text("advisor")}
+          {text("advisorEn")}
+        </Section>
+        <Section title={t("section.department")}>
+          {text("college")}
+          {text("collegeEn")}
+          {text("institute")}
+          {text("instituteEn")}
+        </Section>
+        <Section title={t("section.degree")}>
+          {text("degree")}
+          {text("degreeEn")}
+          {text("type")}
+          {text("typeEn")}
+        </Section>
+        <Section title={t("section.dates")}>
+          {text("date", { hint: t("hint.date"), placeholder: "2026-06-30" })}
+          {text("oralDate", { hint: t("hint.date"), placeholder: "2026-06-15" })}
+        </Section>
+        <Section title={t("section.keywords")}>
+          {keywords("keywords")}
+          {keywords("keywordsEn")}
+        </Section>
+      </form>
+    </div>
+  );
+}
+
+function Section({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <fieldset className="flex flex-col gap-4">
+      <legend className="mb-1 text-sm font-medium">{title}</legend>
+      {children}
+    </fieldset>
+  );
+}
+
+function Field({
+  id,
+  label,
+  hint,
+  error,
+  children,
+}: {
+  id: string;
+  label: string;
+  hint?: string;
+  error?: string;
+  children: ReactNode;
+}) {
+  return (
+    <div className="grid gap-1.5">
+      <Label htmlFor={id}>{label}</Label>
+      {children}
+      {hint && !error && <p className="text-xs text-muted-foreground">{hint}</p>}
+      {error && (
+        <p role="alert" className="text-xs text-destructive">
+          {error}
+        </p>
+      )}
+    </div>
+  );
+}

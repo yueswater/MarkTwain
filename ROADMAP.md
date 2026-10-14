@@ -2,12 +2,12 @@
 
 MarkTwain is developed against version milestones. Each version maps to a [GitHub Milestone](../../milestones), and the work items are tracked as issues.
 
-Current version: not released yet (in development).
+Current version: v0.2.0.
 
 | Version | Theme | Status |
 |---|---|---|
-| [v0.1.0](#v010--foundation) | Foundation | In progress |
-| [v0.2.0](#v020--editor) | Editor | Not started |
+| [v0.1.0](#v010--foundation) | Foundation | Released |
+| [v0.2.0](#v020--editor) | Editor | Released |
 | [v0.3.0](#v030--typst-output) | Typst output | Not started |
 | [v0.4.0](#v040--version-control) | Version control | Not started |
 | [v0.5.0](#v050--latex-output) | LaTeX output | Not started |
@@ -42,7 +42,8 @@ Create a project, write the thesis, and save it.
 
 - TipTap Markdown editor (the document is Markdown) with the v1 node set: headings, lists, tables, images, math, code, footnotes, cross-references
 - Numbering and resolution of cross-references for figures, tables, equations, and chapters
-- Create and open projects (`.marktwain`)
+- Create and open projects (`.marktwain`), stored in SQLite (Node's built-in `node:sqlite`) with versioned migrations
+- An interface that follows AnvilNote's design language: strict monochrome (Notion-style), Tailwind CSS with shadcn/ui-style components, Geist and Noto Sans TC fonts; the brand colors live only in the logo and app icon
 - `config.yml` form: title, author, advisor, college, degree, keywords, and so on
 
 **Done when:** content that uses every node survives closing and reopening the project, numbering updates immediately when figures or tables are added or removed, and Chinese input (Zhuyin, Cangjie) works on Windows and macOS.

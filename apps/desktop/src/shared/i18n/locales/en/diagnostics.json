@@ -5,6 +5,25 @@
     },
     "settings": {
       "invalid-locale": "That interface language is not supported."
+    },
+    "project": {
+      "not-found": "The project file could not be found.",
+      "invalid": "This is not a valid MarkTwain project file.",
+      "too-new": "This project was created by a newer version of MarkTwain (file format version {{found}}; this version supports up to {{supported}}). Please update MarkTwain.",
+      "none-open": "No project is open.",
+      "exists": "A file already exists at that location and will not be overwritten."
+    },
+    "config": {
+      "invalid": "The project settings (config.yml) are not valid YAML."
+    },
+    "asset": {
+      "unsupported": "This file type is not supported. Use PNG, JPEG or SVG images.",
+      "too-large": "This image is larger than {{max}} MB.",
+      "unreadable": "The image file could not be read."
+    },
+    "document": {
+      "not-found": "The document could not be found.",
+      "singleton": "This project already has a document of that kind."
     }
   }
 }

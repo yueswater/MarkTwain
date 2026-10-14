@@ -2,14 +2,15 @@ import { _electron as electron, expect, test } from "@playwright/test";
 import { mkdirSync, mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
+import { captureDesktop } from "./desktop-capture";
 import { findPackagedExecutable } from "./find-app";
 
 const dist = resolve(__dirname, "../dist");
 const outDir = resolve(__dirname, "../e2e-output");
 
 const cases = [
-  { locale: "zh-Hant", lang: "zh-TW", tagline: "離線論文編輯器" },
-  { locale: "en", lang: "en-US", tagline: "Offline thesis editor" },
+  { locale: "zh-Hant", lang: "zh-TW", tagline: "離線撰寫你的論文。" },
+  { locale: "en", lang: "en-US", tagline: "Write your thesis, offline." },
 ] as const;
 
 for (const { locale, lang, tagline } of cases) {
@@ -35,6 +36,11 @@ for (const { locale, lang, tagline } of cases) {
 
         mkdirSync(outDir, { recursive: true });
         await page.screenshot({ path: join(outDir, `shell-${locale}-${scale}x.png`) });
+        // 整個桌面（含標題列）：Windows 才有實作，結果在 CI 的 screenshots 成品裡
+        if (scale === 1) {
+          await app.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0]?.focus());
+          captureDesktop(join(outDir, `desktop-${process.platform}-${locale}.png`));
+        }
       } finally {
         await app.close();
         rmSync(userData, { recursive: true, force: true });
