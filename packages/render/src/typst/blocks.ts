@@ -52,7 +52,7 @@ export function renderBlock(block: Block, ctx: BlockContext): string[] {
       const fence = fenceFor(block.text);
       const raw = `${fence}${block.language ?? ""}\n${block.text}\n${fence}`.split("\n");
       if (block.caption.length === 0 && !block.label) return raw;
-      const caption = block.caption.length > 0 ? `caption: ${content(block.caption, ctx)}` : "";
+      const caption = `caption: ${content(block.caption, ctx)}`;
       return [`#code(${caption})[`, ...raw, `]${label(block.label)}`];
     }
 
@@ -67,7 +67,8 @@ export function renderBlock(block: Block, ctx: BlockContext): string[] {
 
     case "figure": {
       const args = [str(ctx.imagePath(block.src))];
-      if (block.caption.length > 0) args.push(`caption: ${content(block.caption, ctx)}`);
+      // The template reads the caption unconditionally, so an empty one is passed.
+      args.push(`caption: ${content(block.caption, ctx)}`);
       const width = safeLength(block.width);
       if (width) args.push(`width: ${width}`);
       return [`#fig(${args.join(", ")})${label(block.label)}`];
@@ -81,7 +82,7 @@ export function renderBlock(block: Block, ctx: BlockContext): string[] {
       );
       const args: string[] = [];
       if (block.layout === "grid" && block.columns) args.push(`columns: ${block.columns}`);
-      if (block.caption.length > 0) args.push(`caption: ${content(block.caption, ctx)}`);
+      args.push(`caption: ${content(block.caption, ctx)}`);
       const fn = block.layout === "grid" ? "fig-grid" : "fig-row";
       return [`#${fn}(`, ...indent([...args.map((a) => `${a},`), ...items.map((i) => `${i},`)], "  "), `)${label(block.label)}`];
     }
@@ -94,7 +95,7 @@ export function renderBlock(block: Block, ctx: BlockContext): string[] {
         `(${Array.from({ length: columns }, (_, i) => content(cells[i]?.content ?? [], ctx)).join(", ")},)`;
       const lines = [
         "#tlt(",
-        ...(block.caption.length > 0 ? [`  caption: ${content(block.caption, ctx)},`] : []),
+        `  caption: ${content(block.caption, ctx)},`,
         `  columns: ${columns},`,
         `  align: (${align.join(", ")},),`,
         ...(block.header ? [`  header: ${row(block.header)},`] : []),

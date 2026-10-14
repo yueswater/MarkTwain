@@ -23,11 +23,7 @@ const typst = findTypst();
 const available = typst !== null && existsSync(templateDir);
 const maybe = available ? describe : describe.skip;
 
-// 1x1 PNG
-const PNG = Buffer.from(
-  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
-  "base64",
-);
+import { PNG } from "./fixtures";
 
 const config = 'title: "測試論文"\nauthor: "王小明"\nkeywords: ["甲", "乙"]\nkeywords-en: ["a", "b"]\n';
 

@@ -32,7 +32,7 @@ export type SourceRef = { documentId: string; block: number };
 export type Diagnostic = {
   severity: "error" | "warning";
   /** Set for diagnostics that MarkTwain raises itself */
-  code?: "config-missing";
+  code?: "config-missing" | "citation-no-bibliography";
   message: string;
   /** Path inside the build directory */
   file: string | null;

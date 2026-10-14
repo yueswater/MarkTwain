@@ -20,6 +20,7 @@ export function PreviewPanel({ build, onClose, onJump }: Props) {
   const errors = outcome?.diagnostics.filter((d) => d.severity === "error") ?? [];
   const warnings = outcome?.diagnostics.filter((d) => d.severity === "warning") ?? [];
   // One line for all unfilled settings, not one per field
+  const uncited = warnings.filter((d) => d.code === "citation-no-bibliography").map((d) => d.message);
   const missingFields = warnings.filter((d) => d.code === "config-missing").map((d) => d.message);
 
   return (
@@ -79,6 +80,9 @@ export function PreviewPanel({ build, onClose, onJump }: Props) {
           <ul className="flex flex-col gap-1 text-muted-foreground">
             {missingFields.length > 0 && (
               <li className="select-text">{t("configMissing", { field: missingFields.join(", ") })}</li>
+            )}
+            {uncited.length > 0 && (
+              <li className="select-text">{t("citationNoBibliography", { keys: uncited.join(", ") })}</li>
             )}
             {outcome?.mathFailures.map((latex, i) => (
               <li key={`m${i}`} className="select-text">

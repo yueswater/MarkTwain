@@ -5,6 +5,10 @@ import { convertMath, mathFallback } from "./math";
 export type InlineContext = {
   /** 公式轉換失敗時呼叫，讓建置回報 */
   onMathFailure: (latex: string) => void;
+  /** False when the project has no bibliography file; citations then render as plain text. */
+  hasBibliography?: boolean;
+  /** Called with the keys of a citation that fell back to plain text. */
+  onCitationFallback?: (keys: string[]) => void;
 };
 
 type Piece = { text: string; call: boolean };
@@ -43,6 +47,10 @@ function renderOne(node: Inline, ctx: InlineContext): Piece {
     case "footnote":
       return { text: `#footnote[${renderInline(node.content, ctx)}]`, call: true };
     case "citation": {
+      if (ctx.hasBibliography === false) {
+        ctx.onCitationFallback?.(node.keys);
+        return { text: escapeMarkup(`[${node.keys.join("; ")}]`), call: false };
+      }
       const fn = CITE_FUNCTION[node.form];
       return { text: node.keys.map((key) => `#${fn}("${escapeString(key)}")`).join(""), call: true };
     }

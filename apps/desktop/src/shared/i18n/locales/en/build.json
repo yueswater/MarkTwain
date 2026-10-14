@@ -11,5 +11,6 @@
   "previewTitle": "PDF preview",
   "configMissing": "Not filled in the project settings: {{field}}",
   "mathFailed": "This formula could not be converted and is shown as source text: {{latex}}",
-  "noSource": "No source location"
+  "noSource": "No source location",
+  "citationNoBibliography": "No bibliography yet, shown as plain text: {{keys}}"
 }
