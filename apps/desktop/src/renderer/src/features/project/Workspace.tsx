@@ -19,6 +19,34 @@ export function Workspace({ state, build, previewOpen, onClosePreview }: Props) 
   const project = state.project;
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [settings, setSettings] = useState(false);
+  const [collapsed, setCollapsed] = useState(() => {
+    try {
+      return localStorage.getItem("marktwain.sidebar.collapsed") === "1";
+    } catch {
+      return false;
+    }
+  });
+  const toggleCollapsed = () =>
+    setCollapsed((value) => {
+      try {
+        localStorage.setItem("marktwain.sidebar.collapsed", value ? "0" : "1");
+      } catch {
+        // The choice is only a convenience
+      }
+      return !value;
+    });
+
+  // Ctrl or Cmd plus B folds the sidebar, like in many editors
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "b") {
+        event.preventDefault();
+        toggleCollapsed();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
   const [target, setTarget] = useState<{ block: number; nonce: number } | null>(null);
 
   const documents = project?.documents ?? [];
@@ -44,6 +72,8 @@ export function Workspace({ state, build, previewOpen, onClosePreview }: Props) 
         }}
         settingsSelected={settings}
         onSelectSettings={() => setSettings(true)}
+        collapsed={collapsed}
+        onToggleCollapsed={toggleCollapsed}
         onAdd={(kind) => void state.addDocument(kind)}
         onRename={(id, title) => void state.renameDocument(id, title)}
         onMove={(id, delta) => void state.moveDocument(id, delta)}

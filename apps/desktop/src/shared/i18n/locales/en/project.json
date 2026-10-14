@@ -13,7 +13,9 @@
     "documents": "Documents",
     "close": "Close project",
     "add": "Add document",
-    "empty": "Select a document to start writing."
+    "empty": "Select a document to start writing.",
+    "collapse": "Collapse the sidebar",
+    "expand": "Expand the sidebar"
   },
   "kind": {
     "title": {
