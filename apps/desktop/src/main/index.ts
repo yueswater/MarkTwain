@@ -1,5 +1,7 @@
 import { declareAssetScheme, handleAssetProtocol } from "./core/asset-protocol";
 import { settingsFilePath } from "./config/paths.config";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { bootstrap } from "./core/bootstrap";
 import { DatabaseSession } from "./core/database-session";
 import { registerAssetController } from "./features/asset/asset.controller";
@@ -19,6 +21,8 @@ import { LabelService } from "./features/label/label.service";
 import { applyAppMenu } from "./features/menu/menu.controller";
 import { registerProjectController } from "./features/project/project.controller";
 import { ProjectService } from "./features/project/project.service";
+import { PrefsService } from "./features/prefs/prefs.service";
+import { registerPrefsController } from "./features/prefs/prefs.controller";
 import { RecentService } from "./features/recent/recent.service";
 import { SettingsRepository } from "./features/settings/settings.repository";
 import { registerSettingsController } from "./features/settings/settings.controller";
@@ -29,9 +33,17 @@ const documents = new DocumentService(session);
 const projects = new ProjectService(session, documents);
 const labels = new LabelService(documents);
 const assets = new AssetService(session);
-const config = new ConfigService(session);
-const recent = new RecentService(new SettingsRepository(settingsFilePath()));
-const build = new BuildService(session, documents, config, resolveBuildPaths);
+const config = new ConfigService(session, undefined, (path) => {
+  try {
+    return readFileSync(join(resolveBuildPaths().templateDir, path), "utf8");
+  } catch {
+    return null;
+  }
+});
+const settingsRepository = new SettingsRepository(settingsFilePath());
+const recent = new RecentService(settingsRepository);
+const prefs = new PrefsService(settingsRepository);
+const build = new BuildService(session, documents, config, resolveBuildPaths, undefined, undefined, undefined, () => prefs.get().previewPpi);
 let dialogs: DialogService;
 
 // The custom protocol must be declared before app ready
@@ -50,6 +62,7 @@ bootstrap([
   () => registerDocumentController(documents),
   () => registerLabelController(labels),
   () => registerConfigController(config),
+  () => registerPrefsController(prefs),
   () => registerBuildController(build),
   () => registerExportController(build, dialogs),
 ]);

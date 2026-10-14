@@ -4,24 +4,24 @@ import type { BuildState } from "../build/use-build";
 import { PreviewPanel } from "../build/PreviewPanel";
 import type { ProjectState } from "./use-project";
 import { DocumentEditor } from "../editor/DocumentEditor";
-import { ConfigForm } from "./ConfigForm";
 import { DocumentSidebar } from "./DocumentSidebar";
 
 type Props = {
   state: ProjectState;
+  /** Opens the settings window */
+  onOpenSettings: () => void;
+  /** Grows whenever a document or the thesis settings were saved, the preview watches it */
+  saveTick: number;
+  onSaved: () => void;
   build: BuildState;
   previewOpen: boolean;
   onClosePreview: () => void;
 };
 
-export function Workspace({ state, build, previewOpen, onClosePreview }: Props) {
+export function Workspace({ state, build, previewOpen, onClosePreview, onOpenSettings, saveTick, onSaved }: Props) {
   const { t } = useTranslation("project");
   const project = state.project;
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [settings, setSettings] = useState(false);
-  // Grows whenever a document or the settings were saved, the preview watches it
-  const [saveTick, setSaveTick] = useState(0);
-  const bumpSaved = () => setSaveTick((n) => n + 1);
   const [collapsed, setCollapsed] = useState(() => {
     try {
       return localStorage.getItem("marktwain.sidebar.collapsed") === "1";
@@ -70,10 +70,9 @@ export function Workspace({ state, build, previewOpen, onClosePreview }: Props) 
         documents={documents}
         selectedId={selected?.id ?? null}
         onSelect={(id) => {
-          setSettings(false);
           setSelectedId(id);
         }}
-        onOpenSettings={() => setSettings(true)}
+        onOpenSettings={onOpenSettings}
         onReorder={(id, targetId, placement) => void state.reorderDocument(id, targetId, placement)}
         collapsed={collapsed}
         onToggleCollapsed={toggleCollapsed}
@@ -83,10 +82,8 @@ export function Workspace({ state, build, previewOpen, onClosePreview }: Props) 
         onDelete={(id) => void state.removeDocument(id)}
       />
       <section className="min-h-0 min-w-0 flex-1 overflow-hidden">
-        {settings ? (
-          <ConfigForm onSaved={bumpSaved} />
-        ) : selected ? (
-          <DocumentEditor key={selected.id} documentId={selected.id} scrollTo={target} onSaved={bumpSaved} />
+        {selected ? (
+          <DocumentEditor key={selected.id} documentId={selected.id} scrollTo={target} onSaved={onSaved} />
         ) : (
           <p className="p-8 text-sm text-muted-foreground">{t("workspace.empty")}</p>
         )}
@@ -97,7 +94,6 @@ export function Workspace({ state, build, previewOpen, onClosePreview }: Props) 
           saveTick={saveTick}
           onClose={onClosePreview}
           onJump={(documentId, block) => {
-            setSettings(false);
             setSelectedId(documentId);
             setTarget({ block, nonce: Date.now() });
           }}

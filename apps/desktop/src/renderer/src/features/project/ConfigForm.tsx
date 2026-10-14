@@ -31,7 +31,7 @@ const NO_SCHOOL = "none";
 type TextField = Exclude<keyof ConfigFields, "keywords" | "keywordsEn" | "school">;
 
 /** Project settings form that saves while typing, fields of config.yml. */
-export function ConfigForm({ onSaved }: { onSaved?: () => void }) {
+export function ConfigForm({ onSaved, embedded = false }: { onSaved?: () => void; embedded?: boolean }) {
   const { t, i18n } = useTranslation("config");
   const [state, setState] = useState<ConfigState | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -131,10 +131,10 @@ export function ConfigForm({ onSaved }: { onSaved?: () => void }) {
   const english = i18n.language === "en";
 
   return (
-    <div className="h-full overflow-y-auto">
-      <form className="mx-auto flex max-w-2xl flex-col gap-8 p-8" onSubmit={(event) => event.preventDefault()}>
+    <div className={embedded ? undefined : "h-full overflow-y-auto"}>
+      <form className={embedded ? "flex flex-col gap-8" : "mx-auto flex max-w-2xl flex-col gap-8 p-8"} onSubmit={(event) => event.preventDefault()}>
         <header className="flex flex-col gap-1">
-          <h2 className="text-2xl font-semibold tracking-tight">{t("title")}</h2>
+          {!embedded && <h2 className="text-2xl font-semibold tracking-tight">{t("title")}</h2>}
           <p className="text-sm text-muted-foreground">{t("description")}</p>
           <p role="status" className="h-4 text-xs text-muted-foreground" data-status={status}>
             {status === "idle" ? "" : t(`save.${status}`)}

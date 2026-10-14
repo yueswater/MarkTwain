@@ -1,0 +1,142 @@
+{
+  "title": "Settings",
+  "description": "Preferences of the editor, and the format of the thesis.",
+  "close": "Close",
+  "nav": {
+    "editor": "Editor",
+    "editorAdvanced": "Editor, advanced",
+    "thesis": "Thesis",
+    "thesisAdvanced": "Thesis, advanced"
+  },
+  "reset": "Use the default",
+  "inherited": "Default: {{value}}",
+  "followDefault": "Follow the default",
+  "invalid": "This value is not allowed.",
+  "editor": {
+    "fontFamily": "Font",
+    "fontFamilyHint": "The typeface of the text in the editor.",
+    "sans": "Sans serif",
+    "serif": "Serif",
+    "fontSize": "Text size",
+    "fontSizeHint": "In pixels.",
+    "lineHeight": "Line spacing",
+    "contentWidth": "Width of the text",
+    "narrow": "Narrow",
+    "normal": "Normal",
+    "wide": "Wide",
+    "lineNumbers": "Block numbers",
+    "lineNumbersHint": "Number the paragraphs, headings and other blocks in the margin.",
+    "spellcheck": "Spell check",
+    "spellcheckHint": "Underline misspelled words while typing.",
+    "codeFontSize": "Code size",
+    "autosaveDelay": "Save after typing stops",
+    "autosaveDelayHint": "Milliseconds to wait before the text is saved.",
+    "pasteMarkdown": "Paste Markdown as structure",
+    "pasteMarkdownHint": "Turn pasted Markdown into headings, lists and tables.",
+    "previewPpi": "Preview sharpness",
+    "previewPpiHint": "Pixels per inch of the page images, higher is sharper and slower.",
+    "previewDelay": "Rebuild the preview after a save",
+    "previewDelayHint": "Milliseconds to wait before the preview rebuilds."
+  },
+  "group": {
+    "page": "Page",
+    "text": "Text",
+    "numbering": "Numbering",
+    "captions": "Captions",
+    "headings": "Headings",
+    "pageNumber": "Page numbers",
+    "crossRef": "Cross-references",
+    "bibliography": "References",
+    "outline": "Table of contents"
+  },
+  "advancedHint": "Empty fields follow the school format. Changing a value overrides it for this thesis only.",
+  "noProject": "Open a project to change the format of its thesis.",
+  "levels": "Level {{n}}",
+  "field": {
+    "layout": {
+      "paper": "Paper size",
+      "margin": {
+        "top": "Top margin",
+        "bottom": "Bottom margin",
+        "left": "Left margin",
+        "right": "Right margin"
+      },
+      "font-latin": "Latin fonts",
+      "font-cjk": "Chinese fonts",
+      "font-size": "Text size",
+      "line-height": "Line spacing",
+      "par-spacing": "Space between paragraphs",
+      "first-line-indent": "First line indent",
+      "first-line-indent-all": "Indent the paragraph after a heading",
+      "justify": "Justify text",
+      "footnote-numbering": "Footnote numbers",
+      "footnote-per-chapter": "Restart footnotes in each chapter",
+      "equation-numbering": "Equation numbers",
+      "equation-per-chapter": "Number equations by chapter",
+      "caption-position": {
+        "image": "Figure captions",
+        "table": "Table captions",
+        "code": "Listing captions"
+      },
+      "heading": {
+        "size": "Heading sizes",
+        "align": "Heading alignment",
+        "line-height": "Heading line spacing"
+      }
+    },
+    "page-number": {
+      "position": "Page number position",
+      "align": "Page number alignment",
+      "format": "Page number text"
+    },
+    "cross-ref": {
+      "chapter": "Chapter reference",
+      "section": "Section reference",
+      "subsection": "Subsection reference"
+    },
+    "outline": {
+      "depth": "Depth of the contents"
+    },
+    "bibliography": {
+      "title": "References title",
+      "full": "List uncited entries too"
+    }
+  },
+  "hint": {
+    "page-number": {
+      "format": "Use {page} for the number, for example 第 {page} 頁. Empty hides it."
+    },
+    "cross-ref": {
+      "chapter": "Use {C} for the chapter number.",
+      "section": "Use {C} and {S}.",
+      "subsection": "Use {C}, {S} and {B}."
+    },
+    "layout": {
+      "font-latin": "Separate several fonts with commas, the first available one is used.",
+      "font-cjk": "Separate several fonts with commas.",
+      "par-spacing": "Empty keeps paragraphs on the line grid.",
+      "first-line-indent": "Empty picks 2 for Chinese and 1.5 for English."
+    }
+  },
+  "option": {
+    "a4": "A4",
+    "us-letter": "US Letter",
+    "b5": "B5",
+    "top": "Above",
+    "bottom": "Below",
+    "left": "Left",
+    "center": "Center",
+    "right": "Right",
+    "1": "1, 2, 3",
+    "a": "a, b, c",
+    "A": "A, B, C",
+    "i": "i, ii, iii",
+    "I": "I, II, III",
+    "*": "* † ‡"
+  },
+  "units": {
+    "pt": "pt",
+    "cm": "cm",
+    "em": "em"
+  }
+}

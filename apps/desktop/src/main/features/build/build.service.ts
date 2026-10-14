@@ -29,6 +29,7 @@ export class BuildService {
     private readonly run: Runner = buildTypst,
     private readonly workDir: string = tmpdir(),
     private readonly exporter: Exporter = exportTypstProject,
+    private readonly previewPpi: () => number = () => 110,
   ) {}
 
   /** A page image of the latest successful build, for the preview protocol. */
@@ -88,7 +89,7 @@ export class BuildService {
 
     this.running = true;
     try {
-      const result: BuildResult = await this.run({ ...input, format: "png" });
+      const result: BuildResult = await this.run({ ...input, format: "png", ppi: this.previewPpi() });
 
       if (!result.ok && result.diagnostics.some((d) => /ENOENT/.test(d.message))) {
         throw new AppError(ErrorCode.BuildTypstMissing);

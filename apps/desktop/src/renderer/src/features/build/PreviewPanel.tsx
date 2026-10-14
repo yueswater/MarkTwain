@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { usePrefs } from "@/lib/prefs";
 import { useResizableWidth } from "@/lib/resizable-width";
 import { IpcChannel } from "../../../../shared/enums/ipc-channel.enum";
 import { api } from "../../shared/api";
@@ -24,7 +25,6 @@ type Props = {
 };
 
 const WATCH_KEY = "marktwain.preview.watch";
-const WATCH_DELAY_MS = 700;
 
 function readWatch(): boolean {
   try {
@@ -40,6 +40,7 @@ export function PreviewPanel({ build, saveTick, onClose, onJump }: Props) {
   const [exportNote, setExportNote] = useState<{ ok: boolean; text: string } | null>(null);
   const [watch, setWatch] = useState(readWatch);
   const { outcome, building, error, run } = build;
+  const { prefs } = usePrefs();
   const { width, separator } = useResizableWidth("marktwain.preview.width", 520, 320, 0.7);
 
   const errors = outcome?.diagnostics.filter((d) => d.severity === "error") ?? [];
@@ -51,7 +52,7 @@ export function PreviewPanel({ build, saveTick, onClose, onJump }: Props) {
   // Opening the preview starts watching, and every save rebuilds after a short pause
   useEffect(() => {
     if (!watch) return;
-    const timer = setTimeout(() => void run(), outcome ? WATCH_DELAY_MS : 0);
+    const timer = setTimeout(() => void run(), outcome ? prefs.previewDelayMs : 0);
     return () => clearTimeout(timer);
     // The outcome only decides the first delay, it must not retrigger the build
   }, [watch, saveTick, run]);

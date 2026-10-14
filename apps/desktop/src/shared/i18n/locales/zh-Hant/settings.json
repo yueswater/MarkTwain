@@ -1,0 +1,142 @@
+{
+  "title": "設定",
+  "description": "編輯器的偏好，以及論文的格式。",
+  "close": "關閉",
+  "nav": {
+    "editor": "編輯器",
+    "editorAdvanced": "編輯器進階",
+    "thesis": "論文",
+    "thesisAdvanced": "論文進階"
+  },
+  "reset": "恢復預設",
+  "inherited": "預設：{{value}}",
+  "followDefault": "跟隨預設",
+  "invalid": "這個值不可以使用。",
+  "editor": {
+    "fontFamily": "字體",
+    "fontFamilyHint": "編輯區文字的字型。",
+    "sans": "黑體",
+    "serif": "明體",
+    "fontSize": "文字大小",
+    "fontSizeHint": "單位是像素。",
+    "lineHeight": "行距",
+    "contentWidth": "文字欄寬度",
+    "narrow": "窄",
+    "normal": "標準",
+    "wide": "寬",
+    "lineNumbers": "區塊編號",
+    "lineNumbersHint": "在左側邊界替段落、標題等區塊編號。",
+    "spellcheck": "拼字檢查",
+    "spellcheckHint": "輸入時在拼錯的英文字底下畫線。",
+    "codeFontSize": "程式碼大小",
+    "autosaveDelay": "停止輸入後儲存",
+    "autosaveDelayHint": "等待多少毫秒才儲存。",
+    "pasteMarkdown": "貼上 Markdown 時轉成結構",
+    "pasteMarkdownHint": "把貼上的 Markdown 變成標題、清單與表格。",
+    "previewPpi": "預覽清晰度",
+    "previewPpiHint": "預覽頁面圖片的解析度，越高越清楚也越慢。",
+    "previewDelay": "儲存後重新建置預覽",
+    "previewDelayHint": "等待多少毫秒才重新建置。"
+  },
+  "group": {
+    "page": "頁面",
+    "text": "文字",
+    "numbering": "編號",
+    "captions": "圖表標題",
+    "headings": "標題",
+    "pageNumber": "頁碼",
+    "crossRef": "交叉引用",
+    "bibliography": "參考文獻",
+    "outline": "目次"
+  },
+  "advancedHint": "留空表示跟隨學校格式。修改後只會覆蓋這份論文。",
+  "noProject": "開啟專案後才能調整論文格式。",
+  "levels": "第 {{n}} 層",
+  "field": {
+    "layout": {
+      "paper": "紙張大小",
+      "margin": {
+        "top": "上邊界",
+        "bottom": "下邊界",
+        "left": "左邊界",
+        "right": "右邊界"
+      },
+      "font-latin": "西文字型",
+      "font-cjk": "中文字型",
+      "font-size": "文字大小",
+      "line-height": "行距",
+      "par-spacing": "段落間距",
+      "first-line-indent": "首行縮排",
+      "first-line-indent-all": "標題後的段落也縮排",
+      "justify": "左右對齊",
+      "footnote-numbering": "腳註編號樣式",
+      "footnote-per-chapter": "每章重新編腳註",
+      "equation-numbering": "公式編號樣式",
+      "equation-per-chapter": "公式依章節編號",
+      "caption-position": {
+        "image": "圖的標題位置",
+        "table": "表的標題位置",
+        "code": "程式碼的標題位置"
+      },
+      "heading": {
+        "size": "標題字級",
+        "align": "標題對齊",
+        "line-height": "標題行距"
+      }
+    },
+    "page-number": {
+      "position": "頁碼位置",
+      "align": "頁碼對齊",
+      "format": "頁碼文字"
+    },
+    "cross-ref": {
+      "chapter": "章的引用格式",
+      "section": "節的引用格式",
+      "subsection": "小節的引用格式"
+    },
+    "outline": {
+      "depth": "目次深度"
+    },
+    "bibliography": {
+      "title": "參考文獻標題",
+      "full": "也列出未引用的條目"
+    }
+  },
+  "hint": {
+    "page-number": {
+      "format": "用 {page} 代表頁碼，例如「第 {page} 頁」。留空則不顯示。"
+    },
+    "cross-ref": {
+      "chapter": "用 {C} 代表章號。",
+      "section": "用 {C} 與 {S}。",
+      "subsection": "用 {C}、{S} 與 {B}。"
+    },
+    "layout": {
+      "font-latin": "多個字型以逗號分隔，使用第一個可用的。",
+      "font-cjk": "多個字型以逗號分隔。",
+      "par-spacing": "留空則讓段落對齊行格。",
+      "first-line-indent": "留空時中文為 2、英文為 1.5。"
+    }
+  },
+  "option": {
+    "a4": "A4",
+    "us-letter": "US Letter",
+    "b5": "B5",
+    "top": "上方",
+    "bottom": "下方",
+    "left": "靠左",
+    "center": "置中",
+    "right": "靠右",
+    "1": "1, 2, 3",
+    "a": "a, b, c",
+    "A": "A, B, C",
+    "i": "i, ii, iii",
+    "I": "I, II, III",
+    "*": "* † ‡"
+  },
+  "units": {
+    "pt": "pt",
+    "cm": "cm",
+    "em": "em"
+  }
+}
