@@ -4,4 +4,5 @@ import type { LabelService } from "./label.service";
 
 export function registerLabelController(service: LabelService): void {
   handle(IpcChannel.LabelResolve, () => service.resolve());
+  handle(IpcChannel.LabelPreview, ({ label }) => service.preview(label));
 }

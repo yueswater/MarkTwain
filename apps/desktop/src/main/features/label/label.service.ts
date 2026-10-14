@@ -7,8 +7,9 @@ import {
   type Target,
 } from "@marktwain/schema";
 import { DocumentKind } from "../../../shared/enums/document-kind.enum";
-import type { LabelIndex, LabelTarget } from "../../../shared/ipc";
+import type { LabelIndex, LabelPreview, LabelTarget } from "../../../shared/ipc";
 import { DEFAULT_NUMBERING } from "../../config/numbering.config";
+import { findPreview } from "./label-preview";
 import type { DocumentService } from "../document/document.service";
 
 const CHAPTER_LIKE: readonly string[] = [DocumentKind.Chapter, DocumentKind.Appendix];
@@ -20,6 +21,17 @@ export class LabelService {
     /** The numbering rules, or a function that reads them from the settings of the project each time */
     private readonly options: NumberingOptions | (() => NumberingOptions) = DEFAULT_NUMBERING,
   ) {}
+
+  /** The content of the target of a label, read from the saved documents. */
+  preview(label: string): LabelPreview | null {
+    for (const summary of this.documents.list()) {
+      const doc = this.documents.get(summary.id);
+      const blocks = (parseMarkdown(doc.text).content ?? []) as Parameters<typeof findPreview>[0];
+      const found = findPreview(blocks, label);
+      if (found) return { label, documentId: doc.id, block: found.block, document: { kind: doc.kind, position: doc.position, title: doc.title }, content: found.content };
+    }
+    return null;
+  }
 
   resolve(): LabelIndex {
     const targets: Target[] = [];

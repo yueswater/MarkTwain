@@ -959,3 +959,84 @@ test("a slash opens a list of blocks with a description or a drawing of the chos
     rmSync(dir, { recursive: true, force: true });
   }
 });
+
+test("hovering a reference or a footnote opens a card with what it points to", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "marktwain 卡片 "));
+  const args = [`--user-data-dir=${join(dir, "userData")}`, "--lang=en-US"];
+  if (process.platform === "linux") args.push("--no-sandbox");
+  const app = await electron.launch({
+    executablePath: findPackagedExecutable(dist),
+    args,
+    env: { ...process.env, MARKTWAIN_TEST_DIALOG_PATH: join(dir, "p.marktwain") },
+  });
+  try {
+    const page = await app.firstWindow();
+    await page.getByRole("button", { name: "New project" }).click();
+    await page.evaluate(async () => {
+      const list = await window.marktwain.invoke("document:list");
+      if (!list.ok) return;
+      const chapter = list.data.find((d) => d.kind === "chapter")!;
+      const long = "word ".repeat(80);
+      await window.marktwain.invoke("document:save", {
+        id: chapter.id,
+        text: [
+          "# Intro {#cha:intro}",
+          "",
+          "Opening words for the chapter.",
+          "",
+          "$$",
+          "E = mc^2",
+          "$$ {#eq:energy}",
+          "",
+          "| Setting | Share |",
+          "|---|---|",
+          "| A | 0.4 |",
+          "| B | 0.6 |",
+          "",
+          ": Shares of the settings {#tbl:shares}",
+          "",
+          `See @eq:energy and @tbl:shares and @fig:missing, then a note[^1].`,
+          "",
+          `[^1]: ${long}`,
+        ].join("\n"),
+      });
+    });
+    await page.getByRole("button", { name: "Close project" }).click();
+    await page.getByRole("region", { name: "Recent projects" }).getByRole("button").first().click();
+    const editor = page.locator(".ProseMirror");
+    await expect(editor.locator("[data-cross-ref]")).toHaveCount(3);
+
+    // A formula and a table are drawn in a card next to the reference
+    await editor.locator("[data-cross-ref]").nth(0).hover();
+    const card = page.getByTestId("reference-card");
+    await expect(card).toBeVisible();
+    await expect(card.locator(".katex")).toBeVisible();
+    await expect(card).toContainText("Chapter 1");
+    await editor.locator("[data-cross-ref]").nth(1).hover();
+    await expect(card.locator("table")).toBeVisible();
+    await expect(card).toContainText("Shares of the settings");
+
+    // A reference to nothing says so
+    await editor.locator("[data-cross-ref]").nth(2).hover();
+    await expect(card).toContainText("points to nothing");
+
+    // A footnote has a tooltip of a fixed size with the start of its text, cut with three dots
+    await page.mouse.move(5, 5);
+    await expect(card).toBeHidden();
+    await editor.locator("sup[data-footnote]").hover();
+    const note = page.getByTestId("footnote-card");
+    await expect(note).toBeVisible();
+    await expect(note).toContainText("word word");
+    await expect(note).toContainText("...");
+    const box = await note.boundingBox();
+    expect(box && Math.round(box.width) === 280 && Math.round(box.height) === 104).toBe(true);
+
+    // Going to the target from the card closes it
+    await editor.locator("[data-cross-ref]").nth(0).hover();
+    await card.getByRole("button", { name: "Go to" }).click();
+    await expect(card).toBeHidden();
+  } finally {
+    await app.close();
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
