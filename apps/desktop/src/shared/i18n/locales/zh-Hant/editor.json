@@ -149,12 +149,27 @@
     "captionHint": "可以使用行內 Markdown。沒有圖說的圖不會有編號。",
     "width": "寬度",
     "widthAuto": "原始大小",
-    "captionPlaceholder": "圖說，選填"
+    "captionPlaceholder": "圖說，選填",
+    "dragWidth": "寬度 {{value}}%"
   },
   "bubble": {
     "label": "選取工具",
     "merge": "合併",
     "mergeHint": "合併選取的儲存格",
     "sizeHint": "選擇表格大小"
+  },
+  "crop": {
+    "title": "裁切圖片",
+    "hint": "拖曳外框或四個角。原本的圖片仍保留在專案裡。",
+    "apply": "裁切",
+    "reset": "整張圖片",
+    "failed": "無法裁切這張圖片。"
+  },
+  "figureMenu": {
+    "label": "圖片工具",
+    "edit": "編輯圖說",
+    "crop": "裁切",
+    "width": "寬度 {{value}}",
+    "remove": "移除圖片"
   }
 }

@@ -1,4 +1,5 @@
 import type { Editor } from "@tiptap/core";
+import { NodeSelection } from "@tiptap/pm/state";
 import { CellSelection } from "@tiptap/pm/tables";
 import { useEditorState } from "@tiptap/react";
 import { BubbleMenu } from "@tiptap/react/menus";
@@ -9,6 +10,9 @@ import {
   BoldIcon,
   CodeIcon,
   ColumnsIcon,
+  CropIcon,
+  PencilIcon,
+  Trash2Icon,
   ItalicIcon,
   RowsIcon,
   VariableIcon,
@@ -61,19 +65,26 @@ const divider = <span className="mx-0.5 h-5 w-px shrink-0 bg-border" aria-hidden
 const MENU_CLASS =
   "z-20 flex max-w-[min(94vw,40rem)] items-center gap-0.5 overflow-x-auto rounded-lg border bg-popover p-1 shadow-md";
 
-type Props = { editor: Editor; onInsertMath: () => void };
+type Props = {
+  editor: Editor;
+  onInsertMath: () => void;
+  onEditFigure: (pos: number, attrs: Record<string, unknown>) => void;
+  onCropFigure: (pos: number, src: string) => void;
+};
 
 /**
  * Floating tools next to the selection. Selected text offers the marks,
  * and selected table cells suggest merging and offer alignment.
  */
-export function EditorBubbleMenu({ editor, onInsertMath }: Props) {
+export function EditorBubbleMenu({ editor, onInsertMath, onEditFigure, onCropFigure }: Props) {
   const { t } = useTranslation("editor");
   const state = useEditorState({
     editor,
     selector: ({ editor: e }) => {
       const selection = e.state.selection;
+      const figure = selection instanceof NodeSelection && selection.node.type.name === "figure" ? selection : null;
       return {
+        figure: figure ? { pos: figure.from, attrs: figure.node.attrs as Record<string, unknown> } : null,
         cells: selection instanceof CellSelection,
         text: !(selection instanceof CellSelection) && !selection.empty && selection.$from.parent.isTextblock && !e.isActive("codeBlock"),
         canMerge: e.can().mergeCells(),
@@ -99,6 +110,31 @@ export function EditorBubbleMenu({ editor, onInsertMath }: Props) {
         <Item icon={CodeIcon} label={t("toolbar.code")} active={state.code} onClick={run(() => editor.chain().toggleCode().run())} />
         {divider}
         <Item icon={VariableIcon} label={t("toolbar.inlineMath")} onClick={onInsertMath} />
+      </BubbleMenu>
+
+      <BubbleMenu editor={editor} className={MENU_CLASS} shouldShow={() => state.figure !== null} aria-label={t("figureMenu.label")}>
+        {state.figure && (
+          <>
+            <Item icon={PencilIcon} label={t("figureMenu.edit")} onClick={() => onEditFigure(state.figure!.pos, state.figure!.attrs)} />
+            <Item icon={CropIcon} label={t("figureMenu.crop")} onClick={() => onCropFigure(state.figure!.pos, String(state.figure!.attrs.src))} />
+            {divider}
+            {["25%", "50%", "75%", "100%"].map((width) => (
+              <button
+                key={width}
+                type="button"
+                aria-label={t("figureMenu.width", { value: width })}
+                aria-pressed={state.figure!.attrs.width === width}
+                onMouseDown={(event) => event.preventDefault()}
+                onClick={run(() => editor.chain().updateAttributes("figure", { width }).run())}
+                className={cn("h-7 shrink-0 rounded px-1.5 text-xs text-muted-foreground hover:bg-accent hover:text-foreground", state.figure!.attrs.width === width && "bg-accent text-foreground")}
+              >
+                {width}
+              </button>
+            ))}
+            {divider}
+            <Item icon={Trash2Icon} label={t("figureMenu.remove")} destructive onClick={run(() => editor.chain().deleteSelection().run())} />
+          </>
+        )}
       </BubbleMenu>
 
       <BubbleMenu editor={editor} className={MENU_CLASS} shouldShow={() => state.cells} aria-label={t("bubble.label")}>

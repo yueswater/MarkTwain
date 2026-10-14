@@ -20,6 +20,7 @@ export const IpcChannel = {
   ConfigGet: "config:get",
   ConfigSet: "config:set",
   AssetImportImage: "asset:import-image",
+  AssetStoreImage: "asset:store-image",
   LabelResolve: "label:resolve",
   DialogChooseNewProject: "dialog:choose-new-project",
   DialogChooseOpenProject: "dialog:choose-open-project",
