@@ -4,10 +4,23 @@ import { MarkName, NodeName } from "../model/names";
 import { schema } from "../model/schema";
 import { createMarkdownIt } from "./markdown-it";
 
-/** Column alignment, markdown-it turns :---: into a style attribute on the cell. */
-function cellAttrs(token: Token): { align: string | null } {
+/** Cell attributes, column alignment comes from the style attribute that markdown-it sets, the rest from the caption line. */
+function cellAttrs(token: Token): {
+  align: string | null;
+  valign: string | null;
+  colspan: number;
+  rowspan: number;
+  colwidth: number[] | null;
+} {
   const match = /text-align:\s*(left|center|right)/.exec(String(token.attrGet("style") ?? ""));
-  return { align: match?.[1] ?? null };
+  const meta = (token.meta ?? {}) as Partial<{ colspan: number; rowspan: number; align: string | null; valign: string | null; colwidth: number[] | null }>;
+  return {
+    align: meta.align ?? match?.[1] ?? null,
+    valign: meta.valign ?? null,
+    colspan: meta.colspan ?? 1,
+    rowspan: meta.rowspan ?? 1,
+    colwidth: meta.colwidth ?? null,
+  };
 }
 
 /** The caption of a figure has its brackets escaped inside ![…], restore them. */
@@ -89,11 +102,13 @@ const markdownParser = new MarkdownParser(schema, createMarkdownIt() as unknown 
       label: token.meta?.label ?? null,
       caption: String(token.meta?.caption ?? ""),
       notes: String(token.meta?.notes ?? ""),
+      style: token.meta?.style === "grid" ? "grid" : "three-line",
+      widths: String(token.meta?.widths ?? ""),
     }),
   },
   thead: { ignore: true },
   tbody: { ignore: true },
-  tr: { block: NodeName.TableRow },
+  tr: { block: NodeName.TableRow, getAttrs: (token) => ({ height: token.meta?.height ?? null }) },
   th: { block: NodeName.TableHeader, getAttrs: cellAttrs },
   td: { block: NodeName.TableCell, getAttrs: cellAttrs },
   dl: { block: NodeName.DefinitionList },

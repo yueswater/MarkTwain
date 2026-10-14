@@ -21,7 +21,15 @@ export type RefKind = "cha" | "sec" | "fig" | "tbl" | "eq" | "lst";
 
 export type Align = "left" | "center" | "right" | null;
 
-export type Cell = { content: Inline[]; align: Align };
+export type VAlign = "top" | "middle" | "bottom" | null;
+
+export type Cell = {
+  content: Inline[];
+  align: Align;
+  valign: VAlign;
+  colspan: number;
+  rowspan: number;
+};
 
 export type Block =
   | { type: "heading"; level: number; label: string | null; content: Inline[] }
@@ -60,6 +68,13 @@ export type Block =
       /** Header row, null when there is none */
       header: Cell[] | null;
       rows: Cell[][];
+      style: "three-line" | "grid";
+      /** Number of grid columns, merged cells counted */
+      columns: number;
+      /** One entry per column, a length such as 20% or null for automatic */
+      widths: (string | null)[];
+      /** One entry per row of the grid, header first, a length or null for automatic */
+      heights: (string | null)[];
     }
   | { type: "rule" }
   | { type: "definitionList"; entries: { term: Inline[]; descriptions: Block[][] }[] }

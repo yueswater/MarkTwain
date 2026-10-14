@@ -9,6 +9,7 @@ import type {
   IrResult,
   RefKind,
   TextMark,
+  VAlign,
 } from "./types";
 
 type JsonNode = {
@@ -107,7 +108,34 @@ export function toIr(doc: DocJson, options: IrOptions): IrResult {
 
   function cell(node: JsonNode): Cell {
     const first = node.content?.[0];
-    return { content: inlines(first?.content), align: (strOrNull(node.attrs?.align) as Align) ?? null };
+    const attrs = node.attrs ?? {};
+    return {
+      content: inlines(first?.content),
+      align: (strOrNull(attrs.align) as Align) ?? null,
+      valign: (strOrNull(attrs.valign) as VAlign) ?? null,
+      colspan: Math.max(1, Number(attrs.colspan) || 1),
+      rowspan: Math.max(1, Number(attrs.rowspan) || 1),
+    };
+  }
+
+  /** Width of the grid, counting cells that rows above cover with a rowspan. */
+  function gridColumns(rows: Cell[][]): number {
+    const covered = new Set<string>();
+    let columns = 1;
+    rows.forEach((cells, r) => {
+      let c = 0;
+      for (const item of cells) {
+        while (covered.has(`${r}.${c}`)) c += 1;
+        for (let dr = 0; dr < item.rowspan; dr += 1) {
+          for (let dc = 0; dc < item.colspan; dc += 1) {
+            covered.add(`${r + dr}.${c + dc}`);
+            columns = Math.max(columns, c + dc + 1);
+          }
+        }
+        c += item.colspan;
+      }
+    });
+    return columns;
   }
 
   function block(node: JsonNode): Block | null {
@@ -168,14 +196,23 @@ export function toIr(doc: DocJson, options: IrOptions): IrResult {
         const rows = node.content ?? [];
         const isHeader = (row: JsonNode) => (row.content ?? []).every((c) => c.type === "tableHeader");
         const hasHeader = rows.length > 0 && isHeader(rows[0] as JsonNode);
-        const body = (hasHeader ? rows.slice(1) : rows).map((row) => (row.content ?? []).map(cell));
+        const all = rows.map((row) => (row.content ?? []).map(cell));
+        const header = hasHeader ? (all[0] ?? []) : null;
+        const body = hasHeader ? all.slice(1) : all;
+        const widths = String(attrs.widths ?? "")
+          .split(",")
+          .map((w) => (/^\d+(\.\d+)?(%|pt|cm|mm|in|em)$/.test(w.trim()) ? w.trim() : null));
         return {
           type: "table",
           label: strOrNull(attrs.label),
           caption: inlineSource(attrs.caption),
           notes: inlineSource(attrs.notes),
-          header: hasHeader ? (rows[0]?.content ?? []).map(cell) : null,
+          header,
           rows: body,
+          style: attrs.style === "grid" ? "grid" : "three-line",
+          columns: gridColumns(all),
+          widths: String(attrs.widths ?? "") === "" ? [] : widths,
+          heights: rows.map((row) => strOrNull(row.attrs?.height)),
         };
       }
       case "definitionList": {

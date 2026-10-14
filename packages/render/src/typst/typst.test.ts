@@ -126,6 +126,42 @@ describe("區塊", () => {
     expect(render("![](images/a.png)\n").body).toBe('#fig("/figures/images/a.png", caption: [])\n');
   });
 
+  it("complex tables are drawn as a figure with table cells, rows and column widths", () => {
+    const md = [
+      "| a | b | c |",
+      "| :--- | :---: | ---: |",
+      "| 1 |  |  |",
+      "| 2 | 3 | 4 |",
+      "| 5 | 6 | 7 |",
+      "",
+      ': Cap {#tbl:x widths="20%,auto,30%" heights="2:24pt" cells="2.1:colspan=3;3.2:rowspan=2,valign=top"}',
+    ].join("\n");
+    const out = render(md).body;
+    expect(out).toContain("#figure(");
+    expect(out).toContain("columns: (20%, auto, 30%,),");
+    expect(out).toContain("rows: (auto, 24pt, auto, auto,),");
+    expect(out).toContain("table.cell(colspan: 3)[1],");
+    expect(out).toContain("table.cell(rowspan: 2, align: center + top)[3],");
+    expect(out).toContain("      [2],");
+    expect(out).not.toContain("table.cell(align: left + horizon)");
+    expect(out).toContain("table.header(repeat: true, toprule,");
+    expect(out).toContain("      midrule),");
+    expect(out).toContain("      bottomrule,");
+    expect(out).toContain("kind: table,");
+    expect(out).toContain(") <tbl:x>");
+  });
+
+  it("the grid style has rules everywhere and no three line rules", () => {
+    const out = render("| a | b |\n| --- | --- |\n| 1 | 2 |\n\n: {style=grid}\n").body;
+    expect(out).toContain("stroke: 0.5pt,");
+    expect(out).not.toContain("toprule");
+    expect(out).not.toContain("bottomrule");
+  });
+
+  it("plain tables still use tlt", () => {
+    expect(render("| a |\n| --- |\n| 1 |\n").body).toContain("#tlt(");
+  });
+
   it("定義清單", () => {
     expect(render("PDF\n: 文件格式\n\n$E$\n: 能量\n", "denotation").body).toContain("/ PDF: 文件格式\n/ $E$: 能量");
   });

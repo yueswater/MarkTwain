@@ -116,16 +116,28 @@ const nodes: Record<NodeName, NodeSpec> = {
     group: "block",
     content: "tableRow+",
     isolating: true,
-    attrs: { label: { default: null }, caption: { default: "" }, notes: { default: "" } },
+    attrs: {
+      label: { default: null },
+      caption: { default: "" },
+      notes: { default: "" },
+      // three-line or grid
+      style: { default: "three-line" },
+      // Column widths such as "20%,30%,50%", an empty string means automatic
+      widths: { default: "" },
+    },
   },
 
-  [NodeName.TableRow]: { content: "(tableHeader | tableCell)+" },
+  // height is a length such as 30pt or 2em, null means automatic.
+  // A row can be empty when every cell of it is merged from the rows above.
+  [NodeName.TableRow]: { content: "(tableHeader | tableCell)*", attrs: { height: { default: null } } },
 
   [NodeName.TableHeader]: {
     content: "paragraph",
     isolating: true,
     attrs: {
       align: { default: null },
+      // top, middle or bottom, null means the default of the template
+      valign: { default: null },
       colspan: { default: 1 },
       rowspan: { default: 1 },
       colwidth: { default: null },
@@ -137,6 +149,8 @@ const nodes: Record<NodeName, NodeSpec> = {
     isolating: true,
     attrs: {
       align: { default: null },
+      // top, middle or bottom, null means the default of the template
+      valign: { default: null },
       colspan: { default: 1 },
       rowspan: { default: 1 },
       colwidth: { default: null },
