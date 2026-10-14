@@ -24,6 +24,7 @@ coverage/
 # bundled binaries fetched at build time (typst, tectonic, fonts)
 resources/bin/
 resources/fonts/
+resources/templates/
 
 # local data: user documents and the version-control database
 *.sqlite

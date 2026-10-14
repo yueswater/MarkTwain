@@ -9,7 +9,8 @@
     "build": "pnpm -r build",
     "test": "pnpm -r test",
     "typecheck": "pnpm -r typecheck",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "templates:fetch": "pnpm --filter @marktwain/fetch-templates start"
   },
   "devDependencies": {
     "@jest/globals": "^30.0.0",
