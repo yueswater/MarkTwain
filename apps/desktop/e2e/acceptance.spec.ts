@@ -64,9 +64,10 @@ test("a document that uses every node survives closing and reopening", async () 
     }, id);
     expect(after).toBe(sample);
 
-    // 在編輯器裡打一個字再存：序列化出來仍與範例的差異只有那個字（沒有節點被吃掉）
-    await page.locator(".ProseMirror").click();
-    await page.keyboard.press("ControlOrMeta+End");
+    // 在編輯器裡打字再存：序列化出來與範例的差異只有那幾個字（沒有節點被吃掉）
+    // 打在第一個標題的開頭：不依賴文件結尾是哪一種節點（分隔線後面打字會多出空段落）
+    await page.locator(".ProseMirror h1").first().click();
+    await page.keyboard.press("ControlOrMeta+Home");
     await page.keyboard.type("結尾");
     await page.keyboard.press("ControlOrMeta+s");
     await expect(page.getByRole("status")).toHaveText("已儲存");
