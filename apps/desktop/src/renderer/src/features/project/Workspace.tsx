@@ -1,27 +1,40 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { BuildState } from "../build/use-build";
 import { PreviewPanel } from "../build/PreviewPanel";
 import type { ProjectState } from "./use-project";
+import { BibliographyPage } from "../bibliography/BibliographyPage";
+import { BibliographyProvider, useBibliography } from "../bibliography/bibliography-context";
 import { DocumentEditor } from "../editor/DocumentEditor";
-import { ConfigForm } from "./ConfigForm";
 import { DocumentSidebar } from "./DocumentSidebar";
+import { SearchDialog } from "./SearchDialog";
 
 type Props = {
   state: ProjectState;
+  /** Opens the settings window */
+  onOpenSettings: () => void;
+  /** Grows whenever a document or the thesis settings were saved, the preview watches it */
+  saveTick: number;
+  onSaved: () => void;
   build: BuildState;
   previewOpen: boolean;
   onClosePreview: () => void;
 };
 
-export function Workspace({ state, build, previewOpen, onClosePreview }: Props) {
+export function Workspace(props: Props) {
+  return (
+    <BibliographyProvider saveTick={props.saveTick}>
+      <WorkspaceBody {...props} />
+    </BibliographyProvider>
+  );
+}
+
+function WorkspaceBody({ state, build, previewOpen, onClosePreview, onOpenSettings, saveTick, onSaved }: Props) {
   const { t } = useTranslation("project");
   const project = state.project;
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [settings, setSettings] = useState(false);
-  // Grows whenever a document or the settings were saved, the preview watches it
-  const [saveTick, setSaveTick] = useState(0);
-  const bumpSaved = () => setSaveTick((n) => n + 1);
+  const [showBibliography, setShowBibliography] = useState(false);
+  const { view: bibliography } = useBibliography();
   const [collapsed, setCollapsed] = useState(() => {
     try {
       return localStorage.getItem("marktwain.sidebar.collapsed") === "1";
@@ -39,9 +52,14 @@ export function Workspace({ state, build, previewOpen, onClosePreview }: Props) 
       return !value;
     });
 
-  // Ctrl or Cmd plus B folds the sidebar, like in many editors
+  // Ctrl or Cmd plus B folds the sidebar, and plus Shift and F searches the whole project
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key.toLowerCase() === "f") {
+        event.preventDefault();
+        setSearchOpen(true);
+        return;
+      }
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "b") {
         event.preventDefault();
         toggleCollapsed();
@@ -50,7 +68,12 @@ export function Workspace({ state, build, previewOpen, onClosePreview }: Props) 
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
-  const [target, setTarget] = useState<{ block: number; nonce: number } | null>(null);
+  const [target, setTarget] = useState<{ block: number; nonce: number; term?: string } | null>(null);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const flush = useRef<(() => Promise<void>) | null>(null);
+  const registerFlush = useCallback((fn: (() => Promise<void>) | null) => {
+    flush.current = fn;
+  }, []);
 
   const documents = project?.documents ?? [];
   const selected = documents.find((d) => d.id === selectedId) ?? null;
@@ -65,16 +88,20 @@ export function Workspace({ state, build, previewOpen, onClosePreview }: Props) 
   if (!project) return null;
 
   return (
-    <div className="flex h-full min-h-0">
+    <div className="flex h-full min-h-0 overflow-hidden">
       <DocumentSidebar
         documents={documents}
         selectedId={selected?.id ?? null}
         onSelect={(id) => {
-          setSettings(false);
           setSelectedId(id);
+          setShowBibliography(false);
         }}
-        settingsSelected={settings}
-        onSelectSettings={() => setSettings(true)}
+        bibliographyActive={showBibliography}
+        bibliographyCount={bibliography.items.length}
+        onOpenBibliography={() => setShowBibliography(true)}
+        onOpenSettings={onOpenSettings}
+        onOpenSearch={() => setSearchOpen(true)}
+        onReorder={(id, targetId, placement) => void state.reorderDocument(id, targetId, placement)}
         collapsed={collapsed}
         onToggleCollapsed={toggleCollapsed}
         onAdd={(kind) => void state.addDocument(kind)}
@@ -82,22 +109,41 @@ export function Workspace({ state, build, previewOpen, onClosePreview }: Props) 
         onMove={(id, delta) => void state.moveDocument(id, delta)}
         onDelete={(id) => void state.removeDocument(id)}
       />
-      <section className="min-w-0 flex-1">
-        {settings ? (
-          <ConfigForm onSaved={bumpSaved} />
+      <section className="min-h-0 min-w-0 flex-1 overflow-hidden">
+        {showBibliography ? (
+          <BibliographyPage
+            documents={documents}
+            onOpenDocument={(id) => {
+              setSelectedId(id);
+              setShowBibliography(false);
+            }}
+          />
         ) : selected ? (
-          <DocumentEditor key={selected.id} documentId={selected.id} scrollTo={target} onSaved={bumpSaved} />
+          <DocumentEditor key={selected.id} documentId={selected.id} scrollTo={target} onSaved={onSaved} registerFlush={registerFlush} />
         ) : (
           <p className="p-8 text-sm text-muted-foreground">{t("workspace.empty")}</p>
         )}
       </section>
+      <SearchDialog
+        open={searchOpen}
+        onOpenChange={setSearchOpen}
+        documents={documents}
+        beforeSearch={async () => {
+          await flush.current?.();
+        }}
+        onOpenHit={(hit, term) => {
+          setShowBibliography(false);
+          setSelectedId(hit.documentId);
+          setTarget({ block: hit.block, nonce: Date.now(), term });
+        }}
+      />
       {previewOpen && (
         <PreviewPanel
           build={build}
           saveTick={saveTick}
           onClose={onClosePreview}
           onJump={(documentId, block) => {
-            setSettings(false);
+            setShowBibliography(false);
             setSelectedId(documentId);
             setTarget({ block, nonce: Date.now() });
           }}

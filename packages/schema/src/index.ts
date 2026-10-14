@@ -14,7 +14,7 @@ export type {
   NumberingResult,
   Target,
 } from "./numbering/types";
-export { collectTargets, type CollectedTargets } from "./numbering/collect";
+export { collectCitations, collectTargets, type CollectedTargets } from "./numbering/collect";
 export {
   ConfigParseError,
   defaultFields,
@@ -37,3 +37,45 @@ export {
   type Named,
 } from "./config/options";
 export { SCHOOLS, isKnownSchool, type School } from "./config/schools";
+export {
+  ADVANCED_FIELDS,
+  advancedField,
+  getPath,
+  inheritedValues,
+  isValidAdvanced,
+  mergeConfigs,
+  readAdvanced,
+  writeAdvanced,
+  type AdvancedField,
+  type AdvancedGroup,
+  type AdvancedKind,
+  type AdvancedValue,
+  type AdvancedValues,
+} from "./config/advanced";
+export {
+  ENTRY_TYPES,
+  REQUIRED_FIELDS,
+  appendEntry,
+  duplicateKeys,
+  entryAuthor,
+  entryLabel,
+  entryYear,
+  formatEntry,
+  isValidBibKey,
+  missingFields,
+  parseBibtex,
+  removeEntry,
+  replaceEntry,
+  type BibEntry,
+  type BibError,
+  type BibParseResult,
+} from "./bibliography/bibtex";
+export {
+  detectFormat,
+  importCslJson,
+  importEntries,
+  importHayagriva,
+  type ImportFormat,
+  type ImportResult,
+  type ImportedEntry,
+} from "./bibliography/import";

@@ -2,6 +2,7 @@ import { _electron as electron, expect, test } from "@playwright/test";
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
+import zlib from "node:zlib";
 import { findPackagedExecutable } from "./find-app";
 
 const dist = resolve(__dirname, "../dist");
@@ -167,7 +168,7 @@ test("footnotes, citations and cross-references can be inserted, shown, and save
     // Citation
     await page.keyboard.type(" see ");
     await page.getByRole("button", { name: "Citation" }).click();
-    await dialog.getByLabel("Bibliography keys").fill("wang2020, lee2019");
+    await dialog.getByLabel("Other keys").fill("wang2020, lee2019");
     await dialog.getByRole("button", { name: "Insert" }).click();
     await settle();
     await expect(editor.locator("[data-citation]")).toHaveAttribute("data-display", "(wang2020; lee2019)");
@@ -504,6 +505,179 @@ test("selecting text shows a floating menu with the marks", async () => {
     await expect(bubble).toBeVisible();
     await bubble.getByRole("button", { name: "Bold" }).click();
     await expect(editor.locator("strong")).toHaveCount(1);
+  } finally {
+    await app.close();
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("code blocks take a language, are highlighted, and keep it in the Markdown", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "marktwain 程式碼 "));
+  const file = join(dir, "論文.marktwain");
+  const args = [`--user-data-dir=${join(dir, "userData")}`, "--lang=en-US"];
+  if (process.platform === "linux") args.push("--no-sandbox");
+  const app = await electron.launch({
+    executablePath: findPackagedExecutable(dist),
+    args,
+    env: { ...process.env, MARKTWAIN_TEST_DIALOG_PATH: file },
+  });
+  try {
+    const page = await app.firstWindow();
+    await page.getByRole("button", { name: "New project" }).click();
+    const editor = page.locator(".ProseMirror");
+    await editor.click();
+    await page.getByRole("button", { name: "Code block" }).click();
+    await page.getByRole("combobox", { name: "Code language" }).click();
+    await page.getByRole("option", { name: "Python" }).click();
+    await page.keyboard.type('def hello():\n    return "hi"');
+    await expect(editor.locator("pre code .hljs-keyword").first()).toHaveText("def");
+    await expect(editor.locator("pre code .hljs-string")).toHaveCount(1);
+    await expect(page.getByRole("status")).toHaveText("Saved");
+    const text = await page.evaluate(async () => {
+      const list = await window.marktwain.invoke("document:list");
+      if (!list.ok) return "";
+      const chapter = list.data.find((d) => d.kind === "chapter");
+      const doc = chapter && (await window.marktwain.invoke("document:get", { id: chapter.id }));
+      return doc && doc.ok ? doc.data.text : "";
+    });
+    expect(text).toBe('```python\ndef hello():\n    return "hi"\n```\n');
+  } finally {
+    await app.close();
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("dragging a row or a column edge shows the value that it takes", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "marktwain 拖曳 "));
+  const file = join(dir, "論文.marktwain");
+  const args = [`--user-data-dir=${join(dir, "userData")}`, "--lang=en-US"];
+  if (process.platform === "linux") args.push("--no-sandbox");
+  const app = await electron.launch({
+    executablePath: findPackagedExecutable(dist),
+    args,
+    env: { ...process.env, MARKTWAIN_TEST_DIALOG_PATH: file },
+  });
+  try {
+    const page = await app.firstWindow();
+    await page.getByRole("button", { name: "New project" }).click();
+    const editor = page.locator(".ProseMirror");
+    await editor.click();
+    await page.getByRole("button", { name: "Insert table" }).click();
+    await page.getByRole("dialog").getByRole("button", { name: "Insert" }).click();
+    await expect(page.getByRole("dialog")).toBeHidden();
+
+    // Row: grab the bottom edge of the second row and pull it down
+    const cell = editor.locator("tr").nth(1).locator("td").first();
+    const box = (await cell.boundingBox())!;
+    await page.mouse.move(box.x + 20, box.y + box.height - 1);
+    await page.mouse.down();
+    await page.mouse.move(box.x + 20, box.y + box.height + 40, { steps: 6 });
+    await expect(page.getByTestId("resize-value")).toContainText(/Row height \d+ pt/);
+    await page.mouse.up();
+    await expect(page.getByTestId("resize-value")).toBeHidden();
+    await expect(editor.locator("tr").nth(1)).toHaveAttribute("data-height", /^\d+pt$/);
+    const height = Number(((await editor.locator("tr").nth(1).getAttribute("data-height")) ?? "").replace("pt", ""));
+    expect(height).toBeGreaterThan(30);
+
+    // Column: pull the right edge of the first column to the right
+    const head = editor.locator("tr").first().locator("th").first();
+    const hbox = (await head.boundingBox())!;
+    await page.mouse.move(hbox.x + hbox.width - 2, hbox.y + 10);
+    await page.mouse.down();
+    await page.mouse.move(hbox.x + hbox.width + 60, hbox.y + 10, { steps: 6 });
+    await expect(page.getByTestId("resize-value")).toContainText(/Column width [\d.]+%/);
+    await page.mouse.up();
+    await expect(page.getByTestId("table-readout")).toContainText("Column width");
+  } finally {
+    await app.close();
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+/** A solid colour PNG of the given size, made without any image library. */
+function makePng(width: number, height: number): Buffer {
+  const chunk = (type: string, data: Buffer) => {
+    const body = Buffer.concat([Buffer.from(type), data]);
+    const out = Buffer.alloc(12 + data.length);
+    out.writeUInt32BE(data.length, 0);
+    body.copy(out, 4);
+    out.writeUInt32BE(zlib.crc32(body) >>> 0, 8 + data.length);
+    return out;
+  };
+  const header = Buffer.alloc(13);
+  header.writeUInt32BE(width, 0);
+  header.writeUInt32BE(height, 4);
+  header[8] = 8;
+  header[9] = 2; // RGB
+  const row = Buffer.concat([Buffer.from([0]), Buffer.alloc(width * 3, 0x66)]);
+  const raw = Buffer.concat(Array.from({ length: height }, () => row));
+  return Buffer.concat([Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]), chunk("IHDR", header), chunk("IDAT", zlib.deflateSync(raw)), chunk("IEND", Buffer.alloc(0))]);
+}
+
+test("a picture is resized by its corners and cropped, in the manner of Word", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "marktwain 圖片編輯 "));
+  const file = join(dir, "論文.marktwain");
+  const image = join(dir, "照片.png");
+  writeFileSync(image, makePng(200, 100));
+  const args = [`--user-data-dir=${join(dir, "userData")}`, "--lang=en-US"];
+  if (process.platform === "linux") args.push("--no-sandbox");
+  const app = await electron.launch({
+    executablePath: findPackagedExecutable(dist),
+    args,
+    env: { ...process.env, MARKTWAIN_TEST_DIALOG_PATH: file, MARKTWAIN_TEST_IMAGE_PATH: image },
+  });
+  try {
+    const page = await app.firstWindow();
+    await page.getByRole("button", { name: "New project" }).click();
+    const editor = page.locator(".ProseMirror");
+    await editor.click();
+    const dialog = page.getByRole("dialog");
+    await page.getByRole("button", { name: "Insert image" }).click();
+    await dialog.getByLabel("Caption").fill("Photo");
+    await dialog.getByRole("button", { name: "Insert" }).click();
+    await expect(dialog).toBeHidden();
+
+    // A click selects the picture, handles and a floating menu appear
+    const figure = editor.locator("figure");
+    await figure.locator("img").click();
+    await expect(figure).toHaveClass(/is-selected/);
+    await expect(page.getByLabel("Picture tools")).toBeVisible();
+
+    // Preset widths from the menu
+    await page.getByRole("button", { name: "Width 50%" }).click();
+    await expect(figure).toHaveAttribute("data-width", "50%");
+
+    // Dragging a corner resizes it and shows the width on the way
+    const handle = figure.locator("[data-handle='se']");
+    const hbox = (await handle.boundingBox())!;
+    await page.mouse.move(hbox.x + hbox.width / 2, hbox.y + hbox.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(hbox.x + 120, hbox.y + 10, { steps: 6 });
+    await expect(page.getByTestId("figure-value")).toContainText(/Width \d+%/);
+    await page.mouse.up();
+    const width = Number(((await figure.getAttribute("data-width")) ?? "").replace("%", ""));
+    expect(width).toBeGreaterThan(50);
+
+    // Crop to the left half, the picture is replaced by a new one that is half as wide
+    await figure.locator("img").click();
+    await page.getByRole("button", { name: "Crop", exact: true }).click();
+    const stage = page.getByTestId("crop-stage");
+    await expect(stage).toBeVisible();
+    const corner = page.locator("[data-corner='se']");
+    const cbox = (await corner.boundingBox())!;
+    const sbox = (await stage.boundingBox())!;
+    await page.mouse.move(cbox.x + cbox.width / 2, cbox.y + cbox.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(sbox.x + sbox.width / 2, cbox.y + cbox.height / 2, { steps: 6 });
+    await page.mouse.up();
+    const before = await figure.locator("img").getAttribute("src");
+    await page.getByRole("dialog").getByRole("button", { name: "Crop", exact: true }).click();
+    await expect(page.getByRole("dialog")).toBeHidden();
+    await expect.poll(() => figure.locator("img").getAttribute("src")).not.toBe(before);
+    await expect.poll(() => figure.locator("img").evaluate((el: HTMLImageElement) => el.naturalWidth)).toBeGreaterThan(80);
+    const natural = await figure.locator("img").evaluate((el: HTMLImageElement) => [el.naturalWidth, el.naturalHeight]);
+    expect(natural[0]).toBeLessThan(120);
+    expect(natural[1]).toBe(100);
   } finally {
     await app.close();
     rmSync(dir, { recursive: true, force: true });

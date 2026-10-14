@@ -95,7 +95,7 @@ test("a build error points back to the block that caused it", async () => {
     await expect(log).toContainText("file not found", { timeout: 90_000 });
     await log.getByRole("button", { name: "Go to the source" }).click();
     // The failing block is the figure, which becomes the selected node
-    await expect(page.locator(".ProseMirror figure.ProseMirror-selectednode")).toBeAttached();
+    await expect(page.locator(".ProseMirror figure.is-selected")).toBeAttached();
   } finally {
     await app.close();
     rmSync(dir, { recursive: true, force: true });

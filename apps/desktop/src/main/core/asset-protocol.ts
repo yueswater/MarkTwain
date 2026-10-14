@@ -17,6 +17,7 @@ export function handleAssetProtocol(read: Reader): void {
     const path = decodeURIComponent(new URL(request.url).pathname).replace(/^\/+/, "");
     const file = read(path);
     if (!file) return new Response(null, { status: 404 });
-    return new Response(file.data as unknown as BodyInit, { headers: { "content-type": file.mime } });
+    // The editor draws these images on a canvas to crop them, which needs a CORS answer
+    return new Response(file.data as unknown as BodyInit, { headers: { "content-type": file.mime, "access-control-allow-origin": "*" } });
   });
 }

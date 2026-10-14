@@ -1,7 +1,9 @@
 import type { Extensions } from "@tiptap/core";
 import { Mathematics } from "@tiptap/extension-mathematics";
 import { Table, TableCell, TableHeader, TableRow } from "@tiptap/extension-table";
+import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import StarterKit from "@tiptap/starter-kit";
+import { lowlight } from "../code-languages";
 import { GlobalAttributes } from "./global-attributes";
 import { Citation } from "./nodes/citation";
 import { CrossRef } from "./nodes/cross-ref";
@@ -9,8 +11,11 @@ import { DefinitionDescription, DefinitionList, DefinitionTerm } from "./nodes/d
 import { Div } from "./nodes/div";
 import { FigureGroup } from "./nodes/figure-group";
 import { Figure } from "./nodes/figure";
+import { figureNodeView } from "./figure-view";
 import { MathInputRules } from "./math-input";
+import { Find } from "./find";
 import { TableExtras } from "./table-extras";
+import { TableResize, type ResizeLabels } from "./table-resize";
 import { Footnote } from "./nodes/footnote";
 import { CjkBold, CjkItalic, CjkStrike } from "./marks";
 
@@ -18,16 +23,31 @@ import { CjkBold, CjkItalic, CjkStrike } from "./marks";
  * Schema of the editor, only nodes and marks known to @marktwain/schema, checked by the parity test.
  * It holds no view code such as node views or toolbars, so it can run in tests without a DOM.
  */
+/** The figure node with handles to resize it, same schema as Figure. */
+function InteractiveFigure(label: (percent: number) => string) {
+  return Figure.extend({
+    addNodeView() {
+      return figureNodeView({ label });
+    },
+  });
+}
+
 export type SchemaExtensionOptions = {
+  /** Texts of the tooltips shown while a table row or column is dragged */
+  resizeLabels?: ResizeLabels;
+  /** Text of the tooltip while a figure is resized, only the editor needs the interactive figure */
+  figureLabel?: (percent: number) => string;
   /** Called when a formula is clicked, the view layer uses it to open the edit dialog. Not needed in tests or pure schema use. */
   onMathClick?: (kind: "inline" | "block", latex: string, pos: number) => void;
 };
 
 export function createSchemaExtensions(options: SchemaExtensionOptions = {}): Extensions {
-  const { onMathClick } = options;
+  const { onMathClick, resizeLabels, figureLabel } = options;
   return [
     StarterKit.configure({
       heading: { levels: [1, 2, 3, 4] },
+      // Code blocks come from the lowlight extension below so they are highlighted
+      codeBlock: false,
       // Replaced with versions whose input rules work for Chinese, see marks.ts
       bold: false,
       italic: false,
@@ -39,7 +59,9 @@ export function createSchemaExtensions(options: SchemaExtensionOptions = {}): Ex
     CjkBold,
     CjkItalic,
     CjkStrike,
+    CodeBlockLowlight.configure({ lowlight, defaultLanguage: null }),
     GlobalAttributes,
+    Find,
     Mathematics.configure({
       inlineOptions: onMathClick ? { onClick: (node, pos) => onMathClick("inline", node.attrs.latex, pos) } : undefined,
       blockOptions: onMathClick ? { onClick: (node, pos) => onMathClick("block", node.attrs.latex, pos) } : undefined,
@@ -48,6 +70,7 @@ export function createSchemaExtensions(options: SchemaExtensionOptions = {}): Ex
     // Columns can be dragged, TableExtras copies the widths into the document
     Table.configure({ resizable: true, allowTableNodeSelection: true }),
     TableExtras,
+    ...(resizeLabels ? [TableResize.configure({ labels: resizeLabels })] : []),
     TableRow,
     // A cell holds a single paragraph, pipe tables have no multi paragraph cells
     TableHeader.extend({ content: "paragraph" }),
@@ -55,7 +78,7 @@ export function createSchemaExtensions(options: SchemaExtensionOptions = {}): Ex
     Footnote,
     Citation,
     CrossRef,
-    Figure,
+    figureLabel ? InteractiveFigure(figureLabel) : Figure,
     FigureGroup,
     Div,
     DefinitionList,

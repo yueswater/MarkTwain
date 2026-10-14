@@ -33,7 +33,9 @@
     "crossRef": "Cross-reference",
     "definitionList": "Definition list",
     "addDefinition": "Add term",
-    "image": "Insert image"
+    "image": "Insert image",
+    "codeLanguage": "Code language",
+    "plainText": "Plain text"
   },
   "math": {
     "insertTitle": "Insert math",
@@ -56,9 +58,13 @@
   "citation": {
     "insertTitle": "Insert citation",
     "editTitle": "Edit citation",
-    "keys": "Bibliography keys",
-    "keysHint": "Separate several keys with commas, for example wang2020, lee2019.",
+    "keys": "Other keys",
+    "keysHint": "Keys that are not in the bibliography yet. Separate several with commas, for example wang2020, lee2019.",
     "form": "Style",
+    "pick": "Choose from the bibliography",
+    "filter": "Search by author, title or key",
+    "noMatch": "No entry matches.",
+    "noBibliography": "The bibliography is empty. Add entries in Bibliography in the sidebar, or type keys below. Citations without an entry stay plain text in the PDF.",
     "forms": {
       "paren": "(Author, Year)",
       "prose": "Author (Year)",
@@ -82,7 +88,8 @@
       "lst": "Listing"
     },
     "broken": "Missing target",
-    "chooseHint": "Choose what to refer to."
+    "chooseHint": "Choose what to refer to.",
+    "placeholder": "Choose a target to refer to"
   },
   "atom": {
     "insert": "Insert",
@@ -126,7 +133,9 @@
     "columnWidth": "Column width",
     "rowHeightShort": "Row height",
     "auto": "auto",
-    "percent": "%"
+    "percent": "%",
+    "dragWidth": "Column width {{value}}%",
+    "dragHeight": "Row height {{value}} pt"
   },
   "caption": {
     "tableTitle": "Table caption",
@@ -144,12 +153,36 @@
     "captionHint": "Inline Markdown is allowed. Without a caption the image has no number.",
     "width": "Width",
     "widthAuto": "Original size",
-    "captionPlaceholder": "Figure caption, optional"
+    "captionPlaceholder": "Figure caption, optional",
+    "dragWidth": "Width {{value}}%"
   },
   "bubble": {
     "label": "Selection tools",
     "merge": "Merge",
     "mergeHint": "Merge the selected cells",
     "sizeHint": "Pick a size"
+  },
+  "crop": {
+    "title": "Crop the picture",
+    "hint": "Drag the frame or its corners. The original picture stays in the project.",
+    "apply": "Crop",
+    "reset": "Whole picture",
+    "failed": "The picture could not be cropped."
+  },
+  "figureMenu": {
+    "label": "Picture tools",
+    "edit": "Edit caption",
+    "crop": "Crop",
+    "width": "Width {{value}}",
+    "remove": "Remove the picture"
+  },
+  "find": {
+    "label": "Find in this document",
+    "placeholder": "Find",
+    "none": "No match",
+    "next": "Next match",
+    "previous": "Previous match",
+    "close": "Close the find bar",
+    "caseSensitive": "Match case"
   }
 }

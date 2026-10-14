@@ -1,0 +1,79 @@
+{
+  "title": "參考文獻",
+  "open": "參考文獻",
+  "count": "共 {{count}} 筆",
+  "modes": {
+    "label": "檢視方式",
+    "manager": "管理介面",
+    "source": "BibTeX 原始碼"
+  },
+  "add": "新增文獻",
+  "import": "匯入",
+  "importHint": "BibTeX、CSL JSON 或 Hayagriva YAML",
+  "imported": "新增 {{added}} 筆，{{skipped}} 筆已存在，{{errors}} 筆無法讀取。",
+  "search": "搜尋文獻",
+  "searchPlaceholder": "作者、題名或代號",
+  "empty": "書目還是空的。可以新增一筆文獻，匯入文獻管理軟體匯出的檔案，或在原始碼檢視直接寫 BibTeX。",
+  "noMatch": "沒有符合的文獻。",
+  "select": "從左邊選一筆文獻，或新增一筆。",
+  "cited": "被引用 {{count}} 次",
+  "uncited": "尚未被引用",
+  "incomplete": "缺少：{{fields}}",
+  "citedIn": "被引用於",
+  "citedInNone": "還沒有文件引用這筆文獻。",
+  "citedTimes": "{{count}} 次",
+  "form": {
+    "type": "類型",
+    "key": "代號",
+    "keyHint": "可用英數字與 _ : . - / +，引用時使用這個代號。",
+    "required": "必填",
+    "save": "儲存",
+    "saved": "已儲存",
+    "delete": "刪除文獻",
+    "revert": "放棄變更",
+    "newTitle": "新增文獻"
+  },
+  "deleteTitle": "刪除這筆文獻？",
+  "deleteBody": "「{{key}}」會從書目移除。文件中對它的引用會保留，並顯示為未知。",
+  "types": {
+    "article": "期刊論文",
+    "book": "書籍",
+    "inproceedings": "研討會論文",
+    "incollection": "書籍章節",
+    "phdthesis": "博士論文",
+    "mastersthesis": "碩士論文",
+    "techreport": "技術報告",
+    "misc": "其他"
+  },
+  "fields": {
+    "author": "作者",
+    "editor": "編者",
+    "title": "題名",
+    "journal": "期刊",
+    "booktitle": "書名或論文集",
+    "year": "年份",
+    "volume": "卷",
+    "number": "期",
+    "pages": "頁碼",
+    "publisher": "出版者",
+    "school": "學校",
+    "institution": "機構",
+    "doi": "DOI",
+    "url": "網址",
+    "note": "備註"
+  },
+  "authorHint": "多位作者以 and 分隔，例如 Wang, Xiaoming and Lee, Jane。",
+  "problems": {
+    "title": "需要處理",
+    "unreadable": "第 {{line}} 行無法讀取：{{message}}。",
+    "duplicate": "代號「{{key}}」被多筆文獻使用。",
+    "unknown": "文件引用了，但書目沒有：{{keys}}",
+    "createFrom": "新增「{{key}}」"
+  },
+  "source": {
+    "label": "BibTeX 原始碼",
+    "hint": "變更會自動儲存，註解與條目順序都會保留。",
+    "saving": "儲存中",
+    "saved": "已儲存"
+  }
+}

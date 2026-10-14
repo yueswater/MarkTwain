@@ -1,13 +1,17 @@
 import {
   ConfigParseError,
   defaultFields,
+  inheritedValues,
+  readAdvanced,
   readConfig,
   validateConfig,
+  writeAdvanced,
   writeConfig,
+  type AdvancedValue,
   type ConfigFields,
 } from "@marktwain/schema";
 import { ErrorCode } from "../../../shared/enums/error-code.enum";
-import type { ConfigState } from "../../../shared/ipc";
+import type { AdvancedState, ConfigState } from "../../../shared/ipc";
 import type { DatabaseSession } from "../../core/database-session";
 import { AppError } from "../../core/errors";
 import { ProjectRepository } from "../project/project.repository";
@@ -18,12 +22,34 @@ export class ConfigService {
   constructor(
     private readonly session: DatabaseSession,
     private readonly now: () => Date = () => new Date(),
+    /** Reads a file of the template such as schools/default.yml, null when it is missing */
+    private readonly templateFile: (path: string) => string | null = () => null,
   ) {}
 
   /** Raw config.yml text for the build, built from defaults when the project has none yet. */
   text(): string {
     const stored = new ConfigRepository(this.session.db).read();
     return stored ?? writeConfig("", this.initialFields());
+  }
+
+  /** Advanced format settings: the overrides of the project and what they would be without them. */
+  advanced(): AdvancedState {
+    const text = new ConfigRepository(this.session.db).read() ?? "";
+    this.parse(text);
+    const school = readConfig(text).school;
+    const defaults = this.templateFile("schools/default.yml") ?? "";
+    const preset = school ? this.templateFile(`schools/${school}.yml`) : null;
+    return { values: readAdvanced(text), inherited: inheritedValues(defaults, preset) };
+  }
+
+  /** A path with a value is set, a path with null goes back to the inherited value. */
+  setAdvanced(values: Record<string, AdvancedValue | null>): AdvancedState {
+    const repository = new ConfigRepository(this.session.db);
+    const existing = repository.read() ?? writeConfig("", this.initialFields());
+    this.parse(existing);
+    const patch = Object.fromEntries(Object.entries(values).map(([path, value]) => [path, value ?? undefined]));
+    repository.write(writeAdvanced(existing, patch), this.now().getTime());
+    return this.advanced();
   }
 
   get(): ConfigState {

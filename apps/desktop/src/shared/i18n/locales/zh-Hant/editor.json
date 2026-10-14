@@ -33,7 +33,9 @@
     "crossRef": "交叉引用",
     "definitionList": "定義清單",
     "addDefinition": "新增詞條",
-    "image": "插入圖片"
+    "image": "插入圖片",
+    "codeLanguage": "程式語言",
+    "plainText": "純文字"
   },
   "math": {
     "insertTitle": "插入公式",
@@ -56,9 +58,13 @@
   "citation": {
     "insertTitle": "插入文獻引用",
     "editTitle": "編輯文獻引用",
-    "keys": "書目代號",
-    "keysHint": "多個代號以逗號分隔，例如 wang2020, lee2019。",
+    "keys": "其他代號",
+    "keysHint": "尚未收進書目的代號，多個以逗號分隔，例如 wang2020, lee2019。",
     "form": "樣式",
+    "pick": "從書目選擇",
+    "filter": "以作者、題名或代號搜尋",
+    "noMatch": "沒有符合的文獻。",
+    "noBibliography": "書目是空的。請到側邊欄的「參考文獻」新增，或在下方直接輸入代號。沒有對應條目的引用在 PDF 中會維持純文字。",
     "forms": {
       "paren": "（作者，年份）",
       "prose": "作者（年份）",
@@ -82,7 +88,8 @@
       "lst": "程式"
     },
     "broken": "找不到目標",
-    "chooseHint": "選擇要引用的目標。"
+    "chooseHint": "選擇要引用的目標。",
+    "placeholder": "請選擇欲引用目標"
   },
   "atom": {
     "insert": "插入",
@@ -126,7 +133,9 @@
     "columnWidth": "欄寬",
     "rowHeightShort": "列高",
     "auto": "自動",
-    "percent": "%"
+    "percent": "%",
+    "dragWidth": "欄寬 {{value}}%",
+    "dragHeight": "列高 {{value}} pt"
   },
   "caption": {
     "tableTitle": "表格標題",
@@ -144,12 +153,36 @@
     "captionHint": "可以使用行內 Markdown。沒有圖說的圖不會有編號。",
     "width": "寬度",
     "widthAuto": "原始大小",
-    "captionPlaceholder": "圖說，選填"
+    "captionPlaceholder": "圖說，選填",
+    "dragWidth": "寬度 {{value}}%"
   },
   "bubble": {
     "label": "選取工具",
     "merge": "合併",
     "mergeHint": "合併選取的儲存格",
     "sizeHint": "選擇表格大小"
+  },
+  "crop": {
+    "title": "裁切圖片",
+    "hint": "拖曳外框或四個角。原本的圖片仍保留在專案裡。",
+    "apply": "裁切",
+    "reset": "整張圖片",
+    "failed": "無法裁切這張圖片。"
+  },
+  "figureMenu": {
+    "label": "圖片工具",
+    "edit": "編輯圖說",
+    "crop": "裁切",
+    "width": "寬度 {{value}}",
+    "remove": "移除圖片"
+  },
+  "find": {
+    "label": "在這份文件中尋找",
+    "placeholder": "尋找",
+    "none": "找不到",
+    "next": "下一個",
+    "previous": "上一個",
+    "close": "關閉尋找列",
+    "caseSensitive": "區分大小寫"
   }
 }

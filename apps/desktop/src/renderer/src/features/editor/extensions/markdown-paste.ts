@@ -43,14 +43,20 @@ export function markdownToSlice(schema: Schema, text: string): Slice {
  * Pasted Markdown text, for example from VS Code, a web page or a chat, is parsed with our dialect into document structure.
  * Content copied from the editor itself, which carries ProseMirror markers, and pastes inside code blocks stay as they are.
  */
-export const MarkdownPaste = Extension.create({
+export const MarkdownPaste = Extension.create<{ enabled: () => boolean }>({
   name: "markdownPaste",
 
+  addOptions() {
+    return { enabled: () => true };
+  },
+
   addProseMirrorPlugins() {
+    const { enabled } = this.options;
     return [
       new Plugin({
         props: {
           handlePaste(view, event) {
+            if (!enabled()) return false;
             const data = event.clipboardData;
             const text = data?.getData("text/plain") ?? "";
             if (!text || !looksLikeMarkdown(text)) return false;

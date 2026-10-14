@@ -108,13 +108,13 @@ test("cross-reference numbers update when a figure is removed", async () => {
 
     // Delete the first figure, the second becomes 1.1
     await page.locator(".ProseMirror figure").first().click();
-    await page.getByRole("dialog").getByRole("button", { name: "Remove" }).click();
+    await page.getByRole("button", { name: "Remove the picture" }).click();
     await expect(page.locator(".ProseMirror figure")).toHaveCount(1);
     await expect(ref).toHaveAttribute("data-display", "Figure 1.1");
 
     // Delete the referenced figure too, the reference becomes broken
     await page.locator(".ProseMirror figure").first().click();
-    await page.getByRole("dialog").getByRole("button", { name: "Remove" }).click();
+    await page.getByRole("button", { name: "Remove the picture" }).click();
     await expect(ref).toHaveAttribute("data-broken", "");
   } finally {
     await app.close();

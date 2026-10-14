@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import type { LabelTarget } from "../../../../shared/ipc";
+import { useBibliography } from "../bibliography/bibliography-context";
 import type { UnlabeledTarget } from "./unlabeled-targets";
 
 /** Editing state shared by the three inline atom nodes, footnote, citation and cross-reference. */
@@ -155,26 +156,75 @@ export function CitationDialog({
   onSubmit: (keys: string[], form: string) => void;
 }) {
   const { t } = useTranslation("editor");
-  const [keys, setKeys] = useState(target.keys.join(", "));
+  const { view } = useBibliography();
+  const [keys, setKeys] = useState<string[]>(target.keys);
   const [form, setForm] = useState(target.form);
+  const [filter, setFilter] = useState("");
   const editing = target.pos !== null;
-  const parsed = parseCitationKeys(keys);
+
+  const known = new Set(view.items.map((item) => item.key));
+  const typed = keys.filter((key) => !known.has(key)).join(", ");
+  const needle = filter.trim().toLowerCase();
+  const shown = view.items.filter(
+    (item) => needle === "" || `${item.key} ${item.label} ${item.fields.title ?? ""}`.toLowerCase().includes(needle),
+  );
+  const toggle = (key: string) => setKeys((current) => (current.includes(key) ? current.filter((k) => k !== key) : [...current, key]));
+
   return (
     <Frame
       title={t(editing ? "citation.editTitle" : "citation.insertTitle")}
       editing={editing}
-      canSubmit={parsed.length > 0}
-      onSubmit={() => onSubmit(parsed, form)}
+      canSubmit={keys.length > 0}
+      onSubmit={() => onSubmit(keys, form)}
       {...common}
     >
+      <div className="grid gap-2">
+        <Label htmlFor="citation-filter">{t("citation.pick")}</Label>
+        {view.items.length === 0 ? (
+          <p className="rounded-md border border-dashed p-3 text-sm text-muted-foreground">{t("citation.noBibliography")}</p>
+        ) : (
+          <>
+            <Input
+              id="citation-filter"
+              value={filter}
+              autoFocus
+              placeholder={t("citation.filter")}
+              spellCheck={false}
+              onChange={(event) => setFilter(event.target.value)}
+            />
+            <ul className="max-h-48 overflow-y-auto rounded-md border" aria-label={t("citation.pick")}>
+              {shown.length === 0 && <li className="p-3 text-sm text-muted-foreground">{t("citation.noMatch")}</li>}
+              {shown.map((item) => (
+                <li key={item.key}>
+                  <label className="flex cursor-pointer items-start gap-2 px-3 py-1.5 text-sm hover:bg-muted">
+                    <input
+                      type="checkbox"
+                      className="mt-1"
+                      checked={keys.includes(item.key)}
+                      onChange={() => toggle(item.key)}
+                    />
+                    <span className="min-w-0">
+                      <span className="block truncate font-medium">{item.label}</span>
+                      <span className="block truncate text-xs text-muted-foreground">
+                        {item.key}
+                        {item.fields.title ? ` · ${item.fields.title}` : ""}
+                      </span>
+                    </span>
+                  </label>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+      </div>
       <div className="grid gap-2">
         <Label htmlFor="citation-keys">{t("citation.keys")}</Label>
         <Input
           id="citation-keys"
-          value={keys}
-          autoFocus
+          value={typed}
+          autoFocus={view.items.length === 0}
           spellCheck={false}
-          onChange={(event) => setKeys(event.target.value)}
+          onChange={(event) => setKeys([...keys.filter((key) => known.has(key)), ...parseCitationKeys(event.target.value)])}
         />
         <p className="text-xs text-muted-foreground">{t("citation.keysHint")}</p>
       </div>
@@ -255,7 +305,7 @@ export function CrossRefDialog({
           <Label>{t("crossRef.target")}</Label>
           <Select value={value} onValueChange={setValue}>
             <SelectTrigger aria-label={t("crossRef.target")}>
-              <SelectValue />
+              <SelectValue placeholder={t("crossRef.placeholder")} />
             </SelectTrigger>
             <SelectContent>
               {!known && value !== "" && (

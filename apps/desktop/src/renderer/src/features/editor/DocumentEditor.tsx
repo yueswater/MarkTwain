@@ -1,5 +1,7 @@
-import type { JSONContent } from "@tiptap/core";
+import type { Editor, JSONContent } from "@tiptap/core";
 import { findTable } from "@tiptap/pm/tables";
+import { usePrefs } from "@/lib/prefs";
+import { cn } from "@/lib/utils";
 import { EditorContent, useEditor } from "@tiptap/react";
 import Placeholder from "@tiptap/extension-placeholder";
 import { parseMarkdown, serializeMarkdown } from "@marktwain/schema";
@@ -20,24 +22,30 @@ import {
 } from "./AtomDialogs";
 import { CaptionDialog, type CaptionTarget } from "./CaptionDialog";
 import { FigureDialog, type FigureTarget } from "./FigureDialog";
+import { CropDialog } from "./CropDialog";
+import { FindBar } from "./FindBar";
 import { EditorBubbleMenu } from "./EditorBubbleMenu";
 import { TableInsertDialog } from "./TableInsertDialog";
 import { MathDialog, type MathTarget } from "./MathDialog";
 import { MarkdownPaste } from "./extensions/markdown-paste";
 import { RefDecorations, REFS_CHANGED } from "./extensions/ref-decorations";
 import { useLabelIndex } from "./use-label-index";
+import { useBibliography } from "../bibliography/bibliography-context";
+import type { CitationInfo } from "./ref-display";
 import { findUnlabeledTargets, newLabel, type UnlabeledTarget } from "./unlabeled-targets";
 import { Toolbar } from "./Toolbar";
 
 type Props = {
   documentId: string;
-  scrollTo?: { block: number; nonce: number } | null;
+  scrollTo?: { block: number; nonce: number; term?: string } | null;
+  /** Gives the parent a way to save what is being typed at once */
+  registerFlush?: (flush: (() => Promise<void>) | null) => void;
   /** Called every time the text has been saved */
   onSaved?: () => void;
 };
 
 /** Loads one document. The caller remounts with key when the document changes, so each document has its own editor and undo history. */
-export function DocumentEditor({ documentId, scrollTo, onSaved }: Props) {
+export function DocumentEditor({ documentId, scrollTo, onSaved, registerFlush }: Props) {
   const { t } = useTranslation();
   const [doc, setDoc] = useState<DocumentData | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -62,8 +70,10 @@ export function DocumentEditor({ documentId, scrollTo, onSaved }: Props) {
     );
   }
   if (!doc) return null;
-  return <EditorSurface doc={doc} scrollTo={scrollTo ?? null} onSaved={onSaved} />;
+  return <EditorSurface doc={doc} scrollTo={scrollTo ?? null} onSaved={onSaved} registerFlush={registerFlush} />;
 }
+
+const WIDTH = { narrow: "max-w-xl", normal: "max-w-3xl", wide: "max-w-5xl" } as const;
 
 const ATOM_TYPES = new Set(["footnote", "citation", "crossRef"]);
 
@@ -71,23 +81,37 @@ function EditorSurface({
   doc,
   scrollTo,
   onSaved,
+  registerFlush,
 }: {
   doc: DocumentData;
-  scrollTo: { block: number; nonce: number } | null;
+  scrollTo: { block: number; nonce: number; term?: string } | null;
   onSaved?: () => void;
+  registerFlush?: (flush: (() => Promise<void>) | null) => void;
 }) {
   const { t } = useTranslation("editor");
   const { t: tCommon } = useTranslation();
   const [status, setStatus] = useState<SaveStatus>("idle");
+  const { prefs } = usePrefs();
+  const prefsRef = useRef(prefs);
+  prefsRef.current = prefs;
   const [math, setMath] = useState<MathTarget | null>(null);
   const [atom, setAtom] = useState<AtomTarget | null>(null);
   const [caption, setCaption] = useState<CaptionTarget | null>(null);
   const [tableDialog, setTableDialog] = useState(false);
+  const [find, setFind] = useState<{ open: boolean; term: string }>({ open: false, term: "" });
+  const [crop, setCrop] = useState<{ pos: number; src: string } | null>(null);
   const [figure, setFigure] = useState<FigureTarget | null>(null);
   const [importError, setImportError] = useState<string | null>(null);
   const [unlabeled, setUnlabeled] = useState<UnlabeledTarget[]>([]);
 
   const labels = useLabelIndex(status);
+  const { view: bibliography } = useBibliography();
+  const citations = useMemo(
+    () => Object.fromEntries(bibliography.items.map((item): [string, CitationInfo] => [item.key, { author: item.author, year: item.year }])),
+    [bibliography.items],
+  );
+  const citationsRef = useRef(citations);
+  citationsRef.current = citations;
   const savedRef = useRef(onSaved);
   savedRef.current = onSaved;
   useEffect(() => {
@@ -106,38 +130,47 @@ function EditorSurface({
       ),
     [doc.id],
   );
+  const editorRef = useRef<Editor | null>(null);
   const flushRef = useRef(autosaver);
   flushRef.current = autosaver;
+  useEffect(() => autosaver.setDelay(prefs.autosaveDelayMs), [autosaver, prefs.autosaveDelayMs]);
+  useEffect(() => {
+    registerFlush?.(() => autosaver.flush());
+    return () => registerFlush?.(null);
+  }, [autosaver, registerFlush]);
 
   const editor = useEditor(
     {
       extensions: [
         ...createSchemaExtensions({
           onMathClick: (kind, latex, pos) => setMath({ kind, latex, pos }),
+          figureLabel: (percent) => tRef.current("figure.dragWidth", { value: percent }),
+          resizeLabels: {
+            width: (percent) => tRef.current("table.dragWidth", { value: percent }),
+            height: (points) => tRef.current("table.dragHeight", { value: points }),
+          },
         }),
-        MarkdownPaste,
+        MarkdownPaste.configure({ enabled: () => prefsRef.current.pasteMarkdown }),
         Placeholder.configure({ placeholder: t("placeholder") }),
         RefDecorations.configure({
           getNumbers: () => labelsRef.current.numbers,
           kindName: (kind) => tRef.current(`crossRef.kind.${kind}`),
           brokenText: t("crossRef.broken"),
+          getCitations: () => citationsRef.current,
         }),
       ],
       content: parseMarkdown(doc.text) as JSONContent,
       onUpdate: ({ editor: e }) => autosaver.schedule(() => serializeMarkdown(e.getJSON())),
       editorProps: {
         attributes: { "aria-label": doc.title || doc.kind, spellcheck: "false" },
+        // A double click on a figure edits its caption, a single click only selects it
+        handleDoubleClickOn: (_view, _pos, node, nodePos) => {
+          if (node.type.name !== "figure") return false;
+          setFigure({ pos: nodePos, src: String(node.attrs.src), caption: String(node.attrs.caption ?? ""), width: (node.attrs.width as string | null) ?? null });
+          return true;
+        },
         // Open the edit dialog when a footnote, citation or cross-reference is clicked
         handleClickOn: (_view, _pos, node, nodePos, _event, direct) => {
-          if (direct && node.type.name === "figure") {
-            setFigure({
-              pos: nodePos,
-              src: String(node.attrs.src),
-              caption: String(node.attrs.caption ?? ""),
-              width: (node.attrs.width as string | null) ?? null,
-            });
-            return true;
-          }
           if (!direct || !ATOM_TYPES.has(node.type.name)) return false;
           if (node.type.name === "footnote") {
             setAtom({ type: "footnote", pos: nodePos, text: String(node.attrs.text) });
@@ -159,6 +192,15 @@ function EditorSurface({
     [doc.id],
   );
 
+  useEffect(() => {
+    if (editor && !editor.isDestroyed) editor.view.dom.setAttribute("spellcheck", String(prefs.spellcheck));
+  }, [editor, prefs.spellcheck]);
+
+  // A hit of the project search brings its term along, the find bar shows it in this document
+  useEffect(() => {
+    if (scrollTo?.term) setFind({ open: true, term: scrollTo.term });
+  }, [scrollTo]);
+
   // Move the cursor to the top level block named by a build error
   useEffect(() => {
     if (!editor || editor.isDestroyed || !scrollTo) return;
@@ -176,11 +218,21 @@ function EditorSurface({
   useEffect(() => {
     if (!editor || editor.isDestroyed) return;
     editor.view.dispatch(editor.state.tr.setMeta(REFS_CHANGED, true));
-  }, [editor, labels]);
+  }, [editor, labels, citations]);
 
   // Save pending changes before switching documents, closing the project or closing the window
   useEffect(() => {
     const flush = () => void flushRef.current.flush();
+    // Ctrl or Cmd plus F finds in this document, with the selected text as the start
+    const onFind = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && !event.shiftKey && event.key.toLowerCase() === "f") {
+        event.preventDefault();
+        const { from, to, empty } = editorRef.current?.state.selection ?? { from: 0, to: 0, empty: true };
+        const selected = !empty && to - from < 80 ? (editorRef.current?.state.doc.textBetween(from, to, " ") ?? "") : "";
+        setFind((current) => ({ open: true, term: selected || current.term }));
+      }
+    };
+    window.addEventListener("keydown", onFind);
     // Ctrl or Cmd plus S saves at once, normally saving happens after typing stops
     const onKeyDown = (event: KeyboardEvent) => {
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "s") {
@@ -193,10 +245,12 @@ function EditorSurface({
     return () => {
       window.removeEventListener("beforeunload", flush);
       window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("keydown", onFind);
       flush();
     };
   }, [autosaver]);
 
+  editorRef.current = editor;
   if (!editor) return null;
 
   const openAtom = (type: "footnote" | "citation" | "crossRef") => {
@@ -277,9 +331,31 @@ function EditorSurface({
           });
         }}
       />
-      <EditorBubbleMenu editor={editor} onInsertMath={() => setMath({ kind: "inline", latex: "", pos: null })} />
-      <div className="min-h-0 flex-1 overflow-y-auto">
-        <EditorContent editor={editor} className="mx-auto max-w-3xl px-8 py-8" />
+      <EditorBubbleMenu
+        editor={editor}
+        onInsertMath={() => setMath({ kind: "inline", latex: "", pos: null })}
+        onEditFigure={(pos, attrs) =>
+          setFigure({ pos, src: String(attrs.src), caption: String(attrs.caption ?? ""), width: (attrs.width as string | null) ?? null })
+        }
+        onCropFigure={(pos, src) => setCrop({ pos, src })}
+      />
+      <div className="relative min-h-0 flex-1">
+      {find.open && <FindBar key={find.term} editor={editor} initialTerm={find.term} onClose={() => setFind((c) => ({ ...c, open: false }))} />}
+      <div className="h-full overflow-y-auto">
+        <EditorContent
+          editor={editor}
+          data-line-numbers={prefs.lineNumbers}
+          data-font={prefs.fontFamily}
+          className={cn("mx-auto px-8 py-8", WIDTH[prefs.contentWidth])}
+          style={
+            {
+              "--editor-font-size": `${prefs.fontSize}px`,
+              "--editor-line-height": String(prefs.lineHeight),
+              "--editor-code-size": `${prefs.codeFontSize}px`,
+            } as React.CSSProperties
+          }
+        />
+      </div>
       </div>
       {importError && (
         <p role="alert" className="border-t bg-destructive/5 px-4 py-1 text-xs text-destructive select-text">
@@ -336,6 +412,18 @@ function EditorSurface({
             if (caption) editor.chain().updateAttributes("table", { caption }).run();
           }}
           onClose={() => setTableDialog(false)}
+          onRestoreFocus={() => editor.commands.focus()}
+        />
+      )}
+      {crop && (
+        <CropDialog
+          src={crop.src}
+          onCrop={async (png) => {
+            const { src } = await api.invoke(IpcChannel.AssetStoreImage, { data: png });
+            const node = editor.state.doc.nodeAt(crop.pos);
+            if (node) editor.view.dispatch(editor.state.tr.setNodeMarkup(crop.pos, undefined, { ...node.attrs, src }));
+          }}
+          onClose={() => setCrop(null)}
           onRestoreFocus={() => editor.commands.focus()}
         />
       )}

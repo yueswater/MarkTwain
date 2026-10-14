@@ -2,13 +2,14 @@
 
 MarkTwain is developed against version milestones. Each version maps to a [GitHub Milestone](../../milestones), and the work items are tracked as issues.
 
-Current version: v0.3.1.
+Current version: v0.3.2.
 
 | Version | Theme | Status |
 |---|---|---|
 | [v0.1.0](#v010--foundation) | Foundation | Released |
 | [v0.2.0](#v020--editor) | Editor | Released |
 | [v0.3.0](#v030--typst-output) | Typst output | Released |
+| [v0.3.2](#v032--editor-and-bibliography-polish) | Editor and bibliography polish | Released |
 | [v0.4.0](#v040--version-control) | Version control | Not started |
 | [v0.5.0](#v050--latex-output) | LaTeX output | Not started |
 | [v0.6.0](#v060--thesis-features) | Thesis features | Not started |
@@ -61,6 +62,18 @@ The first version that produces a PDF.
 - Word-like tables: three-line or grid style, merged cells, column widths, row heights, horizontal and vertical alignment
 
 **Done when:** a sample thesis builds a PDF for every supported school.
+
+## v0.3.2 · Editor and Bibliography Polish
+
+Work on the editor and the project window, plus a bibliography manager that was planned for v0.6.0.
+
+- Settings window with editor preferences and the thesis settings, basic and advanced
+- A preview that can be resized, a sidebar that folds into one icon, and documents that reorder by dragging
+- Code blocks with a language menu and syntax colors, optional block numbers, and find in the document and in the whole project
+- Pictures that resize by their corners and can be cropped, and tables that show their sizes while dragging
+- Bibliography: a manager with a list and a form, a BibTeX source view, import from BibTeX, CSL JSON and Hayagriva, a citation picker, and citations that are highlighted and flagged when the key is unknown
+
+**Not done:** keeping several bibliography files, custom `.csl` styles and the `bibliography.style` menu stay in v0.6.0.
 
 ## v0.4.0 · Version Control
 

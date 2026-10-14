@@ -135,6 +135,12 @@
     @apply border-border outline-ring/50;
   }
 
+  html,
+  body,
+  #root {
+    height: 100%;
+    overflow: hidden;
+  }
   body {
     @apply bg-background text-foreground antialiased select-none;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
@@ -146,10 +152,31 @@
  * ------------------------------------------------------------------------- */
 .ProseMirror {
   outline: none;
-  font-size: 1rem;
-  line-height: 1.75;
+  font-size: var(--editor-font-size, 1rem);
+  line-height: var(--editor-line-height, 1.75);
   user-select: text;
 }
+[data-font="serif"] .ProseMirror { font-family: "Noto Serif TC", "Songti TC", "PMingLiU", Georgia, serif; }
+.ProseMirror pre, .ProseMirror pre code { font-size: var(--editor-code-size, 0.875rem); }
+
+/* Block numbers in the left margin, counted over the top level blocks */
+[data-line-numbers="true"] .ProseMirror { counter-reset: block; position: relative; }
+[data-line-numbers="true"] .ProseMirror > * { counter-increment: block; position: relative; }
+[data-line-numbers="true"] .ProseMirror > *::before {
+  content: counter(block);
+  position: absolute;
+  right: calc(100% + 0.9rem);
+  top: 0;
+  min-width: 1.5rem;
+  text-align: right;
+  font-size: 0.7rem;
+  line-height: 2.4;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted-foreground);
+  user-select: none;
+  pointer-events: none;
+}
+
 .ProseMirror > * + * { margin-top: 0; }
 .ProseMirror h1 { font-size: 2rem; line-height: 1.2; font-weight: 600; letter-spacing: -0.03em; margin: 2rem 0 1rem; }
 .ProseMirror h2 { font-size: 1.5rem; line-height: 1.3; font-weight: 600; letter-spacing: -0.02em; margin: 1.75rem 0 0.75rem; }
@@ -188,7 +215,8 @@
 .ProseMirror sup[data-footnote] { cursor: pointer; color: var(--foreground); font-size: 0.75em; padding: 0 0.1em; border-radius: 0.25rem; }
 .ProseMirror sup[data-footnote]::after { content: "[" attr(data-n) "]"; }
 .ProseMirror sup[data-footnote]:hover, .ProseMirror span[data-citation]:hover, .ProseMirror span[data-cross-ref]:hover { background: var(--muted); }
-.ProseMirror span[data-citation] { cursor: pointer; border-radius: 0.25rem; }
+.ProseMirror span[data-citation] { cursor: pointer; border-radius: 0.25rem; background: color-mix(in oklab, var(--primary) 10%, transparent); }
+.ProseMirror span[data-citation][data-broken] { color: var(--destructive); background: color-mix(in oklab, var(--destructive) 10%, transparent); text-decoration: underline wavy var(--destructive); text-underline-offset: 3px; }
 .ProseMirror span[data-citation]::after { content: attr(data-display); }
 .ProseMirror span[data-cross-ref] { cursor: pointer; border-radius: 0.25rem; text-decoration: underline; text-decoration-style: dotted; text-underline-offset: 3px; }
 .ProseMirror span[data-cross-ref]::after { content: attr(data-display); }
@@ -218,5 +246,32 @@
 .ProseMirror td[data-align="right"], .ProseMirror th[data-align="right"] { text-align: right; }
 .ProseMirror .column-resize-handle { position: absolute; right: -2px; top: 0; bottom: 0; width: 4px; background: var(--ring); pointer-events: none; }
 .ProseMirror.resize-cursor { cursor: col-resize; }
+.ProseMirror.row-resize-cursor { cursor: row-resize; }
 .ProseMirror .selectedCell::after { content: ""; position: absolute; inset: 0; background: color-mix(in oklab, var(--ring) 20%, transparent); pointer-events: none; }
 .ProseMirror td, .ProseMirror th { position: relative; }
+
+/* Syntax colors for code blocks, close to the palette that Typst gives raw blocks in the PDF */
+.ProseMirror pre code .hljs-comment, .ProseMirror pre code .hljs-quote { color: #8a8a8a; font-style: italic; }
+.ProseMirror pre code .hljs-keyword, .ProseMirror pre code .hljs-selector-tag, .ProseMirror pre code .hljs-literal, .ProseMirror pre code .hljs-built_in, .ProseMirror pre code .hljs-type { color: #d73a49; }
+.ProseMirror pre code .hljs-string, .ProseMirror pre code .hljs-regexp, .ProseMirror pre code .hljs-symbol, .ProseMirror pre code .hljs-template-variable { color: #298e0d; }
+.ProseMirror pre code .hljs-number, .ProseMirror pre code .hljs-meta { color: #b60157; }
+.ProseMirror pre code .hljs-title, .ProseMirror pre code .hljs-function, .ProseMirror pre code .hljs-section, .ProseMirror pre code .hljs-name { color: #4b69c6; }
+.ProseMirror pre code .hljs-attr, .ProseMirror pre code .hljs-attribute, .ProseMirror pre code .hljs-variable, .ProseMirror pre code .hljs-property { color: #1d6fa5; }
+.ProseMirror pre code .hljs-addition { color: #298e0d; }
+.ProseMirror pre code .hljs-deletion { color: #d73a49; }
+
+.ProseMirror .find-match { background: rgba(255, 213, 0, 0.35); border-radius: 2px; }
+.ProseMirror .find-current { background: rgba(255, 140, 0, 0.55); }
+
+/* Figure with resize handles at the corners, shown while it is selected */
+.ProseMirror figure { position: relative; }
+.ProseMirror figure .figure-box { position: relative; display: inline-block; max-width: 100%; line-height: 0; }
+.ProseMirror figure .figure-box img { width: 100%; }
+.ProseMirror figure .figure-handle { position: absolute; z-index: 2; display: none; width: 10px; height: 10px; border: 1.5px solid var(--background); border-radius: 2px; background: var(--foreground); }
+.ProseMirror figure.is-selected .figure-box { outline: 2px solid var(--foreground); outline-offset: 0; }
+.ProseMirror figure.is-selected .figure-handle { display: block; }
+.ProseMirror figure .figure-handle-nw { top: -5px; left: -5px; cursor: nwse-resize; }
+.ProseMirror figure .figure-handle-ne { top: -5px; right: -5px; cursor: nesw-resize; }
+.ProseMirror figure .figure-handle-sw { bottom: -5px; left: -5px; cursor: nesw-resize; }
+.ProseMirror figure .figure-handle-se { bottom: -5px; right: -5px; cursor: nwse-resize; }
+.ProseMirror figure figcaption { line-height: 1.5; }

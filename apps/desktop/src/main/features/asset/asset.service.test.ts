@@ -69,3 +69,19 @@ describe("AssetService", () => {
     expect(mimeFor("a.bin")).toBe("application/octet-stream");
   });
 });
+
+describe("storePng", () => {
+  const PNG_HEAD = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
+
+  it("stores PNG bytes under a hash and reads them back, the same bytes give the same path", () => {
+    const data = new Uint8Array([...PNG_HEAD, 1, 2, 3]);
+    const src = service.storePng(data);
+    expect(src).toMatch(/^images\/[0-9a-f]{16}\.png$/);
+    expect(service.storePng(data)).toBe(src);
+    expect([...(service.read(src)?.data ?? [])]).toEqual([...data]);
+  });
+
+  it("refuses bytes that are not a PNG", () => {
+    expect(codeOf(() => service.storePng(new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9])))).toBe("asset.unsupported");
+  });
+});

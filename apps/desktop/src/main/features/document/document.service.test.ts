@@ -150,3 +150,26 @@ describe("create / remove / move / rename", () => {
     expect(codeOf(() => service.rename("nope", "x"))).toBe("document.not-found");
   });
 });
+
+describe("reorder", () => {
+  const order = () => service.list().filter((d) => d.kind === "chapter").map((d) => d.id);
+
+  it("moves a document before or after another one of the same kind and renumbers", () => {
+    service.seedDefaults(); // id-2 chapter 1
+    service.create("chapter"); // id-3
+    service.create("chapter"); // id-4
+    service.reorder("id-4", "id-2", "before");
+    expect(order()).toEqual(["id-4", "id-2", "id-3"]);
+    service.reorder("id-4", "id-3", "after");
+    expect(order()).toEqual(["id-2", "id-3", "id-4"]);
+    expect(service.list().filter((d) => d.kind === "chapter").map((d) => d.position)).toEqual([1, 2, 3]);
+  });
+
+  it("ignores a target of another kind or itself, and reports a missing document", () => {
+    service.seedDefaults();
+    service.reorder("id-2", "id-1", "after");
+    service.reorder("id-2", "id-2", "before");
+    expect(order()).toEqual(["id-2"]);
+    expect(codeOf(() => service.reorder("nope", "id-2", "after"))).toBe("document.not-found");
+  });
+});

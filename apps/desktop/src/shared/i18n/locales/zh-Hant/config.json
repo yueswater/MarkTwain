@@ -55,7 +55,7 @@
     "date-format": "請使用 YYYY-MM-DD 格式。",
     "unknown-school": "沒有這所學校。"
   },
-  "open": "專案設定",
+  "open": "設定",
   "followPreset": "跟隨學校預設",
   "custom": "其他，自行輸入",
   "chooseCollege": "選擇學院",

@@ -1,7 +1,11 @@
 import { declareAssetScheme, handleAssetProtocol } from "./core/asset-protocol";
 import { settingsFilePath } from "./config/paths.config";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { bootstrap } from "./core/bootstrap";
 import { DatabaseSession } from "./core/database-session";
+import { registerBibliographyController } from "./features/bibliography/bibliography.controller";
+import { BibliographyService } from "./features/bibliography/bibliography.service";
 import { registerAssetController } from "./features/asset/asset.controller";
 import { AssetService } from "./features/asset/asset.service";
 import { registerAppController } from "./features/app/app.controller";
@@ -19,6 +23,10 @@ import { LabelService } from "./features/label/label.service";
 import { applyAppMenu } from "./features/menu/menu.controller";
 import { registerProjectController } from "./features/project/project.controller";
 import { ProjectService } from "./features/project/project.service";
+import { PrefsService } from "./features/prefs/prefs.service";
+import { registerSearchController } from "./features/search/search.controller";
+import { SearchService } from "./features/search/search.service";
+import { registerPrefsController } from "./features/prefs/prefs.controller";
 import { RecentService } from "./features/recent/recent.service";
 import { SettingsRepository } from "./features/settings/settings.repository";
 import { registerSettingsController } from "./features/settings/settings.controller";
@@ -29,9 +37,19 @@ const documents = new DocumentService(session);
 const projects = new ProjectService(session, documents);
 const labels = new LabelService(documents);
 const assets = new AssetService(session);
-const config = new ConfigService(session);
-const recent = new RecentService(new SettingsRepository(settingsFilePath()));
-const build = new BuildService(session, documents, config, resolveBuildPaths);
+const search = new SearchService(documents);
+const bibliography = new BibliographyService(session, documents);
+const config = new ConfigService(session, undefined, (path) => {
+  try {
+    return readFileSync(join(resolveBuildPaths().templateDir, path), "utf8");
+  } catch {
+    return null;
+  }
+});
+const settingsRepository = new SettingsRepository(settingsFilePath());
+const recent = new RecentService(settingsRepository);
+const prefs = new PrefsService(settingsRepository);
+const build = new BuildService(session, documents, config, resolveBuildPaths, undefined, undefined, undefined, () => prefs.get().previewPpi, bibliography);
 let dialogs: DialogService;
 
 // The custom protocol must be declared before app ready
@@ -50,6 +68,9 @@ bootstrap([
   () => registerDocumentController(documents),
   () => registerLabelController(labels),
   () => registerConfigController(config),
+  () => registerPrefsController(prefs),
+  () => registerSearchController(search),
+  () => registerBibliographyController(bibliography),
   () => registerBuildController(build),
   () => registerExportController(build, dialogs),
 ]);

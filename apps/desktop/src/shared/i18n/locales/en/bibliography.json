@@ -1,0 +1,79 @@
+{
+  "title": "Bibliography",
+  "open": "Bibliography",
+  "count": "{{count}} entries",
+  "modes": {
+    "label": "View",
+    "manager": "Manager",
+    "source": "BibTeX source"
+  },
+  "add": "New entry",
+  "import": "Import",
+  "importHint": "BibTeX, CSL JSON or Hayagriva YAML",
+  "imported": "{{added}} added, {{skipped}} already there, {{errors}} could not be read.",
+  "search": "Search entries",
+  "searchPlaceholder": "Author, title or key",
+  "empty": "The bibliography is empty. Add an entry, import a file from your reference manager, or write BibTeX in the source view.",
+  "noMatch": "No entry matches.",
+  "select": "Select an entry on the left, or add a new one.",
+  "cited": "Cited {{count}} times",
+  "uncited": "Not cited",
+  "incomplete": "Missing: {{fields}}",
+  "citedIn": "Cited in",
+  "citedInNone": "No document cites this entry yet.",
+  "citedTimes": "{{count}} times",
+  "form": {
+    "type": "Type",
+    "key": "Key",
+    "keyHint": "Letters, digits and _ : . - / + are allowed. Citations use this key.",
+    "required": "Required",
+    "save": "Save",
+    "saved": "Saved",
+    "delete": "Delete entry",
+    "revert": "Discard changes",
+    "newTitle": "New entry"
+  },
+  "deleteTitle": "Delete this entry?",
+  "deleteBody": "“{{key}}” will be removed from the bibliography. Citations of it in your documents stay and will show as unknown.",
+  "types": {
+    "article": "Journal article",
+    "book": "Book",
+    "inproceedings": "Conference paper",
+    "incollection": "Book chapter",
+    "phdthesis": "Doctoral thesis",
+    "mastersthesis": "Master's thesis",
+    "techreport": "Technical report",
+    "misc": "Other"
+  },
+  "fields": {
+    "author": "Authors",
+    "editor": "Editors",
+    "title": "Title",
+    "journal": "Journal",
+    "booktitle": "Book or proceedings",
+    "year": "Year",
+    "volume": "Volume",
+    "number": "Issue",
+    "pages": "Pages",
+    "publisher": "Publisher",
+    "school": "School",
+    "institution": "Institution",
+    "doi": "DOI",
+    "url": "URL",
+    "note": "Note"
+  },
+  "authorHint": "Separate people with and, for example Wang, Xiaoming and Lee, Jane.",
+  "problems": {
+    "title": "Needs attention",
+    "unreadable": "Line {{line}} cannot be read: {{message}}.",
+    "duplicate": "The key “{{key}}” is used by more than one entry.",
+    "unknown": "Cited but not in the bibliography: {{keys}}",
+    "createFrom": "Add “{{key}}”"
+  },
+  "source": {
+    "label": "BibTeX source",
+    "hint": "Changes are saved automatically. Comments and the order of entries are kept.",
+    "saving": "Saving",
+    "saved": "Saved"
+  }
+}

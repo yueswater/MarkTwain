@@ -15,7 +15,7 @@ import {
   ListOrderedIcon,
   MinusIcon,
   QuoteIcon,
-  RadicalIcon,
+  VariableIcon,
   SigmaIcon,
   Redo2Icon,
   StrikethroughIcon,
@@ -26,7 +26,10 @@ import {
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { CODE_LANGUAGES, languageLabel } from "./code-languages";
 import { TableTools } from "./TableTools";
+
+const PLAIN = "__plain__";
 import {
   Select,
   SelectContent,
@@ -114,6 +117,7 @@ export function Toolbar({ editor, onInsertMath, onInsertAtom, onEditCaption, onI
       orderedList: e.isActive("orderedList"),
       blockquote: e.isActive("blockquote"),
       codeBlock: e.isActive("codeBlock"),
+      codeLanguage: String(e.getAttributes("codeBlock").language ?? ""),
       inTable: e.isActive("table"),
       inDefinitionList: e.isActive("definitionList"),
       canUndo: e.can().undo(),
@@ -162,7 +166,7 @@ export function Toolbar({ editor, onInsertMath, onInsertAtom, onEditCaption, onI
         <SelectTrigger size="sm" aria-label={t("toolbar.block")} className="w-28">
           <SelectValue />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent onCloseAutoFocus={(event) => { event.preventDefault(); editor.commands.focus(); }}>
           {BLOCKS.map((block) => (
             <SelectItem key={block} value={block}>
               {t(`toolbar.${block}`)}
@@ -211,10 +215,33 @@ export function Toolbar({ editor, onInsertMath, onInsertAtom, onEditCaption, onI
         () => editor.chain().focus().toggleCodeBlock().run(),
         { active: state.codeBlock },
       )}
-      {state.codeBlock && button(t("caption.codeTitle"), TypeIcon, onEditCaption)}
+      {state.codeBlock && (
+        <>
+          <Select
+            value={state.codeLanguage || PLAIN}
+            onValueChange={(value) => editor.chain().focus().updateAttributes("codeBlock", { language: value === PLAIN ? null : value }).run()}
+          >
+            <SelectTrigger size="sm" aria-label={t("toolbar.codeLanguage")} className="h-7 w-32">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent onCloseAutoFocus={(event) => { event.preventDefault(); editor.commands.focus(); }}>
+              <SelectItem value={PLAIN}>{t("toolbar.plainText")}</SelectItem>
+              {CODE_LANGUAGES.map((language) => (
+                <SelectItem key={language} value={language}>
+                  {languageLabel(language)}
+                </SelectItem>
+              ))}
+              {state.codeLanguage && !(CODE_LANGUAGES as readonly string[]).includes(state.codeLanguage) && (
+                <SelectItem value={state.codeLanguage}>{state.codeLanguage}</SelectItem>
+              )}
+            </SelectContent>
+          </Select>
+          {button(t("caption.codeTitle"), TypeIcon, onEditCaption)}
+        </>
+      )}
       <span className="mx-1 h-5 w-px bg-border" aria-hidden="true" />
-      {button(t("toolbar.inlineMath"), SigmaIcon, () => onInsertMath("inline"))}
-      {button(t("toolbar.blockMath"), RadicalIcon, () => onInsertMath("block"))}
+      {button(t("toolbar.inlineMath"), VariableIcon, () => onInsertMath("inline"))}
+      {button(t("toolbar.blockMath"), SigmaIcon, () => onInsertMath("block"))}
       {button(t("toolbar.footnote"), AsteriskIcon, () => onInsertAtom("footnote"))}
       {button(t("toolbar.citation"), BookMarkedIcon, () => onInsertAtom("citation"))}
       {button(t("toolbar.crossRef"), Link2Icon, () => onInsertAtom("crossRef"))}

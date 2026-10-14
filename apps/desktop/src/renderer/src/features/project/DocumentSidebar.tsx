@@ -1,15 +1,19 @@
 import {
   ArrowDownIcon,
   ArrowUpIcon,
-  MoreHorizontalIcon,
+  BookMarkedIcon,
+  BookOpenIcon,
   FileTextIcon,
+  GripVerticalIcon,
+  MoreHorizontalIcon,
   PanelLeftIcon,
   PencilIcon,
   PlusIcon,
+  SearchIcon,
   SettingsIcon,
   Trash2Icon,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, type DragEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
@@ -37,14 +41,20 @@ type Props = {
   onAdd: (kind: DocumentKind) => void;
   onRename: (id: string, title: string) => void;
   onMove: (id: string, delta: -1 | 1) => void;
+  onReorder: (id: string, targetId: string, placement: "before" | "after") => void;
   onDelete: (id: string) => void;
-  settingsSelected: boolean;
-  onSelectSettings: () => void;
+  onOpenSettings: () => void;
+  onOpenSearch: () => void;
+  /** The bibliography page is shown instead of a document */
+  bibliographyActive: boolean;
+  bibliographyCount: number;
+  onOpenBibliography: () => void;
   collapsed: boolean;
   onToggleCollapsed: () => void;
 };
 
 type Pending = { type: "rename" | "delete"; doc: DocumentSummary };
+type Drop = { targetId: string; placement: "before" | "after" };
 
 export function DocumentSidebar({
   documents,
@@ -53,21 +63,142 @@ export function DocumentSidebar({
   onAdd,
   onRename,
   onMove,
+  onReorder,
   onDelete,
-  settingsSelected,
-  onSelectSettings,
+  onOpenSettings,
+  onOpenSearch,
+  bibliographyActive,
+  bibliographyCount,
+  onOpenBibliography,
   collapsed,
   onToggleCollapsed,
 }: Props) {
   const { t } = useTranslation("project");
   const { t: tConfig } = useTranslation("config");
+  const { t: tBib } = useTranslation("bibliography");
   const [pending, setPending] = useState<Pending | null>(null);
+  const [dragId, setDragId] = useState<string | null>(null);
+  const [drop, setDrop] = useState<Drop | null>(null);
 
   const kindCount = (kind: DocumentKind) => documents.filter((d) => d.kind === kind).length;
+  const dragged = documents.find((d) => d.id === dragId) ?? null;
+
+  const addMenu = (
+    <DropdownMenuContent align="end">
+      {DOCUMENT_KIND_ORDER.map((kind) => (
+        <DropdownMenuItem
+          key={kind}
+          disabled={SINGLETON_KINDS.includes(kind) && kindCount(kind) > 0}
+          onSelect={() => onAdd(kind)}
+        >
+          {t(`kind.name.${kind}`)}
+        </DropdownMenuItem>
+      ))}
+    </DropdownMenuContent>
+  );
+
+  /** Above the middle of a row means before it, below means after it. */
+  function placementAt(event: DragEvent<HTMLLIElement>): "before" | "after" {
+    const box = event.currentTarget.getBoundingClientRect();
+    return event.clientY < box.top + box.height / 2 ? "before" : "after";
+  }
+
+  function onDragOver(event: DragEvent<HTMLLIElement>, doc: DocumentSummary): void {
+    // Only a document of the same kind can be dropped here
+    if (!dragged || dragged.kind !== doc.kind || dragged.id === doc.id) return;
+    event.preventDefault();
+    const placement = placementAt(event);
+    setDrop((current) => (current?.targetId === doc.id && current.placement === placement ? current : { targetId: doc.id, placement }));
+  }
+
+  function endDrag(): void {
+    setDragId(null);
+    setDrop(null);
+  }
+
+  const row = (doc: DocumentSummary, compact: boolean) => {
+    const title = documentTitle(t, doc);
+    const current = doc.id === selectedId && !bibliographyActive;
+    const indicator = drop?.targetId === doc.id ? drop.placement : null;
+    return (
+      <li
+        key={doc.id}
+        className={cn(
+          "group/item relative",
+          indicator === "before" && "before:absolute before:inset-x-1 before:top-0 before:h-0.5 before:rounded before:bg-foreground",
+          indicator === "after" && "after:absolute after:inset-x-1 after:bottom-0 after:h-0.5 after:rounded after:bg-foreground",
+          dragId === doc.id && "opacity-40",
+        )}
+        draggable={!compact}
+        onDragStart={(event) => {
+          event.dataTransfer.effectAllowed = "move";
+          event.dataTransfer.setData("text/plain", doc.id);
+          setDragId(doc.id);
+        }}
+        onDragOver={(event) => onDragOver(event, doc)}
+        onDrop={(event) => {
+          event.preventDefault();
+          // The placement is read from the drop itself, state may lag behind a fast drag
+          const id = dragId ?? event.dataTransfer.getData("text/plain");
+          const source = documents.find((d) => d.id === id);
+          if (source && source.kind === doc.kind && source.id !== doc.id) onReorder(source.id, doc.id, placementAt(event));
+          endDrag();
+        }}
+        onDragEnd={endDrag}
+      >
+        <button
+          type="button"
+          aria-current={current ? "true" : undefined}
+          onClick={() => onSelect(doc.id)}
+          className={cn(
+            "flex h-8 w-full items-center truncate rounded-md px-2 text-left text-sm hover:bg-muted",
+            !compact && "pr-9",
+            current && "bg-muted font-medium",
+          )}
+        >
+          {!compact && <GripVerticalIcon className="-ml-1 mr-0.5 size-3.5 shrink-0 cursor-grab text-muted-foreground/50" aria-hidden="true" />}
+          <span className="truncate">{title}</span>
+        </button>
+        {!compact && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon-xs"
+                aria-label={t("document.actions", { title })}
+                className="absolute top-1 right-1 opacity-0 group-hover/item:opacity-100 focus-visible:opacity-100 data-[state=open]:opacity-100"
+              >
+                <MoreHorizontalIcon aria-hidden="true" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onSelect={() => setPending({ type: "rename", doc })}>
+                <PencilIcon aria-hidden="true" />
+                {t("document.rename")}
+              </DropdownMenuItem>
+              <DropdownMenuItem disabled={doc.position <= 1} onSelect={() => onMove(doc.id, -1)}>
+                <ArrowUpIcon aria-hidden="true" />
+                {t("document.moveUp")}
+              </DropdownMenuItem>
+              <DropdownMenuItem disabled={doc.position >= kindCount(doc.kind)} onSelect={() => onMove(doc.id, 1)}>
+                <ArrowDownIcon aria-hidden="true" />
+                {t("document.moveDown")}
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem variant="destructive" onSelect={() => setPending({ type: "delete", doc })}>
+                <Trash2Icon aria-hidden="true" />
+                {t("document.delete")}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+      </li>
+    );
+  };
 
   return (
     <aside
-      className={cn("flex shrink-0 flex-col border-r transition-[width] duration-150", collapsed ? "w-12" : "w-64")}
+      className={cn("relative flex shrink-0 flex-col border-r transition-[width] duration-150", collapsed ? "w-12" : "w-64")}
       aria-label={t("workspace.documents")}
       data-collapsed={collapsed}
     >
@@ -85,102 +216,83 @@ export function DocumentSidebar({
         {!collapsed && (
           <>
             <h2 className="mr-auto ml-2 text-xs font-medium text-muted-foreground">{t("workspace.documents")}</h2>
+            <Button variant="ghost" size="icon-sm" aria-label={t("search.open")} title={t("search.open")} onClick={onOpenSearch}>
+              <SearchIcon aria-hidden="true" />
+            </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon-sm" aria-label={t("workspace.add")}>
                   <PlusIcon aria-hidden="true" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                {DOCUMENT_KIND_ORDER.map((kind) => (
-                  <DropdownMenuItem
-                    key={kind}
-                    disabled={SINGLETON_KINDS.includes(kind) && kindCount(kind) > 0}
-                    onSelect={() => onAdd(kind)}
-                  >
-                    {t(`kind.name.${kind}`)}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
+              {addMenu}
             </DropdownMenu>
           </>
         )}
       </div>
 
-      <ul className="flex-1 overflow-y-auto px-2 pb-2">
-        {documents.map((doc) => {
-          const title = documentTitle(t, doc);
-          const current = !settingsSelected && doc.id === selectedId;
-          return (
-            <li key={doc.id} className="group/item relative">
-              <button
-                type="button"
-                aria-current={current ? "true" : undefined}
-                aria-label={collapsed ? title : undefined}
-                title={collapsed ? title : undefined}
-                onClick={() => onSelect(doc.id)}
-                className={cn(
-                  "flex h-8 w-full items-center rounded-md text-left text-sm hover:bg-muted",
-                  collapsed ? "justify-center px-0" : "truncate px-2 pr-9",
-                  current && "bg-muted font-medium",
-                )}
-              >
-                {collapsed ? (
-                  <FileTextIcon className="size-4 text-muted-foreground" aria-hidden="true" />
-                ) : (
-                  <span className="truncate">{title}</span>
-                )}
-              </button>
-              {!collapsed && (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon-xs"
-                      aria-label={t("document.actions", { title })}
-                      className="absolute top-1 right-1 opacity-0 group-hover/item:opacity-100 focus-visible:opacity-100 data-[state=open]:opacity-100"
-                    >
-                      <MoreHorizontalIcon aria-hidden="true" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onSelect={() => setPending({ type: "rename", doc })}>
-                      <PencilIcon aria-hidden="true" />
-                      {t("document.rename")}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem disabled={doc.position <= 1} onSelect={() => onMove(doc.id, -1)}>
-                      <ArrowUpIcon aria-hidden="true" />
-                      {t("document.moveUp")}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem disabled={doc.position >= kindCount(doc.kind)} onSelect={() => onMove(doc.id, 1)}>
-                      <ArrowDownIcon aria-hidden="true" />
-                      {t("document.moveDown")}
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem variant="destructive" onSelect={() => setPending({ type: "delete", doc })}>
-                      <Trash2Icon aria-hidden="true" />
-                      {t("document.delete")}
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              )}
-            </li>
-          );
-        })}
-      </ul>
+      {collapsed ? (
+        // The whole list folds into one icon, and hovering it slides the list out to the right
+        <div className="group/fly relative px-2">
+          <button
+            type="button"
+            aria-label={t("workspace.documents")}
+            aria-haspopup="menu"
+            className="flex h-8 w-full items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:bg-muted"
+          >
+            <BookOpenIcon className="size-4" aria-hidden="true" />
+          </button>
+          <div
+            role="menu"
+            aria-label={t("workspace.documents")}
+            className="invisible absolute top-0 left-full z-30 w-60 -translate-x-1 rounded-lg border bg-popover p-1 opacity-0 shadow-md transition duration-100 group-focus-within/fly:visible group-focus-within/fly:translate-x-0 group-focus-within/fly:opacity-100 group-hover/fly:visible group-hover/fly:translate-x-0 group-hover/fly:opacity-100"
+          >
+            <ul className="max-h-[70vh] overflow-y-auto">{documents.map((doc) => row(doc, true))}</ul>
+            <div className="mt-1 border-t pt-1">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button type="button" className="flex h-8 w-full items-center gap-2 rounded-md px-2 text-left text-sm hover:bg-muted">
+                    <PlusIcon className="size-4 text-muted-foreground" aria-hidden="true" />
+                    {t("workspace.add")}
+                  </button>
+                </DropdownMenuTrigger>
+                {addMenu}
+              </DropdownMenu>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <ul className="flex-1 overflow-y-auto px-2 pb-2">{documents.map((doc) => row(doc, false))}</ul>
+      )}
+      {collapsed && <div className="flex-1" />}
 
-      <div className="border-t p-2">
+      <div className="grid gap-1 border-t p-2">
         <button
           type="button"
-          aria-current={settingsSelected ? "true" : undefined}
-          aria-label={collapsed ? tConfig("open") : undefined}
-          title={collapsed ? tConfig("open") : undefined}
-          onClick={onSelectSettings}
+          aria-current={bibliographyActive ? "true" : undefined}
+          aria-label={collapsed ? tBib("open") : undefined}
+          title={collapsed ? tBib("open") : undefined}
+          onClick={onOpenBibliography}
           className={cn(
             "flex h-8 w-full items-center gap-2 rounded-md text-left text-sm hover:bg-muted",
             collapsed ? "justify-center" : "px-2",
-            settingsSelected && "bg-muted font-medium",
+            bibliographyActive && "bg-muted font-medium",
           )}
+        >
+          <BookMarkedIcon className="size-4 text-muted-foreground" aria-hidden="true" />
+          {!collapsed && (
+            <>
+              {tBib("open")}
+              {bibliographyCount > 0 && <span className="ml-auto text-xs text-muted-foreground">{bibliographyCount}</span>}
+            </>
+          )}
+        </button>
+        <button
+          type="button"
+          aria-label={collapsed ? tConfig("open") : undefined}
+          title={collapsed ? tConfig("open") : undefined}
+          onClick={onOpenSettings}
+          className={cn("flex h-8 w-full items-center gap-2 rounded-md text-left text-sm hover:bg-muted", collapsed ? "justify-center" : "px-2")}
         >
           <SettingsIcon className="size-4 text-muted-foreground" aria-hidden="true" />
           {!collapsed && tConfig("open")}

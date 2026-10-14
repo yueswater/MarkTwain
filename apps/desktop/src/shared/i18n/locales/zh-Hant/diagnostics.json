@@ -30,6 +30,11 @@
       "too-large": "這張圖片超過 {{max}} MB。",
       "unreadable": "無法讀取這個圖片檔。"
     },
+    "bibliography": {
+      "invalid-key": "無法使用「{{key}}」作為識別名稱。請用英數字與 _ : . - / +，且不能以 fig: 這類標籤前綴開頭。",
+      "duplicate-key": "已經有另一筆文獻使用「{{key}}」。",
+      "not-found": "找不到文獻「{{key}}」。"
+    },
     "document": {
       "not-found": "找不到這份文件。",
       "singleton": "這個專案已經有這種文件了。"
