@@ -197,6 +197,10 @@
     "thesisBibliography": {
       "title": "參考文獻",
       "description": "參考文獻的標題與列出方式。"
+    },
+    "editorProfile": {
+      "title": "關於你",
+      "description": "每一篇論文都一樣的資料，新專案會自動帶入。"
     }
   },
   "search": {
@@ -259,5 +263,10 @@
     "custom": "自訂",
     "describeSave": "停止輸入約 {{seconds}} 後儲存。",
     "describePreview": "儲存約 {{seconds}} 後重新建置預覽。"
+  },
+  "profile": {
+    "ask": "建立專案時詢問",
+    "askHint": "關閉後，新專案會直接帶入這些資料，不再詢問。",
+    "local": "這些資料只存在這台電腦的 App 設定裡。"
   }
 }

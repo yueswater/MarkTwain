@@ -1,6 +1,7 @@
 import {
   BookOpenIcon,
   GraduationCapIcon,
+  IdCardIcon,
   HashIcon,
   ImageIcon,
   LayoutIcon,
@@ -20,6 +21,7 @@ export type SettingsPageId =
   | "editorAppearance"
   | "editorWriting"
   | "editorPreview"
+  | "editorProfile"
   | "thesisSchool"
   | "thesisInfo"
   | "thesisPage"
@@ -45,6 +47,7 @@ export const SETTINGS_PAGES: readonly SettingsPage[] = [
   { id: "editorAppearance", section: "editor", icon: PenLineIcon, needsProject: false, groups: [] },
   { id: "editorWriting", section: "editor", icon: PencilRulerIcon, needsProject: false, groups: [] },
   { id: "editorPreview", section: "editor", icon: EyeIcon, needsProject: false, groups: [] },
+  { id: "editorProfile", section: "editor", icon: IdCardIcon, needsProject: false, groups: [] },
   { id: "thesisSchool", section: "thesis", icon: GraduationCapIcon, needsProject: true, groups: ["watermark"] },
   { id: "thesisInfo", section: "thesis", icon: UserRoundIcon, needsProject: true, groups: [] },
   { id: "thesisPage", section: "thesis", icon: LayoutIcon, needsProject: true, groups: ["page"] },
@@ -92,6 +95,7 @@ const SCHOOL_FIELDS = ["school", "collegePick", "institutePick", "degree", "lang
 
 /** Every setting that can be found by search, with the page it is on. */
 export const SETTING_ENTRIES: readonly SettingEntry[] = [
+  { id: "setting-profile-ask", page: "editorProfile", ns: "settings", key: "profile.ask" },
   ...EDITOR_ENTRIES.map(([page, key]): SettingEntry => ({ id: `setting-editor-${key}`, page, ns: "settings", key: `editor.${key}` })),
   ...SCHOOL_FIELDS.map((key): SettingEntry => ({ id: key === "collegePick" ? "config-college" : key === "institutePick" ? "config-institute" : `config-${key === "citationStyle" ? "citation" : key}`, page: "thesisSchool", ns: "config", key: `field.${key}` })),
   ...INFO_FIELDS.map((key): SettingEntry => ({ id: `config-${key}`, page: "thesisInfo", ns: "config", key: `field.${key}` })),

@@ -13,7 +13,11 @@ export function useProject() {
   const [project, setProject] = useState<ProjectInfo | null>(null);
   const [recent, setRecent] = useState<RecentProject[]>([]);
   const [loading, setLoading] = useState(true);
+  // True right after a project was made, the dialog about the thesis is shown until it is done
+  const [justCreated, setJustCreated] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const finishCreation = useCallback(() => setJustCreated(false), []);
 
   const run = useCallback(
     async (action: () => Promise<void>): Promise<void> => {
@@ -51,6 +55,7 @@ export function useProject() {
       const path = await api.invoke(IpcChannel.DialogChooseNewProject, { suggestedName });
       if (!path) return;
       setProject(await api.invoke(IpcChannel.ProjectCreate, { path, name: projectNameFromPath(path) }));
+      setJustCreated(true);
       await refreshRecent();
     });
 
@@ -115,6 +120,8 @@ export function useProject() {
     removeRecent,
     loading,
     error,
+    justCreated,
+    finishCreation,
     createProject,
     openProject,
     closeProject,

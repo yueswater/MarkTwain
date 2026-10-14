@@ -4,6 +4,7 @@ import { IpcChannel } from "../../../shared/enums/ipc-channel.enum";
 import type { Locale } from "../../../shared/enums/locale.enum";
 import { useBuild } from "../features/build/use-build";
 import { useProject } from "../features/project/use-project";
+import { NewProjectDialog } from "../features/project/NewProjectDialog";
 import { WelcomeScreen } from "../features/project/WelcomeScreen";
 import { Workspace } from "../features/project/Workspace";
 import { api } from "../shared/api";
@@ -103,6 +104,7 @@ export function App() {
         )}
         </div>
       </div>
+      {state.project && state.justCreated && <NewProjectDialog onClose={state.finishCreation} />}
       <SettingsDialog
         open={settingsOpen}
         onOpenChange={setSettingsOpen}

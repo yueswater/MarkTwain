@@ -23,6 +23,8 @@ export const IpcChannel = {
   BibliographyUpsert: "bibliography:upsert",
   BibliographyRemove: "bibliography:remove",
   BibliographyImport: "bibliography:import",
+  ProfileGet: "profile:get",
+  ProfileSet: "profile:set",
   PrefsGet: "prefs:get",
   PrefsSet: "prefs:set",
   ConfigGetAdvanced: "config:get-advanced",
