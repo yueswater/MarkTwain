@@ -86,7 +86,6 @@ export async function buildTypst(input: BuildInput): Promise<BuildResult> {
       root,
       input.timeoutMs ?? 120_000,
     );
-    if (code !== 0 && process.env.CI) console.log("TYPST_STDERR", JSON.stringify(stderr));
     const diagnostics = [
       ...completed.missing.map<Diagnostic>((field) => ({
         severity: "warning",
@@ -97,7 +96,7 @@ export async function buildTypst(input: BuildInput): Promise<BuildResult> {
         column: null,
         source: null,
       })),
-      ...parseDiagnostics(stderr, lineMap),
+      ...parseDiagnostics(stderr, lineMap, root),
     ];
     if (code === 0 && existsSync(join(root, "out.pdf"))) {
       return { ok: true, pdf: readFileSync(join(root, "out.pdf")), diagnostics, mathFailures };
