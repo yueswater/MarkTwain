@@ -4,7 +4,7 @@
 
 An offline desktop thesis editor. You write in a TipTap Markdown editor; MarkTwain turns the Markdown into the [TW-Thesis](https://github.com/TW-Thesis) Typst and LaTeX templates and builds a PDF that follows your school's format. It has built-in local version control (named branches, merging back into the main line) and does not use git or the cloud.
 
-> Under development. There is no usable release yet. See [ROADMAP.md](ROADMAP.md).
+> Under development. v0.2.0 is an editor only: you can create a project and write, but PDF output arrives in v0.3.0. See [ROADMAP.md](ROADMAP.md).
 
 ## Development
 
