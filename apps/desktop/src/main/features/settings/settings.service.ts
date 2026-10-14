@@ -17,7 +17,7 @@ export class SettingsService {
     if (setting !== null && !isLocale(setting)) {
       throw new AppError(ErrorCode.InvalidLocale, { value: String(setting) });
     }
-    this.repository.write({ locale: setting });
+    this.repository.write({ ...this.repository.read(), locale: setting });
     return describeLocale(osLocale, setting);
   }
 }
