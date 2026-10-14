@@ -96,6 +96,7 @@ describe("inheritedValues", () => {
     expect(values["page-number.position"]).toBe("bottom");
     // Every advanced field has a default in the template, a typo in a path would show up here
     const missing = ADVANCED_FIELDS.filter((f) => !(f.path in values)).map((f) => f.path);
-    expect(missing).toEqual(["layout.par-spacing", "layout.first-line-indent"]);
+    // The watermark image has no default, the template leaves it empty and a school fills it in
+    expect(missing).toEqual(["layout.par-spacing", "layout.first-line-indent", "watermark.image"]);
   });
 });

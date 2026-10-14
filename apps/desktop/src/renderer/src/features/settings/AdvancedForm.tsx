@@ -1,5 +1,5 @@
 import { RotateCcwIcon } from "lucide-react";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ADVANCED_FIELDS, isValidAdvanced, type AdvancedField, type AdvancedGroup, type AdvancedValue, type AdvancedValues } from "@marktwain/schema";
 import { Button } from "@/components/ui/button";
@@ -37,11 +37,14 @@ export function useAdvancedState(enabled: boolean, onSaved?: () => void) {
   const [state, setState] = useState<AdvancedState | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!enabled) return;
+  const reload = useCallback(() => {
     api.invoke(IpcChannel.ConfigGetAdvanced).then(setState).catch((e: unknown) => setError(errorMessage(tRoot, e)));
+  }, [tRoot]);
+
+  useEffect(() => {
+    if (enabled) reload();
     // Loaded again each time the window opens
-  }, [enabled]);
+  }, [enabled, reload]);
 
   async function save(path: string, value: AdvancedValue | null): Promise<void> {
     try {
@@ -53,7 +56,7 @@ export function useAdvancedState(enabled: boolean, onSaved?: () => void) {
     }
   }
 
-  return { state, error, save };
+  return { state, error, save, reload };
 }
 
 function display(value: AdvancedValue | undefined): string {

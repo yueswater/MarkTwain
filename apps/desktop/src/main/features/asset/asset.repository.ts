@@ -11,9 +11,9 @@ export class AssetRepository {
     );
   }
 
-  /** Every stored image, used to place images in a build directory. The settings and the bibliography have their own paths. */
+  /** Every stored image, used to place images in a build directory. The settings, the bibliography and the watermarks have their own paths. */
   list(): { path: string; data: Uint8Array }[] {
-    return this.db.all<{ path: string; data: Uint8Array }>("SELECT path, data FROM files WHERE path NOT IN ('config.yml', 'references.bib')");
+    return this.db.all<{ path: string; data: Uint8Array }>("SELECT path, data FROM files WHERE path NOT IN ('config.yml', 'references.bib') AND path NOT LIKE 'watermarks/%'");
   }
 
   get(path: string): Uint8Array | undefined {

@@ -1,9 +1,10 @@
 import { describe, expect, it } from "@jest/globals";
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdtempSync, rmSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { buildTypst } from "./build-typst";
+import { renderThumbnail } from "./thumbnail";
 import type { BuildInput } from "./types";
 
 const templateDir = resolve(__dirname, "../../../resources/templates/typ");
@@ -141,4 +142,49 @@ maybe("buildTypst with the real template", () => {
       rmSync(work, { recursive: true, force: true });
     }
   }, 120_000);
+
+  it("draws the watermark only when it is asked for, from the school or from a file of the project", async () => {
+    const work = mkdtempSync(join(tmpdir(), "marktwain 浮水印 "));
+    try {
+      const documents = [{ id: "c1", kind: "chapter" as const, text: "# 緒論\n\n內文。\n" }];
+      const withSchool = `${config}school: nccu\n`;
+      const draft = await buildTypst(input(work, { documents, config: withSchool }));
+      const final = await buildTypst(input(work, { documents, config: withSchool, watermark: true }));
+      expect(draft.ok && final.ok).toBe(true);
+      if (!draft.ok || !final.ok) return;
+      expect(final.pdf.length).toBeGreaterThan(draft.pdf.length);
+
+      // A file of the project named in the settings is used, and none turns the watermark off
+      const custom = await buildTypst(
+        input(work, {
+          documents,
+          config: `${config}watermark:\n  image: "/assets/watermarks/mine.png"\n`,
+          watermark: true,
+          watermarkFiles: [{ path: "mine.png", data: PNG }],
+        }),
+      );
+      expect(custom.ok).toBe(true);
+      const none = await buildTypst(input(work, { documents, config: `${withSchool}watermark:\n  image: "none"\n`, watermark: true }));
+      expect(none.ok).toBe(true);
+      if (!none.ok) return;
+      expect(none.pdf.length).toBeLessThan(final.pdf.length);
+    } finally {
+      rmSync(work, { recursive: true, force: true });
+    }
+  });
+
+  it("makes a thumbnail of a PNG and of a PDF, and gives up on a file that is not an image", async () => {
+    const work = mkdtempSync(join(tmpdir(), "marktwain 縮圖 "));
+    try {
+      const png = await renderThumbnail({ typst: typst as string, workDir: work, name: "a.png", data: PNG });
+      expect(png).not.toBeNull();
+      expect(Buffer.from(png as Uint8Array).subarray(1, 4).toString()).toBe("PNG");
+      const pdf = await renderThumbnail({ typst: typst as string, workDir: work, name: "nccu.pdf", data: readFileSync(join(templateDir, "assets/watermarks/nccu.pdf")) });
+      expect(pdf).not.toBeNull();
+      expect(await renderThumbnail({ typst: typst as string, workDir: work, name: "bad.png", data: new Uint8Array([1, 2, 3]) })).toBeNull();
+      expect(await renderThumbnail({ typst: typst as string, workDir: work, name: "../x.png", data: PNG })).toBeNull();
+    } finally {
+      rmSync(work, { recursive: true, force: true });
+    }
+  });
 });

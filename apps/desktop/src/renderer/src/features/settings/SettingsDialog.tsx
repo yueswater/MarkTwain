@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/compone
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { ConfigForm } from "../project/ConfigForm";
+import { WatermarkSettings } from "./WatermarkSettings";
 import { AdvancedForm, useAdvancedState } from "./AdvancedForm";
 import { EditorAppearanceSettings, EditorPreviewSettings, EditorWritingSettings } from "./EditorSettings";
 import {
@@ -177,7 +178,18 @@ function PageBody({ pageId, onThesisSaved, advanced }: { pageId: SettingsPageId;
     case "editorPreview":
       return <EditorPreviewSettings />;
     case "thesisSchool":
-      return <ConfigForm embedded part="school" onSaved={onThesisSaved} />;
+      return (
+        <ConfigForm
+          embedded
+          part="school"
+          onSaved={() => {
+            onThesisSaved();
+            // The school decides what the format settings inherit, the watermark included
+            advanced.reload();
+          }}
+          afterSchool={<WatermarkSettings state={advanced.state} onSave={advanced.save} />}
+        />
+      );
     case "thesisInfo":
       return <ConfigForm embedded part="info" onSaved={onThesisSaved} />;
     default:

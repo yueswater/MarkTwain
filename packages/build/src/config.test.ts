@@ -26,4 +26,9 @@ describe("completeConfig", () => {
   it("treats a malformed date as missing", () => {
     expect(completeConfig("date: tomorrow\n", "2026-10-14").text).toContain("date: 2026-10-14");
   });
+
+  it("turns a watermark of none into the null that the template reads", () => {
+    expect(completeConfig('watermark:\n  image: "none"\n', "2026-10-14").text).toMatch(/image: null|image: ~|image:\s*$/m);
+    expect(completeConfig('watermark:\n  image: "/assets/watermarks/a.png"\n', "2026-10-14").text).toContain("/assets/watermarks/a.png");
+  });
 });

@@ -27,6 +27,10 @@ export type BuildInput = {
   format?: "pdf" | "png";
   /** Resolution of the page images */
   ppi?: number;
+  /** Draw the watermark of the thesis on the body pages, the template does it only for a final copy */
+  watermark?: boolean;
+  /** Images of the project that config.yml can name as the watermark, written to assets/watermarks */
+  watermarkFiles?: BuildFile[];
   /** Keep the build directory, useful for debugging */
   keep?: boolean;
 };
