@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { ConfigForm } from "../project/ConfigForm";
 import { WatermarkSettings } from "./WatermarkSettings";
+import { ProfileSettings } from "./ProfileSettings";
 import { AdvancedForm, useAdvancedState } from "./AdvancedForm";
 import { EditorAppearanceSettings, EditorPreviewSettings, EditorWritingSettings } from "./EditorSettings";
 import {
@@ -177,6 +178,8 @@ function PageBody({ pageId, onThesisSaved, advanced }: { pageId: SettingsPageId;
       return <EditorWritingSettings />;
     case "editorPreview":
       return <EditorPreviewSettings />;
+    case "editorProfile":
+      return <ProfileSettings />;
     case "thesisSchool":
       return (
         <ConfigForm

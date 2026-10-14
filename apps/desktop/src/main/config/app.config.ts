@@ -38,3 +38,6 @@ export const TEST_DIALOG_PATH_ENV = "MARKTWAIN_TEST_DIALOG_PATH";
 
 /** Test hook: when set, export dialogs are skipped and this path is used. */
 export const TEST_EXPORT_PATH_ENV = "MARKTWAIN_TEST_EXPORT_PATH";
+
+/** Test hook, when set to 1 a new project does not ask for the facts of the thesis. */
+export const TEST_NO_PROFILE_DIALOG_ENV = "MARKTWAIN_TEST_NO_PROFILE_DIALOG";

@@ -197,6 +197,10 @@
     "thesisBibliography": {
       "title": "Bibliography",
       "description": "Title and listing of the references."
+    },
+    "editorProfile": {
+      "title": "About you",
+      "description": "What is true of you in every thesis. A new project starts with it."
     }
   },
   "search": {
@@ -259,5 +263,10 @@
     "custom": "Custom",
     "describeSave": "Saves about {{seconds}} after you stop typing.",
     "describePreview": "Builds the preview about {{seconds}} after a save."
+  },
+  "profile": {
+    "ask": "Ask when a project is created",
+    "askHint": "Turn it off and a new project starts with this, without a question.",
+    "local": "This stays on this computer, in the settings of the app."
   }
 }

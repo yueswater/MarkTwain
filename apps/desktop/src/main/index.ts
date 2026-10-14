@@ -29,6 +29,8 @@ import { ProjectService } from "./features/project/project.service";
 import { PrefsService } from "./features/prefs/prefs.service";
 import { registerSearchController } from "./features/search/search.controller";
 import { SearchService } from "./features/search/search.service";
+import { registerProfileController } from "./features/profile/profile.controller";
+import { ProfileService } from "./features/profile/profile.service";
 import { registerPrefsController } from "./features/prefs/prefs.controller";
 import { RecentService } from "./features/recent/recent.service";
 import { SettingsRepository } from "./features/settings/settings.repository";
@@ -60,6 +62,7 @@ const labels = new LabelService(documents, () => {
 const settingsRepository = new SettingsRepository(settingsFilePath());
 const recent = new RecentService(settingsRepository);
 const prefs = new PrefsService(settingsRepository);
+const profile = new ProfileService(settingsRepository);
 const watermarks = new WatermarkService(session, config, resolveBuildPaths);
 const build = new BuildService(session, documents, config, resolveBuildPaths, undefined, undefined, undefined, () => prefs.get().previewPpi, bibliography, watermarks);
 let dialogs: DialogService;
@@ -81,6 +84,7 @@ bootstrap([
   () => registerLabelController(labels),
   () => registerConfigController(config),
   () => registerPrefsController(prefs),
+  () => registerProfileController(profile),
   () => registerSearchController(search),
   () => registerBibliographyController(bibliography),
   () => registerWatermarkController(watermarks, dialogs),

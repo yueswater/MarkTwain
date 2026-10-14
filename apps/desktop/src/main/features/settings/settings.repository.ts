@@ -1,4 +1,5 @@
 import { sanitizePrefs } from "../../../shared/prefs";
+import { sanitizeProfile } from "../../../shared/profile";
 import { isLocale } from "../../../shared/i18n/locale";
 import { readJsonSafe, writeJson } from "../../utils/fs.util";
 import { DEFAULT_SETTINGS, type AppSettings, type RecentEntry } from "./settings.types";
@@ -8,7 +9,7 @@ export class SettingsRepository {
   constructor(private readonly file: string) {}
 
   read(): AppSettings {
-    const data = readJsonSafe(this.file) as { locale?: unknown; recentProjects?: unknown; lastProject?: unknown; editor?: unknown } | null;
+    const data = readJsonSafe(this.file) as { locale?: unknown; recentProjects?: unknown; lastProject?: unknown; editor?: unknown; profile?: unknown } | null;
     if (!data || typeof data !== "object") return { ...DEFAULT_SETTINGS };
     const recent = Array.isArray(data.recentProjects) ? data.recentProjects : [];
     return {
@@ -23,6 +24,7 @@ export class SettingsRepository {
       ),
       lastProject: typeof data.lastProject === "string" ? data.lastProject : null,
       editor: sanitizePrefs(data.editor),
+      profile: sanitizeProfile(data.profile),
     };
   }
 
