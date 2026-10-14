@@ -30,7 +30,7 @@ export function App() {
   }
 
   return (
-    <main style={{ fontFamily: "system-ui", padding: 32 }}>
+    <main style={{ padding: 32 }}>
       <h1>{t("app.name")}</h1>
       <p>{t("app.tagline")}</p>
       {info && <p>{t("app.version", { version: info.version, platform: info.platform })}</p>}
