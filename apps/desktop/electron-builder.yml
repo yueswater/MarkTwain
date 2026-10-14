@@ -6,6 +6,10 @@ directories:
 files:
   - out/**
   - package.json
+# 視窗圖示（Windows、Linux）：打包後放在 resources/icon.png
+extraResources:
+  - from: build/icon.png
+    to: icon.png
 mac:
   icon: build/icon.icns
   # Development and CI builds are not signed. Signing and notarization are

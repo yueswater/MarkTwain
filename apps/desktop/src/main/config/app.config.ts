@@ -1,5 +1,7 @@
 export const APP_NAME = "MarkTwain";
 
+export const WEBSITE_URL = "https://github.com/yueswater/MarkTwain";
+
 export const WINDOW_SIZE = { width: 1280, height: 800 } as const;
 
 /** electron-vite 的開發伺服器網址所在的環境變數。 */

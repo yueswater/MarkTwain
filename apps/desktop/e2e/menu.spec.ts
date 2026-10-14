@@ -1,0 +1,65 @@
+import { _electron as electron, expect, test } from "@playwright/test";
+import { mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join, resolve } from "node:path";
+import { findPackagedExecutable } from "./find-app";
+
+const dist = resolve(__dirname, "../dist");
+
+test("the native menu follows the interface language and drives the app", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "marktwain 選單 "));
+  const file = join(dir, "論文.marktwain");
+  const args = [`--user-data-dir=${join(dir, "userData")}`, "--lang=zh-TW"];
+  if (process.platform === "linux") args.push("--no-sandbox");
+
+  const app = await electron.launch({
+    executablePath: findPackagedExecutable(dist),
+    args,
+    env: { ...process.env, MARKTWAIN_TEST_DIALOG_PATH: file },
+  });
+  try {
+    const page = await app.firstWindow();
+    const labels = () =>
+      app.evaluate(({ Menu }) => Menu.getApplicationMenu()?.items.map((item) => item.label) ?? []);
+    const fileMenuItems = () =>
+      app.evaluate(({ Menu }) => {
+        const menu = Menu.getApplicationMenu();
+        const fileItem = menu?.items.find((item) => item.submenu?.items.some((i) => i.accelerator === "CmdOrCtrl+N"));
+        return fileItem?.submenu?.items.map((item) => item.label) ?? [];
+      });
+
+    // 畫面載入完成（前端已訂閱選單指令）後才開始
+    await expect(page.getByRole("button", { name: "新增專案" })).toBeVisible();
+
+    // 中文選單（macOS 還有以 App 名稱命名的第一個選單）
+    expect((await labels()).filter(Boolean)).toEqual(expect.arrayContaining(["檔案", "編輯", "檢視", "視窗", "說明"]));
+    expect(await fileMenuItems()).toEqual(expect.arrayContaining(["新增專案…", "開啟專案…", "關閉專案"]));
+
+    // 「檔案 → 新增專案」會觸發前端的新增流程
+    await app.evaluate(({ Menu }) => {
+      const item = Menu.getApplicationMenu()
+        ?.items.flatMap((i) => i.submenu?.items ?? [])
+        .find((i) => i.accelerator === "CmdOrCtrl+N");
+      item?.click();
+    });
+    await expect(page.getByRole("complementary", { name: "文件" })).toBeVisible();
+
+    // 「檔案 → 關閉專案」回到歡迎畫面
+    await app.evaluate(({ Menu }) => {
+      const item = Menu.getApplicationMenu()
+        ?.items.flatMap((i) => i.submenu?.items ?? [])
+        .find((i) => i.accelerator === "CmdOrCtrl+W");
+      item?.click();
+    });
+    await expect(page.getByRole("button", { name: "新增專案" })).toBeVisible();
+
+    // 切換語言後選單跟著換
+    await page.getByRole("combobox").click();
+    await page.getByRole("option", { name: "English" }).click();
+    await expect.poll(fileMenuItems).toEqual(expect.arrayContaining(["New Project…", "Open Project…", "Close Project"]));
+    expect((await labels()).filter(Boolean)).toEqual(expect.arrayContaining(["File", "Edit", "View", "Window", "Help"]));
+  } finally {
+    await app.close();
+    rmSync(dir, { recursive: true, force: true });
+  }
+});

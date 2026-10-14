@@ -12,6 +12,7 @@ import { registerDocumentController } from "./features/document/document.control
 import { DocumentService } from "./features/document/document.service";
 import { registerLabelController } from "./features/label/label.controller";
 import { LabelService } from "./features/label/label.service";
+import { applyAppMenu } from "./features/menu/menu.controller";
 import { registerProjectController } from "./features/project/project.controller";
 import { ProjectService } from "./features/project/project.service";
 import { registerSettingsController } from "./features/settings/settings.controller";
@@ -30,7 +31,8 @@ declareAssetScheme();
 
 bootstrap([
   registerAppController,
-  registerSettingsController,
+  () => registerSettingsController(applyAppMenu),
+  applyAppMenu,
   () => {
     dialogs = registerDialogController();
   },

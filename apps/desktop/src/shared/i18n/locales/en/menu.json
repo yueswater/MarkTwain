@@ -1,0 +1,35 @@
+{
+  "file": {
+    "label": "File",
+    "newProject": "New Project…",
+    "openProject": "Open Project…",
+    "closeProject": "Close Project",
+    "quit": "Exit"
+  },
+  "edit": {
+    "label": "Edit",
+    "undo": "Undo",
+    "redo": "Redo",
+    "cut": "Cut",
+    "copy": "Copy",
+    "paste": "Paste",
+    "selectAll": "Select All"
+  },
+  "view": {
+    "label": "View",
+    "zoomIn": "Zoom In",
+    "zoomOut": "Zoom Out",
+    "resetZoom": "Actual Size",
+    "fullscreen": "Toggle Full Screen",
+    "devTools": "Developer Tools"
+  },
+  "window": {
+    "label": "Window",
+    "minimize": "Minimize",
+    "close": "Close"
+  },
+  "help": {
+    "label": "Help",
+    "website": "MarkTwain on GitHub"
+  }
+}
