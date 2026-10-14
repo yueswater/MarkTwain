@@ -1016,7 +1016,9 @@ test("hovering a reference or a footnote opens a card with what it points to", a
     await expect(card.locator("table")).toBeVisible();
     await expect(card).toContainText("Shares of the settings");
 
-    // A reference to nothing says so
+    // A reference to nothing says so, the card of the one before may lie over it, so the pointer leaves first
+    await page.mouse.move(5, 5);
+    await expect(card).toBeHidden();
     await editor.locator("[data-cross-ref]").nth(2).hover();
     await expect(card).toContainText("points to nothing");
 
