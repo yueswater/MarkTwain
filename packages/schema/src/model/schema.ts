@@ -109,6 +109,39 @@ const nodes: Record<NodeName, NodeSpec> = {
     defining: true,
     attrs: { id: { default: null }, classes: { default: [] }, props: { default: {} } },
   },
+
+  // 表格：名稱與 TipTap 的表格擴充一致。儲存格只有一個段落（管線表格沒有多段儲存格）；
+  // align 是欄位對齊（left、center、right 或 null）。標題、標籤與附註在表格節點上。
+  [NodeName.Table]: {
+    group: "block",
+    content: "tableRow+",
+    isolating: true,
+    attrs: { label: { default: null }, caption: { default: "" }, notes: { default: "" } },
+  },
+
+  [NodeName.TableRow]: { content: "(tableHeader | tableCell)+" },
+
+  [NodeName.TableHeader]: {
+    content: "paragraph",
+    isolating: true,
+    attrs: {
+      align: { default: null },
+      colspan: { default: 1 },
+      rowspan: { default: 1 },
+      colwidth: { default: null },
+    },
+  },
+
+  [NodeName.TableCell]: {
+    content: "paragraph",
+    isolating: true,
+    attrs: {
+      align: { default: null },
+      colspan: { default: 1 },
+      rowspan: { default: 1 },
+      colwidth: { default: null },
+    },
+  },
 };
 
 const marks: Record<MarkName, MarkSpec> = {

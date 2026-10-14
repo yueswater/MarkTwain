@@ -21,7 +21,9 @@ function promoteFigures(state: CoreState): void {
     const inline = tokens[i + 1];
     const close = tokens[i + 2];
     const only = inline?.children?.length === 1 ? inline.children[0] : undefined;
+    const inCell = promoted[promoted.length - 1]?.type === "th_open" || promoted[promoted.length - 1]?.type === "td_open";
     if (
+      !inCell &&
       open?.type === "paragraph_open" &&
       inline?.type === "inline" &&
       close?.type === "paragraph_close" &&
