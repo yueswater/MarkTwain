@@ -1,5 +1,5 @@
 import { spawn } from "node:child_process";
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, statSync, mkdtempSync, readFileSync, readdirSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { basename, dirname, join } from "node:path";
 import { collectTargets, parseMarkdown } from "@marktwain/schema";
 import { renderTypstFile, toIr } from "@marktwain/render";
@@ -34,6 +34,16 @@ function run(command: string, args: string[], cwd: string, timeoutMs: number): P
   });
 }
 
+/** Copies a file or folder, following links. fs.cpSync skipped folders on the Windows runner, so this walks the tree. */
+function copyTree(source: string, destination: string): void {
+  if (statSync(source).isDirectory()) {
+    mkdirSync(destination, { recursive: true });
+    for (const name of readdirSync(source)) copyTree(join(source, name), join(destination, name));
+  } else {
+    copyFileSync(source, destination);
+  }
+}
+
 type Prepared = {
   missing: string[];
   lineMap: LineMap;
@@ -61,7 +71,7 @@ function prepare(input: BuildInput, root: string, link: boolean): Prepared {
   } else {
     for (const name of readdirSync(input.templateDir)) {
       if (NOT_COPIED.has(name)) continue;
-      cpSync(join(input.templateDir, name), join(root, name), { recursive: true, dereference: true });
+      copyTree(join(input.templateDir, name), join(root, name));
     }
   }
 
