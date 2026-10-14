@@ -1,6 +1,7 @@
 import { bootstrap } from "./core/bootstrap";
 import { DatabaseSession } from "./core/database-session";
 import { registerAppController } from "./features/app/app.controller";
+import { registerDialogController } from "./features/dialog/dialog.controller";
 import { registerDocumentController } from "./features/document/document.controller";
 import { DocumentService } from "./features/document/document.service";
 import { registerProjectController } from "./features/project/project.controller";
@@ -15,6 +16,7 @@ const projects = new ProjectService(session, documents);
 bootstrap([
   registerAppController,
   registerSettingsController,
+  registerDialogController,
   () => registerProjectController(projects),
   () => registerDocumentController(documents),
 ]);
