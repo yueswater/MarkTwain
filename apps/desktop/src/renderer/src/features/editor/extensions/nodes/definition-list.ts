@@ -19,6 +19,17 @@ export const DefinitionTerm = Node.create({
   name: "definitionTerm",
   content: "inline*",
 
+  addKeyboardShortcuts() {
+    return {
+      // 詞條不能分成兩個詞條（結構是「詞條加說明」），Enter 改為跳到它的說明
+      Enter: ({ editor }) => {
+        const { $from } = editor.state.selection;
+        if ($from.parent.type.name !== this.name) return false;
+        return editor.commands.setTextSelection($from.after() + 2);
+      },
+    };
+  },
+
   parseHTML() {
     return [{ tag: "dt" }];
   },

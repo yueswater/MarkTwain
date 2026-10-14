@@ -1,9 +1,11 @@
 import type { Editor } from "@tiptap/core";
+import { TextSelection } from "@tiptap/pm/state";
 import { useEditorState } from "@tiptap/react";
 import {
   AsteriskIcon,
   BoldIcon,
   BookMarkedIcon,
+  BookAIcon,
   CodeIcon,
   FileCodeIcon,
   ItalicIcon,
@@ -17,11 +19,13 @@ import {
   Redo2Icon,
   StrikethroughIcon,
   TableIcon,
+  TypeIcon,
   Undo2Icon,
   type LucideIcon,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { TableTools } from "./TableTools";
 import {
   Select,
   SelectContent,
@@ -35,6 +39,7 @@ type Props = {
   editor: Editor;
   onInsertMath: (kind: "inline" | "block") => void;
   onInsertAtom: (type: "footnote" | "citation" | "crossRef") => void;
+  onEditCaption: () => void;
 };
 
 const BLOCKS = ["paragraph", "heading1", "heading2", "heading3", "heading4"] as const;
@@ -53,7 +58,44 @@ function setBlock(editor: Editor, block: Block): void {
   else chain.setHeading({ level: Number(block.slice(-1)) as 1 | 2 | 3 | 4 }).run();
 }
 
-export function Toolbar({ editor, onInsertMath, onInsertAtom }: Props) {
+/** 在游標所在的清單後面接一組新的「詞條＋說明」；不在定義清單裡時插入新的清單，游標落在詞條裡。 */
+function insertDefinition(editor: Editor, inList: boolean): void {
+  const { schema } = editor.state;
+  const term = schema.nodes.definitionTerm;
+  const description = schema.nodes.definitionDescription;
+  const list = schema.nodes.definitionList;
+  const paragraph = schema.nodes.paragraph;
+  if (!term || !description || !list || !paragraph) return;
+  const pair = [term.create(), description.create(null, paragraph.create())];
+
+  editor
+    .chain()
+    .focus()
+    .command(({ tr, state }) => {
+      const { $from } = state.selection;
+      if (inList) {
+        for (let depth = $from.depth; depth > 0; depth--) {
+          if ($from.node(depth).type === list) {
+            const end = $from.end(depth);
+            tr.insert(end, pair);
+            tr.setSelection(TextSelection.create(tr.doc, end + 1)); // 新詞條的內容開頭
+            return true;
+          }
+        }
+        return false;
+      }
+      // 游標在空段落時取代它，否則插在目前區塊之後
+      const emptyParagraph = $from.parent.type === paragraph && $from.parent.content.size === 0;
+      const at = emptyParagraph ? $from.before() : $from.after();
+      if (emptyParagraph) tr.replaceWith(at, $from.after(), list.create(null, pair));
+      else tr.insert(at, list.create(null, pair));
+      tr.setSelection(TextSelection.create(tr.doc, at + 2)); // list 開頭 +1、term 開頭 +1
+      return true;
+    })
+    .run();
+}
+
+export function Toolbar({ editor, onInsertMath, onInsertAtom, onEditCaption }: Props) {
   const { t } = useTranslation("editor");
 
   // 選取範圍或內容改變時重新計算按鈕狀態
@@ -69,6 +111,8 @@ export function Toolbar({ editor, onInsertMath, onInsertAtom }: Props) {
       orderedList: e.isActive("orderedList"),
       blockquote: e.isActive("blockquote"),
       codeBlock: e.isActive("codeBlock"),
+      inTable: e.isActive("table"),
+      inDefinitionList: e.isActive("definitionList"),
       canUndo: e.can().undo(),
       canRedo: e.can().redo(),
     }),
@@ -98,6 +142,7 @@ export function Toolbar({ editor, onInsertMath, onInsertAtom }: Props) {
   );
 
   return (
+    <>
     <div
       role="toolbar"
       aria-label={t("toolbar.label")}
@@ -163,6 +208,7 @@ export function Toolbar({ editor, onInsertMath, onInsertAtom }: Props) {
         () => editor.chain().focus().toggleCodeBlock().run(),
         { active: state.codeBlock },
       )}
+      {state.codeBlock && button(t("caption.codeTitle"), TypeIcon, onEditCaption)}
       <span className="mx-1 h-5 w-px bg-border" aria-hidden="true" />
       {button(t("toolbar.inlineMath"), SigmaIcon, () => onInsertMath("inline"))}
       {button(t("toolbar.blockMath"), RadicalIcon, () => onInsertMath("block"))}
@@ -174,6 +220,9 @@ export function Toolbar({ editor, onInsertMath, onInsertAtom }: Props) {
       {button(t("toolbar.table"), TableIcon, () =>
         editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run(),
       )}
+      {button(t("toolbar.definitionList"), BookAIcon, () => insertDefinition(editor, state.inDefinitionList))}
     </div>
+    {state.inTable && <TableTools editor={editor} onEditCaption={onEditCaption} />}
+    </>
   );
 }

@@ -30,7 +30,9 @@
     "blockMath": "獨立公式",
     "footnote": "腳註",
     "citation": "文獻引用",
-    "crossRef": "交叉引用"
+    "crossRef": "交叉引用",
+    "definitionList": "定義清單",
+    "addDefinition": "新增詞條"
   },
   "math": {
     "insertTitle": "插入公式",
@@ -85,5 +87,27 @@
     "insert": "插入",
     "update": "更新",
     "remove": "移除"
+  },
+  "table": {
+    "label": "表格工具",
+    "addRow": "在下方新增列",
+    "addColumn": "在右方新增欄",
+    "deleteRow": "刪除列",
+    "deleteColumn": "刪除欄",
+    "toggleHeader": "切換標題列",
+    "deleteTable": "刪除表格",
+    "alignLeft": "靠左",
+    "alignCenter": "置中",
+    "alignRight": "靠右",
+    "caption": "表格標題與附註"
+  },
+  "caption": {
+    "tableTitle": "表格標題",
+    "codeTitle": "程式碼標題",
+    "captionLabel": "標題",
+    "captionHint": "可以使用行內 Markdown。留空表示沒有標題。",
+    "notes": "附註",
+    "notesHint": "顯示在表格下方，例如資料來源。",
+    "save": "儲存"
   }
 }
