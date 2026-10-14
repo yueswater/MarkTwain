@@ -41,7 +41,7 @@ function CodeBlockView({ node, editor, getPos, updateAttributes }: NodeViewProps
     <NodeViewWrapper className="code-block">
       <div className="code-lang" contentEditable={false} data-open={open} data-testid="code-language">
         <Select value={language || PLAIN} onValueChange={choose} open={open} onOpenChange={setOpen}>
-          <SelectTrigger size="sm" aria-label={t("toolbar.codeLanguage")} className="h-6 w-auto gap-1 border-0 bg-background/80 px-2 text-xs shadow-none">
+          <SelectTrigger size="sm" aria-label={t("toolbar.codeLanguage")} className="h-7 w-auto gap-1 border border-border bg-background px-2 text-xs shadow-sm hover:bg-muted">
             <SelectValue />
           </SelectTrigger>
           <SelectContent
