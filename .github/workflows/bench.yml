@@ -1,0 +1,45 @@
+name: bench
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 3 * * 1"
+
+jobs:
+  typst-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: typst-community/setup-typst@v4
+      - run: pnpm install --frozen-lockfile
+      - name: Fetch the pinned template
+        run: pnpm templates:fetch typ
+        env:
+          GH_TOKEN: ${{ github.token }}
+      - run: pip install locust
+      - name: Start the bench server
+        run: |
+          pnpm --filter @marktwain/bench server &
+          for i in $(seq 1 30); do curl -sf localhost:8787/health && break; sleep 1; done
+      - name: Long thesis, one user
+        run: |
+          mkdir -p out
+          locust -f tools/bench/locustfile.py LongThesisUser --headless -u 1 -r 1 -t 60s --csv out/long
+          python3 tools/bench/check_budgets.py out/long_stats.csv
+      - name: Concurrent builds, eight users
+        run: |
+          locust -f tools/bench/locustfile.py ConcurrentUsers --headless -u 8 -r 8 -t 90s --csv out/concurrent
+          python3 tools/bench/check_budgets.py out/concurrent_stats.csv
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: bench-results
+          path: out

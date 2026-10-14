@@ -374,6 +374,22 @@ importers:
         specifier: ^4.10.2
         version: 4.10.2
 
+  tools/bench:
+    dependencies:
+      '@marktwain/build':
+        specifier: workspace:*
+        version: link:../../packages/build
+      '@marktwain/schema':
+        specifier: workspace:*
+        version: link:../../packages/schema
+    devDependencies:
+      '@types/node':
+        specifier: ^22.0.0
+        version: 22.20.5
+      tsx:
+        specifier: ^4.20.0
+        version: 4.23.15
+
   tools/fetch-templates:
     devDependencies:
       '@types/node':

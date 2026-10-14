@@ -1,0 +1,15 @@
+{
+  "comment": "Milliseconds. p95 is the 95th percentile of a request, failures is the allowed share of failed requests.",
+  "long-thesis": {
+    "p95": 5000,
+    "failures": 0
+  },
+  "medium-thesis": {
+    "p95": 3000,
+    "failures": 0
+  },
+  "small-thesis": {
+    "p95": 2000,
+    "failures": 0
+  }
+}

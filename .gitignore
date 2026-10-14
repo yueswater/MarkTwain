@@ -69,3 +69,6 @@ npm-debug.log*
 docs/
 .superpowers/
 .claude/
+
+# load test output
+tools/bench/out/
