@@ -423,5 +423,37 @@
       "name": "Exactly here",
       "hint": "Does not float, stays where it is in the text."
     }
+  },
+  "borders": {
+    "label": "Borders",
+    "items": {
+      "bottom": "Bottom border",
+      "top": "Top border",
+      "left": "Left border",
+      "right": "Right border",
+      "none": "No border",
+      "all": "All borders",
+      "outside": "Outside borders",
+      "inside": "Inside borders",
+      "insideH": "Inside horizontal",
+      "insideV": "Inside vertical",
+      "diagonalDown": "Diagonal down",
+      "diagonalUp": "Diagonal up",
+      "horizontalLine": "Horizontal line"
+    },
+    "pen": "Pen",
+    "width": "Line width",
+    "widthOther": "Other width (pt)",
+    "style": "Line style",
+    "styles": {
+      "solid": "Solid",
+      "dashed": "Dashed",
+      "dotted": "Dotted",
+      "double": "Double"
+    },
+    "color": "Line color",
+    "doubleNote": "The PDF has no double line, it is drawn solid.",
+    "applyPen": "Apply to the lines of the selection",
+    "points": "{{value}} pt"
   }
 }

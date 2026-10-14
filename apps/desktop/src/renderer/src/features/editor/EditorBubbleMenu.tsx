@@ -24,6 +24,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { setColumnAlign } from "./table-commands";
+import { BordersMenu } from "./BordersMenu";
 import { PlacementPicker } from "./PlacementPicker";
 import type { Placement } from "@marktwain/schema";
 
@@ -160,6 +161,8 @@ export function EditorBubbleMenu({ editor, onInsertMath, onEditFigure, onCropFig
         <Item icon={AlignLeftIcon} label={t("table.alignColumnLeft")} onClick={run(() => setColumnAlign(editor, "left"))} />
         <Item icon={AlignCenterIcon} label={t("table.alignColumnCenter")} onClick={run(() => setColumnAlign(editor, "center"))} />
         <Item icon={AlignRightIcon} label={t("table.alignColumnRight")} onClick={run(() => setColumnAlign(editor, "right"))} />
+        {divider}
+        <BordersMenu editor={editor} compact />
       </BubbleMenu>
     </>
   );

@@ -19,7 +19,7 @@ const table = (
   attrs: Partial<{ label: string | null; caption: string; notes: string; style: string; widths: string }> = {},
 ) => ({
   type: "table",
-  attrs: { label: null, caption: "", notes: "", style: "three-line", widths: "", placement: null, ...attrs },
+  attrs: { label: null, caption: "", notes: "", style: "three-line", widths: "", borders: "", placement: null, ...attrs },
   content: rows,
 });
 
@@ -239,5 +239,17 @@ describe("spans are clamped to the table", () => {
     const parsed = parseMarkdown(md).content[0] as { content: { content: { attrs: Record<string, unknown> }[] }[] };
     expect(parsed.content[1]?.content[0]?.attrs).toMatchObject({ colspan: 2, rowspan: 1 });
     expect(parsed.content).toHaveLength(2);
+  });
+});
+
+describe("borders", () => {
+  it("lines of the caption line are kept in order, a bad entry is dropped, and a table without them is unchanged", () => {
+    const md = "| a | b |\n|---|---|\n| 1 | 2 |\n\n: 表 {#tbl:t borders=\"h-1.*=2.25;v1.0=0.5/dashed;x9.9=1\"}\n";
+    const parsed = parseMarkdown(md).content?.[0] as { attrs: { borders: string } };
+    expect(parsed.attrs.borders).toBe("h-1.*=2.25;v1.0=0.5/dashed");
+    const out = serializeMarkdown(parseMarkdown(md));
+    expect(out).toContain("borders=h-1.*=2.25;v1.0=0.5/dashed");
+    expect(serializeMarkdown(parseMarkdown(out))).toBe(out);
+    expect(serializeMarkdown(parseMarkdown("| a |\n|---|\n| 1 |\n\n: 表\n"))).not.toContain("borders");
   });
 });

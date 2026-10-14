@@ -29,6 +29,7 @@ export const GlobalAttributes = Extension.create({
           style: text("style", "three-line"),
           widths: text("widths", ""),
           placement: text("placement"),
+          borders: text("borders", ""),
         },
       },
       {

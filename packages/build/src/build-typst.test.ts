@@ -174,6 +174,43 @@ maybe("buildTypst with the real template", () => {
     }
   }, 120_000);
 
+  it("builds tables whose lines the author chose, diagonals and merged cells included", async () => {
+    const work = mkdtempSync(join(tmpdir(), "marktwain 框線 "));
+    try {
+      const result = await buildTypst(
+        input(work, {
+          documents: [
+            {
+              id: "c1",
+              kind: "chapter",
+              text: [
+                "# 緒論",
+                "",
+                "| 甲＼乙 | 左 | 右 |",
+                "|---|---|---|",
+                "| 上 | 3,1 | 0,0 |",
+                "| 下 | 1,1 | 2,3 |",
+                "",
+                ": 報酬矩陣 {#tbl:a borders=\"h0.*=none;h-1.*=none;h1.1-2=1.5;v1.0-1=1/dashed/#ff0000;dd0.0=0.5;du1.2=0.75\"}",
+                "",
+                "| a | b | c |",
+                "|---|---|---|",
+                "| 1 |  | 3 |",
+                "| 4 | 5 | 6 |",
+                "",
+                ": 合併 {#tbl:b cells=\"2.2:colspan=2\" borders=\"h2.*=2.25;v1.*=0.5/dotted\"}",
+              ].join("\n"),
+            },
+          ],
+        }),
+      );
+      expect(result.diagnostics.filter((d) => d.severity === "error")).toEqual([]);
+      expect(result.ok).toBe(true);
+    } finally {
+      rmSync(work, { recursive: true, force: true });
+    }
+  }, 120_000);
+
   it("reports a typst error against the source block", async () => {
     const work = mkdtempSync(join(tmpdir(), "marktwain 錯誤 "));
     try {

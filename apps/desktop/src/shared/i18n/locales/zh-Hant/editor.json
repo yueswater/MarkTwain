@@ -423,5 +423,37 @@
       "name": "固定在此",
       "hint": "不浮動，就留在文字中的這個位置。"
     }
+  },
+  "borders": {
+    "label": "框線",
+    "items": {
+      "bottom": "下框線",
+      "top": "上框線",
+      "left": "左框線",
+      "right": "右框線",
+      "none": "無框線",
+      "all": "所有框線",
+      "outside": "外框線",
+      "inside": "內框線",
+      "insideH": "內橫線",
+      "insideV": "內直線",
+      "diagonalDown": "斜線（往下）",
+      "diagonalUp": "斜線（往上）",
+      "horizontalLine": "橫線（列下方）"
+    },
+    "pen": "筆",
+    "width": "線寬",
+    "widthOther": "其他線寬（pt）",
+    "style": "線型",
+    "styles": {
+      "solid": "實線",
+      "dashed": "虛線",
+      "dotted": "點線",
+      "double": "雙線"
+    },
+    "color": "線的顏色",
+    "doubleNote": "PDF 輸出沒有雙線，會畫成實線。",
+    "applyPen": "套用到選取範圍內的線",
+    "points": "{{value}} pt"
   }
 }

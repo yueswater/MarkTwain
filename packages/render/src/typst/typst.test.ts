@@ -248,6 +248,30 @@ describe("placement", () => {
   });
 });
 
+describe("table borders", () => {
+  const table = (borders: string) => `| a | b |\n|---|---|\n| 1 | 2 |\n| 3 | 4 |\n\n: 表 {#tbl:t ${borders}}\n`;
+
+  it("a table without borders keeps the preset helper, and with borders every line is drawn by its own entry", () => {
+    expect(render(table("")).body).toContain("#tlt(");
+    const out = render(table('borders="h2.*=0.5;v1.1=1/dashed;dd0.0=0.5"')).body;
+    expect(out).not.toContain("#tlt(");
+    expect(out).toContain("kind: table");
+    expect(out).toContain("stroke: none");
+    // The preset lines come along as entries, the top and bottom rules and the thin one under the header
+    expect(out).toContain("table.hline(y: 0, start: 0, end: 2, stroke: (thickness: 1pt))");
+    expect(out).toContain("table.hline(y: 1, start: 0, end: 2, stroke: (thickness: 0.6pt))");
+    expect(out).toContain("table.hline(y: 2, start: 0, end: 2, stroke: (thickness: 0.5pt))");
+    expect(out).toContain('table.vline(x: 1, start: 1, end: 2, stroke: (thickness: 1pt, dash: "dashed"))');
+    expect(out).toContain("let height = measure(inner).height");
+  });
+
+  it("a line can be turned off and gets a color and a style", () => {
+    const out = render(table('borders="h-1.*=none;h0.0=2.25/dotted/#ff0000"')).body;
+    expect(out).not.toContain("table.hline(y: 3");
+    expect(out).toContain('table.hline(y: 0, start: 0, end: 1, stroke: (paint: rgb("#FF0000"), thickness: 2.25pt, dash: "dotted"))');
+  });
+});
+
 describe("statements", () => {
   it("writes a block of a mathematical thesis with its kind, label and title", () => {
     const out = render('::: {.lemma #lem:ss title="Sum"}\n內容\n:::\n').body;
