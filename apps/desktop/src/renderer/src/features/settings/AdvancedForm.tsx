@@ -18,26 +18,28 @@ import { api } from "../../shared/api";
 import { errorMessage } from "../../shared/error-message";
 import { NumberField, SettingsHeading, SettingsRow } from "./fields";
 
-const GROUP_ORDER: AdvancedGroup[] = ["page", "text", "numbering", "captions", "headings", "pageNumber", "crossRef", "outline", "bibliography"];
 const FOLLOW = "__follow__";
 
-type Props = { onSaved?: () => void };
+type Props = {
+  /** The groups of settings this page shows, in order */
+  groups: readonly AdvancedGroup[];
+  state: AdvancedState | null;
+  error: string | null;
+  /** Saves one setting, a null value goes back to the inherited one */
+  onSave: (path: string, value: AdvancedValue | null) => Promise<void>;
+};
 
-function display(value: AdvancedValue | undefined): string {
-  return Array.isArray(value) ? value.join(", ") : value === undefined ? "" : String(value);
-}
-
-/** The format of the thesis beyond the basic form, every field falls back to the school format. */
-export function AdvancedForm({ onSaved }: Props) {
-  const { t } = useTranslation("settings");
+/** Loads the format settings of the open project, shared by the pages and the page list of the settings window. */
+export function useAdvancedState(enabled: boolean, onSaved?: () => void) {
   const { t: tRoot } = useTranslation();
   const [state, setState] = useState<AdvancedState | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!enabled) return;
     api.invoke(IpcChannel.ConfigGetAdvanced).then(setState).catch((e: unknown) => setError(errorMessage(tRoot, e)));
-    // Loaded once when the section opens
-  }, []);
+    // Loaded again each time the window opens
+  }, [enabled]);
 
   async function save(path: string, value: AdvancedValue | null): Promise<void> {
     try {
@@ -48,6 +50,18 @@ export function AdvancedForm({ onSaved }: Props) {
       setError(errorMessage(tRoot, e));
     }
   }
+
+  return { state, error, save };
+}
+
+function display(value: AdvancedValue | undefined): string {
+  return Array.isArray(value) ? value.join(", ") : value === undefined ? "" : String(value);
+}
+
+/** The format of the thesis beyond the basic form, every field falls back to the school format. */
+export function AdvancedForm({ groups, state, error, onSave }: Props) {
+  const { t } = useTranslation("settings");
+  const save = onSave;
 
   if (error && !state) {
     return (
@@ -170,7 +184,7 @@ export function AdvancedForm({ onSaved }: Props) {
           {error}
         </p>
       )}
-      {GROUP_ORDER.map((group) => (
+      {groups.map((group) => (
         <Fragment key={group}>
           <SettingsHeading>{t(`group.${group}`)}</SettingsHeading>
           {ADVANCED_FIELDS.filter((field) => field.group === group).map((field) => {
@@ -180,6 +194,7 @@ export function AdvancedForm({ onSaved }: Props) {
             return (
               <SettingsRow
                 key={field.path}
+                id={`setting-${field.path}`}
                 label={label}
                 hint={hint || undefined}
                 control={

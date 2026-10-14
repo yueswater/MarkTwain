@@ -2,12 +2,6 @@
   "title": "設定",
   "description": "編輯器的偏好，以及論文的格式。",
   "close": "關閉",
-  "nav": {
-    "editor": "編輯器",
-    "editorAdvanced": "編輯器進階",
-    "thesis": "論文",
-    "thesisAdvanced": "論文進階"
-  },
   "reset": "恢復預設",
   "inherited": "預設：{{value}}",
   "followDefault": "跟隨預設",
@@ -138,5 +132,62 @@
     "pt": "pt",
     "cm": "cm",
     "em": "em"
-  }
+  },
+  "section": {
+    "editor": "編輯器",
+    "thesis": "論文"
+  },
+  "page": {
+    "editorAppearance": {
+      "title": "外觀",
+      "description": "編輯區文字的樣子。"
+    },
+    "editorWriting": {
+      "title": "寫作",
+      "description": "區塊編號、拼字檢查、貼上與儲存。"
+    },
+    "editorPreview": {
+      "title": "預覽",
+      "description": "論文預覽的建置方式。"
+    },
+    "thesisSchool": {
+      "title": "學校與格式",
+      "description": "學校決定論文格式。變更會立即儲存。"
+    },
+    "thesisInfo": {
+      "title": "基本資料",
+      "description": "封面與題名頁會用到的資料。變更會立即儲存。"
+    },
+    "thesisPage": {
+      "title": "頁面",
+      "description": "紙張大小與邊界。留空表示跟隨學校格式。"
+    },
+    "thesisText": {
+      "title": "文字",
+      "description": "內文的字型、大小與間距。"
+    },
+    "thesisHeadings": {
+      "title": "標題與編號",
+      "description": "標題的大小與對齊，以及腳註、公式的編號。"
+    },
+    "thesisCaptions": {
+      "title": "圖表與引用",
+      "description": "圖表標題，以及交叉引用使用的文字。"
+    },
+    "thesisPageNumber": {
+      "title": "頁碼與目次",
+      "description": "前置部分與正文的頁碼，以及目次。"
+    },
+    "thesisBibliography": {
+      "title": "參考文獻",
+      "description": "參考文獻的標題與列出方式。"
+    }
+  },
+  "search": {
+    "label": "搜尋設定",
+    "placeholder": "搜尋設定",
+    "results": "搜尋結果",
+    "none": "沒有符合的設定。"
+  },
+  "changedDot": "這一頁有和學校格式不同的設定"
 }

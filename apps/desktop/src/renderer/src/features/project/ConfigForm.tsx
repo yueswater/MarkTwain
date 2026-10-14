@@ -31,7 +31,10 @@ const NO_SCHOOL = "none";
 type TextField = Exclude<keyof ConfigFields, "keywords" | "keywordsEn" | "school">;
 
 /** Project settings form that saves while typing, fields of config.yml. */
-export function ConfigForm({ onSaved, embedded = false }: { onSaved?: () => void; embedded?: boolean }) {
+export function ConfigForm({ onSaved, embedded = false, part = "all" }: { onSaved?: () => void; embedded?: boolean; part?: "all" | "school" | "info" }) {
+  // The settings window shows the school part and the information part as two pages
+  const showSchool = part !== "info";
+  const showInfo = part !== "school";
   const { t, i18n } = useTranslation("config");
   const [state, setState] = useState<ConfigState | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -93,7 +96,7 @@ export function ConfigForm({ onSaved, embedded = false }: { onSaved?: () => void
   const issueFor = (field: keyof ConfigFields): ConfigIssue | undefined =>
     state.issues.find((issue) => issue.field === field);
 
-  const text = (field: TextField, extra?: { hint?: string; placeholder?: string }) => {
+  const text = (field: TextField, extra?: { hint?: string; placeholder?: string; type?: "date" }) => {
     const issue = issueFor(field);
     // Do not show errors on required fields before the user filled them, to avoid a page of red text on open
     const showIssue = issue && !(issue.code === "required" && fields[field] === "" && status === "idle");
@@ -107,6 +110,7 @@ export function ConfigForm({ onSaved, embedded = false }: { onSaved?: () => void
       >
         <Input
           id={`config-${field}`}
+          type={extra?.type}
           value={fields[field]}
           placeholder={extra?.placeholder}
           aria-invalid={showIssue ? true : undefined}
@@ -141,121 +145,139 @@ export function ConfigForm({ onSaved, embedded = false }: { onSaved?: () => void
           </p>
         </header>
 
-        <Section title={t("section.school")}>
-          <Field id="config-school" label={t("field.school")} hint={t("hint.school")}>
-            <Select
-              value={fields.school === "" ? NO_SCHOOL : fields.school}
-              onValueChange={(value) => update({ school: value === NO_SCHOOL ? "" : value })}
-            >
-              <SelectTrigger id="config-school" aria-label={t("field.school")} className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={NO_SCHOOL}>{t("noSchool")}</SelectItem>
-                {SCHOOLS.map((school) => (
-                  <SelectItem key={school.code} value={school.code}>
-                    {english ? school.nameEn : school.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </Field>
-        </Section>
+        {showSchool && (
+          <Section title={t("section.school")}>
+            <Field id="config-school" label={t("field.school")} hint={t("hint.school")}>
+              <Select
+                value={fields.school === "" ? NO_SCHOOL : fields.school}
+                onValueChange={(value) => update({ school: value === NO_SCHOOL ? "" : value })}
+              >
+                <SelectTrigger id="config-school" aria-label={t("field.school")} className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={NO_SCHOOL}>{t("noSchool")}</SelectItem>
+                  {SCHOOLS.map((school) => (
+                    <SelectItem key={school.code} value={school.code}>
+                      {english ? school.nameEn : school.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Field>
+          </Section>
+        )}
 
-        <Section title={t("section.thesis")}>
-          {text("title")}
-          {text("titleEn")}
-        </Section>
-        <Section title={t("section.author")}>
-          {text("author")}
-          {text("authorEn")}
-          {text("id")}
-        </Section>
-        <Section title={t("section.advisor")}>
-          {text("advisor")}
-          {text("advisorEn")}
-        </Section>
-        <Section title={t("section.department")}>
-          {fields.school === "" && <p className="text-xs text-muted-foreground">{t("chooseSchoolFirst")}</p>}
-          <OptionPicker
-            id="config-college"
-            label={t("field.collegePick")}
-            placeholder={t("chooseCollege")}
-            options={collegesOf(fields.school)}
-            zh={fields.college}
-            en={fields.collegeEn}
-            english={english}
-            onChange={(value) => update({ college: value.zh, collegeEn: value.en })}
-          />
-          <OptionPicker
-            id="config-institute"
-            label={t("field.institutePick")}
-            placeholder={t("chooseDepartment")}
-            options={departmentsOf(fields.school, fields.college)}
-            zh={fields.institute}
-            en={fields.instituteEn}
-            english={english}
-            onChange={(value) => update({ institute: value.zh, instituteEn: value.en })}
-          />
-        </Section>
-        <Section title={t("section.degree")}>
-          <OptionPicker
-            id="config-degree"
-            label={t("field.degree")}
-            placeholder={t("field.degree")}
-            options={[...DEGREES]}
-            zh={fields.degree}
-            en={fields.degreeEn}
-            english={english}
-            onChange={(value) => update({ degree: value.zh, degreeEn: value.en })}
-          />
-        </Section>
-        <Section title={t("section.language")}>
-          <Field id="config-language" label={t("field.language")}>
-            <Select
-              value={fields.language === "" ? NO_SCHOOL : fields.language}
-              onValueChange={(value) => update({ language: value === NO_SCHOOL ? "" : value })}
-            >
-              <SelectTrigger id="config-language" aria-label={t("field.language")} className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={NO_SCHOOL}>{t("followPreset")}</SelectItem>
-                {LANGUAGES.map((value) => (
-                  <SelectItem key={value} value={value}>
-                    {t(`lang.${value}`)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </Field>
-          <Field id="config-citation" label={t("field.citationStyle")}>
-            <Select
-              value={fields.citationStyle === "" ? NO_SCHOOL : fields.citationStyle}
-              onValueChange={(value) => update({ citationStyle: value === NO_SCHOOL ? "" : value })}
-            >
-              <SelectTrigger id="config-citation" aria-label={t("field.citationStyle")} className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={NO_SCHOOL}>{t("followPreset")}</SelectItem>
-                {CITATION_STYLES.map((value) => (
-                  <SelectItem key={value} value={value}>
-                    {t(`style.${value}`)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </Field>
-        </Section>
-        <Section title={t("section.dates")}>
-          {text("date", { hint: t("hint.date"), placeholder: "2026-06-30" })}
-          {text("oralDate", { hint: t("hint.date"), placeholder: "2026-06-15" })}
-        </Section>
-        <Section title={t("section.keywords")}>
-          {keywords("keywords")}
-          {keywords("keywordsEn")}
-        </Section>
+        {showInfo && (
+          <Section title={t("section.thesis")}>
+            {text("title")}
+            {text("titleEn")}
+          </Section>
+        )}
+        {showInfo && (
+          <Section title={t("section.author")}>
+            {text("author")}
+            {text("authorEn")}
+            {text("id")}
+          </Section>
+        )}
+        {showInfo && (
+          <Section title={t("section.advisor")}>
+            {text("advisor")}
+            {text("advisorEn")}
+          </Section>
+        )}
+        {showSchool && (
+          <Section title={t("section.department")}>
+            {fields.school === "" && <p className="text-xs text-muted-foreground">{t("chooseSchoolFirst")}</p>}
+            <OptionPicker
+              id="config-college"
+              label={t("field.collegePick")}
+              placeholder={t("chooseCollege")}
+              options={collegesOf(fields.school)}
+              zh={fields.college}
+              en={fields.collegeEn}
+              english={english}
+              onChange={(value) => update({ college: value.zh, collegeEn: value.en })}
+            />
+            <OptionPicker
+              id="config-institute"
+              label={t("field.institutePick")}
+              placeholder={t("chooseDepartment")}
+              options={departmentsOf(fields.school, fields.college)}
+              zh={fields.institute}
+              en={fields.instituteEn}
+              english={english}
+              onChange={(value) => update({ institute: value.zh, instituteEn: value.en })}
+            />
+          </Section>
+        )}
+        {showSchool && (
+          <Section title={t("section.degree")}>
+            <OptionPicker
+              id="config-degree"
+              label={t("field.degree")}
+              placeholder={t("field.degree")}
+              options={[...DEGREES]}
+              zh={fields.degree}
+              en={fields.degreeEn}
+              english={english}
+              onChange={(value) => update({ degree: value.zh, degreeEn: value.en })}
+            />
+          </Section>
+        )}
+        {showSchool && (
+          <Section title={t("section.language")}>
+            <Field id="config-language" label={t("field.language")}>
+              <Select
+                value={fields.language === "" ? NO_SCHOOL : fields.language}
+                onValueChange={(value) => update({ language: value === NO_SCHOOL ? "" : value })}
+              >
+                <SelectTrigger id="config-language" aria-label={t("field.language")} className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={NO_SCHOOL}>{t("followPreset")}</SelectItem>
+                  {LANGUAGES.map((value) => (
+                    <SelectItem key={value} value={value}>
+                      {t(`lang.${value}`)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Field>
+            <Field id="config-citation" label={t("field.citationStyle")}>
+              <Select
+                value={fields.citationStyle === "" ? NO_SCHOOL : fields.citationStyle}
+                onValueChange={(value) => update({ citationStyle: value === NO_SCHOOL ? "" : value })}
+              >
+                <SelectTrigger id="config-citation" aria-label={t("field.citationStyle")} className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={NO_SCHOOL}>{t("followPreset")}</SelectItem>
+                  {CITATION_STYLES.map((value) => (
+                    <SelectItem key={value} value={value}>
+                      {t(`style.${value}`)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Field>
+          </Section>
+        )}
+        {showInfo && (
+          <Section title={t("section.dates")}>
+            {text("date", { type: "date" })}
+            {text("oralDate", { type: "date" })}
+          </Section>
+        )}
+        {showInfo && (
+          <Section title={t("section.keywords")}>
+            {keywords("keywords")}
+            {keywords("keywordsEn")}
+          </Section>
+        )}
       </form>
     </div>
   );
