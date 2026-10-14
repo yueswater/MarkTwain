@@ -14,6 +14,7 @@ Current version: not released yet (in development).
 | [v0.6.0](#v060--thesis-features) | Thesis features | Not started |
 | [v0.7.0](#v070--offline-packaging) | Offline packaging | Not started |
 | [v0.8.0](#v080--polish) | Polish | Not started |
+| [v1.0.0-beta.1](#v100-beta1--public-beta) | Public beta | Not started |
 | [v1.0.0](#v100--release) | Release | Not started |
 
 v0.3.0 (Typst output) and v0.4.0 (version control) do not depend on each other and can be developed in parallel.
@@ -110,13 +111,25 @@ An installer that works without a network.
 
 **Done when:** after a forced quit, the draft is restored on reopen, and the exported folder compiles with `tw-thesis-typ` or `tw-thesis-tex` using their own commands.
 
+## v1.0.0-beta.1 · Public Beta
+
+The first release that other people use for real work. Versions follow SemVer, so the pre-release is `1.0.0-beta.1` (not `1.0.0b1`, which is Python's notation and is rejected by npm and electron-builder).
+
+- Feature complete against the project goals; installers for macOS, Windows, and Linux, published as a GitHub pre-release
+- End-to-end regression tests (Playwright driving Electron) and installer verification on every platform
+- An "Export diagnostics" command (no telemetry; no thesis content) and an issue template, so offline users can report problems
+- A known-issues list and a first draft of the user documentation
+- Project file migrations: from this release on, every later version can open projects created by the beta (with an automatic backup before upgrading)
+- Only bug fixes, documentation, and performance work while in beta; no new features
+
+**Done when:** every project goal is met, and the installers pass the smoke and end-to-end tests in CI on all three platforms.
+
 ## v1.0.0 · Release
 
-- End-to-end regression tests (Playwright driving Electron)
-- User documentation
-- Installer verification on every platform, and the release
+- Fix the problems found in the beta; more betas (`beta.2`, `beta.3`, and so on) if needed
+- Final documentation and the signing decision carried out
 
-**Done when:** every project goal is met: fully offline, both Typst and LaTeX output, 15 schools, local version control, and a Traditional Chinese and English interface.
+**Done when:** the beta exit criteria are met: no known data-loss, cannot-open, or cannot-export bugs; CI green on all platforms; beta projects open in 1.0.0; documentation finished; Chinese input checked on Windows and macOS.
 
 ## Out of Scope
 
