@@ -2,7 +2,11 @@ import { MarkdownParser } from "prosemirror-markdown";
 import type { Token } from "markdown-it";
 import { MarkName, NodeName } from "../model/names";
 import { schema } from "../model/schema";
+import { isPlacement } from "../placement";
 import { createMarkdownIt } from "./markdown-it";
+
+/** A placement that the schema knows, anything else is dropped. */
+const placementOf = (value: unknown): string | null => (isPlacement(value) ? value : null);
 
 /** Cell attributes, column alignment comes from the style attribute that markdown-it sets, the rest from the caption line. */
 function cellAttrs(token: Token): {
@@ -77,6 +81,7 @@ const markdownParser = new MarkdownParser(schema, createMarkdownIt() as unknown 
       caption: unescapeBrackets(token.content),
       label: token.meta?.id ?? null,
       width: token.meta?.width ?? null,
+      placement: placementOf(token.meta?.placement),
     }),
   },
   figure_group: {
@@ -86,6 +91,7 @@ const markdownParser = new MarkdownParser(schema, createMarkdownIt() as unknown 
       caption: String(token.meta?.caption ?? ""),
       layout: token.meta?.layout ?? "row",
       columns: token.meta?.columns ?? null,
+      placement: placementOf(token.meta?.placement),
     }),
   },
   div: {
@@ -104,6 +110,8 @@ const markdownParser = new MarkdownParser(schema, createMarkdownIt() as unknown 
       notes: String(token.meta?.notes ?? ""),
       style: token.meta?.style === "grid" ? "grid" : "three-line",
       widths: String(token.meta?.widths ?? ""),
+      borders: String(token.meta?.borders ?? ""),
+      placement: placementOf(token.meta?.placement),
     }),
   },
   thead: { ignore: true },

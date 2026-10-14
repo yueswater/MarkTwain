@@ -2,9 +2,11 @@ import { Node } from "prosemirror-model";
 import { MarkdownSerializer, type MarkdownSerializerState } from "prosemirror-markdown";
 import { formatAttributes } from "./attributes";
 import { escapeLineStart, escapeText } from "./escape";
+import { formatBorders, parseBorders } from "./table-borders";
 import { formatCells, formatHeights, normalizeWidths, type CellExtra } from "./table-extras";
 import { MarkName, NodeName } from "../model/names";
 import { schema } from "../model/schema";
+import { isPlacement } from "../placement";
 import type { DocJson } from "./parse";
 
 /** A fence is one longer than the longest backtick run in the content. */
@@ -263,6 +265,9 @@ const serializer = new MarkdownSerializer(
       if (node.attrs.style === "grid") props.style = "grid";
       const widths = normalizeWidths(String(node.attrs.widths ?? ""));
       if (widths) props.widths = widths;
+      const borders = formatBorders(parseBorders(String(node.attrs.borders ?? "")));
+      if (borders) props.borders = borders;
+      if (isPlacement(node.attrs.placement)) props.placement = node.attrs.placement;
       if (heights.size > 0) props.heights = formatHeights(heights);
       if (extras.size > 0) props.cells = formatCells(extras);
       const attributes = formatAttributes({ id: label, classes: [], props });
@@ -289,7 +294,10 @@ const serializer = new MarkdownSerializer(
     [NodeName.Figure](state, node) {
       const label = node.attrs.label as string | null;
       const width = node.attrs.width as string | null;
-      const attributes = formatAttributes({ id: label, classes: [], props: width ? { width } : {} });
+      const props: Record<string, string> = {};
+      if (width) props.width = width;
+      if (isPlacement(node.attrs.placement)) props.placement = node.attrs.placement;
+      const attributes = formatAttributes({ id: label, classes: [], props });
       state.write(
         `![${figureCaption(String(node.attrs.caption))}](${destination(String(node.attrs.src))})${attributes}`,
       );
@@ -302,7 +310,10 @@ const serializer = new MarkdownSerializer(
       const attributes = formatAttributes({
         id: node.attrs.label as string | null,
         classes: [grid ? "figgrid" : "figrow"],
-        props: columns ? { columns } : {},
+        props: {
+          ...(columns ? { columns } : {}),
+          ...(isPlacement(node.attrs.placement) ? { placement: node.attrs.placement } : {}),
+        },
       });
       state.write(`::: ${attributes}\n`);
       state.renderContent(node);

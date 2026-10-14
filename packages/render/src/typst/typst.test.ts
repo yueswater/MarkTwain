@@ -12,7 +12,7 @@ function render(md: string, kind: TypstKind = "chapter", labels: string[] = []) 
     imagePath: (src) => `/figures/${src}`,
     onMathFailure: (latex) => failures.push(latex),
   });
-  return { ...file, failures, body: file.text.replace(/^#import.*\n\n/, "") };
+  return { ...file, failures, body: file.text.replace(/^(?:#import.*\n)+\n/, "") };
 }
 
 describe("跳脫", () => {
@@ -211,6 +211,76 @@ describe("文件種類", () => {
     const { blockLines, text } = render("# 標題\n\n段落一\n\n段落二\n");
     const lines = text.split("\n");
     expect(blockLines.map((n) => lines[(n ?? 1) - 1])).toEqual(["= 標題", "段落一", "段落二"]);
+  });
+});
+
+describe("placement", () => {
+  const ctxOf = (md: string, figure: "auto" | "here" = "here", table: "auto" | "here" = "here") => {
+    const { document } = toIr(parseMarkdown(md), { documentId: "d", knownLabels: new Set() });
+    return renderTypstFile(document, {
+      kind: "chapter",
+      imagePath: (src) => `/figures/${src}`,
+      onMathFailure: () => undefined,
+      defaultPlacement: { figure, table },
+    }).text;
+  };
+
+  it("a figure floats where it asks to and follows the default of the thesis otherwise", () => {
+    expect(ctxOf("![圖](a.png){placement=top}\n")).toContain('#fig("/figures/a.png", caption: [圖], placement: top)');
+    expect(ctxOf("![圖](a.png){placement=bottom}\n")).toContain("placement: bottom");
+    expect(ctxOf("![圖](a.png){placement=here}\n", "auto")).not.toContain("placement");
+    expect(ctxOf("![圖](a.png)\n", "auto")).toContain("placement: auto");
+    expect(ctxOf("![圖](a.png)\n")).not.toContain("placement");
+  });
+
+  it("near follows auto and a page of its own goes to the top, Typst has no better", () => {
+    expect(ctxOf("![圖](a.png){placement=near}\n")).toContain("placement: auto");
+    expect(ctxOf("![圖](a.png){placement=page}\n")).toContain("placement: top");
+  });
+
+  it("a table takes the placement through a set rule around tlt and an argument on a drawn figure", () => {
+    const plain = ctxOf("| a |\n|---|\n| 1 |\n\n: 表 {#tbl:t placement=top}\n");
+    expect(plain).toContain("#[\n#set figure(placement: top)\n#tlt(");
+    expect(plain).toContain(") <tbl:t>\n]");
+    const merged = ctxOf("| a |\n|---|\n| 1 |\n\n: 表 {#tbl:t style=grid placement=bottom}\n");
+    expect(merged).toContain("  placement: bottom,");
+    expect(ctxOf("| a |\n|---|\n| 1 |\n\n: 表\n")).not.toContain("placement");
+  });
+});
+
+describe("table borders", () => {
+  const table = (borders: string) => `| a | b |\n|---|---|\n| 1 | 2 |\n| 3 | 4 |\n\n: 表 {#tbl:t ${borders}}\n`;
+
+  it("a table without borders keeps the preset helper, and with borders every line is drawn by its own entry", () => {
+    expect(render(table("")).body).toContain("#tlt(");
+    const out = render(table('borders="h2.*=0.5;v1.1=1/dashed;dd0.0=0.5"')).body;
+    expect(out).not.toContain("#tlt(");
+    expect(out).toContain("kind: table");
+    expect(out).toContain("stroke: none");
+    // The preset lines come along as entries, the top and bottom rules and the thin one under the header
+    expect(out).toContain("table.hline(y: 0, start: 0, end: 2, stroke: (thickness: 1pt))");
+    expect(out).toContain("table.hline(y: 1, start: 0, end: 2, stroke: (thickness: 0.6pt))");
+    expect(out).toContain("table.hline(y: 2, start: 0, end: 2, stroke: (thickness: 0.5pt))");
+    expect(out).toContain('table.vline(x: 1, start: 1, end: 2, stroke: (thickness: 1pt, dash: "dashed"))');
+    expect(out).toContain("let height = measure(inner).height");
+  });
+
+  it("a line can be turned off and gets a color and a style", () => {
+    const out = render(table('borders="h-1.*=none;h0.0=2.25/dotted/#ff0000"')).body;
+    expect(out).not.toContain("table.hline(y: 3");
+    expect(out).toContain('table.hline(y: 0, start: 0, end: 1, stroke: (paint: rgb("#FF0000"), thickness: 2.25pt, dash: "dotted"))');
+  });
+});
+
+describe("statements", () => {
+  it("writes a block of a mathematical thesis with its kind, label and title", () => {
+    const out = render('::: {.lemma #lem:ss title="Sum"}\n內容\n:::\n').body;
+    expect(out).toBe('#statement("lemma", id: "lem:ss", title: "Sum")[\n  內容\n]\n');
+  });
+
+  it("gives a proof no label and refers to a block through the statement helper", () => {
+    expect(render("::: {.proof #prf:a}\n證\n:::\n").body).toBe('#statement("proof")[\n  證\n]\n');
+    expect(render("見 @lem:ss\n", "chapter", ["lem:ss"]).body).toBe("見 #statement-ref(<lem:ss>)\n");
   });
 });
 

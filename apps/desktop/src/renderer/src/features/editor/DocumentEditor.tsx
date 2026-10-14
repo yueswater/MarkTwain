@@ -37,7 +37,20 @@ import { Toolbar } from "./Toolbar";
 import { CodeBlockWithLanguage } from "./extensions/nodes/code-block-view";
 import { LineGutter } from "./LineGutter";
 import { EquationLabelBubble } from "./EquationLabelBubble";
+import { ReferenceCard } from "./ReferenceCard";
+import { SlashCommand } from "./slash/slash-command";
+import type { SlashHandlers } from "./slash/slash-items";
 import { EquationShortcut } from "./extensions/equation-shortcut";
+import type { Placement } from "@marktwain/schema";
+import { TableBorders } from "./extensions/table-borders";
+import { TableCaptions } from "./extensions/table-captions";
+import { TableLayout } from "./extensions/table-layout";
+import { useTableLayout } from "./use-table-layout";
+import { PlacementMarks } from "./extensions/placement-marks";
+import { StatementDecorations, STATEMENTS_CHANGED } from "./extensions/statement-decorations";
+import { StatementDialog, type StatementTarget } from "./StatementDialog";
+import { statementOf } from "./statement-heads";
+import { unwrapStatement, updateStatement } from "./statement-commands";
 
 type Props = {
   documentId: string;
@@ -46,10 +59,12 @@ type Props = {
   registerFlush?: (flush: (() => Promise<void>) | null) => void;
   /** Called every time the text has been saved */
   onSaved?: () => void;
+  /** Goes to a block of a document from a card over a reference, opening the document first */
+  onOpenTarget?: (documentId: string, block: number) => void;
 };
 
 /** Loads one document. The caller remounts with key when the document changes, so each document has its own editor and undo history. */
-export function DocumentEditor({ documentId, scrollTo, onSaved, registerFlush }: Props) {
+export function DocumentEditor({ documentId, scrollTo, onSaved, registerFlush, onOpenTarget }: Props) {
   const { t } = useTranslation();
   const [doc, setDoc] = useState<DocumentData | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -74,10 +89,26 @@ export function DocumentEditor({ documentId, scrollTo, onSaved, registerFlush }:
     );
   }
   if (!doc) return null;
-  return <EditorSurface doc={doc} scrollTo={scrollTo ?? null} onSaved={onSaved} registerFlush={registerFlush} />;
+  return <EditorSurface doc={doc} scrollTo={scrollTo ?? null} onSaved={onSaved} registerFlush={registerFlush} onOpenTarget={onOpenTarget} />;
 }
 
 const WIDTH = { narrow: "max-w-xl", normal: "max-w-3xl", wide: "max-w-5xl" } as const;
+
+/** Where the cursor is, in window coordinates, for a box that opens at it. */
+function anchorAtCursor(editor: Editor | null): MathTarget["anchor"] {
+  if (!editor || editor.isDestroyed) return undefined;
+  const coords = editor.view.coordsAtPos(editor.state.selection.from);
+  return { top: coords.top, bottom: coords.bottom, left: coords.left, right: coords.right };
+}
+
+/** Where an existing formula is drawn. */
+function anchorOfNode(editor: Editor | null, pos: number): MathTarget["anchor"] {
+  if (!editor || editor.isDestroyed) return undefined;
+  const dom = editor.view.nodeDOM(pos);
+  if (!(dom instanceof HTMLElement)) return undefined;
+  const box = dom.getBoundingClientRect();
+  return { top: box.top, bottom: box.bottom, left: box.left, right: box.right };
+}
 
 const ATOM_TYPES = new Set(["footnote", "citation", "crossRef"]);
 
@@ -86,11 +117,13 @@ function EditorSurface({
   scrollTo,
   onSaved,
   registerFlush,
+  onOpenTarget,
 }: {
   doc: DocumentData;
   scrollTo: { block: number; nonce: number; term?: string } | null;
   onSaved?: () => void;
   registerFlush?: (flush: (() => Promise<void>) | null) => void;
+  onOpenTarget?: (documentId: string, block: number) => void;
 }) {
   const { t } = useTranslation("editor");
   const { t: tCommon } = useTranslation();
@@ -108,8 +141,12 @@ function EditorSurface({
   const gutterHolder = useRef<HTMLDivElement>(null);
   const [importError, setImportError] = useState<string | null>(null);
   const [unlabeled, setUnlabeled] = useState<UnlabeledTarget[]>([]);
+  const [statement, setStatement] = useState<StatementTarget | null>(null);
 
   const labels = useLabelIndex(status);
+  const tableLayout = useTableLayout();
+  const tableLayoutRef = useRef(tableLayout);
+  tableLayoutRef.current = tableLayout;
   const { view: bibliography } = useBibliography();
   const citations = useMemo(
     () => Object.fromEntries(bibliography.items.map((item): [string, CitationInfo] => [item.key, { author: item.author, year: item.year }])),
@@ -136,6 +173,8 @@ function EditorSurface({
     [doc.id],
   );
   const editorRef = useRef<Editor | null>(null);
+  // What the slash menu asks the view to do, the same functions the toolbar uses
+  const slashRef = useRef<SlashHandlers>({ insertMath: () => undefined, insertAtom: () => undefined, insertImage: () => undefined, insertTable: () => undefined });
   const flushRef = useRef(autosaver);
   flushRef.current = autosaver;
   useEffect(() => autosaver.setDelay(prefs.autosaveDelayMs), [autosaver, prefs.autosaveDelayMs]);
@@ -149,7 +188,7 @@ function EditorSurface({
       extensions: [
         ...createSchemaExtensions({
           codeBlock: CodeBlockWithLanguage,
-          onMathClick: (kind, latex, pos) => setMath({ kind, latex, pos }),
+          onMathClick: (kind, latex, pos) => setMath({ kind, latex, pos, anchor: anchorOfNode(editorRef.current, pos) }),
           figureLabel: (percent) => tRef.current("figure.dragWidth", { value: percent }),
           resizeLabels: {
             width: (percent) => tRef.current("table.dragWidth", { value: percent }),
@@ -157,8 +196,32 @@ function EditorSurface({
           },
         }),
         EquationShortcut,
+        SlashCommand.configure({
+          handlers: () => slashRef.current,
+          nameOf: (item) => tRef.current(`slash.items.${item.id}.name`),
+        }),
         MarkdownPaste.configure({ enabled: () => prefsRef.current.pasteMarkdown }),
         Placeholder.configure({ placeholder: t("placeholder") }),
+        PlacementMarks,
+        TableBorders,
+        TableLayout,
+        TableCaptions.configure({
+          getBase: () => labelsRef.current.bases[doc.id]?.tbl ?? 0,
+          getPosition: () => tableLayoutRef.current.position,
+          getPrefix: () => tableLayoutRef.current.prefix,
+          getNotesLabel: () => tRef.current("table.notesLabel"),
+        }),
+        StatementDecorations.configure({
+          getBase: () => labelsRef.current.bases[doc.id] ?? {},
+          nameOf: (kind) => tRef.current(`statement.kinds.${kind.id}`),
+          getStyle: () => prefsRef.current.statementStyle,
+          colorOf: (kind) => prefsRef.current.statementColors[kind.id] ?? kind.accent,
+          onEdit: (pos) => {
+            const node = editorRef.current?.state.doc.nodeAt(pos);
+            const kind = node ? statementOf(node) : null;
+            if (node && kind) setStatement({ pos, kind: kind.id, title: String((node.attrs.props as { title?: string })?.title ?? "") });
+          },
+        }),
         RefDecorations.configure({
           getNumbers: () => labelsRef.current.numbers,
           kindName: (kind) => tRef.current(`crossRef.kind.${kind}`),
@@ -173,7 +236,7 @@ function EditorSurface({
         // A double click on a figure edits its caption, a single click only selects it
         handleDoubleClickOn: (_view, _pos, node, nodePos) => {
           if (node.type.name !== "figure") return false;
-          setFigure({ pos: nodePos, src: String(node.attrs.src), caption: String(node.attrs.caption ?? ""), width: (node.attrs.width as string | null) ?? null });
+          setFigure({ pos: nodePos, src: String(node.attrs.src), caption: String(node.attrs.caption ?? ""), width: (node.attrs.width as string | null) ?? null, placement: (node.attrs.placement as Placement | null) ?? null });
           return true;
         },
         // Open the edit dialog when a footnote, citation or cross-reference is clicked
@@ -227,6 +290,12 @@ function EditorSurface({
     editor.view.dispatch(editor.state.tr.setMeta(REFS_CHANGED, true));
   }, [editor, labels, citations]);
 
+  // The numbers of the blocks follow the other documents, and the style and colors are a preference
+  useEffect(() => {
+    if (!editor || editor.isDestroyed) return;
+    editor.view.dispatch(editor.state.tr.setMeta(STATEMENTS_CHANGED, true));
+  }, [editor, labels, prefs.statementStyle, prefs.statementColors, tableLayout]);
+
   // Save pending changes before switching documents, closing the project or closing the window
   useEffect(() => {
     const flush = () => void flushRef.current.flush();
@@ -259,6 +328,16 @@ function EditorSurface({
 
   editorRef.current = editor;
   if (!editor) return null;
+
+  const insertImage = () => {
+          setImportError(null);
+          api
+            .invoke(IpcChannel.AssetImportImage)
+            .then((imported) => {
+              if (imported) setFigure({ pos: null, src: imported.src, caption: "", width: null });
+            })
+            .catch((e: unknown) => setImportError(errorMessage(tCommon, e)));
+  };
 
   const openAtom = (type: "footnote" | "citation" | "crossRef") => {
     if (type === "footnote") setAtom({ type, pos: null, text: "" });
@@ -304,7 +383,8 @@ function EditorSurface({
         editor
           .chain()
           .command(({ tr }) => {
-            tr.setNodeMarkup(choice.pos, undefined, { ...target.attrs, label });
+            // A block of a mathematical thesis keeps its label in id
+            tr.setNodeMarkup(choice.pos, undefined, { ...target.attrs, [target.type.name === "div" ? "id" : "label"]: label });
             return true;
           })
           .run();
@@ -313,36 +393,36 @@ function EditorSurface({
     writeAtom("crossRef", { label }, pos);
   };
 
+  slashRef.current = {
+    insertMath: (kind) => setMath({ kind, latex: "", pos: null, anchor: anchorAtCursor(editor) }),
+    insertAtom: openAtom,
+    insertImage,
+    insertTable: () => setTableDialog(true),
+  };
+
   return (
     <div className="flex h-full min-h-0 flex-col">
       <Toolbar
         editor={editor}
-        onInsertMath={(kind) => setMath({ kind, latex: "", pos: null })}
+        onInsertMath={(kind) => setMath({ kind, latex: "", pos: null, anchor: anchorAtCursor(editor) })}
         onInsertAtom={openAtom}
         onInsertTable={() => setTableDialog(true)}
-        onInsertImage={() => {
-          setImportError(null);
-          api
-            .invoke(IpcChannel.AssetImportImage)
-            .then((imported) => {
-              if (imported) setFigure({ pos: null, src: imported.src, caption: "", width: null });
-            })
-            .catch((e: unknown) => setImportError(errorMessage(tCommon, e)));
-        }}
+        onInsertImage={insertImage}
         onEditCaption={() => {
           const attrs = editor.getAttributes(editor.isActive("table") ? "table" : "codeBlock");
           setCaption({
             kind: editor.isActive("table") ? "table" : "codeBlock",
             caption: String(attrs.caption ?? ""),
             notes: String(attrs.notes ?? ""),
+            placement: (attrs.placement as Placement | null | undefined) ?? null,
           });
         }}
       />
       <EditorBubbleMenu
         editor={editor}
-        onInsertMath={() => setMath({ kind: "inline", latex: "", pos: null })}
+        onInsertMath={() => setMath({ kind: "inline", latex: "", pos: null, anchor: anchorAtCursor(editor) })}
         onEditFigure={(pos, attrs) =>
-          setFigure({ pos, src: String(attrs.src), caption: String(attrs.caption ?? ""), width: (attrs.width as string | null) ?? null })
+          setFigure({ pos, src: String(attrs.src), caption: String(attrs.caption ?? ""), width: (attrs.width as string | null) ?? null, placement: (attrs.placement as Placement | null) ?? null })
         }
         onCropFigure={(pos, src) => setCrop({ pos, src })}
       />
@@ -367,6 +447,15 @@ function EditorSurface({
         </div>
       </div>
       </div>
+      {statement && (
+        <StatementDialog
+          target={statement}
+          onSubmit={(change) => updateStatement(editor, statement.pos, change)}
+          onUnwrap={() => unwrapStatement(editor, statement.pos)}
+          onClose={() => setStatement(null)}
+          onRestoreFocus={() => editor.commands.focus()}
+        />
+      )}
       {importError && (
         <p role="alert" className="border-t bg-destructive/5 px-4 py-1 text-xs text-destructive select-text">
           {importError}
@@ -440,8 +529,8 @@ function EditorSurface({
       {figure && (
         <FigureDialog
           target={figure}
-          onSubmit={({ caption: text, width }) => {
-            const attrs = { src: figure.src, caption: text, width };
+          onSubmit={({ caption: text, width, placement }) => {
+            const attrs = { src: figure.src, caption: text, width, placement };
             if (figure.pos === null) {
               // A figure cannot live inside a table cell, so it goes after the table
               const table = findTable(editor.state.selection.$from);
@@ -458,7 +547,7 @@ function EditorSurface({
                   .chain()
                   .focus()
                   .command(({ tr }) => {
-                    tr.setNodeMarkup(pos, undefined, { ...node.attrs, caption: text, width });
+                    tr.setNodeMarkup(pos, undefined, { ...node.attrs, caption: text, width, placement });
                     return true;
                   })
                   .run();
@@ -473,11 +562,11 @@ function EditorSurface({
       {caption && (
         <CaptionDialog
           target={caption}
-          onSubmit={({ caption: text, notes }) =>
+          onSubmit={({ caption: text, notes, placement }) =>
             editor
               .chain()
               .focus()
-              .updateAttributes(caption.kind, caption.kind === "table" ? { caption: text, notes } : { caption: text })
+              .updateAttributes(caption.kind, caption.kind === "table" ? { caption: text, notes, placement } : { caption: text })
               .run()
           }
           onClose={() => setCaption(null)}
@@ -485,6 +574,7 @@ function EditorSurface({
         />
       )}
       <EquationLabelBubble editor={editor} labels={labels} />
+      <ReferenceCard editor={editor} labels={labels} onOpenTarget={(documentId, block) => onOpenTarget?.(documentId, block)} />
       {atom?.type === "footnote" && (
         <FootnoteDialog
           target={atom}

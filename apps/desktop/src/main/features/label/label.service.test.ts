@@ -22,7 +22,21 @@ beforeEach(() => {
 describe("LabelService.resolve", () => {
   it("沒有文件內容時什麼都沒有", () => {
     documents.seedDefaults();
-    expect(labels.resolve()).toEqual({ numbers: {}, broken: [], duplicates: [], targets: [], used: [] });
+    const index = labels.resolve();
+    expect(index).toMatchObject({ numbers: {}, broken: [], duplicates: [], targets: [], used: [] });
+    expect(Object.values(index.bases).every((base) => Object.keys(base).length === 0)).toBe(true);
+  });
+
+  it("定理區塊每種類各自編號，後面的文件從前面的數量接續", () => {
+    documents.seedDefaults(); // id-2 is chapter 1
+    documents.save("id-2", "# 一\n\n::: {.lemma #lem:a}\nx\n:::\n\n::: {.lemma}\ny\n:::\n\n::: {.proof}\nz\n:::\n");
+    const second = documents.create("chapter");
+    documents.save(second.id, "# 二\n\n::: {.lemma #lem:c}\nx\n:::\n\n::: {.definition #def:d}\nx\n:::\n");
+
+    const index = labels.resolve();
+    expect(index.numbers).toMatchObject({ "lem:a": "1", "lem:c": "3", "def:d": "1" });
+    expect(index.targets.map((t) => [t.label, t.kind])).toEqual(expect.arrayContaining([["lem:a", "lem"], ["def:d", "def"]]));
+    expect(index.bases[second.id]).toEqual({ lem: 2 });
   });
 
   it("圖整篇連續編號，沒標籤的也佔編號；章標題顯示標題文字", () => {
@@ -49,6 +63,15 @@ describe("LabelService.resolve", () => {
     const wholeThesis = new LabelService(documents, () => ({ equationNumbering: "all", numberPerChapter: false }));
     expect(perChapter.resolve().numbers["eq:b"]).toBe("1.2");
     expect(wholeThesis.resolve().numbers["eq:b"]).toBe("2");
+  });
+
+  it("取得標籤指向的內容，在哪份文件的哪一個區塊", () => {
+    documents.seedDefaults();
+    documents.save("id-2", "# 章\n\n![說明](a.png){#fig:a}\n\n文字。\n");
+    const preview = labels.preview("fig:a");
+    expect(preview).toMatchObject({ label: "fig:a", documentId: "id-2", block: 1, content: { type: "figure", src: "a.png", caption: "說明" } });
+    expect(preview?.document.kind).toBe("chapter");
+    expect(labels.preview("fig:none")).toBeNull();
   });
 
   it("找出失效的引用與重複的標籤", () => {

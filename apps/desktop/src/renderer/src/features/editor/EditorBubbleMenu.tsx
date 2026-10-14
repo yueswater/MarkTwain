@@ -24,6 +24,9 @@ import {
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { setColumnAlign } from "./table-commands";
+import { BordersMenu } from "./BordersMenu";
+import { PlacementPicker } from "./PlacementPicker";
+import type { Placement } from "@marktwain/schema";
 
 type ItemProps = {
   icon: LucideIcon;
@@ -132,6 +135,8 @@ export function EditorBubbleMenu({ editor, onInsertMath, onEditFigure, onCropFig
               </button>
             ))}
             {divider}
+            <PlacementPicker compact value={(state.figure.attrs.placement as Placement | null) ?? null} onChange={(placement) => run(() => editor.chain().updateAttributes("figure", { placement }).run())()} />
+            {divider}
             <Item icon={Trash2Icon} label={t("figureMenu.remove")} destructive onClick={run(() => editor.chain().deleteSelection().run())} />
           </>
         )}
@@ -156,6 +161,8 @@ export function EditorBubbleMenu({ editor, onInsertMath, onEditFigure, onCropFig
         <Item icon={AlignLeftIcon} label={t("table.alignColumnLeft")} onClick={run(() => setColumnAlign(editor, "left"))} />
         <Item icon={AlignCenterIcon} label={t("table.alignColumnCenter")} onClick={run(() => setColumnAlign(editor, "center"))} />
         <Item icon={AlignRightIcon} label={t("table.alignColumnRight")} onClick={run(() => setColumnAlign(editor, "right"))} />
+        {divider}
+        <BordersMenu editor={editor} compact />
       </BubbleMenu>
     </>
   );

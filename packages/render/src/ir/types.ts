@@ -1,3 +1,5 @@
+import type { Placement } from "@marktwain/schema";
+
 /**
  * Intermediate representation, a tree of blocks and inlines independent of Typst or LaTeX syntax, see section 5 of the spec.
  * Resolved here, inline content of footnotes and captions is parsed and the kind of every cross-reference is known,
@@ -16,8 +18,8 @@ export type Inline =
 
 export type CitationForm = "paren" | "prose" | "year" | "author";
 
-/** Prefix of the label, one of cha, sec, fig, tbl, eq and lst */
-export type RefKind = "cha" | "sec" | "fig" | "tbl" | "eq" | "lst";
+/** Prefix of the label, one of cha, sec, fig, tbl, eq and lst, or the prefix of a block of a mathematical thesis such as lem */
+export type RefKind = string;
 
 export type Align = "left" | "center" | "right" | null;
 
@@ -51,9 +53,12 @@ export type Block =
       label: string | null;
       /** For example "60%", null means the template default */
       width: string | null;
+      /** Where it floats, null follows the default of the thesis */
+      placement: Placement | null;
     }
   | {
       type: "figureGroup";
+      placement: Placement | null;
       layout: "row" | "grid";
       columns: number | null;
       label: string | null;
@@ -62,6 +67,9 @@ export type Block =
     }
   | {
       type: "table";
+      placement: Placement | null;
+      /** Lines that differ from the preset, see table-borders of the schema, empty means the preset */
+      borders: string;
       label: string | null;
       caption: Inline[];
       notes: Inline[];

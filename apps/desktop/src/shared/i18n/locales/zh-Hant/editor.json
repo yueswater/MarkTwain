@@ -35,7 +35,8 @@
     "addDefinition": "新增詞條",
     "image": "插入圖片",
     "codeLanguage": "程式語言",
-    "plainText": "純文字"
+    "plainText": "純文字",
+    "statement": "定理區塊"
   },
   "math": {
     "insertTitle": "插入公式",
@@ -47,7 +48,12 @@
     "insert": "插入",
     "update": "更新",
     "remove": "移除",
-    "hint": "例如：\\frac{a}{b} 或 \\sum_{i=1}^{n} x_i"
+    "hint": "例如：\\frac{a}{b} 或 \\sum_{i=1}^{n} x_i",
+    "inlineTitle": "行內公式",
+    "blockTitle": "獨立公式",
+    "done": "完成 ↵",
+    "hintInline": "夾在文字行中的公式。Enter 完成，Esc 取消。",
+    "hintBlock": "單獨成行的公式。Enter 完成，Shift+Enter 換行，Esc 取消。"
   },
   "footnote": {
     "insertTitle": "插入腳註",
@@ -85,7 +91,16 @@
       "fig": "圖",
       "tbl": "表",
       "eq": "式",
-      "lst": "程式"
+      "lst": "程式",
+      "def": "定義",
+      "lem": "引理",
+      "alm": "輔助引理",
+      "thm": "定理",
+      "prp": "命題",
+      "cor": "推論",
+      "cas": "情況",
+      "exa": "範例",
+      "rem": "註記"
     },
     "broken": "找不到目標",
     "chooseHint": "選擇要引用的目標。",
@@ -99,7 +114,8 @@
       "figure": "圖",
       "table": "表",
       "formula": "公式",
-      "code": "程式碼區塊"
+      "code": "程式碼區塊",
+      "statement": "定理區塊"
     }
   },
   "atom": {
@@ -146,7 +162,8 @@
     "auto": "自動",
     "percent": "%",
     "dragWidth": "欄寬 {{value}}%",
-    "dragHeight": "列高 {{value}} pt"
+    "dragHeight": "列高 {{value}} pt",
+    "notesLabel": "註："
   },
   "caption": {
     "tableTitle": "表格標題",
@@ -208,5 +225,236 @@
     "hint": "有名稱的公式會編號，也能被引用。",
     "numbered": "編號 {{number}}",
     "perChapter": "依章節編號，(3.1) 而不是 (1)"
+  },
+  "slash": {
+    "title": "插入區塊",
+    "none": "沒有符合的區塊。",
+    "close": "關閉選單",
+    "preview": "區塊的樣子",
+    "groups": {
+      "basic": "基本區塊",
+      "thesis": "論文區塊",
+      "statement": "定理區塊"
+    },
+    "items": {
+      "text": {
+        "name": "文字",
+        "description": "一般的文字，內文預設的區塊。"
+      },
+      "heading1": {
+        "name": "標題 1",
+        "description": "一章的標題。"
+      },
+      "heading2": {
+        "name": "標題 2",
+        "description": "章裡一節的標題。"
+      },
+      "heading3": {
+        "name": "標題 3",
+        "description": "一小節的標題。"
+      },
+      "heading4": {
+        "name": "標題 4",
+        "description": "小節底下較小的標題。"
+      },
+      "bulletList": {
+        "name": "項目清單",
+        "description": "沒有順序的要點。"
+      },
+      "orderedList": {
+        "name": "編號清單",
+        "description": "需要計數的步驟或要點。"
+      },
+      "quote": {
+        "name": "引文",
+        "description": "摘自其他著作的段落。"
+      },
+      "rule": {
+        "name": "分隔線",
+        "description": "用一條細線把前後兩段文字隔開。"
+      },
+      "displayMath": {
+        "name": "獨立公式",
+        "description": "單獨成行的公式，取了名稱就會編號。"
+      },
+      "inlineMath": {
+        "name": "行內公式",
+        "description": "夾在文字行中的短公式。"
+      },
+      "figure": {
+        "name": "圖",
+        "description": "含圖說的圖片，從電腦上選檔案。"
+      },
+      "table": {
+        "name": "表格",
+        "description": "列與欄，可加表題與附註。"
+      },
+      "codeBlock": {
+        "name": "程式碼區塊",
+        "description": "框起來的程式文字，依語言上色。"
+      },
+      "footnote": {
+        "name": "腳註",
+        "description": "在頁面底部補充說明，內文裡留下標記。"
+      },
+      "citation": {
+        "name": "文獻引用",
+        "description": "引用書目裡的一筆文獻。"
+      },
+      "crossRef": {
+        "name": "交叉引用",
+        "description": "連到圖、表、公式或標題。"
+      },
+      "statement_definition": {
+        "name": "定義",
+        "description": "一個詞或符號的精確意義。"
+      },
+      "statement_lemma": {
+        "name": "引理",
+        "description": "用來證明定理的小結果。"
+      },
+      "statement_auxlemma": {
+        "name": "輔助引理",
+        "description": "只為某個證明準備的引理。"
+      },
+      "statement_theorem": {
+        "name": "定理",
+        "description": "論文中主要的已證明結果。"
+      },
+      "statement_proposition": {
+        "name": "命題",
+        "description": "比定理次要的已證明結果。"
+      },
+      "statement_corollary": {
+        "name": "推論",
+        "description": "直接由定理推出的結果。"
+      },
+      "statement_case": {
+        "name": "情況",
+        "description": "證明中分情形討論的一種。"
+      },
+      "statement_example": {
+        "name": "範例",
+        "description": "用具體例子說明。"
+      },
+      "statement_remark": {
+        "name": "註記",
+        "description": "補充說明，不屬於主線。"
+      },
+      "statement_proof": {
+        "name": "證明",
+        "description": "不編號，結尾加方框。"
+      }
+    },
+    "sample": {
+      "heading": "研究設計",
+      "list": {
+        "0": "蒐集資料",
+        "1": "估計模型",
+        "2": "報告結果"
+      },
+      "quote": "掌握最多資訊的一方，才能在競賽中先行一步。",
+      "inlineBefore": "相關係數",
+      "inlineAfter": "衡量雙方評價的相似程度。",
+      "figure": "圖 1  均衡區域",
+      "tableHead": {
+        "0": "設定",
+        "1": "比例"
+      },
+      "tableRow": {
+        "0": "獨立",
+        "1": "相關"
+      },
+      "footnote": "此結果在任何正的成本下成立",
+      "citationBefore": "此處沿用先前的模型",
+      "crossRefBefore": "各區域畫在",
+      "crossRefTarget": "圖 1"
+    }
+  },
+  "card": {
+    "footnote": "腳註",
+    "broken": "這個引用找不到目標。",
+    "goTo": "前往",
+    "moreRows": "…還有更多列"
+  },
+  "statement": {
+    "editTitle": "編輯區塊",
+    "kind": "種類",
+    "titleLabel": "標題（選填）",
+    "titleHint": "顯示在編號後面，例如 定義 1（範數）。",
+    "save": "儲存",
+    "unwrap": "移除區塊外框",
+    "kinds": {
+      "definition": "定義",
+      "lemma": "引理",
+      "auxlemma": "輔助引理",
+      "theorem": "定理",
+      "proposition": "命題",
+      "corollary": "推論",
+      "case": "情況",
+      "example": "範例",
+      "remark": "註記",
+      "proof": "證明"
+    }
+  },
+  "placement": {
+    "label": "浮動位置",
+    "followDefault": "都沒有選時，跟隨論文設定。",
+    "auto": {
+      "name": "自動",
+      "hint": "由排版決定放在頁面頂端或底端。"
+    },
+    "near": {
+      "name": "靠近文字",
+      "hint": "盡量靠近引用它的文字。Typst 沒有這個選項，輸出時等同自動。"
+    },
+    "top": {
+      "name": "頁面頂端",
+      "hint": "放在某一頁的上方。"
+    },
+    "bottom": {
+      "name": "頁面底端",
+      "hint": "放在某一頁的下方。"
+    },
+    "page": {
+      "name": "獨立一頁",
+      "hint": "放在專屬的頁面。Typst 沒有這個選項，輸出時放在頁面頂端。"
+    },
+    "here": {
+      "name": "固定在此",
+      "hint": "不浮動，就留在文字中的這個位置。"
+    }
+  },
+  "borders": {
+    "label": "框線",
+    "items": {
+      "bottom": "下框線",
+      "top": "上框線",
+      "left": "左框線",
+      "right": "右框線",
+      "none": "無框線",
+      "all": "所有框線",
+      "outside": "外框線",
+      "inside": "內框線",
+      "insideH": "內橫線",
+      "insideV": "內直線",
+      "diagonalDown": "斜線（往下）",
+      "diagonalUp": "斜線（往上）",
+      "horizontalLine": "橫線（列下方）"
+    },
+    "pen": "筆",
+    "width": "線寬",
+    "widthOther": "其他線寬（pt）",
+    "style": "線型",
+    "styles": {
+      "solid": "實線",
+      "dashed": "虛線",
+      "dotted": "點線",
+      "double": "雙線"
+    },
+    "color": "線的顏色",
+    "doubleNote": "PDF 輸出沒有雙線，會畫成實線。",
+    "applyPen": "套用到選取範圍內的線",
+    "points": "{{value}} pt"
   }
 }

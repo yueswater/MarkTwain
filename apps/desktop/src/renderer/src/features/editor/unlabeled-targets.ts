@@ -1,5 +1,6 @@
 import type { Node as PmNode } from "@tiptap/pm/model";
 import { createLabel, isValidLabel, type LabelKind } from "@marktwain/schema";
+import { statementOf } from "./statement-heads";
 
 export type UnlabeledTarget = {
   pos: number;
@@ -21,6 +22,11 @@ function kindOf(node: PmNode): LabelKind | null {
       return "eq";
     case "codeBlock":
       return node.attrs.caption ? "lst" : null;
+    // A block of a mathematical thesis keeps its label in id, a proof is not referenced
+    case "div": {
+      const statement = statementOf(node);
+      return statement?.numbered ? statement.prefix : null;
+    }
     default:
       return null;
   }
@@ -30,7 +36,7 @@ function describe(node: PmNode): string {
   const text =
     node.type.name === "blockMath"
       ? String(node.attrs.latex)
-      : (node.attrs.caption as string | undefined) || node.textContent;
+      : (node.attrs.caption as string | undefined) || (node.attrs.props as { title?: string } | undefined)?.title || node.textContent;
   return text.replace(/\s+/g, " ").trim().slice(0, 60);
 }
 
@@ -39,7 +45,7 @@ export function findUnlabeledTargets(doc: PmNode): UnlabeledTarget[] {
   const found: UnlabeledTarget[] = [];
   doc.descendants((node, pos) => {
     const kind = kindOf(node);
-    if (kind && !isValidLabel(String(node.attrs.label ?? ""))) {
+    if (kind && !isValidLabel(String(node.attrs.label ?? node.attrs.id ?? ""))) {
       found.push({ pos, kind, text: describe(node) });
     }
     return node.type.name !== "figureGroup"; // Sub figures cannot be referenced on their own
@@ -51,8 +57,9 @@ export function findUnlabeledTargets(doc: PmNode): UnlabeledTarget[] {
 export function existingLabels(doc: PmNode, others: readonly string[]): Set<string> {
   const labels = new Set<string>(others);
   doc.descendants((node) => {
-    const label = node.attrs.label;
-    if (typeof label === "string" && label) labels.add(label);
+    for (const label of [node.attrs.label, node.attrs.id]) {
+      if (typeof label === "string" && label) labels.add(label);
+    }
   });
   return labels;
 }

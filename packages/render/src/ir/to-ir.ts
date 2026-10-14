@@ -1,4 +1,4 @@
-import { labelKind, parseInlineMarkdown, type DocJson } from "@marktwain/schema";
+import { isPlacement, labelKind, parseInlineMarkdown, type DocJson, type Placement } from "@marktwain/schema";
 import type {
   Align,
   Block,
@@ -27,6 +27,7 @@ export type IrOptions = {
 };
 
 const str = (value: unknown): string => (typeof value === "string" ? value : "");
+const placementOrNull = (value: unknown): Placement | null => (isPlacement(value) ? value : null);
 const strOrNull = (value: unknown): string | null =>
   typeof value === "string" && value !== "" ? value : null;
 
@@ -179,10 +180,12 @@ export function toIr(doc: DocJson, options: IrOptions): IrResult {
           caption: inlineSource(attrs.caption),
           label: strOrNull(attrs.label),
           width: strOrNull(attrs.width),
+          placement: placementOrNull(attrs.placement),
         };
       case "figureGroup":
         return {
           type: "figureGroup",
+          placement: placementOrNull(attrs.placement),
           layout: attrs.layout === "grid" ? "grid" : "row",
           columns: typeof attrs.columns === "number" ? attrs.columns : null,
           label: strOrNull(attrs.label),
@@ -204,6 +207,8 @@ export function toIr(doc: DocJson, options: IrOptions): IrResult {
           .map((w) => (/^\d+(\.\d+)?(%|pt|cm|mm|in|em)$/.test(w.trim()) ? w.trim() : null));
         return {
           type: "table",
+          placement: placementOrNull(attrs.placement),
+          borders: str(attrs.borders),
           label: strOrNull(attrs.label),
           caption: inlineSource(attrs.caption),
           notes: inlineSource(attrs.notes),

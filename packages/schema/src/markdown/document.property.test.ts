@@ -64,7 +64,7 @@ const blockMath = fc.tuple(fc.constantFrom("E=mc^2", "\\int_0^1 x\\,dx", "a\nb")
 
 const figure = fc
   .tuple(fc.constantFrom("a.png", "figures/圖 一.png"), boldWord, fc.constantFrom(null, "fig:a"), fc.constantFrom(null, "60%"))
-  .map(([src, caption, label, width]): Json => ({ type: "figure", attrs: { src, caption, label, width } }));
+  .map(([src, caption, label, width]): Json => ({ type: "figure", attrs: { src, caption, label, width, placement: null } }));
 
 const cell = (header: boolean) =>
   word.map((w): Json => ({
@@ -84,7 +84,7 @@ const table = fc
   )
   .map(([head, body, label, caption]): Json => ({
     type: "table",
-    attrs: { label, caption, notes: "", style: "three-line", widths: "" },
+    attrs: { label, caption, notes: "", style: "three-line", widths: "", borders: "", placement: null },
     content: [{ type: "tableRow", attrs: { height: null }, content: head }, ...body.map((cells) => ({ type: "tableRow", attrs: { height: null }, content: cells }))],
   }));
 

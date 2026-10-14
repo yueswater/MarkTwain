@@ -12,6 +12,7 @@ export const FigureGroup = Node.create({
       caption: { default: "" },
       layout: { default: "row" },
       columns: { default: null },
+      placement: { default: null },
     };
   },
 

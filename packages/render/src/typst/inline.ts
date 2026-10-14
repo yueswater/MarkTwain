@@ -1,5 +1,6 @@
 import type { Inline } from "../ir/types";
 import { escapeMarkup, escapeString, ZWSP } from "./escape";
+import { STATEMENT_PREFIXES } from "@marktwain/schema";
 import { convertMath, mathFallback } from "./math";
 
 export type InlineContext = {
@@ -55,6 +56,8 @@ function renderOne(node: Inline, ctx: InlineContext): Piece {
       return { text: node.keys.map((key) => `#${fn}("${escapeString(key)}")`).join(""), call: true };
     }
     case "ref":
+      // A block of a mathematical thesis is numbered by its own helper
+      if (STATEMENT_PREFIXES.includes(node.kind)) return { text: `#statement-ref(<${node.label}>)`, call: true };
       return { text: `#ref(<${node.label}>)`, call: true };
   }
 }

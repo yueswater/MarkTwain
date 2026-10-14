@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { buildTypst } from "./build-typst";
 import { renderThumbnail } from "./thumbnail";
+import { decodeGray, verticalLines } from "./test-png";
 import type { BuildInput } from "./types";
 
 const templateDir = resolve(__dirname, "../../../resources/templates/typ");
@@ -89,6 +90,155 @@ maybe("buildTypst with the real template", () => {
       expect(result.diagnostics.filter((d) => d.severity === "error")).toEqual([]);
       expect(result.ok).toBe(true);
       if (result.ok) expect(Buffer.from(result.pdf.slice(0, 5)).toString()).toBe("%PDF-");
+    } finally {
+      rmSync(work, { recursive: true, force: true });
+    }
+  }, 120_000);
+
+  it("builds the blocks of a mathematical thesis with a name of the author", async () => {
+    const work = mkdtempSync(join(tmpdir(), "marktwain 定理 "));
+    try {
+      const result = await buildTypst(
+        input(work, {
+          config: `${config}statements:\n  name:\n    lemma: "引裡"\n`,
+          documents: [
+            {
+              id: "c1",
+              kind: "chapter",
+              text: [
+                "# 緒論",
+                "",
+                "::: {.definition #def:a title=\"範數\"}",
+                "定義內容 $x$。",
+                ":::",
+                "",
+                "::: {.lemma #lem:ss}",
+                "引理內容。",
+                ":::",
+                "",
+                "::: {.proof}",
+                "由 @lem:ss 與 @def:a 可得。",
+                ":::",
+              ].join("\n"),
+            },
+          ],
+        }),
+      );
+      expect(result.diagnostics.filter((d) => d.severity === "error")).toEqual([]);
+      expect(result.ok).toBe(true);
+    } finally {
+      rmSync(work, { recursive: true, force: true });
+    }
+  }, 120_000);
+
+  it("floats figures and tables where they ask to, and follows the default of the thesis", async () => {
+    const work = mkdtempSync(join(tmpdir(), "marktwain 浮動 "));
+    try {
+      const result = await buildTypst(
+        input(work, {
+          config: `${config}placement:\n  figure: auto\n  table: bottom\n`,
+          documents: [
+            {
+              id: "c1",
+              kind: "chapter",
+              text: [
+                "# 緒論",
+                "",
+                "![頂端](images/a.png){#fig:a placement=top}",
+                "",
+                "![預設](images/a.png){#fig:b}",
+                "",
+                "![固定](images/a.png){#fig:c placement=here}",
+                "",
+                "| 甲 | 乙 |",
+                "|:--|--:|",
+                "| 1 | 2 |",
+                "",
+                ": 表一 {#tbl:t placement=top}",
+                "",
+                "| 甲 | 乙 |",
+                "|:--|--:|",
+                "| 1 | 2 |",
+                "",
+                ": 表二 {#tbl:u style=grid}",
+                "",
+                "見 @fig:a 與 @tbl:t。",
+              ].join("\n"),
+            },
+          ],
+        }),
+      );
+      expect(result.diagnostics.filter((d) => d.severity === "error")).toEqual([]);
+      expect(result.ok).toBe(true);
+    } finally {
+      rmSync(work, { recursive: true, force: true });
+    }
+  }, 120_000);
+
+  it("builds tables whose lines the author chose, diagonals and merged cells included", async () => {
+    const work = mkdtempSync(join(tmpdir(), "marktwain 框線 "));
+    try {
+      const result = await buildTypst(
+        input(work, {
+          documents: [
+            {
+              id: "c1",
+              kind: "chapter",
+              text: [
+                "# 緒論",
+                "",
+                "| 甲＼乙 | 左 | 右 |",
+                "|---|---|---|",
+                "| 上 | 3,1 | 0,0 |",
+                "| 下 | 1,1 | 2,3 |",
+                "",
+                ": 報酬矩陣 {#tbl:a borders=\"h0.*=none;h-1.*=none;h1.1-2=1.5;v1.0-1=1/dashed/#ff0000;dd0.0=0.5;du1.2=0.75\"}",
+                "",
+                "| a | b | c |",
+                "|---|---|---|",
+                "| 1 |  | 3 |",
+                "| 4 | 5 | 6 |",
+                "",
+                ": 合併 {#tbl:b cells=\"2.2:colspan=2\" borders=\"h2.*=2.25;v1.*=0.5/dotted\"}",
+              ].join("\n"),
+            },
+          ],
+        }),
+      );
+      expect(result.diagnostics.filter((d) => d.severity === "error")).toEqual([]);
+      expect(result.ok).toBe(true);
+    } finally {
+      rmSync(work, { recursive: true, force: true });
+    }
+  }, 120_000);
+
+  it("draws the columns of a table in the shares that its widths say", async () => {
+    const work = mkdtempSync(join(tmpdir(), "marktwain 欄寬 "));
+    try {
+      const result = await buildTypst({
+        ...input(work, {
+          documents: [
+            {
+              id: "c1",
+              kind: "chapter",
+              text: ["# 表", "", "| 甲 | 乙 | 丙 |", "|---|---|---|", "| 1 | 2 | 3 |", "| 4 | 5 | 6 |", "", ": 欄寬 {#tbl:w style=grid widths=\"20%,30%,50%\"}"].join("\n"),
+            },
+          ],
+        }),
+        format: "png",
+        ppi: 110,
+      });
+      expect(result.ok).toBe(true);
+      if (!result.ok) return;
+      const lines = verticalLines(decodeGray(result.pages.at(-1) as Uint8Array), 60);
+      expect(lines).toHaveLength(4);
+      const total = (lines[3] as number) - (lines[0] as number);
+      const shares = [1, 2, 3].map((i) => ((lines[i] as number) - (lines[i - 1] as number)) / total);
+      expect(shares[0]).toBeCloseTo(0.2, 1);
+      expect(shares[1]).toBeCloseTo(0.3, 1);
+      expect(shares[2]).toBeCloseTo(0.5, 1);
+      // The table is as wide as the text, 21 cm paper with 3 cm margins is 15 cm of 21
+      expect(total / decodeGray(result.pages.at(-1) as Uint8Array).width).toBeCloseTo(15 / 21, 1);
     } finally {
       rmSync(work, { recursive: true, force: true });
     }

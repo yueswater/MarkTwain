@@ -24,6 +24,7 @@ export const Figure = Node.create({
       caption: data("caption", ""),
       label: data("label"),
       width: data("width"),
+      placement: data("placement"),
     };
   },
 

@@ -79,14 +79,15 @@ test("math can be inserted from the dialog, typed with $…$, edited, and saved 
     await editor.click();
 
     // Insert from the dialog, preview first, a syntax error blocks submit
-    await page.getByRole("button", { name: "Inline math" }).click();
+    await page.getByRole("button", { name: "Inline formula" }).click();
     const dialog = page.getByRole("dialog");
     await dialog.getByLabel("LaTeX").fill("\\frac{a");
     await expect(dialog.getByRole("alert")).toHaveText("This formula has a syntax error.");
-    await expect(dialog.getByRole("button", { name: "Insert" })).toBeDisabled();
+    await expect(dialog.getByRole("button", { name: /Done/ })).toBeDisabled();
     await dialog.getByLabel("LaTeX").fill("x^2");
     await expect(dialog.getByTestId("math-preview")).toBeVisible();
-    await dialog.getByRole("button", { name: "Insert" }).click();
+    // Enter confirms, as the button does
+    await dialog.getByLabel("LaTeX").press("Enter");
     await expect(editor.locator(".katex")).toHaveCount(1);
 
     // Typing $...$ right after Chinese text also becomes a formula
@@ -96,14 +97,15 @@ test("math can be inserted from the dialog, typed with $…$, edited, and saved 
     // Click a formula to edit it
     await editor.locator("[data-type='inline-math'] .katex-html").first().click();
     await page.getByRole("dialog").getByLabel("LaTeX").fill("z^3");
-    await page.getByRole("dialog").getByRole("button", { name: "Update" }).click();
+    await page.getByRole("dialog").getByRole("button", { name: /Done/ }).click();
     await expect(editor.locator("[data-type='inline-math']").first()).toHaveAttribute("data-latex", "z^3");
 
     // Block formula
     await page.keyboard.press("Enter");
-    await page.getByRole("button", { name: "Math block" }).click();
+    await page.getByRole("button", { name: "Display formula" }).click();
+    await expect(page.getByRole("dialog", { name: "Display formula" })).toBeVisible();
     await page.getByRole("dialog").getByLabel("LaTeX").fill("E=mc^2");
-    await page.getByRole("dialog").getByRole("button", { name: "Insert" }).click();
+    await page.getByRole("dialog").getByRole("button", { name: /Done/ }).click();
     await expect(editor.locator("[data-type='block-math']")).toHaveCount(1);
     await expect(page.getByRole("status")).toHaveText("Saved");
 
@@ -726,9 +728,10 @@ test("a display formula has no number until it is named from the box next to it"
     const editor = page.locator(".ProseMirror");
     await editor.click();
     await page.keyboard.type("Intro ");
-    await page.getByRole("button", { name: "Math block" }).click();
+    await page.getByRole("button", { name: "Display formula" }).click();
+    await expect(page.getByRole("dialog", { name: "Display formula" })).toBeVisible();
     await page.getByRole("dialog").getByLabel("LaTeX").fill("E=mc^2");
-    await page.getByRole("dialog").getByRole("button", { name: "Insert" }).click();
+    await page.getByRole("dialog").getByRole("button", { name: /Done/ }).click();
     const formula = editor.locator("[data-type='block-math']");
     await expect(formula).toHaveCount(1);
     await expect(page.getByRole("status")).toHaveText("Saved");
@@ -860,9 +863,10 @@ test("only ordinary text lines are numbered, a named formula shows its number, a
     await expect.poll(() => numbers.count()).toBe(paragraphs);
 
     // A table and a figure do not count either, a display formula shows its number once it has a name
-    await page.getByRole("button", { name: "Math block" }).click();
+    await page.getByRole("button", { name: "Display formula" }).click();
+    await expect(page.getByRole("dialog", { name: "Display formula" })).toBeVisible();
     await page.getByRole("dialog").getByLabel("LaTeX").fill("E=mc^2");
-    await page.getByRole("dialog").getByRole("button", { name: "Insert" }).click();
+    await page.getByRole("dialog").getByRole("button", { name: /Done/ }).click();
     const formula = editor.locator("[data-type='block-math']");
     await expect(formula).toHaveCount(1);
     await formula.hover();
@@ -886,6 +890,153 @@ test("only ordinary text lines are numbered, a named formula shows its number, a
     await expect(page.getByTestId("code-lines").locator("span")).toHaveText(["1", "2", "3"]);
     // The lines of the code are not in the gutter of the text, the paragraph that became code even left it
     await expect.poll(() => numbers.count()).toBeLessThanOrEqual(beforeCode);
+  } finally {
+    await app.close();
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("a slash opens a list of blocks with a description or a drawing of the chosen one", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "marktwain 斜線 "));
+  const args = [`--user-data-dir=${join(dir, "userData")}`, "--lang=en-US"];
+  if (process.platform === "linux") args.push("--no-sandbox");
+  const app = await electron.launch({
+    executablePath: findPackagedExecutable(dist),
+    args,
+    env: { ...process.env, MARKTWAIN_TEST_DIALOG_PATH: join(dir, "p.marktwain") },
+  });
+  try {
+    const page = await app.firstWindow();
+    await page.getByRole("button", { name: "New project" }).click();
+    const editor = page.locator(".ProseMirror");
+    await editor.click();
+    const menu = page.getByTestId("slash-menu");
+    const preview = page.getByTestId("slash-preview");
+
+    // The list opens at a slash, with groups, shortcuts and a panel for the chosen block
+    await page.keyboard.type("/");
+    await expect(menu).toBeVisible();
+    await expect(menu.getByRole("option", { name: /Heading 1/ })).toContainText("#");
+    await expect(preview).toContainText("Text");
+    // The arrows move the choice and the panel follows
+    await page.keyboard.press("ArrowDown");
+    await expect(preview).toContainText("Heading 1");
+    await expect(preview).toContainText("The title of a chapter");
+
+    // Typing narrows the list in either language, Enter inserts the block and takes the slash away
+    await page.keyboard.type("tab");
+    await expect(menu.getByRole("option")).toHaveCount(1);
+    await expect(menu.getByRole("option", { name: /Table/ })).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(menu).toBeHidden();
+    await expect(editor).toContainText("/tab");
+    await page.keyboard.press("Backspace");
+    await page.keyboard.press("Backspace");
+    await page.keyboard.press("Backspace");
+    await page.keyboard.press("Backspace");
+
+    await page.keyboard.type("/h2");
+    await page.keyboard.press("Enter");
+    await expect(editor.locator("h2")).toHaveCount(1);
+    await expect(editor).not.toContainText("/h2");
+    await page.keyboard.type("A section");
+
+    // Chinese words find the formula blocks
+    await page.keyboard.press("Enter");
+    await page.keyboard.type("/公式");
+    await expect(menu.getByRole("option")).toHaveCount(2);
+    await page.keyboard.press("Enter");
+    await expect(page.getByRole("dialog", { name: "Inline formula" }).or(page.getByRole("dialog", { name: "Display formula" }))).toBeVisible();
+    await page.keyboard.press("Escape");
+
+    // A slash inside a word or inside code is only text
+    await editor.click();
+    await page.keyboard.press("ControlOrMeta+End");
+    await page.keyboard.type(" and/or");
+    await expect(menu).toBeHidden();
+  } finally {
+    await app.close();
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("hovering a reference or a footnote opens a card with what it points to", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "marktwain 卡片 "));
+  const args = [`--user-data-dir=${join(dir, "userData")}`, "--lang=en-US"];
+  if (process.platform === "linux") args.push("--no-sandbox");
+  const app = await electron.launch({
+    executablePath: findPackagedExecutable(dist),
+    args,
+    env: { ...process.env, MARKTWAIN_TEST_DIALOG_PATH: join(dir, "p.marktwain") },
+  });
+  try {
+    const page = await app.firstWindow();
+    await page.getByRole("button", { name: "New project" }).click();
+    await page.evaluate(async () => {
+      const list = await window.marktwain.invoke("document:list");
+      if (!list.ok) return;
+      const chapter = list.data.find((d) => d.kind === "chapter")!;
+      const long = "word ".repeat(80);
+      await window.marktwain.invoke("document:save", {
+        id: chapter.id,
+        text: [
+          "# Intro {#cha:intro}",
+          "",
+          "Opening words for the chapter.",
+          "",
+          "$$",
+          "E = mc^2",
+          "$$ {#eq:energy}",
+          "",
+          "| Setting | Share |",
+          "|---|---|",
+          "| A | 0.4 |",
+          "| B | 0.6 |",
+          "",
+          ": Shares of the settings {#tbl:shares}",
+          "",
+          `See @eq:energy and @tbl:shares and @fig:missing, then a note[^1].`,
+          "",
+          `[^1]: ${long}`,
+        ].join("\n"),
+      });
+    });
+    await page.getByRole("button", { name: "Close project" }).click();
+    await page.getByRole("region", { name: "Recent projects" }).getByRole("button").first().click();
+    const editor = page.locator(".ProseMirror");
+    await expect(editor.locator("[data-cross-ref]")).toHaveCount(3);
+
+    // A formula and a table are drawn in a card next to the reference
+    await editor.locator("[data-cross-ref]").nth(0).hover();
+    const card = page.getByTestId("reference-card");
+    await expect(card).toBeVisible();
+    await expect(card.locator(".katex")).toBeVisible();
+    await expect(card).toContainText("Chapter 1");
+    await editor.locator("[data-cross-ref]").nth(1).hover();
+    await expect(card.locator("table")).toBeVisible();
+    await expect(card).toContainText("Shares of the settings");
+
+    // A reference to nothing says so, the card of the one before may lie over it, so the pointer leaves first
+    await page.mouse.move(5, 5);
+    await expect(card).toBeHidden();
+    await editor.locator("[data-cross-ref]").nth(2).hover();
+    await expect(card).toContainText("points to nothing");
+
+    // A footnote has a tooltip of a fixed size with the start of its text, cut with three dots
+    await page.mouse.move(5, 5);
+    await expect(card).toBeHidden();
+    await editor.locator("sup[data-footnote]").hover();
+    const note = page.getByTestId("footnote-card");
+    await expect(note).toBeVisible();
+    await expect(note).toContainText("word word");
+    await expect(note).toContainText("...");
+    const box = await note.boundingBox();
+    expect(box && Math.round(box.width) === 280 && Math.round(box.height) === 104).toBe(true);
+
+    // Going to the target from the card closes it
+    await editor.locator("[data-cross-ref]").nth(0).hover();
+    await card.getByRole("button", { name: "Go to" }).click();
+    await expect(card).toBeHidden();
   } finally {
     await app.close();
     rmSync(dir, { recursive: true, force: true });

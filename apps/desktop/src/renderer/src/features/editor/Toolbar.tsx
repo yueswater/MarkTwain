@@ -23,7 +23,11 @@ import {
   TypeIcon,
   Undo2Icon,
   type LucideIcon,
+  SquareSigmaIcon,
 } from "lucide-react";
+import { STATEMENT_KINDS } from "@marktwain/schema";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { insertStatement } from "./statement-commands";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { TableTools } from "./TableTools";
@@ -228,6 +232,20 @@ export function Toolbar({ editor, onInsertMath, onInsertAtom, onEditCaption, onI
       {button(t("toolbar.image"), ImageIcon, onInsertImage)}
       {button(t("toolbar.table"), TableIcon, onInsertTable)}
       {button(t("toolbar.definitionList"), BookAIcon, () => insertDefinition(editor, state.inDefinitionList))}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button type="button" variant="ghost" size="icon-sm" aria-label={t("toolbar.statement")} title={t("toolbar.statement")} onMouseDown={(event) => event.preventDefault()}>
+            <SquareSigmaIcon aria-hidden="true" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" onCloseAutoFocus={(event) => { event.preventDefault(); editor.commands.focus(); }}>
+          {STATEMENT_KINDS.map((kind) => (
+            <DropdownMenuItem key={kind.id} onSelect={() => insertStatement(editor, kind.id)}>
+              {t(`statement.kinds.${kind.id}`)}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
     {state.inTable && <TableTools editor={editor} onEditCaption={onEditCaption} />}
     </>

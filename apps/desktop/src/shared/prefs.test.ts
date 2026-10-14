@@ -18,3 +18,12 @@ describe("sanitizePrefs", () => {
     expect(sanitizePrefs({ spellcheck: true }, current)).toMatchObject({ fontSize: 20, lineNumbers: true, spellcheck: true });
   });
 });
+
+describe("statement prefs", () => {
+  it("keeps the style and only valid colors of known kinds", () => {
+    const prefs = sanitizePrefs({ statementStyle: "colored", statementColors: { lemma: "#abcdef", theorem: "red", nope: "#000000" } });
+    expect(prefs.statementStyle).toBe("colored");
+    expect(prefs.statementColors).toEqual({ lemma: "#ABCDEF" });
+    expect(sanitizePrefs({ statementStyle: "boxed" }).statementStyle).toBe("callout");
+  });
+});

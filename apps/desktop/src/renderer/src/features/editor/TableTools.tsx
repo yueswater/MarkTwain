@@ -22,6 +22,9 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
+import { BordersMenu } from "./BordersMenu";
+import { PlacementPicker } from "./PlacementPicker";
+import type { Placement } from "@marktwain/schema";
 import { setColumnAlign, setColumnWidth, setRowHeight, tableMetrics } from "./table-commands";
 
 type Props = { editor: Editor; onEditCaption: () => void };
@@ -34,6 +37,7 @@ export function TableTools({ editor, onEditCaption }: Props) {
     editor,
     selector: ({ editor: e }) => ({
       grid: e.getAttributes("table").style === "grid",
+      placement: (e.getAttributes("table").placement as Placement | null | undefined) ?? null,
       canMerge: e.can().mergeCells(),
       canSplit: e.can().splitCell(),
       metrics: tableMetrics(e),
@@ -91,7 +95,10 @@ export function TableTools({ editor, onEditCaption }: Props) {
         () => editor.chain().focus().updateAttributes("table", { style: state.grid ? "three-line" : "grid" }).run(),
         { active: state.grid },
       )}
+      <BordersMenu editor={editor} />
       {button(t("table.caption"), TypeIcon, onEditCaption)}
+      {divider("e")}
+      <PlacementPicker compact value={state.placement} onChange={(placement) => editor.chain().focus().updateAttributes("table", { placement }).run()} />
       {button(t("table.deleteTable"), Trash2Icon, () => editor.chain().focus().deleteTable().run())}
       <div className="ml-3 flex shrink-0 items-center gap-x-4 whitespace-nowrap text-xs text-muted-foreground" data-testid="table-readout">
         <span>{t("table.position", { row: state.metrics.row, rows: state.metrics.rows, column: state.metrics.column, columns: state.metrics.columns })}</span>
