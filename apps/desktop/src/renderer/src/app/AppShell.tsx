@@ -1,51 +1,47 @@
-import TranslateRounded from "@mui/icons-material/TranslateRounded";
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
+import { LanguagesIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
+import logo from "@/assets/logo.png";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { SUPPORTED_LOCALES, type Locale } from "../../../shared/enums/locale.enum";
-import logo from "../assets/logo.png";
-import { SERIF } from "../theme/typography";
 
 type Props = {
   children: ReactNode;
   onLocaleChange: (locale: Locale) => void;
 };
 
-/** 頂部應用列（品牌與語言選單）加內容區。所有文字都走 i18n。 */
+/** 頂部列（品牌與語言選單）加內容區。視覺沿用 anvilnote 的黑白灰設計語言。所有文字都走 i18n。 */
 export function AppShell({ children, onLocaleChange }: Props) {
   const { t, i18n } = useTranslation();
 
   return (
-    <Box sx={{ minHeight: "100vh", bgcolor: "background.default" }}>
-      <AppBar position="static">
-        <Toolbar sx={{ gap: 1.5 }}>
-          <Box component="img" src={logo} alt="" sx={{ height: 44, width: 44 }} />
-          <Typography component="h1" variant="h5" sx={{ fontFamily: SERIF, fontWeight: 700, flexGrow: 1 }}>
-            {t("app.name")}
-          </Typography>
-          <TranslateRounded color="action" />
-          <Select
-            size="small"
-            value={i18n.language}
-            onChange={(event) => onLocaleChange(event.target.value as Locale)}
-            slotProps={{ input: { "aria-label": t("settings.language") } }}
-          >
-            {SUPPORTED_LOCALES.map((locale) => (
-              <MenuItem key={locale} value={locale}>
-                {t(`settings.locale.${locale}`)}
-              </MenuItem>
-            ))}
+    <div className="min-h-screen bg-background">
+      <header className="flex h-12 items-center gap-2 border-b px-4">
+        <img src={logo} alt="" className="size-7" />
+        <h1 className="text-sm font-semibold tracking-tight">{t("app.name")}</h1>
+        <div className="ml-auto flex items-center gap-2">
+          <LanguagesIcon className="size-4 text-muted-foreground" aria-hidden="true" />
+          <Select value={i18n.language} onValueChange={(value) => onLocaleChange(value as Locale)}>
+            <SelectTrigger size="sm" aria-label={t("settings.language")}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent align="end">
+              {SUPPORTED_LOCALES.map((locale) => (
+                <SelectItem key={locale} value={locale}>
+                  {t(`settings.locale.${locale}`)}
+                </SelectItem>
+              ))}
+            </SelectContent>
           </Select>
-        </Toolbar>
-      </AppBar>
-      <Box component="main" sx={{ p: 4, maxWidth: 960, mx: "auto" }}>
-        {children}
-      </Box>
-    </Box>
+        </div>
+      </header>
+      <main className="mx-auto max-w-3xl p-8">{children}</main>
+    </div>
   );
 }
