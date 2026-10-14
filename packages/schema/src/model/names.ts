@@ -14,6 +14,8 @@ export const NodeName = {
   HorizontalRule: "horizontalRule",
   Text: "text",
   HardBreak: "hardBreak",
+  InlineMath: "inlineMath",
+  BlockMath: "blockMath",
 } as const;
 
 export type NodeName = (typeof NodeName)[keyof typeof NodeName];

@@ -41,6 +41,22 @@ function isTight(list: Node): boolean {
   return tight;
 }
 
+/** 行內公式的內容：修剪、換行變空白、把沒跳脫的 `$` 跳脫（否則會提前結束公式）。 */
+function inlineLatex(latex: string): string {
+  const flat = latex.replace(/\s*\n\s*/g, " ").trim();
+  let out = "";
+  for (let i = 0; i < flat.length; i += 1) {
+    const ch = flat.charAt(i);
+    if (ch === "\\") {
+      out += ch + flat.charAt(i + 1);
+      i += 1;
+    } else {
+      out += ch === "$" ? "\\$" : ch;
+    }
+  }
+  return out;
+}
+
 const serializer = new MarkdownSerializer(
   {
     [NodeName.Paragraph](state, node) {
@@ -100,6 +116,19 @@ const serializer = new MarkdownSerializer(
 
     [NodeName.HorizontalRule](state, node) {
       state.write("---");
+      state.closeBlock(node);
+    },
+
+    [NodeName.InlineMath](state, node) {
+      state.write(`$${inlineLatex(String(node.attrs.latex))}$`);
+    },
+
+    [NodeName.BlockMath](state, node) {
+      const label = node.attrs.label as string | null;
+      state.write("$$\n");
+      state.text(String(node.attrs.latex).trim(), false);
+      state.write("\n$$");
+      if (label) state.write(` ${formatAttributes({ id: label, classes: [], props: {} })}`);
       state.closeBlock(node);
     },
 

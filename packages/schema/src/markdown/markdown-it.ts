@@ -1,5 +1,6 @@
 import MarkdownIt from "markdown-it";
 import attrs from "markdown-it-attrs";
+import { mathPlugin } from "./plugins/math";
 
 /**
  * 方言的 markdown-it 實例（規格 4.3 節）。後續的小節會在這裡加入腳註、
@@ -8,5 +9,7 @@ import attrs from "markdown-it-attrs";
 export type MarkdownItInstance = InstanceType<typeof MarkdownIt>;
 
 export function createMarkdownIt(): MarkdownItInstance {
-  return new MarkdownIt({ html: false, linkify: false, typographer: false, breaks: false }).use(attrs);
+  return new MarkdownIt({ html: false, linkify: false, typographer: false, breaks: false })
+    .use(attrs)
+    .use(mathPlugin);
 }

@@ -45,6 +45,11 @@ const markdownParser = new MarkdownParser(schema, createMarkdownIt() as unknown 
     getAttrs: (token) => ({ href: token.attrGet("href"), title: token.attrGet("title") || null }),
   },
   code_inline: { mark: MarkName.Code, noCloseToken: true },
+  math_inline: { node: NodeName.InlineMath, getAttrs: (token) => ({ latex: token.content }) },
+  math_block: {
+    node: NodeName.BlockMath,
+    getAttrs: (token) => ({ latex: token.content, label: token.attrGet("id") }),
+  },
 });
 
 export type DocJson = { type: "doc"; content: unknown[] };

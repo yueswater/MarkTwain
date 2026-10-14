@@ -39,6 +39,20 @@ const nodes: Record<NodeName, NodeSpec> = {
   [NodeName.Text]: { group: "inline" },
 
   [NodeName.HardBreak]: { inline: true, group: "inline", selectable: false },
+
+  // 公式的內容是 LaTeX 原文，不是 Markdown；名稱與 TipTap 官方的數學擴充一致。
+  [NodeName.InlineMath]: {
+    inline: true,
+    group: "inline",
+    atom: true,
+    attrs: { latex: { default: "" } },
+  },
+
+  [NodeName.BlockMath]: {
+    group: "block",
+    atom: true,
+    attrs: { latex: { default: "" }, label: { default: null } },
+  },
 };
 
 const marks: Record<MarkName, MarkSpec> = {
