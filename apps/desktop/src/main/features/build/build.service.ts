@@ -19,7 +19,7 @@ type Exporter = typeof exportTypstProject;
 export class BuildService {
   private running = false;
   private revision = 0;
-  private latest: Uint8Array | null = null;
+  private pages: Uint8Array[] = [];
 
   constructor(
     private readonly session: DatabaseSession,
@@ -31,9 +31,9 @@ export class BuildService {
     private readonly exporter: Exporter = exportTypstProject,
   ) {}
 
-  /** PDF bytes of the latest successful build, for the preview protocol. */
-  latestPdf(): Uint8Array | null {
-    return this.latest;
+  /** A page image of the latest successful build, for the preview protocol. */
+  page(index: number): Uint8Array | null {
+    return this.pages[index] ?? null;
   }
 
   /** Everything the builder needs, read from the open project. */
@@ -60,9 +60,14 @@ export class BuildService {
     return this.config.get().fields.title.trim() || "thesis";
   }
 
-  savePdf(path: string): void {
-    if (!this.latest) throw new AppError(ErrorCode.ExportNoPdf);
-    writeFileSync(path, this.latest);
+  /** Builds the PDF now, so exporting never depends on an earlier preview, and saves it. */
+  async savePdf(path: string): Promise<void> {
+    const result = await this.run({ ...this.input(), format: "pdf" });
+    if (!result.ok) {
+      const first = result.diagnostics.find((d) => d.severity === "error");
+      throw new AppError(ErrorCode.ExportFailed, { reason: first?.message ?? "build failed" });
+    }
+    writeFileSync(path, result.pdf);
   }
 
   /** Writes the standalone Typst project into a new folder inside parent and returns its path. */
@@ -83,13 +88,13 @@ export class BuildService {
 
     this.running = true;
     try {
-      const result: BuildResult = await this.run(input);
+      const result: BuildResult = await this.run({ ...input, format: "png" });
 
       if (!result.ok && result.diagnostics.some((d) => /ENOENT/.test(d.message))) {
         throw new AppError(ErrorCode.BuildTypstMissing);
       }
       if (result.ok) {
-        this.latest = result.pdf;
+        this.pages = result.pages;
         this.revision += 1;
       }
       return {
@@ -103,7 +108,8 @@ export class BuildService {
           source: d.source,
         })),
         mathFailures: result.mathFailures,
-        previewUrl: result.ok ? `marktwain-preview://pdf/${this.revision}.pdf` : null,
+        pageCount: result.ok ? result.pages.length : 0,
+        revision: this.revision,
       };
     } finally {
       this.running = false;

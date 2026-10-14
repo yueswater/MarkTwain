@@ -16,8 +16,10 @@ export type BuildOutcome = {
   diagnostics: BuildDiagnostic[];
   /** LaTeX formulas that could not be converted and are shown as source text */
   mathFailures: string[];
-  /** URL the preview can load, present when ok is true */
-  previewUrl: string | null;
+  /** Number of page images of the preview, 0 when the build failed */
+  pageCount: number;
+  /** Grows with every successful build, part of the page image URLs so they are never cached */
+  revision: number;
 };
 
 export type BuildContract = {

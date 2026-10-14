@@ -133,16 +133,34 @@ export async function buildTypst(input: BuildInput): Promise<BuildResult> {
   try {
     const prepared = prepare(input, root, true);
     const fonts = join(input.templateDir, "fonts");
+    const png = input.format === "png";
+    const output = png ? "page-{0p}.png" : "out.pdf";
     const { code, stderr } = await run(
       input.typst,
-      ["compile", "main.typ", "out.pdf", "--font-path", fonts, "--diagnostic-format", "human"],
+      [
+        "compile",
+        "main.typ",
+        output,
+        ...(png ? ["--format", "png", "--ppi", String(input.ppi ?? 110)] : []),
+        "--font-path",
+        fonts,
+        "--diagnostic-format",
+        "human",
+      ],
       root,
       input.timeoutMs ?? 120_000,
     );
     const diagnostics = [...warnings(prepared), ...parseDiagnostics(stderr, prepared.lineMap, root)];
     const mathFailures = prepared.mathFailures;
-    if (code === 0 && existsSync(join(root, "out.pdf"))) {
-      return { ok: true, pdf: readFileSync(join(root, "out.pdf")), diagnostics, mathFailures };
+    if (code === 0 && png) {
+      const pages = readdirSync(root)
+        .filter((name) => /^page-\d+\.png$/.test(name))
+        .sort()
+        .map((name) => readFileSync(join(root, name)));
+      if (pages.length > 0) return { ok: true, pdf: new Uint8Array(), pages, diagnostics, mathFailures };
+    }
+    if (code === 0 && !png && existsSync(join(root, "out.pdf"))) {
+      return { ok: true, pdf: readFileSync(join(root, "out.pdf")), pages: [], diagnostics, mathFailures };
     }
     if (!diagnostics.some((d) => d.severity === "error")) {
       diagnostics.push({
