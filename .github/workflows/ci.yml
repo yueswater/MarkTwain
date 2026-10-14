@@ -36,7 +36,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - uses: typst-community/setup-typst@v4
       - name: Fetch the pinned templates
-        run: pnpm templates:fetch
+        run: pnpm templates:fetch typ
         env:
           GH_TOKEN: ${{ github.token }}
       - run: pnpm lint
@@ -61,7 +61,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - uses: typst-community/setup-typst@v4
       - name: Fetch the pinned templates
-        run: pnpm templates:fetch
+        run: pnpm templates:fetch typ
         env:
           GH_TOKEN: ${{ github.token }}
       - run: pnpm build:unpacked
