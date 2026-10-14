@@ -2,6 +2,7 @@ import MarkdownIt from "markdown-it";
 import attrs from "markdown-it-attrs";
 import footnote from "markdown-it-footnote";
 import { citationPlugin } from "./plugins/citation";
+import { deflistPlugin } from "./plugins/deflist";
 import { divPlugin } from "./plugins/div";
 import { figuresPlugin } from "./plugins/figures";
 import { footnoteResolvePlugin } from "./plugins/footnote";
@@ -24,6 +25,7 @@ export function createMarkdownIt(): MarkdownItInstance {
   return md
     .use(attrs)
     .use(footnote)
+    .use(deflistPlugin)
     .use(mathPlugin)
     .use(citationPlugin)
     .use(divPlugin)

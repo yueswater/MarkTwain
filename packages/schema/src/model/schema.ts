@@ -142,6 +142,11 @@ const nodes: Record<NodeName, NodeSpec> = {
       colwidth: { default: null },
     },
   },
+
+  // 定義清單（符號說明頁）：每個詞有一個以上的說明。
+  [NodeName.DefinitionList]: { group: "block", content: "(definitionTerm definitionDescription+)+" },
+  [NodeName.DefinitionTerm]: { content: "inline*" },
+  [NodeName.DefinitionDescription]: { content: "block+" },
 };
 
 const marks: Record<MarkName, MarkSpec> = {
