@@ -3,8 +3,8 @@ import { labelKind } from "@marktwain/schema";
 export type RefDisplay = { text: string; broken: boolean };
 
 /**
- * 交叉引用在編輯器裡顯示的文字：章節顯示標題，其他顯示「圖 1.1」。
- * `kindName` 把標籤前綴（fig、tbl…）轉成目前語言的名稱。
+ * Text shown for a cross-reference in the editor, headings show their title and others show for example Figure 1.1.
+ * kindName turns a label prefix such as fig or tbl into a name in the current language.
  */
 export function describeRef(
   label: string,

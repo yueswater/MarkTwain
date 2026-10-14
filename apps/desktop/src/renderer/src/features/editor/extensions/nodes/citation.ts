@@ -1,6 +1,6 @@
 import { mergeAttributes, Node } from "@tiptap/core";
 
-/** 文獻引用：keys 是書目的 key；form 是 paren、prose、year、author 其中之一。 */
+/** Citation, keys are bibliography keys and form is one of paren, prose, year and author. */
 export const Citation = Node.create({
   name: "citation",
   group: "inline",
@@ -11,7 +11,7 @@ export const Citation = Node.create({
     return {
       keys: {
         default: [],
-        // 複製貼上時要還原成陣列；書目 key 不含逗號
+        // Restore an array on copy and paste, bibliography keys contain no commas
         parseHTML: (element: HTMLElement) =>
           (element.getAttribute("data-keys") ?? "").split(",").filter(Boolean),
         renderHTML: (attributes: Record<string, unknown>) => ({

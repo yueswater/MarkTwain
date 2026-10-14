@@ -3,8 +3,8 @@ import fc from "fast-check";
 import { parseMarkdown, type DocJson } from "./parse";
 import { serializeMarkdown } from "./serialize";
 
-// 把方言的每一種語法隨機組合成文件：序列化再解析必須得到原樣，
-// 而且再序列化一次得到完全相同的文字（冪等）。
+// Combines every syntax of the dialect at random into documents, serializing and parsing must give the same document,
+// and serializing again must give the exact same text, which is idempotence.
 
 type Json = Record<string, any>;
 
@@ -30,7 +30,7 @@ const inlineItem: fc.Arbitrary<Json> = fc.oneof(
   boldWord.map((w) => ({ type: "footnote", attrs: { text: `註 ${w}` } })),
 );
 
-/** 行內內容：項目之間用空白文字隔開，避免相鄰字元互相影響。 */
+/** Inline content, items are separated by space text so neighbouring characters do not affect each other. */
 const inline = fc.array(inlineItem, { minLength: 1, maxLength: 4 }).map((items) =>
   items.flatMap((item, i) => (i === 0 ? [item] : [text(" "), item])),
 );
@@ -116,7 +116,7 @@ const block = fc.oneof(
   div,
 );
 
-/** 相鄰且標記相同的文字節點合併，與解析器的輸出一致。 */
+/** Adjacent text nodes with the same marks are merged, matching the output of the parser. */
 function normalize(node: Json): Json {
   if (!node.content) return node;
   const merged: Json[] = [];
@@ -131,7 +131,7 @@ function normalize(node: Json): Json {
   return { ...node, content: merged };
 }
 
-/** 相鄰的相同種類區塊會在 Markdown 裡被併起來（兩個連續的清單），先用空段落隔開。 */
+/** Adjacent blocks of the same kind merge in Markdown, such as two consecutive lists, so separate them with an empty paragraph first. */
 function separate(blocks: Json[]): Json[] {
   const merging = new Set(["bulletList", "orderedList", "definitionList", "blockquote", "table"]);
   const out: Json[] = [];
@@ -154,7 +154,7 @@ describe("混合文件的往返", () => {
         expect(serializeMarkdown(parsed)).toBe(markdown);
         return true;
       }),
-      // 平常 400 組；要深入檢查時：FC_NUM_RUNS=10000 pnpm test -- document.property
+      // Usually 400 runs, for a deep check use FC_NUM_RUNS=10000 pnpm test -- document.property
       { numRuns: Number(process.env.FC_NUM_RUNS ?? 400) },
     );
   });

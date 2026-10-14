@@ -1,6 +1,6 @@
 import type { Database } from "../../infra/db";
 
-/** project 資料表（只有一列）的讀寫。 */
+/** Read and write of the project table, which has a single row. */
 export class ProjectRepository {
   constructor(private readonly db: Database) {}
 

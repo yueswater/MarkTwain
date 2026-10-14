@@ -21,7 +21,7 @@ type JsonNode = {
 
 export type IrOptions = {
   documentId: string;
-  /** 專案裡所有已定義的標籤；引用不在其中的標籤會退回純文字並列入問題清單 */
+  /** Every label defined in the project, references to labels not in it fall back to plain text and are reported */
   knownLabels: ReadonlySet<string>;
 };
 
@@ -29,10 +29,10 @@ const str = (value: unknown): string => (typeof value === "string" ? value : "")
 const strOrNull = (value: unknown): string | null =>
   typeof value === "string" && value !== "" ? value : null;
 
-/** 把 TipTap（ProseMirror）JSON 轉成 IR；純函式，不依賴 DOM。 */
+/** Converts TipTap or ProseMirror JSON to IR, a pure function with no DOM. */
 export function toIr(doc: DocJson, options: IrOptions): IrResult {
   const issues: IrIssue[] = [];
-  let current = 0; // 目前處理的頂層區塊
+  let current = 0; // Top level block being processed
 
   const report = (code: IrIssue["code"], detail: string) =>
     issues.push({ code, documentId: options.documentId, block: current, detail });
@@ -46,7 +46,7 @@ export function toIr(doc: DocJson, options: IrOptions): IrResult {
     return out;
   }
 
-  /** 腳註、圖說等欄位存的是行內 Markdown 原文，這裡再解析一次。 */
+  /** Footnotes and captions store inline Markdown source, so it is parsed again here. */
   function inlineSource(source: unknown): Inline[] {
     const text = str(source);
     return text === "" ? [] : inlines(parseInlineMarkdown(text) as JsonNode[]);
@@ -206,7 +206,7 @@ export function toIr(doc: DocJson, options: IrOptions): IrResult {
   for (const [index, node] of ((doc as JsonNode).content ?? []).entries()) {
     current = index;
     const converted = block(node);
-    // 無法轉換的區塊也要佔一個索引，輸出才能對回來源區塊
+    // A block that cannot be converted still takes an index so output maps back to the source block
     top.push(converted ?? { type: "paragraph", content: [] });
   }
   return { document: { documentId: options.documentId, blocks: top }, issues };

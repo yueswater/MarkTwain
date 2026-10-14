@@ -1,6 +1,6 @@
 /**
- * 節點與標記的名稱。與 TipTap 的 StarterKit 一致（camelCase），
- * 所以編輯器的 JSON 可以直接交給 `serialize`。
+ * Names of nodes and marks. Same as StarterKit of TipTap, in camelCase,
+ * so the JSON of the editor can go straight to serialize.
  */
 export const NodeName = {
   Doc: "doc",

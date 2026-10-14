@@ -1,18 +1,18 @@
 export type EscapeContext = {
-  /** 這段文字是否在一行的開頭（段落開頭、清單項目開頭、硬換行之後） */
+  /** Whether this text is at the start of a line, paragraph start, list item start or after a hard break */
   startOfLine: boolean;
-  /** 是否在標題裡：標題結尾的 `#` 序列會被當成關閉記號 */
+  /** Whether inside a heading, a trailing run of # at the end of a heading is taken as a closing marker */
   inHeading: boolean;
-  /** 是否在表格儲存格裡：`|` 是欄位分隔 */
+  /** Whether inside a table cell, | separates columns */
   inTableCell?: boolean;
 };
 
-/** 看起來像字元實體的 `&…;`（`&amp;`、`&#35;`、`&#x23;`）。 */
+/** Looks like a character entity &…; such as &amp;, &#35; or &#x23;. */
 const ENTITY = /^&(#\d+|#[xX][0-9a-fA-F]+|[A-Za-z][A-Za-z0-9]*);/;
 
 /**
- * `@` 後面接字或大括號、而且前面不是字時，可能被當成引用或交叉引用（規格 4.3 節）。
- * 字中間的 `@`（電子郵件）與單獨的 `@` 不用跳脫。
+ * An @ followed by a word character or a brace and not preceded by a word character may be taken as a citation or cross-reference, see section 4.3 of the spec.
+ * An @ inside a word such as an email address and a lone @ need no escape.
  */
 function startsCitation(text: string, index: number): boolean {
   const previous = index > 0 ? text.charAt(index - 1) : "";
@@ -21,9 +21,9 @@ function startsCitation(text: string, index: number): boolean {
 }
 
 /**
- * 把純文字跳脫成不會被解析成標記的 Markdown。範圍涵蓋 CommonMark 的行內與行首規則，
- * 加上本方言的屬性 `{…}`、公式 `$` 與圍欄 div / 定義清單的行首 `:`（規格 4.3 節）。
- * 往返的屬性測試會驗證：任何文字跳脫後再解析，都得到原本的文字。
+ * Escapes plain text into Markdown that is not parsed as markup. It covers the inline and line start rules of CommonMark
+ * plus attributes {…}, the formula $ and the line start : of fenced divs and definition lists of this dialect, see section 4.3 of the spec.
+ * The round trip property tests check that any text escaped and parsed again gives the original text.
  */
 export function escapeText(text: string, context: EscapeContext): string {
   let out = "";
@@ -33,7 +33,7 @@ export function escapeText(text: string, context: EscapeContext): string {
     if ("`*\\~[]<{}$".includes(ch)) {
       out += `\\${ch}`;
     } else if (ch === "_") {
-      // 字中間的底線（snake_case）不用跳脫；鄰居必須是英數字，連續的底線彼此不算
+      // An underscore inside a word such as snake_case needs no escape, neighbours must be alphanumeric and consecutive underscores do not count for each other
       const intraword =
         i > 0 &&
         i + 1 < text.length &&
@@ -56,7 +56,7 @@ export function escapeText(text: string, context: EscapeContext): string {
   return context.startOfLine ? escapeLineStart(out) : out;
 }
 
-/** 行首會被當成區塊標記（標題、清單、引用、定義、div 圍欄）的字元要跳脫。 */
+/** Characters at line start that would be taken as block markers, heading, list, quote, definition or div fence, must be escaped. */
 export function escapeLineStart(text: string): string {
   return text
     .replace(/^(\s*)(#{1,6})(\s|$)/, "$1\\$2$3")

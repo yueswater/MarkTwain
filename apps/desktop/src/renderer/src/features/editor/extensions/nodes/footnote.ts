@@ -1,6 +1,6 @@
 import { mergeAttributes, Node } from "@tiptap/core";
 
-/** 腳註：內容是行內 Markdown 原文；編號在序列化時依出現順序產生。 */
+/** Footnote, the content is inline Markdown source and numbers are generated in order of appearance when serializing. */
 export const Footnote = Node.create({
   name: "footnote",
   group: "inline",

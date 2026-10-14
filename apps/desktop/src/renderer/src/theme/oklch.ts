@@ -1,4 +1,4 @@
-/** OKLCH 轉 sRGB 十六進位色值（Björn Ottosson 的 OKLab 矩陣）。超出色域的通道限制在 0 到 255。 */
+/** OKLCH to sRGB hex, using the OKLab matrices of Björn Ottosson. Channels outside the gamut are clamped to 0 to 255. */
 export function oklchToHex(lightness: number, chroma: number, hueDegrees: number): string {
   const hue = (hueDegrees * Math.PI) / 180;
   const a = chroma * Math.cos(hue);
@@ -29,8 +29,8 @@ const OKLCH = /^oklch\(\s*([\d.]+)\s+([\d.]+)\s+([\d.]+)\s*\)$/;
 const HEX = /^#[0-9a-f]{6}$/i;
 
 /**
- * 讀出 CSS 裡某個選擇器區塊（例如 `:root`、`.dark`）的顏色 token，轉成十六進位。
- * 只認 `oklch(L C H)` 與 `#rrggbb`，其餘（如 `--radius`）忽略。
+ * Reads the color tokens of a CSS selector block such as :root or .dark and converts them to hex.
+ * Only oklch with L C H and #rrggbb are understood, others such as --radius are ignored.
  */
 export function readColorTokens(css: string, selector: string): Record<string, string> {
   const start = css.indexOf(`${selector} {`);

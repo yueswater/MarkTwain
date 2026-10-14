@@ -2,7 +2,7 @@ import { app, BrowserWindow } from "electron";
 import { join } from "node:path";
 import { RENDERER_URL_ENV, WINDOW_SIZE } from "../config/app.config";
 
-/** Windows 與 Linux 的視窗圖示（macOS 用 .app 的圖示）。打包後放在 resources/icon.png。 */
+/** Window icon for Windows and Linux, macOS uses the app icon. Packaged as resources/icon.png. */
 function windowIconPath(): string {
   return app.isPackaged
     ? join(process.resourcesPath, "icon.png")

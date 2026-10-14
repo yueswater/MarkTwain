@@ -1,6 +1,6 @@
 import { mergeAttributes, Node } from "@tiptap/core";
 
-/** 並排圖（layout 為 row）或網格圖（grid）；子圖的 caption 是子標題，這裡的 caption 是總標題。 */
+/** Side by side figures, layout row, or a grid. A caption of a sub figure is its sub title and the caption here is the overall title. */
 export const FigureGroup = Node.create({
   name: "figureGroup",
   group: "block",

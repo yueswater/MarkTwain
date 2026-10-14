@@ -13,8 +13,8 @@ export type RefDecorationOptions = {
 };
 
 /**
- * 在不改文件內容的前提下，替腳註（編號）、交叉引用（目標的編號）與文獻引用（代號）加上顯示文字。
- * 顯示文字放在節點的 data 屬性，由 CSS 的 `::after` 呈現；內容改變或收到 REFS_CHANGED 時重算。
+ * Adds display text to footnotes, which get a number, cross-references, which get the number of the target, and citations, which get the keys, without changing the document.
+ * Display text lives in data attributes of the node and CSS ::after renders it. It is recomputed when content changes or REFS_CHANGED arrives.
  */
 export const RefDecorations = Extension.create<RefDecorationOptions>({
   name: "refDecorations",

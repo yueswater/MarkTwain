@@ -28,14 +28,14 @@ test("the native menu follows the interface language and drives the app", async 
         return fileItem?.submenu?.items.map((item) => item.label) ?? [];
       });
 
-    // 畫面載入完成（前端已訂閱選單指令）後才開始
+    // Start once the page has loaded and the renderer subscribed to menu commands
     await expect(page.getByRole("button", { name: "新增專案" })).toBeVisible();
 
-    // 中文選單（macOS 還有以 App 名稱命名的第一個選單）
+    // Chinese menu, macOS also has a first menu named after the app
     expect((await labels()).filter(Boolean)).toEqual(expect.arrayContaining(["檔案", "編輯", "檢視", "視窗", "說明"]));
     expect(await fileMenuItems()).toEqual(expect.arrayContaining(["新增專案…", "開啟專案…", "關閉專案"]));
 
-    // 「檔案 → 新增專案」會觸發前端的新增流程
+    // File, New Project triggers the new project flow in the renderer
     await app.evaluate(({ Menu }) => {
       const item = Menu.getApplicationMenu()
         ?.items.flatMap((i) => i.submenu?.items ?? [])
@@ -44,7 +44,7 @@ test("the native menu follows the interface language and drives the app", async 
     });
     await expect(page.getByRole("complementary", { name: "文件" })).toBeVisible();
 
-    // 「檔案 → 關閉專案」回到歡迎畫面
+    // File, Close Project returns to the welcome screen
     await app.evaluate(({ Menu }) => {
       const item = Menu.getApplicationMenu()
         ?.items.flatMap((i) => i.submenu?.items ?? [])
@@ -53,7 +53,7 @@ test("the native menu follows the interface language and drives the app", async 
     });
     await expect(page.getByRole("button", { name: "新增專案" })).toBeVisible();
 
-    // 切換語言後選單跟著換
+    // The menu follows a language switch
     await page.getByRole("combobox").click();
     await page.getByRole("option", { name: "English" }).click();
     await expect.poll(fileMenuItems).toEqual(expect.arrayContaining(["New Project…", "Open Project…", "Close Project"]));

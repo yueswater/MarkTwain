@@ -1,7 +1,7 @@
 import { protocol } from "electron";
 import { ASSET_SCHEME, PREVIEW_SCHEME } from "../config/app.config";
 
-/** 必須在 app ready 之前呼叫：宣告這個協定是標準、安全的，圖片才能在頁面裡載入。 */
+/** Must run before app ready, declares the protocol standard and secure so images can load in the page. */
 export function declareAssetScheme(): void {
   protocol.registerSchemesAsPrivileged([
     { scheme: ASSET_SCHEME, privileges: { standard: true, secure: true, supportFetchAPI: true } },
@@ -11,7 +11,7 @@ export function declareAssetScheme(): void {
 
 type Reader = (path: string) => { data: Uint8Array; mime: string } | null;
 
-/** app ready 之後呼叫：`marktwain-asset://project/images/x.png` 由目前專案的 files 表提供。 */
+/** Runs after app ready, serves marktwain-asset://project/images/x.png from the files table of the open project. */
 export function handleAssetProtocol(read: Reader): void {
   protocol.handle(ASSET_SCHEME, (request) => {
     const path = decodeURIComponent(new URL(request.url).pathname).replace(/^\/+/, "");

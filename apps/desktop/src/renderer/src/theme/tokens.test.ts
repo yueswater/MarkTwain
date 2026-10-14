@@ -4,8 +4,8 @@ import { join } from "node:path";
 import { contrastRatio } from "./contrast";
 import { readColorTokens } from "./oklch";
 
-// anvilnote 的設計語言：嚴格的黑白灰（規格 3.6 節）。這裡驗證它的色票符合 WCAG AA：
-// 一般文字 4.5:1；焦點環至少 3:1。
+// Design language of anvilnote, strict black white and gray. This checks that its palette meets WCAG AA,
+// 4.5 to 1 for normal text and at least 3 to 1 for the focus ring.
 const css = readFileSync(join(__dirname, "../styles/globals.css"), "utf8");
 
 const TEXT_PAIRS: Array<[string, string]> = [
@@ -25,8 +25,8 @@ const TEXT_PAIRS: Array<[string, string]> = [
   ["sidebar-accent-foreground", "sidebar-accent"],
 ];
 
-// 深色主題目前沒有啟用（只有淺色）。這兩組在深色底上的紅色文字對比不到 4.5:1，
-// 是 anvilnote 色票本身的落差；等做深色主題時再處理，並移除這裡的例外。
+// Dark mode is not enabled yet, only light. Red text on a dark background in these two groups is below 4.5 to 1,
+// a gap in the anvilnote palette itself, to be handled with dark mode, then remove the exception here.
 const KNOWN_DARK_GAPS = new Set(["destructive-foreground on destructive", "destructive on background"]);
 
 for (const selector of [":root", ".dark"]) {
@@ -41,7 +41,7 @@ for (const selector of [":root", ".dark"]) {
     it.each(TEXT_PAIRS)("文字 --%s 在 --%s 上至少 4.5:1", (foreground, background) => {
       const ratio = contrastRatio(get(foreground), get(background));
       if (selector === ".dark" && KNOWN_DARK_GAPS.has(`${foreground} on ${background}`)) {
-        expect(ratio).toBeGreaterThanOrEqual(3.9); // 已知落差：不退步
+        expect(ratio).toBeGreaterThanOrEqual(3.9); // Known gap, no regression allowed
         return;
       }
       expect(ratio).toBeGreaterThanOrEqual(4.5);

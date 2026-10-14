@@ -15,7 +15,7 @@ import zhHantProject from "./locales/zh-Hant/project.json";
 import zhHantDialog from "./locales/zh-Hant/dialog.json";
 import zhHantDiagnostics from "./locales/zh-Hant/diagnostics.json";
 
-/** 新增命名空間時，在兩個語言各加一行。 */
+/** Add one line per language when adding a namespace. */
 export const resources = {
   "zh-Hant": { common: zhHantCommon, diagnostics: zhHantDiagnostics, dialog: zhHantDialog, project: zhHantProject, editor: zhHantEditor, config: zhHantConfig, menu: zhHantMenu, build: zhHantBuild },
   en: { common: enCommon, diagnostics: enDiagnostics, dialog: enDialog, project: enProject, editor: enEditor, config: enConfig, menu: enMenu, build: enBuild },

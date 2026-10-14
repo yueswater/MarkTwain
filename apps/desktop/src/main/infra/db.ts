@@ -3,8 +3,8 @@ import { dirname } from "node:path";
 import { ensureDir } from "../utils/fs.util";
 
 /**
- * `node:sqlite` 的 API 仍標示為實驗性（規格第 3 節），所以整個專案只有這個檔案
- * 匯入它；其他程式碼只使用這裡的 `Database` 介面。
+ * The node:sqlite API is still marked experimental, so this is the only file
+ * that imports it. Other code uses the Database interface from here.
  */
 export type SqlValue = string | number | bigint | null | Uint8Array;
 
@@ -15,7 +15,7 @@ export interface Database {
   run(sql: string, params?: SqlValue[]): RunResult;
   get<T = Record<string, SqlValue>>(sql: string, params?: SqlValue[]): T | undefined;
   all<T = Record<string, SqlValue>>(sql: string, params?: SqlValue[]): T[];
-  /** 在單一交易內執行；丟出例外時回滾並重新丟出。不允許巢狀。 */
+  /** Runs in one transaction, rolls back and rethrows on error. Nesting is not allowed. */
   transaction<T>(fn: () => T): T;
   close(): void;
 }

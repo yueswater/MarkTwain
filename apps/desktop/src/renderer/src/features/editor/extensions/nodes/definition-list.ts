@@ -1,6 +1,6 @@
 import { Node } from "@tiptap/core";
 
-/** 定義清單（符號說明頁）：每個詞有一個以上的說明。 */
+/** Definition list for the notation page, each term has one or more descriptions. */
 export const DefinitionList = Node.create({
   name: "definitionList",
   group: "block",
@@ -21,7 +21,7 @@ export const DefinitionTerm = Node.create({
 
   addKeyboardShortcuts() {
     return {
-      // 詞條不能分成兩個詞條（結構是「詞條加說明」），Enter 改為跳到它的說明
+      // A term cannot split into two terms since the structure is term plus description, so Enter jumps to its description
       Enter: ({ editor }) => {
         const { $from } = editor.state.selection;
         if ($from.parent.type.name !== this.name) return false;

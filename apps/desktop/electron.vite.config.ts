@@ -3,9 +3,9 @@ import react from "@vitejs/plugin-react";
 import { defineConfig } from "electron-vite";
 import { resolve } from "node:path";
 
-// main 與 preload 目前只依賴 workspace 內的 TypeScript 原始碼，需要被打包進去，
-// 所以不使用 externalize 外掛。SQLite 使用 Node 內建的 `node:sqlite`，
-// 不需要處理原生模組。
+// main and preload depend on TypeScript sources inside the workspace and must be bundled,
+// so the externalize plugin is not used. SQLite is node:sqlite, built into Node,
+// so no native module needs handling.
 export default defineConfig({
   main: {},
   preload: {},

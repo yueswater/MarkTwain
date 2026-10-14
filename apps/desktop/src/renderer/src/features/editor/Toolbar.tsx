@@ -60,7 +60,7 @@ function setBlock(editor: Editor, block: Block): void {
   else chain.setHeading({ level: Number(block.slice(-1)) as 1 | 2 | 3 | 4 }).run();
 }
 
-/** 在游標所在的清單後面接一組新的「詞條＋說明」；不在定義清單裡時插入新的清單，游標落在詞條裡。 */
+/** Appends a new term and description after the list at the cursor, or inserts a new list when not in one, with the cursor in the term. */
 function insertDefinition(editor: Editor, inList: boolean): void {
   const { schema } = editor.state;
   const term = schema.nodes.definitionTerm;
@@ -80,18 +80,18 @@ function insertDefinition(editor: Editor, inList: boolean): void {
           if ($from.node(depth).type === list) {
             const end = $from.end(depth);
             tr.insert(end, pair);
-            tr.setSelection(TextSelection.create(tr.doc, end + 1)); // 新詞條的內容開頭
+            tr.setSelection(TextSelection.create(tr.doc, end + 1)); // Start of the content of the new term
             return true;
           }
         }
         return false;
       }
-      // 游標在空段落時取代它，否則插在目前區塊之後
+      // Replace an empty paragraph at the cursor, otherwise insert after the current block
       const emptyParagraph = $from.parent.type === paragraph && $from.parent.content.size === 0;
       const at = emptyParagraph ? $from.before() : $from.after();
       if (emptyParagraph) tr.replaceWith(at, $from.after(), list.create(null, pair));
       else tr.insert(at, list.create(null, pair));
-      tr.setSelection(TextSelection.create(tr.doc, at + 2)); // list 開頭 +1、term 開頭 +1
+      tr.setSelection(TextSelection.create(tr.doc, at + 2)); // list start plus 1 and term start plus 1
       return true;
     })
     .run();
@@ -100,7 +100,7 @@ function insertDefinition(editor: Editor, inList: boolean): void {
 export function Toolbar({ editor, onInsertMath, onInsertAtom, onEditCaption, onInsertImage }: Props) {
   const { t } = useTranslation("editor");
 
-  // 選取範圍或內容改變時重新計算按鈕狀態
+  // Recompute button state when the selection or content changes
   const state = useEditorState({
     editor,
     selector: ({ editor: e }) => ({
@@ -135,7 +135,7 @@ export function Toolbar({ editor, onInsertMath, onInsertAtom, onEditCaption, onI
       aria-pressed={options.active}
       disabled={options.disabled}
       className={cn(options.active && "bg-muted")}
-      // 按鈕不搶走編輯器的焦點與選取範圍
+      // Buttons do not take focus or selection from the editor
       onMouseDown={(event) => event.preventDefault()}
       onClick={onClick}
     >

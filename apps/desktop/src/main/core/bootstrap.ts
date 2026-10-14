@@ -2,8 +2,8 @@ import { app, BrowserWindow } from "electron";
 import { createMainWindow } from "./window";
 
 /**
- * 應用程式的生命週期。`registrars` 由入口（組合根）傳入，
- * 讓 core 不必依賴任何 feature。
+ * App lifecycle. The entry point passes registrars in,
+ * so core never depends on a feature.
  */
 export function bootstrap(registrars: Array<() => void>): void {
   void app.whenReady().then(() => {

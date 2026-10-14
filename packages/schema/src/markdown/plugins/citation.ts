@@ -2,10 +2,10 @@ import type { MarkdownItInstance } from "../markdown-it";
 
 type StateInline = InstanceType<MarkdownItInstance["inline"]["State"]>;
 
-/** 交叉引用的標籤前綴；書目的 key 不可以用這些開頭（規格 4.3 節）。 */
+/** Prefixes of cross-reference labels, bibliography keys may not start with them, see section 4.3 of the spec. */
 const XREF_PREFIX = /^(?:cha|sec|fig|tbl|eq|lst):/;
 
-/** 單純的 key：字、數字、底線，內部可以有 : . - / + 但後面必須接字或數字。 */
+/** A plain key, letters, digits and underscores, inside it : . - / + are allowed but must be followed by a letter or digit. */
 const SIMPLE_KEY = "[A-Za-z0-9_](?:[A-Za-z0-9_]|[:.\\-/+](?=[A-Za-z0-9_]))*";
 const BARE_KEY = new RegExp(`^${SIMPLE_KEY}`);
 const ITEM = new RegExp(`^(-?)@(?:\\{([^{}\\s]+)\\}|(${SIMPLE_KEY}))$`);
@@ -27,7 +27,7 @@ function pushCrossRef(state: StateInline, label: string): void {
   token.content = label;
 }
 
-/** `[@a; @b]`、`[-@a]`、`[@a]{.author}`；單一的 `[@fig:x]` 是交叉引用。 */
+/** [@a; @b], [-@a] and [@a]{.author}, while a single [@fig:x] is a cross-reference. */
 function bracketForm(state: StateInline, silent: boolean): boolean {
   const src = state.src;
   const start = state.pos;
@@ -61,7 +61,7 @@ function bracketForm(state: StateInline, silent: boolean): boolean {
   return true;
 }
 
-/** 敘述式 `@key`、`@{key}`，以及 `@fig:x`。 */
+/** Narrative @key and @{key}, and @fig:x. */
 function bareForm(state: StateInline, silent: boolean): boolean {
   const src = state.src;
   const start = state.pos;
@@ -71,7 +71,7 @@ function bareForm(state: StateInline, silent: boolean): boolean {
   let end: number;
   const braces = /^\{([^{}\s]+)\}/.exec(src.slice(afterAt, state.posMax));
   if (braces) {
-    // 大括號寫法是明確的，不檢查前一個字元
+    // The brace form is explicit, the previous character is not checked
     key = braces[1] ?? "";
     end = afterAt + braces[0].length;
   } else {
@@ -98,6 +98,6 @@ function citation(state: StateInline, silent: boolean): boolean {
 }
 
 export function citationPlugin(md: MarkdownItInstance): void {
-  // 在 link 之前：`[@a](x)` 要先被當成引用，而不是連結
+  // Before link, so that a citation followed by a parenthesis is not taken as a link
   md.inline.ruler.before("link", "citation", citation);
 }

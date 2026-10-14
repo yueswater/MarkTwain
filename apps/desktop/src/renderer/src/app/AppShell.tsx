@@ -14,7 +14,7 @@ import { SUPPORTED_LOCALES, type Locale } from "../../../shared/enums/locale.enu
 
 type Props = {
   children: ReactNode;
-  /** 目前開啟的專案名稱；沒有專案時為 null */
+  /** Name of the open project, null when none is open */
   projectName: string | null;
   onCloseProject: () => void;
   /** Shown only while a project is open */
@@ -23,7 +23,7 @@ type Props = {
   onLocaleChange: (locale: Locale) => void;
 };
 
-/** 頂部列（品牌、專案名稱、語言選單）加內容區。視覺沿用 anvilnote 的黑白灰設計語言。所有文字都走 i18n。 */
+/** Top bar with brand, project name and language menu, then the content area. The look follows the AnvilNote monochrome language. All text goes through i18n. */
 export function AppShell({
   children,
   projectName,

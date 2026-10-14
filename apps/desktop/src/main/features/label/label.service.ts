@@ -13,7 +13,7 @@ import type { DocumentService } from "../document/document.service";
 
 const CHAPTER_LIKE: readonly string[] = [DocumentKind.Chapter, DocumentKind.Appendix];
 
-/** 掃描整個專案的文件，算出可引用的標籤、顯示編號與失效的引用（規格 4.4 節）。 */
+/** Scans every document of the project and computes referable labels, display numbers and broken references. */
 export class LabelService {
   constructor(
     private readonly documents: DocumentService,
@@ -29,7 +29,7 @@ export class LabelService {
       const { text } = this.documents.get(summary.id);
       const collected = collectTargets(parseMarkdown(text), summary.id);
 
-      // 每份章或附錄文件就是一章；沒有自己標章的，補一個合成的章，編號才會逐章重編
+      // Each chapter or appendix document is one chapter, add a synthetic chapter when it has none so numbering restarts per chapter
       if (CHAPTER_LIKE.includes(summary.kind) && !collected.targets.some((t) => t.kind === "cha")) {
         collected.targets.unshift({ kind: "cha", label: `cha:~${summary.id}`, text: "" });
       }
@@ -46,13 +46,13 @@ export class LabelService {
       const kind = labelKind(target.label);
       const display = result.numbers.get(target.label);
       const documentId = owners.get(target.label);
-      if (!kind || display === undefined || documentId === undefined) continue; // 合成標籤不能被選
+      if (!kind || display === undefined || documentId === undefined) continue; // Synthetic labels cannot be picked
       if (pickable.some((p) => p.label === target.label)) continue;
       pickable.push({ label: target.label, kind, display, documentId });
     }
 
     return {
-      // 合成標籤只為了讓編號正確，不對外
+      // Synthetic labels only keep numbers right and are not exposed
       numbers: Object.fromEntries([...result.numbers].filter(([label]) => labelKind(label) !== null)),
       broken: result.broken,
       duplicates: result.duplicates,

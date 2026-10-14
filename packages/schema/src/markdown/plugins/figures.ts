@@ -3,14 +3,14 @@ import type { MarkdownItInstance } from "../markdown-it";
 type CoreState = InstanceType<MarkdownItInstance["core"]["State"]>;
 type Token = CoreState["tokens"][number];
 
-/** div_open 的 meta（由 div 外掛設定）。 */
+/** Meta of div_open, set by the div plugin. */
 type DivMeta = { id?: string | null; classes?: string[]; props?: Record<string, string> };
 
 /**
- * 1. 獨立成段的圖片變成 `figure` 區塊（標題是圖片的 alt 原文，標籤與寬度來自屬性）。
- * 2. 還留在文字中間的圖片降級成文字（本方言只支援獨立成段的圖）。
- * 3. 內容符合結構的 `.figrow` / `.figgrid` div 變成 `figure_group`：全部是圖，
- *    最後可以有一個段落當總標題；不符合時保持一般 div。
+ * 1. An image alone in a paragraph becomes a figure block, the caption is the alt source and label and width come from attributes.
+ * 2. An image left inside text is downgraded to text, the dialect supports only figures in their own paragraph.
+ * 3. A .figrow or .figgrid div whose content fits becomes figure_group, all figures,
+ *    with an optional last paragraph as the overall caption. Otherwise it stays a plain div.
  */
 function promoteFigures(state: CoreState): void {
   const tokens = state.tokens;

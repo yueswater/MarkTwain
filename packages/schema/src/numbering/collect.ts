@@ -10,9 +10,9 @@ type JsonNode = {
 };
 
 export type CollectedTargets = {
-  /** 文件順序的目標；沒有標籤的圖、表、公式也在內，這樣編號才會對 */
+  /** Targets in document order, unlabeled figures, tables and formulas are included so numbering is right */
   targets: Target[];
-  /** 文件裡的交叉引用所指的標籤，依出現順序（可重複） */
+  /** Labels that cross-references in the document point to, in order of appearance and possibly repeated */
   references: string[];
 };
 
@@ -27,16 +27,16 @@ function labelOf(node: JsonNode): string | null {
 }
 
 /**
- * 沒有標籤的目標也要佔一個編號，所以給它一個合成的標籤。
- * 合成標籤含 `~`，不符合標籤的格式，不可能與使用者的標籤衝突，也不會被引用。
+ * A target without a label still takes a number, so it gets a synthetic label.
+ * A synthetic label contains ~, which does not fit the label format, so it cannot clash with a user label and is never referenced.
  */
 function syntheticLabel(kind: CountedTarget["kind"], scope: string, index: number): string {
   return `${kind}:~${scope}~${index}`;
 }
 
 /**
- * 掃過一份文件，收集可被引用的目標與文件裡的引用（規格 4.4 節）。
- * `scope` 用來區分不同文件的合成標籤（通常是文件 id）。
+ * Scans one document and collects the targets that can be referenced and the references in it, see section 4.4 of the spec.
+ * scope tells synthetic labels of different documents apart, usually the document id.
  */
 export function collectTargets(doc: DocJson, scope: string): CollectedTargets {
   const targets: Target[] = [];
@@ -61,7 +61,7 @@ export function collectTargets(doc: DocJson, scope: string): CollectedTargets {
       case "figure":
         counted("fig", node);
         return;
-      case "figureGroup": // 子圖不另外編號
+      case "figureGroup": // Sub figures get no number of their own
         counted("fig", node);
         return;
       case "table":

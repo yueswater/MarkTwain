@@ -3,7 +3,7 @@ import { escapeMarkup, escapeString, ZWSP } from "./escape";
 import { convertMath, mathFallback } from "./math";
 
 export type InlineContext = {
-  /** 公式轉換失敗時呼叫，讓建置回報 */
+  /** Called when a formula fails to convert, so the build can report it */
   onMathFailure: (latex: string) => void;
   /** False when the project has no bibliography file; citations then render as plain text. */
   hasBibliography?: boolean;
@@ -59,14 +59,14 @@ function renderOne(node: Inline, ctx: InlineContext): Piece {
   }
 }
 
-/** 行內節點轉 Typst 標記文字。 */
+/** Turns inline nodes into Typst markup text. */
 export function renderInline(nodes: Inline[], ctx: InlineContext): string {
   const pieces = nodes.map((node) => renderOne(node, ctx));
   let out = "";
   for (const [index, piece] of pieces.entries()) {
     const next = pieces[index + 1];
     out += piece.text;
-    // `#strong[...]` 後面直接接 `(` 會被當成參數列
+    // An opening parenthesis right after a function call would be taken as an argument list
     if (piece.call && next && next.text.startsWith("(")) out += ZWSP;
   }
   return out;

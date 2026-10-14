@@ -4,15 +4,15 @@ import { renderBlock, renderBlocks, type BlockContext } from "./blocks";
 export type TypstKind = "abstract" | "acknowledgement" | "denotation" | "chapter" | "appendix";
 
 export type TypstFile = {
-  /** 檔案內容 */
+  /** File content */
   text: string;
-  /** 每個頂層區塊在輸出裡的起始行（從 1 算起），與 IrDocument.blocks 同索引；沒有輸出的區塊為 null */
+  /** Start line of each top level block in the output, counted from 1 and indexed like IrDocument.blocks. Null when a block produced no output. */
   blockLines: (number | null)[];
 };
 
 export type TypstOptions = BlockContext & {
   kind: TypstKind;
-  /** 附錄：第一份要把標題計數歸零 */
+  /** Appendix, the first one resets the heading counter */
   firstAppendix?: boolean;
 };
 
@@ -24,7 +24,7 @@ function abstractFunction(classes: string[]): "abstract-zh" | "abstract-en" | nu
   return null;
 }
 
-/** 一份文件轉成一個 Typst 內容檔（規格第 5 節的檔案對應與模板語彙）。 */
+/** Turns one document into a Typst content file, see the file mapping and template vocabulary in section 5 of the spec. */
 export function renderTypstFile(doc: IrDocument, options: TypstOptions): TypstFile {
   const lines: string[] = [];
   const push = (...next: string[]) => lines.push(...next);
@@ -53,7 +53,7 @@ export function renderTypstFile(doc: IrDocument, options: TypstOptions): TypstFi
   };
 
   if (options.kind === "abstract") {
-    // 摘要：`.abstract-zh` / `.abstract-en` 的 div 各自成為一個摘要；沒有 div 時整份當中文摘要
+    // Abstract, divs .abstract-zh and .abstract-en each become one abstract, without divs the whole document is the Chinese abstract
     const hasDivs = doc.blocks.some((b) => b.type === "div" && abstractFunction(b.classes));
     if (hasDivs) {
       for (const block of doc.blocks) {
@@ -66,7 +66,7 @@ export function renderTypstFile(doc: IrDocument, options: TypstOptions): TypstFi
       }
     } else {
       const inner = renderBlocks(doc.blocks, options);
-      const first = lines.length + 2; // `#abstract-zh(...)[` 的下一行
+      const first = lines.length + 2; // The line after the abstract call
       push("#abstract-zh(keywords: cfg.keywords)[", ...inner, "]", "");
       doc.blocks.forEach((_, i) => blockLines.push(i === 0 ? first : null));
     }

@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 
 type Props = { editor: Editor; onEditCaption: () => void };
 
-/** 游標在表格裡時顯示的第二列工具；指令都是 TipTap 表格擴充提供的。 */
+/** Second toolbar shown while the cursor is in a table, the commands come from the TipTap table extension. */
 export function TableTools({ editor, onEditCaption }: Props) {
   const { t } = useTranslation("editor");
 
@@ -34,7 +34,7 @@ export function TableTools({ editor, onEditCaption }: Props) {
     </Button>
   );
 
-  /** 整欄的對齊：設定目前儲存格所在的欄（表頭與內容格各自套用）。 */
+  /** Alignment of a whole column, sets the column of the current cell. */
   const align = (value: "left" | "center" | "right") => () =>
     editor
       .chain()

@@ -4,9 +4,9 @@ const DIV_OPEN = /^:{3,}\s*\S/;
 const DIV_CLOSE = /^:{3,}\s*$/;
 
 /**
- * 把 Markdown 切成頂層區塊。區塊以空行分隔；下列結構整體算一個區塊，
- * 內部的空行不分隔：圍欄程式碼、獨立成行的 `$$` 包夾的區塊公式、
- * `:::` 圍欄 div（可巢狀）。未關閉的結構一路延伸到文件結尾。
+ * Splits Markdown into top level blocks. Blocks are separated by blank lines, and these structures count as one block,
+ * so blank lines inside them do not split: fenced code, block formulas wrapped by lines holding only $$,
+ * and fenced divs with ::: which may nest. An unclosed structure runs to the end of the document.
  */
 export function splitBlocks(markdown: string): string[] {
   const lines = markdown.replace(/\r\n?/g, "\n").split("\n");
@@ -59,7 +59,7 @@ export function splitBlocks(markdown: string): string[] {
   return blocks;
 }
 
-/** 以單一空行串接區塊並加上結尾換行；沒有區塊時回傳空字串。 */
+/** Joins blocks with a single blank line and adds a trailing newline, an empty string when there are no blocks. */
 export function joinBlocks(blocks: string[]): string {
   return blocks.length === 0 ? "" : `${blocks.join("\n\n")}\n`;
 }

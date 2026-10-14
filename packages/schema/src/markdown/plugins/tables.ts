@@ -4,7 +4,7 @@ import type { MarkdownItInstance } from "../markdown-it";
 type CoreState = InstanceType<MarkdownItInstance["core"]["State"]>;
 type Token = CoreState["tokens"][number];
 
-/** 表格後面的標題行：`: 標題 {#tbl:x notes=…}`，大括號部分可以省略。 */
+/** The caption line after a table, : caption {#tbl:x notes=…}, the braces may be left out. */
 const CAPTION = /^:\s+/;
 const TRAILING_ATTRIBUTES = /\s*\{([^{}]*)\}\s*$/;
 
@@ -24,8 +24,8 @@ function parseCaption(content: string): { caption: string; label: string | null;
 }
 
 /**
- * 1. 儲存格的行內內容外面包一層段落（儲存格的內容模型是一個段落）。
- * 2. 表格後面的 `: 標題 {…}` 段落併進表格，不留在文件裡。
+ * 1. Inline content of a cell is wrapped in a paragraph, since the content model of a cell is one paragraph.
+ * 2. The ": caption {…}" paragraph after a table is merged into the table and does not stay in the document.
  */
 function promoteTables(state: CoreState): void {
   const tokens = state.tokens;
@@ -73,7 +73,7 @@ function promoteTables(state: CoreState): void {
   state.tokens = result;
 }
 
-/** 往回找最近還沒配對的 table_open。 */
+/** Looks back for the nearest table_open that is not matched yet. */
 function findOpen(tokens: Token[]): Token | undefined {
   let depth = 0;
   for (let i = tokens.length - 1; i >= 0; i -= 1) {

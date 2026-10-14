@@ -5,7 +5,7 @@ import { LOCK_FILE, OUTPUT_DIR, TEMPLATE_NAMES } from "./config";
 import { parseLock } from "./lock";
 import { fetchTemplate } from "./run";
 
-// 此檔位於 tools/fetch-templates/src/，往上三層是 repo 根目錄。
+// This file is in tools/fetch-templates/src/, three levels up is the repo root.
 const root = fileURLToPath(new URL("../../../", import.meta.url));
 
 try {

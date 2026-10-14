@@ -11,7 +11,7 @@ const ready = instance.init({
   interpolation: { escapeValue: false },
 });
 
-/** 主行程的翻譯函式（原生對話框、選單等）；與前端共用同一份訊息目錄。 */
+/** Translation function of the main process for native dialogs and menus, sharing the message catalog with the renderer. */
 export function translatorFor(locale: Locale, ns: string): TFunction {
   void ready;
   return instance.getFixedT(locale, ns);
