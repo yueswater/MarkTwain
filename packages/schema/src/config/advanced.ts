@@ -1,5 +1,5 @@
 import { Document, parseDocument } from "yaml";
-import { isHexColor, STATEMENT_KINDS } from "../statements/kinds";
+import { STATEMENT_KINDS } from "../statements/kinds";
 
 /**
  * Thesis format settings beyond the basic form: layout, numbering, captions, headings,
@@ -11,8 +11,6 @@ export type AdvancedKind =
   | "text"
   | "bool"
   | "select"
-  /** A color written as #RRGGBB */
-  | "color"
   /** A list of strings, typed comma separated */
   | "list"
   /** Four numbers, one for each heading level */
@@ -81,9 +79,7 @@ export const ADVANCED_FIELDS: readonly AdvancedField[] = [
   { path: "watermark.width", group: "watermark", kind: "number", min: 10, max: 100, unit: "%" },
   { path: "watermark.opacity", group: "watermark", kind: "number", min: 5, max: 100, unit: "%" },
 
-  // Theorem like blocks, the colors and names are written per kind, a kind that is not set keeps its default
-  { path: "statements.look", group: "statements", kind: "select", options: ["plain", "boxed"] },
-  ...STATEMENT_KINDS.map<AdvancedField>((kind) => ({ path: `statements.accent.${kind.id}`, group: "statements", kind: "color" })),
+  // Theorem like blocks, the name of each kind, a kind that is not set keeps the default of the language
   ...STATEMENT_KINDS.map<AdvancedField>((kind) => ({ path: `statements.name.${kind.id}`, group: "statements", kind: "text" })),
 
   { path: "bibliography.title", group: "bibliography", kind: "text" },
@@ -112,8 +108,6 @@ export function isValidAdvanced(field: AdvancedField, value: unknown): boolean {
       return typeof value === "string";
     case "bool":
       return typeof value === "boolean";
-    case "color":
-      return typeof value === "string" && isHexColor(value);
     case "select":
       return typeof value === "string" && (field.options ?? []).includes(value);
     case "list":
@@ -204,9 +198,7 @@ export function getPath(data: unknown, path: string): unknown {
 /** What each advanced field would be without an override: the template defaults, then the school preset. */
 export function inheritedValues(defaultText: string, schoolText: string | null): AdvancedValues {
   const layers = [defaultText, schoolText ?? ""].map((text) => toPlain(parseDocument(text).toJSON()));
-  // The blocks of a mathematical thesis are not part of the template, their defaults live here
-  const statements = { statements: { look: "plain", accent: Object.fromEntries(STATEMENT_KINDS.map((kind) => [kind.id, kind.accent])) } };
-  const merged = mergeConfigs(statements, ...layers);
+  const merged = mergeConfigs(...layers);
   const out: AdvancedValues = {};
   for (const field of ADVANCED_FIELDS) {
     const value = getPath(merged, field.path);

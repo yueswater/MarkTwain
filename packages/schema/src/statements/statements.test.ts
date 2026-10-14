@@ -60,16 +60,15 @@ describe("statement style", () => {
     expect(statementOfClasses(["abstract-zh"])).toBeNull();
   });
 
-  it("自訂色從 accent 推導淡底，非法色與空白名稱被略過", () => {
+  it("淡底從 accent 推導", () => {
     expect(tintOf("#000000", 0.1)).toBe("#E6E6E6");
-    const style = resolveStatementStyle(
-      { look: "boxed", accent: { lemma: "#FF0000", theorem: "red" }, name: { lemma: " 引理 ", remark: " " } },
-      "zh",
-    );
-    expect(style.look).toBe("boxed");
-    expect(style.colors.lemma).toEqual({ accent: "#FF0000", background: tintOf("#FF0000") });
-    expect(style.colors.theorem?.accent).toBe("#7C4DFF");
+    expect(tintOf("#FFFFFF")).toBe("#FFFFFF");
+  });
+
+  it("自訂名稱去掉空白，空白名稱改用語言預設", () => {
+    const style = resolveStatementStyle({ name: { lemma: " 引理 ", remark: " " } }, "zh");
     expect(style.names.lemma).toBe("引理");
     expect(style.names.remark).toBe("註記");
+    expect(resolveStatementStyle(undefined, "en").names.theorem).toBe("Theorem");
   });
 });

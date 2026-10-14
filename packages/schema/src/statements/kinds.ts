@@ -55,9 +55,7 @@ export function isHexColor(value: string): boolean {
 }
 
 export type StatementStyle = {
-  /** plain draws a bold heading and a thin rule, boxed draws the colored box of the editor */
-  look: "plain" | "boxed";
-  colors: Record<string, { accent: string; background: string }>;
+  /** Name of every kind in the thesis, the one the author wrote or the default of the language */
   names: Record<string, string>;
 };
 
@@ -68,24 +66,14 @@ export function tintOf(accent: string, mix = 0.12): string {
   return `#${[16, 8, 0].map((shift) => channel(shift).toString(16).padStart(2, "0")).join("").toUpperCase()}`;
 }
 
-/**
- * The look of the blocks from the settings of a thesis. A color that is not a hex value is left out, and a background
- * that is not set follows the accent.
- */
+/** The names of the blocks from the settings of a thesis, an empty name is left out. The colors belong to the editor only. */
 export function resolveStatementStyle(statements: unknown, language: "zh" | "en"): StatementStyle {
   const section = (statements !== null && typeof statements === "object" ? statements : {}) as Record<string, unknown>;
-  const group = (key: string) => (section[key] !== null && typeof section[key] === "object" ? section[key] : {}) as Record<string, unknown>;
-  const accents = group("accent");
-  const given = group("name");
-  const look = section.look === "boxed" ? "boxed" : "plain";
-  const colors: StatementStyle["colors"] = {};
+  const given = (section.name !== null && typeof section.name === "object" ? section.name : {}) as Record<string, unknown>;
   const names: StatementStyle["names"] = {};
   for (const kind of STATEMENT_KINDS) {
-    const accent = accents[kind.id];
-    const set = typeof accent === "string" && isHexColor(accent);
-    colors[kind.id] = set ? { accent: accent as string, background: tintOf(accent as string) } : { accent: kind.accent, background: kind.background };
     const name = given[kind.id];
     names[kind.id] = typeof name === "string" && name.trim() !== "" ? name.trim() : kind.name[language];
   }
-  return { look, colors, names };
+  return { names };
 }

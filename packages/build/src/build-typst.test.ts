@@ -94,12 +94,12 @@ maybe("buildTypst with the real template", () => {
     }
   }, 120_000);
 
-  it.each(["plain", "boxed"])("builds the blocks of a mathematical thesis in the %s look", async (look) => {
+  it("builds the blocks of a mathematical thesis with a name of the author", async () => {
     const work = mkdtempSync(join(tmpdir(), "marktwain 定理 "));
     try {
       const result = await buildTypst(
         input(work, {
-          config: `${config}statements:\n  look: ${look}\n  accent:\n    lemma: "#FF0000"\n`,
+          config: `${config}statements:\n  name:\n    lemma: "引裡"\n`,
           documents: [
             {
               id: "c1",
