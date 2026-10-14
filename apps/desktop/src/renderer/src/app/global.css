@@ -1,0 +1,12 @@
+:root {
+  font-family: "Noto Sans TC Variable", sans-serif;
+}
+
+/* Form controls do not inherit the font by default, and their system fonts
+   differ between macOS and Windows. */
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
