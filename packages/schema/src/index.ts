@@ -1,6 +1,6 @@
 export { joinBlocks, splitBlocks } from "./markdown/blocks";
 export { formatAttributes, parseAttributes, type Attributes } from "./markdown/attributes";
-export { parseMarkdown, type DocJson } from "./markdown/parse";
+export { parseInlineMarkdown, parseMarkdown, type DocJson } from "./markdown/parse";
 export { serializeMarkdown } from "./markdown/serialize";
 export { MarkName, NodeName } from "./model/names";
 export { schema } from "./model/schema";
