@@ -33,7 +33,6 @@ export function useProject() {
   useEffect(() => {
     void run(refresh).finally(() => setLoading(false));
     // 只在載入時取得一次
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const createProject = (suggestedName: string) =>

@@ -10,6 +10,7 @@ import { Div } from "./nodes/div";
 import { FigureGroup } from "./nodes/figure-group";
 import { Figure } from "./nodes/figure";
 import { Footnote } from "./nodes/footnote";
+import { CjkBold, CjkItalic, CjkStrike } from "./marks";
 
 /**
  * 編輯器的 schema：只包含 `@marktwain/schema` 認得的節點與標記（對等測試會驗證）。
@@ -19,10 +20,17 @@ export function createSchemaExtensions(): Extensions {
   return [
     StarterKit.configure({
       heading: { levels: [1, 2, 3, 4] },
+      // 換成輸入規則適用中文的版本（見 marks.ts）
+      bold: false,
+      italic: false,
+      strike: false,
       // 我們的 schema 沒有底線；連結不自動偵測、不在點擊時開啟（離線編輯器）
       underline: false,
       link: { openOnClick: false, autolink: false, linkOnPaste: false },
     }),
+    CjkBold,
+    CjkItalic,
+    CjkStrike,
     GlobalAttributes,
     Mathematics,
     Table.configure({ resizable: false }),

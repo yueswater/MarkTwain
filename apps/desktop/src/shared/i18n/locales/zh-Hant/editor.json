@@ -1,0 +1,30 @@
+{
+  "save": {
+    "dirty": "尚未儲存",
+    "saving": "儲存中…",
+    "saved": "已儲存",
+    "error": "無法儲存"
+  },
+  "placeholder": "開始撰寫…",
+  "toolbar": {
+    "label": "格式",
+    "undo": "復原",
+    "redo": "重做",
+    "block": "文字樣式",
+    "paragraph": "內文",
+    "heading1": "標題 1",
+    "heading2": "標題 2",
+    "heading3": "標題 3",
+    "heading4": "標題 4",
+    "bold": "粗體",
+    "italic": "斜體",
+    "strike": "刪除線",
+    "code": "行內程式碼",
+    "bulletList": "項目清單",
+    "orderedList": "編號清單",
+    "blockquote": "引言",
+    "codeBlock": "程式碼區塊",
+    "rule": "分隔線",
+    "table": "插入表格"
+  }
+}
