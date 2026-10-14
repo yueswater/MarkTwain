@@ -122,6 +122,10 @@ function EditorSurface({
       extensions: [
         ...createSchemaExtensions({
           onMathClick: (kind, latex, pos) => setMath({ kind, latex, pos }),
+          resizeLabels: {
+            width: (percent) => tRef.current("table.dragWidth", { value: percent }),
+            height: (points) => tRef.current("table.dragHeight", { value: points }),
+          },
         }),
         MarkdownPaste.configure({ enabled: () => prefsRef.current.pasteMarkdown }),
         Placeholder.configure({ placeholder: t("placeholder") }),

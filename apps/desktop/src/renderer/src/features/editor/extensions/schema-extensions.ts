@@ -13,6 +13,7 @@ import { FigureGroup } from "./nodes/figure-group";
 import { Figure } from "./nodes/figure";
 import { MathInputRules } from "./math-input";
 import { TableExtras } from "./table-extras";
+import { TableResize, type ResizeLabels } from "./table-resize";
 import { Footnote } from "./nodes/footnote";
 import { CjkBold, CjkItalic, CjkStrike } from "./marks";
 
@@ -21,12 +22,14 @@ import { CjkBold, CjkItalic, CjkStrike } from "./marks";
  * It holds no view code such as node views or toolbars, so it can run in tests without a DOM.
  */
 export type SchemaExtensionOptions = {
+  /** Texts of the tooltips shown while a table row or column is dragged */
+  resizeLabels?: ResizeLabels;
   /** Called when a formula is clicked, the view layer uses it to open the edit dialog. Not needed in tests or pure schema use. */
   onMathClick?: (kind: "inline" | "block", latex: string, pos: number) => void;
 };
 
 export function createSchemaExtensions(options: SchemaExtensionOptions = {}): Extensions {
-  const { onMathClick } = options;
+  const { onMathClick, resizeLabels } = options;
   return [
     StarterKit.configure({
       heading: { levels: [1, 2, 3, 4] },
@@ -53,6 +56,7 @@ export function createSchemaExtensions(options: SchemaExtensionOptions = {}): Ex
     // Columns can be dragged, TableExtras copies the widths into the document
     Table.configure({ resizable: true, allowTableNodeSelection: true }),
     TableExtras,
+    ...(resizeLabels ? [TableResize.configure({ labels: resizeLabels })] : []),
     TableRow,
     // A cell holds a single paragraph, pipe tables have no multi paragraph cells
     TableHeader.extend({ content: "paragraph" }),

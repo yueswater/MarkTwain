@@ -545,3 +545,50 @@ test("code blocks take a language, are highlighted, and keep it in the Markdown"
     rmSync(dir, { recursive: true, force: true });
   }
 });
+
+test("dragging a row or a column edge shows the value that it takes", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "marktwain 拖曳 "));
+  const file = join(dir, "論文.marktwain");
+  const args = [`--user-data-dir=${join(dir, "userData")}`, "--lang=en-US"];
+  if (process.platform === "linux") args.push("--no-sandbox");
+  const app = await electron.launch({
+    executablePath: findPackagedExecutable(dist),
+    args,
+    env: { ...process.env, MARKTWAIN_TEST_DIALOG_PATH: file },
+  });
+  try {
+    const page = await app.firstWindow();
+    await page.getByRole("button", { name: "New project" }).click();
+    const editor = page.locator(".ProseMirror");
+    await editor.click();
+    await page.getByRole("button", { name: "Insert table" }).click();
+    await page.getByRole("dialog").getByRole("button", { name: "Insert" }).click();
+    await expect(page.getByRole("dialog")).toBeHidden();
+
+    // Row: grab the bottom edge of the second row and pull it down
+    const cell = editor.locator("tr").nth(1).locator("td").first();
+    const box = (await cell.boundingBox())!;
+    await page.mouse.move(box.x + 20, box.y + box.height - 1);
+    await page.mouse.down();
+    await page.mouse.move(box.x + 20, box.y + box.height + 40, { steps: 6 });
+    await expect(page.getByTestId("resize-value")).toContainText(/Row height \d+ pt/);
+    await page.mouse.up();
+    await expect(page.getByTestId("resize-value")).toBeHidden();
+    await expect(editor.locator("tr").nth(1)).toHaveAttribute("data-height", /^\d+pt$/);
+    const height = Number(((await editor.locator("tr").nth(1).getAttribute("data-height")) ?? "").replace("pt", ""));
+    expect(height).toBeGreaterThan(30);
+
+    // Column: pull the right edge of the first column to the right
+    const head = editor.locator("tr").first().locator("th").first();
+    const hbox = (await head.boundingBox())!;
+    await page.mouse.move(hbox.x + hbox.width - 2, hbox.y + 10);
+    await page.mouse.down();
+    await page.mouse.move(hbox.x + hbox.width + 60, hbox.y + 10, { steps: 6 });
+    await expect(page.getByTestId("resize-value")).toContainText(/Column width [\d.]+%/);
+    await page.mouse.up();
+    await expect(page.getByTestId("table-readout")).toContainText("Column width");
+  } finally {
+    await app.close();
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
