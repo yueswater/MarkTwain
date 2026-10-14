@@ -1,0 +1,20 @@
+{
+  "name": "marktwain",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@12.6.0",
+  "description": "離線桌面論文編輯器：TipTap Markdown，輸出 Typst 與 LaTeX，內建本機版本控制",
+  "scripts": {
+    "dev": "pnpm --filter @marktwain/desktop dev",
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "typecheck": "pnpm -r typecheck"
+  },
+  "devDependencies": {
+    "@jest/globals": "^30.0.0",
+    "@swc/core": "^1.13.0",
+    "@swc/jest": "^0.2.39",
+    "jest": "^30.0.0",
+    "typescript": "^5.9.0"
+  }
+}
