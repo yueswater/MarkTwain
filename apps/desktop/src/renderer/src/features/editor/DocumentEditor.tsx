@@ -355,7 +355,7 @@ function EditorSurface({
           editor={editor}
           data-line-numbers={prefs.lineNumbers}
           data-font={prefs.fontFamily}
-          className={cn("mx-auto px-8 py-8", WIDTH[prefs.contentWidth])}
+          className={cn("mx-auto py-8 pr-8", prefs.lineNumbers ? "pl-20" : "pl-8", WIDTH[prefs.contentWidth])}
           style={
             {
               "--editor-font-size": `${prefs.fontSize}px`,

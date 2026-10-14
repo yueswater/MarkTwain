@@ -56,6 +56,11 @@ test("the bibliography is imported, edited, cited, checked and built", async () 
 
     // Edit one entry in the form
     await list.getByRole("button", { name: /Wang & Lee/ }).click();
+    // The star of a required field sits right after its label
+    const label = bibliography.locator("label", { hasText: /^Title/ });
+    const labelBox = await label.locator("span").first().boundingBox();
+    const star = await label.locator("[title='Required']").boundingBox();
+    expect(labelBox && star && star.x - (labelBox.x + labelBox.width) < 24).toBe(true);
     await bibliography.getByLabel(/^Title/).fill("Deep learning, revised");
     await bibliography.getByRole("button", { name: "Save" }).click();
     await expect(bibliography.getByRole("status").filter({ hasText: "Saved" })).toBeVisible();
@@ -65,6 +70,15 @@ test("the bibliography is imported, edited, cited, checked and built", async () 
     const source = bibliography.getByRole("textbox", { name: "BibTeX source" });
     await expect(source).toHaveValue(/title\s+= \{Deep learning, revised\}/);
     await expect(source).toHaveValue(/@book\{chen2019,\n  author = \{Chen, Da\},/);
+
+    // The source is colored and numbered line by line
+    await expect(bibliography.getByTestId("bib-highlight").locator(".bib-type").first()).toHaveText("@article");
+    await expect(bibliography.getByTestId("bib-highlight").locator(".bib-field").first()).toHaveText("author");
+    await expect(bibliography.getByTestId("bib-gutter").locator("div").first()).toHaveText("1");
+
+    // A broken entry marks its line in the gutter
+    await source.fill(`${BIB}\n@article{broken,\n  title = {never closed\n`);
+    await expect(bibliography.getByTestId("bib-gutter").locator("[data-error]")).not.toHaveCount(0);
 
     // Typing in the source is saved and shows up in the manager
     await source.fill(`% my references\n${BIB}\n@misc{extra2021, title = {Added in source}}\n`);

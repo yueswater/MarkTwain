@@ -33,7 +33,7 @@ export function BibliographyPage({ documents, onOpenDocument }: Props) {
   }
 
   const problems = [
-    ...view.errors.map((e) => t("problems.unreadable", { line: e.line, message: e.message })),
+    ...view.errors.map((e) => t("problems.unreadable", { line: e.line, message: t(`problems.reason.${e.message.replace(/ (\w)/g, (_, c: string) => c.toUpperCase())}`, { defaultValue: e.message }) })),
     ...view.duplicates.map((key) => t("problems.duplicate", { key })),
   ];
 
