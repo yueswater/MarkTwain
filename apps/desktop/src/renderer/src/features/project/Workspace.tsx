@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { ProjectState } from "./use-project";
+import { DocumentEditor } from "../editor/DocumentEditor";
 import { DocumentSidebar } from "./DocumentSidebar";
-import { documentTitle } from "./document-title";
 
 type Props = { state: ProjectState };
 
@@ -34,11 +34,11 @@ export function Workspace({ state }: Props) {
         onMove={(id, delta) => void state.moveDocument(id, delta)}
         onDelete={(id) => void state.removeDocument(id)}
       />
-      <section className="min-w-0 flex-1 overflow-y-auto p-8">
+      <section className="min-w-0 flex-1">
         {selected ? (
-          <h2 className="text-2xl font-semibold tracking-tight">{documentTitle(t, selected)}</h2>
+          <DocumentEditor key={selected.id} documentId={selected.id} />
         ) : (
-          <p className="text-sm text-muted-foreground">{t("workspace.empty")}</p>
+          <p className="p-8 text-sm text-muted-foreground">{t("workspace.empty")}</p>
         )}
       </section>
     </div>
