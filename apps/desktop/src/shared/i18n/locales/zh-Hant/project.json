@@ -13,7 +13,9 @@
     "documents": "文件",
     "close": "關閉專案",
     "add": "新增文件",
-    "empty": "選擇一份文件開始撰寫。"
+    "empty": "選擇一份文件開始撰寫。",
+    "collapse": "收合側邊欄",
+    "expand": "展開側邊欄"
   },
   "kind": {
     "title": {
