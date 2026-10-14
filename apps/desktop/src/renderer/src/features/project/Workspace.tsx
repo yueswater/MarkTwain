@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { BuildState } from "../build/use-build";
 import { PreviewPanel } from "../build/PreviewPanel";
 import type { ProjectState } from "./use-project";
 import { DocumentEditor } from "../editor/DocumentEditor";
 import { DocumentSidebar } from "./DocumentSidebar";
+import { SearchDialog } from "./SearchDialog";
 
 type Props = {
   state: ProjectState;
@@ -39,9 +40,14 @@ export function Workspace({ state, build, previewOpen, onClosePreview, onOpenSet
       return !value;
     });
 
-  // Ctrl or Cmd plus B folds the sidebar, like in many editors
+  // Ctrl or Cmd plus B folds the sidebar, and plus Shift and F searches the whole project
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key.toLowerCase() === "f") {
+        event.preventDefault();
+        setSearchOpen(true);
+        return;
+      }
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "b") {
         event.preventDefault();
         toggleCollapsed();
@@ -50,7 +56,12 @@ export function Workspace({ state, build, previewOpen, onClosePreview, onOpenSet
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
-  const [target, setTarget] = useState<{ block: number; nonce: number } | null>(null);
+  const [target, setTarget] = useState<{ block: number; nonce: number; term?: string } | null>(null);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const flush = useRef<(() => Promise<void>) | null>(null);
+  const registerFlush = useCallback((fn: (() => Promise<void>) | null) => {
+    flush.current = fn;
+  }, []);
 
   const documents = project?.documents ?? [];
   const selected = documents.find((d) => d.id === selectedId) ?? null;
@@ -73,6 +84,7 @@ export function Workspace({ state, build, previewOpen, onClosePreview, onOpenSet
           setSelectedId(id);
         }}
         onOpenSettings={onOpenSettings}
+        onOpenSearch={() => setSearchOpen(true)}
         onReorder={(id, targetId, placement) => void state.reorderDocument(id, targetId, placement)}
         collapsed={collapsed}
         onToggleCollapsed={toggleCollapsed}
@@ -83,11 +95,23 @@ export function Workspace({ state, build, previewOpen, onClosePreview, onOpenSet
       />
       <section className="min-h-0 min-w-0 flex-1 overflow-hidden">
         {selected ? (
-          <DocumentEditor key={selected.id} documentId={selected.id} scrollTo={target} onSaved={onSaved} />
+          <DocumentEditor key={selected.id} documentId={selected.id} scrollTo={target} onSaved={onSaved} registerFlush={registerFlush} />
         ) : (
           <p className="p-8 text-sm text-muted-foreground">{t("workspace.empty")}</p>
         )}
       </section>
+      <SearchDialog
+        open={searchOpen}
+        onOpenChange={setSearchOpen}
+        documents={documents}
+        beforeSearch={async () => {
+          await flush.current?.();
+        }}
+        onOpenHit={(hit, term) => {
+          setSelectedId(hit.documentId);
+          setTarget({ block: hit.block, nonce: Date.now(), term });
+        }}
+      />
       {previewOpen && (
         <PreviewPanel
           build={build}

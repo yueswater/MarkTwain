@@ -1,4 +1,4 @@
-import type { JSONContent } from "@tiptap/core";
+import type { Editor, JSONContent } from "@tiptap/core";
 import { findTable } from "@tiptap/pm/tables";
 import { usePrefs } from "@/lib/prefs";
 import { cn } from "@/lib/utils";
@@ -23,6 +23,7 @@ import {
 import { CaptionDialog, type CaptionTarget } from "./CaptionDialog";
 import { FigureDialog, type FigureTarget } from "./FigureDialog";
 import { CropDialog } from "./CropDialog";
+import { FindBar } from "./FindBar";
 import { EditorBubbleMenu } from "./EditorBubbleMenu";
 import { TableInsertDialog } from "./TableInsertDialog";
 import { MathDialog, type MathTarget } from "./MathDialog";
@@ -34,13 +35,15 @@ import { Toolbar } from "./Toolbar";
 
 type Props = {
   documentId: string;
-  scrollTo?: { block: number; nonce: number } | null;
+  scrollTo?: { block: number; nonce: number; term?: string } | null;
+  /** Gives the parent a way to save what is being typed at once */
+  registerFlush?: (flush: (() => Promise<void>) | null) => void;
   /** Called every time the text has been saved */
   onSaved?: () => void;
 };
 
 /** Loads one document. The caller remounts with key when the document changes, so each document has its own editor and undo history. */
-export function DocumentEditor({ documentId, scrollTo, onSaved }: Props) {
+export function DocumentEditor({ documentId, scrollTo, onSaved, registerFlush }: Props) {
   const { t } = useTranslation();
   const [doc, setDoc] = useState<DocumentData | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -65,7 +68,7 @@ export function DocumentEditor({ documentId, scrollTo, onSaved }: Props) {
     );
   }
   if (!doc) return null;
-  return <EditorSurface doc={doc} scrollTo={scrollTo ?? null} onSaved={onSaved} />;
+  return <EditorSurface doc={doc} scrollTo={scrollTo ?? null} onSaved={onSaved} registerFlush={registerFlush} />;
 }
 
 const WIDTH = { narrow: "max-w-xl", normal: "max-w-3xl", wide: "max-w-5xl" } as const;
@@ -76,10 +79,12 @@ function EditorSurface({
   doc,
   scrollTo,
   onSaved,
+  registerFlush,
 }: {
   doc: DocumentData;
-  scrollTo: { block: number; nonce: number } | null;
+  scrollTo: { block: number; nonce: number; term?: string } | null;
   onSaved?: () => void;
+  registerFlush?: (flush: (() => Promise<void>) | null) => void;
 }) {
   const { t } = useTranslation("editor");
   const { t: tCommon } = useTranslation();
@@ -91,6 +96,7 @@ function EditorSurface({
   const [atom, setAtom] = useState<AtomTarget | null>(null);
   const [caption, setCaption] = useState<CaptionTarget | null>(null);
   const [tableDialog, setTableDialog] = useState(false);
+  const [find, setFind] = useState<{ open: boolean; term: string }>({ open: false, term: "" });
   const [crop, setCrop] = useState<{ pos: number; src: string } | null>(null);
   const [figure, setFigure] = useState<FigureTarget | null>(null);
   const [importError, setImportError] = useState<string | null>(null);
@@ -115,9 +121,14 @@ function EditorSurface({
       ),
     [doc.id],
   );
+  const editorRef = useRef<Editor | null>(null);
   const flushRef = useRef(autosaver);
   flushRef.current = autosaver;
   useEffect(() => autosaver.setDelay(prefs.autosaveDelayMs), [autosaver, prefs.autosaveDelayMs]);
+  useEffect(() => {
+    registerFlush?.(() => autosaver.flush());
+    return () => registerFlush?.(null);
+  }, [autosaver, registerFlush]);
 
   const editor = useEditor(
     {
@@ -175,6 +186,11 @@ function EditorSurface({
     if (editor && !editor.isDestroyed) editor.view.dom.setAttribute("spellcheck", String(prefs.spellcheck));
   }, [editor, prefs.spellcheck]);
 
+  // A hit of the project search brings its term along, the find bar shows it in this document
+  useEffect(() => {
+    if (scrollTo?.term) setFind({ open: true, term: scrollTo.term });
+  }, [scrollTo]);
+
   // Move the cursor to the top level block named by a build error
   useEffect(() => {
     if (!editor || editor.isDestroyed || !scrollTo) return;
@@ -197,6 +213,16 @@ function EditorSurface({
   // Save pending changes before switching documents, closing the project or closing the window
   useEffect(() => {
     const flush = () => void flushRef.current.flush();
+    // Ctrl or Cmd plus F finds in this document, with the selected text as the start
+    const onFind = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && !event.shiftKey && event.key.toLowerCase() === "f") {
+        event.preventDefault();
+        const { from, to, empty } = editorRef.current?.state.selection ?? { from: 0, to: 0, empty: true };
+        const selected = !empty && to - from < 80 ? (editorRef.current?.state.doc.textBetween(from, to, " ") ?? "") : "";
+        setFind((current) => ({ open: true, term: selected || current.term }));
+      }
+    };
+    window.addEventListener("keydown", onFind);
     // Ctrl or Cmd plus S saves at once, normally saving happens after typing stops
     const onKeyDown = (event: KeyboardEvent) => {
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "s") {
@@ -209,10 +235,12 @@ function EditorSurface({
     return () => {
       window.removeEventListener("beforeunload", flush);
       window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("keydown", onFind);
       flush();
     };
   }, [autosaver]);
 
+  editorRef.current = editor;
   if (!editor) return null;
 
   const openAtom = (type: "footnote" | "citation" | "crossRef") => {
@@ -301,7 +329,9 @@ function EditorSurface({
         }
         onCropFigure={(pos, src) => setCrop({ pos, src })}
       />
-      <div className="min-h-0 flex-1 overflow-y-auto">
+      <div className="relative min-h-0 flex-1">
+      {find.open && <FindBar key={find.term} editor={editor} initialTerm={find.term} onClose={() => setFind((c) => ({ ...c, open: false }))} />}
+      <div className="h-full overflow-y-auto">
         <EditorContent
           editor={editor}
           data-line-numbers={prefs.lineNumbers}
@@ -315,6 +345,7 @@ function EditorSurface({
             } as React.CSSProperties
           }
         />
+      </div>
       </div>
       {importError && (
         <p role="alert" className="border-t bg-destructive/5 px-4 py-1 text-xs text-destructive select-text">

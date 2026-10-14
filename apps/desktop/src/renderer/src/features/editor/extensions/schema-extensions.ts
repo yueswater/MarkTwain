@@ -13,6 +13,7 @@ import { FigureGroup } from "./nodes/figure-group";
 import { Figure } from "./nodes/figure";
 import { figureNodeView } from "./figure-view";
 import { MathInputRules } from "./math-input";
+import { Find } from "./find";
 import { TableExtras } from "./table-extras";
 import { TableResize, type ResizeLabels } from "./table-resize";
 import { Footnote } from "./nodes/footnote";
@@ -60,6 +61,7 @@ export function createSchemaExtensions(options: SchemaExtensionOptions = {}): Ex
     CjkStrike,
     CodeBlockLowlight.configure({ lowlight, defaultLanguage: null }),
     GlobalAttributes,
+    Find,
     Mathematics.configure({
       inlineOptions: onMathClick ? { onClick: (node, pos) => onMathClick("inline", node.attrs.latex, pos) } : undefined,
       blockOptions: onMathClick ? { onClick: (node, pos) => onMathClick("block", node.attrs.latex, pos) } : undefined,

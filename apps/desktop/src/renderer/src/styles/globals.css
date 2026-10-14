@@ -259,6 +259,9 @@
 .ProseMirror pre code .hljs-addition { color: #298e0d; }
 .ProseMirror pre code .hljs-deletion { color: #d73a49; }
 
+.ProseMirror .find-match { background: rgba(255, 213, 0, 0.35); border-radius: 2px; }
+.ProseMirror .find-current { background: rgba(255, 140, 0, 0.55); }
+
 /* Figure with resize handles at the corners, shown while it is selected */
 .ProseMirror figure { position: relative; }
 .ProseMirror figure .figure-box { position: relative; display: inline-block; max-width: 100%; line-height: 0; }

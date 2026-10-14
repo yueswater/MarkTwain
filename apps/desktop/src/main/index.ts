@@ -22,6 +22,8 @@ import { applyAppMenu } from "./features/menu/menu.controller";
 import { registerProjectController } from "./features/project/project.controller";
 import { ProjectService } from "./features/project/project.service";
 import { PrefsService } from "./features/prefs/prefs.service";
+import { registerSearchController } from "./features/search/search.controller";
+import { SearchService } from "./features/search/search.service";
 import { registerPrefsController } from "./features/prefs/prefs.controller";
 import { RecentService } from "./features/recent/recent.service";
 import { SettingsRepository } from "./features/settings/settings.repository";
@@ -33,6 +35,7 @@ const documents = new DocumentService(session);
 const projects = new ProjectService(session, documents);
 const labels = new LabelService(documents);
 const assets = new AssetService(session);
+const search = new SearchService(documents);
 const config = new ConfigService(session, undefined, (path) => {
   try {
     return readFileSync(join(resolveBuildPaths().templateDir, path), "utf8");
@@ -63,6 +66,7 @@ bootstrap([
   () => registerLabelController(labels),
   () => registerConfigController(config),
   () => registerPrefsController(prefs),
+  () => registerSearchController(search),
   () => registerBuildController(build),
   () => registerExportController(build, dialogs),
 ]);

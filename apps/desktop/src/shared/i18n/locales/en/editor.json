@@ -171,5 +171,14 @@
     "crop": "Crop",
     "width": "Width {{value}}",
     "remove": "Remove the picture"
+  },
+  "find": {
+    "label": "Find in this document",
+    "placeholder": "Find",
+    "none": "No match",
+    "next": "Next match",
+    "previous": "Previous match",
+    "close": "Close the find bar",
+    "caseSensitive": "Match case"
   }
 }

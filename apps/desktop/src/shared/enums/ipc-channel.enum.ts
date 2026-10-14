@@ -13,6 +13,7 @@ export const IpcChannel = {
   BuildTypst: "build:typst",
   ExportPdf: "export:pdf",
   ExportProject: "export:project",
+  SearchQuery: "search:query",
   PrefsGet: "prefs:get",
   PrefsSet: "prefs:set",
   ConfigGetAdvanced: "config:get-advanced",

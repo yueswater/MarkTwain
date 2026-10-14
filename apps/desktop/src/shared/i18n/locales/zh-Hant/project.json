@@ -44,5 +44,15 @@
     "titleHint": "留空則使用預設標題。",
     "deleteTitle": "要刪除這份文件嗎？",
     "deleteBody": "「{{title}}」與其內容會被永久刪除，無法復原。"
+  },
+  "search": {
+    "title": "搜尋整個專案",
+    "description": "在專案的每一份文件裡尋找文字。",
+    "placeholder": "在所有文件中搜尋",
+    "none": "沒有找到。",
+    "count": "找到 {{count}} 處",
+    "truncated": "只顯示前面的結果，縮小範圍可以看到其他的。",
+    "caseSensitive": "區分大小寫",
+    "open": "搜尋整個專案"
   }
 }
