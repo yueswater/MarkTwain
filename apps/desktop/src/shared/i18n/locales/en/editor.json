@@ -213,5 +213,109 @@
     "hint": "A formula with a name is numbered and can be referred to.",
     "numbered": "Numbered {{number}}",
     "perChapter": "Number by chapter, (3.1) instead of (1)"
+  },
+  "slash": {
+    "title": "Insert a block",
+    "none": "No block matches.",
+    "close": "Close menu",
+    "preview": "What the block looks like",
+    "groups": {
+      "basic": "Basic blocks",
+      "thesis": "Thesis blocks"
+    },
+    "items": {
+      "text": {
+        "name": "Text",
+        "description": "Plain text, the default block of the body."
+      },
+      "heading1": {
+        "name": "Heading 1",
+        "description": "The title of a chapter."
+      },
+      "heading2": {
+        "name": "Heading 2",
+        "description": "The title of a section in a chapter."
+      },
+      "heading3": {
+        "name": "Heading 3",
+        "description": "The title of a subsection."
+      },
+      "heading4": {
+        "name": "Heading 4",
+        "description": "A small heading below a subsection."
+      },
+      "bulletList": {
+        "name": "Bullet list",
+        "description": "Points that have no order."
+      },
+      "orderedList": {
+        "name": "Numbered list",
+        "description": "Steps or points that are counted."
+      },
+      "quote": {
+        "name": "Quote",
+        "description": "A passage taken from another work."
+      },
+      "rule": {
+        "name": "Divider",
+        "description": "A thin line that separates two parts of the text."
+      },
+      "displayMath": {
+        "name": "Display formula",
+        "description": "A formula on its own line, which can be named to give it a number."
+      },
+      "inlineMath": {
+        "name": "Inline formula",
+        "description": "A short formula inside a line of text."
+      },
+      "figure": {
+        "name": "Figure",
+        "description": "A picture with a caption, from a file on your computer."
+      },
+      "table": {
+        "name": "Table",
+        "description": "Rows and columns, with a caption and notes."
+      },
+      "codeBlock": {
+        "name": "Code block",
+        "description": "Program text in a box, with colors for the chosen language."
+      },
+      "footnote": {
+        "name": "Footnote",
+        "description": "A note at the foot of the page, marked in the text."
+      },
+      "citation": {
+        "name": "Citation",
+        "description": "A reference to a work of the bibliography."
+      },
+      "crossRef": {
+        "name": "Cross-reference",
+        "description": "A link to a figure, a table, a formula or a heading."
+      }
+    },
+    "sample": {
+      "heading": "Research design",
+      "list": {
+        "0": "Collect the data",
+        "1": "Fit the model",
+        "2": "Report the results"
+      },
+      "quote": "A contest is won by the player who moves with the most information.",
+      "inlineBefore": "The correlation",
+      "inlineAfter": "measures how alike the valuations are.",
+      "figure": "Figure 1  Equilibrium regions",
+      "tableHead": {
+        "0": "Setting",
+        "1": "Share"
+      },
+      "tableRow": {
+        "0": "Independent",
+        "1": "Correlated"
+      },
+      "footnote": "The result holds for any positive cost",
+      "citationBefore": "This follows the earlier model",
+      "crossRefBefore": "The regions are drawn in",
+      "crossRefTarget": "Figure 1"
+    }
   }
 }

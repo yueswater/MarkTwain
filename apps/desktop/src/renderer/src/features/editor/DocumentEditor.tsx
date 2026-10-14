@@ -37,6 +37,8 @@ import { Toolbar } from "./Toolbar";
 import { CodeBlockWithLanguage } from "./extensions/nodes/code-block-view";
 import { LineGutter } from "./LineGutter";
 import { EquationLabelBubble } from "./EquationLabelBubble";
+import { SlashCommand } from "./slash/slash-command";
+import type { SlashHandlers } from "./slash/slash-items";
 import { EquationShortcut } from "./extensions/equation-shortcut";
 
 type Props = {
@@ -152,6 +154,8 @@ function EditorSurface({
     [doc.id],
   );
   const editorRef = useRef<Editor | null>(null);
+  // What the slash menu asks the view to do, the same functions the toolbar uses
+  const slashRef = useRef<SlashHandlers>({ insertMath: () => undefined, insertAtom: () => undefined, insertImage: () => undefined, insertTable: () => undefined });
   const flushRef = useRef(autosaver);
   flushRef.current = autosaver;
   useEffect(() => autosaver.setDelay(prefs.autosaveDelayMs), [autosaver, prefs.autosaveDelayMs]);
@@ -173,6 +177,10 @@ function EditorSurface({
           },
         }),
         EquationShortcut,
+        SlashCommand.configure({
+          handlers: () => slashRef.current,
+          nameOf: (item) => tRef.current(`slash.items.${item.id}.name`),
+        }),
         MarkdownPaste.configure({ enabled: () => prefsRef.current.pasteMarkdown }),
         Placeholder.configure({ placeholder: t("placeholder") }),
         RefDecorations.configure({
@@ -276,6 +284,16 @@ function EditorSurface({
   editorRef.current = editor;
   if (!editor) return null;
 
+  const insertImage = () => {
+          setImportError(null);
+          api
+            .invoke(IpcChannel.AssetImportImage)
+            .then((imported) => {
+              if (imported) setFigure({ pos: null, src: imported.src, caption: "", width: null });
+            })
+            .catch((e: unknown) => setImportError(errorMessage(tCommon, e)));
+  };
+
   const openAtom = (type: "footnote" | "citation" | "crossRef") => {
     if (type === "footnote") setAtom({ type, pos: null, text: "" });
     else if (type === "citation") setAtom({ type, pos: null, keys: [], form: "paren" });
@@ -329,6 +347,13 @@ function EditorSurface({
     writeAtom("crossRef", { label }, pos);
   };
 
+  slashRef.current = {
+    insertMath: (kind) => setMath({ kind, latex: "", pos: null, anchor: anchorAtCursor(editor) }),
+    insertAtom: openAtom,
+    insertImage,
+    insertTable: () => setTableDialog(true),
+  };
+
   return (
     <div className="flex h-full min-h-0 flex-col">
       <Toolbar
@@ -336,15 +361,7 @@ function EditorSurface({
         onInsertMath={(kind) => setMath({ kind, latex: "", pos: null, anchor: anchorAtCursor(editor) })}
         onInsertAtom={openAtom}
         onInsertTable={() => setTableDialog(true)}
-        onInsertImage={() => {
-          setImportError(null);
-          api
-            .invoke(IpcChannel.AssetImportImage)
-            .then((imported) => {
-              if (imported) setFigure({ pos: null, src: imported.src, caption: "", width: null });
-            })
-            .catch((e: unknown) => setImportError(errorMessage(tCommon, e)));
-        }}
+        onInsertImage={insertImage}
         onEditCaption={() => {
           const attrs = editor.getAttributes(editor.isActive("table") ? "table" : "codeBlock");
           setCaption({
