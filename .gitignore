@@ -7,7 +7,7 @@ node_modules/
 # build output
 dist/
 out/
-build/
+/build/
 release/
 coverage/
 *.tsbuildinfo
