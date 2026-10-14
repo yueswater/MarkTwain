@@ -1,4 +1,3 @@
-import MenuBookRounded from "@mui/icons-material/MenuBookRounded";
 import TranslateRounded from "@mui/icons-material/TranslateRounded";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -9,6 +8,7 @@ import Typography from "@mui/material/Typography";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { SUPPORTED_LOCALES, type Locale } from "../../../shared/enums/locale.enum";
+import logo from "../assets/logo.png";
 import { SERIF } from "../theme/typography";
 
 type Props = {
@@ -24,7 +24,7 @@ export function AppShell({ children, onLocaleChange }: Props) {
     <Box sx={{ minHeight: "100vh", bgcolor: "background.default" }}>
       <AppBar position="static">
         <Toolbar sx={{ gap: 1.5 }}>
-          <MenuBookRounded color="primary" fontSize="large" />
+          <Box component="img" src={logo} alt="" sx={{ height: 44, width: 44 }} />
           <Typography component="h1" variant="h5" sx={{ fontFamily: SERIF, fontWeight: 700, flexGrow: 1 }}>
             {t("app.name")}
           </Typography>

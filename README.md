@@ -1,3 +1,5 @@
+<p align="center"><img src="brand/logo.png" alt="MarkTwain" width="160"></p>
+
 # MarkTwain
 
 An offline desktop thesis editor. You write in a TipTap Markdown editor; MarkTwain turns the Markdown into the [TW-Thesis](https://github.com/TW-Thesis) Typst and LaTeX templates and builds a PDF that follows your school's format. It has built-in local version control (named branches, merging back into the main line) and does not use git or the cloud.
