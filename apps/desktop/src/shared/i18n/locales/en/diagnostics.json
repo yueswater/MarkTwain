@@ -5,6 +5,15 @@
     },
     "settings": {
       "invalid-locale": "That interface language is not supported."
+    },
+    "project": {
+      "not-found": "The project file could not be found.",
+      "invalid": "This is not a valid MarkTwain project file.",
+      "too-new": "This project was created by a newer version of MarkTwain (file format version {{found}}; this version supports up to {{supported}}). Please update MarkTwain.",
+      "none-open": "No project is open."
+    },
+    "document": {
+      "not-found": "The document could not be found."
     }
   }
 }
