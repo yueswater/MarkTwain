@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { MenuCommand } from "../../../shared/ipc/menu";
 import { IpcChannel } from "../../../shared/enums/ipc-channel.enum";
 import type { Locale } from "../../../shared/enums/locale.enum";
 import { useProject } from "../features/project/use-project";
@@ -6,7 +7,7 @@ import { WelcomeScreen } from "../features/project/WelcomeScreen";
 import { Workspace } from "../features/project/Workspace";
 import { api } from "../shared/api";
 import { errorMessage } from "../shared/error-message";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AppShell } from "./AppShell";
 
 export function App() {
@@ -23,6 +24,20 @@ export function App() {
       setLocaleError(errorMessage(t, e));
     }
   }
+
+  // 原生選單的「檔案」指令；每次渲染都用最新的 state，所以用 ref 避免重複訂閱
+  const stateRef = useRef(state);
+  stateRef.current = state;
+  useEffect(
+    () =>
+      window.marktwain.onMenuCommand((command) => {
+        const current = stateRef.current;
+        if (command === MenuCommand.NewProject) void current.createProject(t("welcome.defaultName", { ns: "project" }));
+        else if (command === MenuCommand.OpenProject) void current.openProject();
+        else if (command === MenuCommand.CloseProject) void current.closeProject();
+      }),
+    [t],
+  );
 
   const error = state.error ?? localeError;
 

@@ -2,6 +2,7 @@ import type { AppContract } from "./app";
 import type { ConfigContract } from "./config";
 import type { DialogContract } from "./dialog";
 import type { DocumentContract } from "./document";
+import type { MenuCommand } from "./menu";
 import type { AssetContract } from "./asset";
 import type { LabelContract } from "./label";
 import type { ProjectContract } from "./project";
@@ -34,4 +35,6 @@ export type MarkTwainApi = {
     channel: C,
     ...args: InvokeArgs<C>
   ): Promise<IpcResult<IpcResponse<C>>>;
+  /** 訂閱原生選單的指令；回傳取消訂閱的函式 */
+  onMenuCommand(listener: (command: MenuCommand) => void): () => void;
 };
