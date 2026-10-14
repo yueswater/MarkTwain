@@ -47,7 +47,12 @@
     "insert": "插入",
     "update": "更新",
     "remove": "移除",
-    "hint": "例如：\\frac{a}{b} 或 \\sum_{i=1}^{n} x_i"
+    "hint": "例如：\\frac{a}{b} 或 \\sum_{i=1}^{n} x_i",
+    "inlineTitle": "行內公式",
+    "blockTitle": "獨立公式",
+    "done": "完成 ↵",
+    "hintInline": "夾在文字行中的公式。Enter 完成，Esc 取消。",
+    "hintBlock": "單獨成行的公式。Enter 完成，Shift+Enter 換行，Esc 取消。"
   },
   "footnote": {
     "insertTitle": "插入腳註",

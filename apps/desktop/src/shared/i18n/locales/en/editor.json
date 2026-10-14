@@ -26,8 +26,8 @@
     "codeBlock": "Code block",
     "rule": "Horizontal rule",
     "table": "Insert table",
-    "inlineMath": "Inline math",
-    "blockMath": "Math block",
+    "inlineMath": "Inline formula",
+    "blockMath": "Display formula",
     "footnote": "Footnote",
     "citation": "Citation",
     "crossRef": "Cross-reference",
@@ -47,7 +47,12 @@
     "insert": "Insert",
     "update": "Update",
     "remove": "Remove",
-    "hint": "Example: \\frac{a}{b} or \\sum_{i=1}^{n} x_i"
+    "hint": "Example: \\frac{a}{b} or \\sum_{i=1}^{n} x_i",
+    "inlineTitle": "Inline formula",
+    "blockTitle": "Display formula",
+    "done": "Done ↵",
+    "hintInline": "A formula inside the line. Enter confirms, Esc cancels.",
+    "hintBlock": "A formula on its own line. Enter confirms, Shift+Enter adds a line, Esc cancels."
   },
   "footnote": {
     "insertTitle": "Insert footnote",

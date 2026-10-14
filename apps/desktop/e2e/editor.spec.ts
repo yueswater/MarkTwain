@@ -79,14 +79,15 @@ test("math can be inserted from the dialog, typed with $…$, edited, and saved 
     await editor.click();
 
     // Insert from the dialog, preview first, a syntax error blocks submit
-    await page.getByRole("button", { name: "Inline math" }).click();
+    await page.getByRole("button", { name: "Inline formula" }).click();
     const dialog = page.getByRole("dialog");
     await dialog.getByLabel("LaTeX").fill("\\frac{a");
     await expect(dialog.getByRole("alert")).toHaveText("This formula has a syntax error.");
-    await expect(dialog.getByRole("button", { name: "Insert" })).toBeDisabled();
+    await expect(dialog.getByRole("button", { name: /Done/ })).toBeDisabled();
     await dialog.getByLabel("LaTeX").fill("x^2");
     await expect(dialog.getByTestId("math-preview")).toBeVisible();
-    await dialog.getByRole("button", { name: "Insert" }).click();
+    // Enter confirms, as the button does
+    await dialog.getByLabel("LaTeX").press("Enter");
     await expect(editor.locator(".katex")).toHaveCount(1);
 
     // Typing $...$ right after Chinese text also becomes a formula
@@ -96,14 +97,15 @@ test("math can be inserted from the dialog, typed with $…$, edited, and saved 
     // Click a formula to edit it
     await editor.locator("[data-type='inline-math'] .katex-html").first().click();
     await page.getByRole("dialog").getByLabel("LaTeX").fill("z^3");
-    await page.getByRole("dialog").getByRole("button", { name: "Update" }).click();
+    await page.getByRole("dialog").getByRole("button", { name: /Done/ }).click();
     await expect(editor.locator("[data-type='inline-math']").first()).toHaveAttribute("data-latex", "z^3");
 
     // Block formula
     await page.keyboard.press("Enter");
-    await page.getByRole("button", { name: "Math block" }).click();
+    await page.getByRole("button", { name: "Display formula" }).click();
+    await expect(page.getByRole("dialog", { name: "Display formula" })).toBeVisible();
     await page.getByRole("dialog").getByLabel("LaTeX").fill("E=mc^2");
-    await page.getByRole("dialog").getByRole("button", { name: "Insert" }).click();
+    await page.getByRole("dialog").getByRole("button", { name: /Done/ }).click();
     await expect(editor.locator("[data-type='block-math']")).toHaveCount(1);
     await expect(page.getByRole("status")).toHaveText("Saved");
 
@@ -726,9 +728,10 @@ test("a display formula has no number until it is named from the box next to it"
     const editor = page.locator(".ProseMirror");
     await editor.click();
     await page.keyboard.type("Intro ");
-    await page.getByRole("button", { name: "Math block" }).click();
+    await page.getByRole("button", { name: "Display formula" }).click();
+    await expect(page.getByRole("dialog", { name: "Display formula" })).toBeVisible();
     await page.getByRole("dialog").getByLabel("LaTeX").fill("E=mc^2");
-    await page.getByRole("dialog").getByRole("button", { name: "Insert" }).click();
+    await page.getByRole("dialog").getByRole("button", { name: /Done/ }).click();
     const formula = editor.locator("[data-type='block-math']");
     await expect(formula).toHaveCount(1);
     await expect(page.getByRole("status")).toHaveText("Saved");
@@ -860,9 +863,10 @@ test("only ordinary text lines are numbered, a named formula shows its number, a
     await expect.poll(() => numbers.count()).toBe(paragraphs);
 
     // A table and a figure do not count either, a display formula shows its number once it has a name
-    await page.getByRole("button", { name: "Math block" }).click();
+    await page.getByRole("button", { name: "Display formula" }).click();
+    await expect(page.getByRole("dialog", { name: "Display formula" })).toBeVisible();
     await page.getByRole("dialog").getByLabel("LaTeX").fill("E=mc^2");
-    await page.getByRole("dialog").getByRole("button", { name: "Insert" }).click();
+    await page.getByRole("dialog").getByRole("button", { name: /Done/ }).click();
     const formula = editor.locator("[data-type='block-math']");
     await expect(formula).toHaveCount(1);
     await formula.hover();
