@@ -24,13 +24,14 @@
     "spellcheckHint": "Underline misspelled words while typing.",
     "codeFontSize": "Code size",
     "autosaveDelay": "Save after typing stops",
-    "autosaveDelayHint": "Milliseconds to wait before the text is saved.",
+    "autosaveDelayHint": "Slide to the right to save sooner after you stop typing.",
     "pasteMarkdown": "Paste Markdown as structure",
     "pasteMarkdownHint": "Turn pasted Markdown into headings, lists and tables.",
     "previewPpi": "Preview sharpness",
-    "previewPpiHint": "Pixels per inch of the page images, higher is sharper and slower.",
+    "previewPpiHint": "The sharpness of the page pictures of the preview. A sharper picture takes longer to build.",
     "previewDelay": "Rebuild the preview after a save",
-    "previewDelayHint": "Milliseconds to wait before the preview rebuilds."
+    "previewDelayHint": "Slide to the right to rebuild the preview sooner after a save.",
+    "codeSample": "print(\"hello\")"
   },
   "group": {
     "page": "Page",
@@ -47,6 +48,15 @@
   "advancedHint": "Empty fields follow the school format. Changing a value overrides it for this thesis only.",
   "noProject": "Open a project to change the format of its thesis.",
   "levels": "Level {{n}}",
+  "sizeLevels": {
+    "draft": "Draft",
+    "normal": "Normal",
+    "sharp": "Sharp",
+    "verySharp": "Very sharp",
+    "small": "Small",
+    "large": "Large",
+    "larger": "Larger"
+  },
   "field": {
     "layout": {
       "paper": "Paper size",
@@ -241,5 +251,13 @@
     "noPicture": "No picture",
     "rule": "Whether a thesis needs a watermark depends on the school.",
     "replace": "Replace file"
+  },
+  "steps": {
+    "slowest": "Relaxed",
+    "fastest": "Immediate",
+    "level": "Step {{n}} of {{total}}",
+    "custom": "Custom",
+    "describeSave": "Saves about {{seconds}} after you stop typing.",
+    "describePreview": "Builds the preview about {{seconds}} after a save."
   }
 }
