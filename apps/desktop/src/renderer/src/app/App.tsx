@@ -9,6 +9,7 @@ import { Workspace } from "../features/project/Workspace";
 import { api } from "../shared/api";
 import { errorMessage } from "../shared/error-message";
 import { useEffect, useRef, useState } from "react";
+import { SettingsDialog } from "../features/settings/SettingsDialog";
 import { AppShell } from "./AppShell";
 
 export function App() {
@@ -16,6 +17,10 @@ export function App() {
   const state = useProject();
   const build = useBuild();
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  // Grows whenever a document or the thesis settings were saved, the preview watches it
+  const [saveTick, setSaveTick] = useState(0);
+  const bumpSaved = () => setSaveTick((n) => n + 1);
   const [localeError, setLocaleError] = useState<string | null>(null);
 
   async function changeLocale(locale: Locale): Promise<void> {
@@ -42,6 +47,18 @@ export function App() {
     [t],
   );
 
+  // Ctrl or Cmd plus comma opens the settings, as in most apps
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === ",") {
+        event.preventDefault();
+        setSettingsOpen(true);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
   const error = state.error ?? localeError;
 
   return (
@@ -54,6 +71,7 @@ export function App() {
       }}
       onTogglePreview={state.project ? () => setPreviewOpen((open) => !open) : null}
       previewOpen={previewOpen}
+      onOpenSettings={() => setSettingsOpen(true)}
       onLocaleChange={(locale) => void changeLocale(locale)}
     >
       {error && (
@@ -65,7 +83,15 @@ export function App() {
       <div className="relative min-h-0 flex-1">
         <div className="absolute inset-0 overflow-hidden">
         {state.loading ? null : state.project ? (
-          <Workspace state={state} build={build} previewOpen={previewOpen} onClosePreview={() => setPreviewOpen(false)} />
+          <Workspace
+            state={state}
+            build={build}
+            previewOpen={previewOpen}
+            onClosePreview={() => setPreviewOpen(false)}
+            onOpenSettings={() => setSettingsOpen(true)}
+            saveTick={saveTick}
+            onSaved={bumpSaved}
+          />
         ) : (
           <WelcomeScreen
             recent={state.recent}
@@ -77,6 +103,12 @@ export function App() {
         )}
         </div>
       </div>
+      <SettingsDialog
+        open={settingsOpen}
+        onOpenChange={setSettingsOpen}
+        hasProject={state.project !== null}
+        onThesisSaved={bumpSaved}
+      />
     </AppShell>
   );
 }

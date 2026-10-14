@@ -12,8 +12,13 @@ export class Autosaver {
   constructor(
     private readonly save: (text: string) => Promise<void>,
     private readonly onStatus: (status: SaveStatus) => void,
-    private readonly delayMs = 800,
+    private delayMs = 800,
   ) {}
+
+  /** The pause after the last edit before saving, can change while the editor is open. */
+  setDelay(delayMs: number): void {
+    this.delayMs = delayMs;
+  }
 
   /** Marks unsaved changes, read is called only when saving to get the latest text. */
   schedule(read: () => string): void {

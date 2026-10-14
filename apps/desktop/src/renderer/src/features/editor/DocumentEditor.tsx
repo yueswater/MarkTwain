@@ -1,5 +1,7 @@
 import type { JSONContent } from "@tiptap/core";
 import { findTable } from "@tiptap/pm/tables";
+import { usePrefs } from "@/lib/prefs";
+import { cn } from "@/lib/utils";
 import { EditorContent, useEditor } from "@tiptap/react";
 import Placeholder from "@tiptap/extension-placeholder";
 import { parseMarkdown, serializeMarkdown } from "@marktwain/schema";
@@ -65,6 +67,8 @@ export function DocumentEditor({ documentId, scrollTo, onSaved }: Props) {
   return <EditorSurface doc={doc} scrollTo={scrollTo ?? null} onSaved={onSaved} />;
 }
 
+const WIDTH = { narrow: "max-w-xl", normal: "max-w-3xl", wide: "max-w-5xl" } as const;
+
 const ATOM_TYPES = new Set(["footnote", "citation", "crossRef"]);
 
 function EditorSurface({
@@ -79,6 +83,9 @@ function EditorSurface({
   const { t } = useTranslation("editor");
   const { t: tCommon } = useTranslation();
   const [status, setStatus] = useState<SaveStatus>("idle");
+  const { prefs } = usePrefs();
+  const prefsRef = useRef(prefs);
+  prefsRef.current = prefs;
   const [math, setMath] = useState<MathTarget | null>(null);
   const [atom, setAtom] = useState<AtomTarget | null>(null);
   const [caption, setCaption] = useState<CaptionTarget | null>(null);
@@ -108,6 +115,7 @@ function EditorSurface({
   );
   const flushRef = useRef(autosaver);
   flushRef.current = autosaver;
+  useEffect(() => autosaver.setDelay(prefs.autosaveDelayMs), [autosaver, prefs.autosaveDelayMs]);
 
   const editor = useEditor(
     {
@@ -115,7 +123,7 @@ function EditorSurface({
         ...createSchemaExtensions({
           onMathClick: (kind, latex, pos) => setMath({ kind, latex, pos }),
         }),
-        MarkdownPaste,
+        MarkdownPaste.configure({ enabled: () => prefsRef.current.pasteMarkdown }),
         Placeholder.configure({ placeholder: t("placeholder") }),
         RefDecorations.configure({
           getNumbers: () => labelsRef.current.numbers,
@@ -158,6 +166,10 @@ function EditorSurface({
     },
     [doc.id],
   );
+
+  useEffect(() => {
+    if (editor && !editor.isDestroyed) editor.view.dom.setAttribute("spellcheck", String(prefs.spellcheck));
+  }, [editor, prefs.spellcheck]);
 
   // Move the cursor to the top level block named by a build error
   useEffect(() => {
@@ -279,7 +291,19 @@ function EditorSurface({
       />
       <EditorBubbleMenu editor={editor} onInsertMath={() => setMath({ kind: "inline", latex: "", pos: null })} />
       <div className="min-h-0 flex-1 overflow-y-auto">
-        <EditorContent editor={editor} className="mx-auto max-w-3xl px-8 py-8" />
+        <EditorContent
+          editor={editor}
+          data-line-numbers={prefs.lineNumbers}
+          data-font={prefs.fontFamily}
+          className={cn("mx-auto px-8 py-8", WIDTH[prefs.contentWidth])}
+          style={
+            {
+              "--editor-font-size": `${prefs.fontSize}px`,
+              "--editor-line-height": String(prefs.lineHeight),
+              "--editor-code-size": `${prefs.codeFontSize}px`,
+            } as React.CSSProperties
+          }
+        />
       </div>
       {importError && (
         <p role="alert" className="border-t bg-destructive/5 px-4 py-1 text-xs text-destructive select-text">

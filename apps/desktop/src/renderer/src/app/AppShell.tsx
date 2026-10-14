@@ -1,4 +1,4 @@
-import { FileTextIcon, LanguagesIcon, XIcon } from "lucide-react";
+import { FileTextIcon, LanguagesIcon, SettingsIcon, XIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import logo from "@/assets/logo.png";
@@ -20,6 +20,7 @@ type Props = {
   /** Shown only while a project is open */
   onTogglePreview: (() => void) | null;
   previewOpen: boolean;
+  onOpenSettings: () => void;
   onLocaleChange: (locale: Locale) => void;
 };
 
@@ -30,6 +31,7 @@ export function AppShell({
   onCloseProject,
   onTogglePreview,
   previewOpen,
+  onOpenSettings,
   onLocaleChange,
 }: Props) {
   const { t, i18n } = useTranslation();
@@ -58,6 +60,9 @@ export function AppShell({
               {t("preview", { ns: "build" })}
             </Button>
           )}
+          <Button variant="ghost" size="icon-sm" aria-label={t("open", { ns: "config" })} title={t("open", { ns: "config" })} onClick={onOpenSettings}>
+            <SettingsIcon aria-hidden="true" />
+          </Button>
           <LanguagesIcon className="size-4 text-muted-foreground" aria-hidden="true" />
           <Select value={i18n.language} onValueChange={(value) => onLocaleChange(value as Locale)}>
             <SelectTrigger size="sm" aria-label={t("settings.language")}>

@@ -6,6 +6,13 @@ import { findPackagedExecutable } from "./find-app";
 
 const dist = resolve(__dirname, "../dist");
 
+/** Opens the settings window on the thesis section. */
+async function openThesisSettings(page: import("@playwright/test").Page): Promise<void> {
+  const dialog = page.getByRole("dialog");
+  if (!(await dialog.isVisible())) await page.locator("header").getByRole("button", { name: "設定" }).click();
+  await dialog.getByRole("button", { name: "論文", exact: true }).click();
+}
+
 test("project settings are filled in, validated, saved and restored", async () => {
   const dir = mkdtempSync(join(tmpdir(), "marktwain 設定 "));
   const file = join(dir, "我的論文.marktwain");
@@ -20,7 +27,7 @@ test("project settings are filled in, validated, saved and restored", async () =
   try {
     const page = await app.firstWindow();
     await page.getByRole("button", { name: "新增專案" }).click();
-    await page.getByRole("button", { name: "專案設定" }).click();
+    await openThesisSettings(page);
 
     // The title defaults to the project name, no red text before the author is filled in
     await expect(page.getByLabel("論文題目（中文）")).toHaveValue("我的論文");
@@ -50,9 +57,10 @@ test("project settings are filled in, validated, saved and restored", async () =
     await expect(page.getByRole("status")).toHaveText("已儲存");
 
     // Close and reopen the project, the settings are still there
+    await page.keyboard.press("Escape");
     await page.getByRole("button", { name: "關閉專案" }).click();
     await page.getByRole("button", { name: "開啟專案" }).click();
-    await page.getByRole("button", { name: "專案設定" }).click();
+    await openThesisSettings(page);
     await expect(page.getByLabel("作者（中文）")).toHaveValue("王小明");
     await expect(page.getByLabel("學號")).toHaveValue("112345678");
     await expect(page.getByLabel("口試日期")).toHaveValue("2026-06-15");
@@ -88,7 +96,7 @@ test("editing the last field of the settings never scrolls the whole window", as
   try {
     const page = await app.firstWindow();
     await page.getByRole("button", { name: "新增專案" }).click();
-    await page.getByRole("button", { name: "專案設定" }).click();
+    await openThesisSettings(page);
     await page.getByLabel("關鍵字（英文）").fill("one, two");
     await page.getByLabel("關鍵字（英文）").press("End");
     const state = await page.evaluate(() => ({
