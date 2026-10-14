@@ -12,6 +12,7 @@ export const ErrorCode = {
   ProjectNoneOpen: "project.none-open",
   DocumentNotFound: "document.not-found",
   DocumentSingleton: "document.singleton",
+  ConfigInvalid: "config.invalid",
   AssetUnsupported: "asset.unsupported",
   AssetTooLarge: "asset.too-large",
   AssetUnreadable: "asset.unreadable",

@@ -4,6 +4,7 @@ import {
   MoreHorizontalIcon,
   PencilIcon,
   PlusIcon,
+  SettingsIcon,
   Trash2Icon,
 } from "lucide-react";
 import { useState } from "react";
@@ -35,6 +36,8 @@ type Props = {
   onRename: (id: string, title: string) => void;
   onMove: (id: string, delta: -1 | 1) => void;
   onDelete: (id: string) => void;
+  settingsSelected: boolean;
+  onSelectSettings: () => void;
 };
 
 type Pending = { type: "rename" | "delete"; doc: DocumentSummary };
@@ -47,8 +50,11 @@ export function DocumentSidebar({
   onRename,
   onMove,
   onDelete,
+  settingsSelected,
+  onSelectSettings,
 }: Props) {
   const { t } = useTranslation("project");
+  const { t: tConfig } = useTranslation("config");
   const [pending, setPending] = useState<Pending | null>(null);
 
   const kindCount = (kind: DocumentKind) => documents.filter((d) => d.kind === kind).length;
@@ -77,6 +83,21 @@ export function DocumentSidebar({
         </DropdownMenu>
       </div>
 
+      <div className="px-2 pb-1">
+        <button
+          type="button"
+          aria-current={settingsSelected ? "true" : undefined}
+          onClick={onSelectSettings}
+          className={cn(
+            "flex h-8 w-full items-center gap-2 rounded-md px-2 text-left text-sm hover:bg-muted",
+            settingsSelected && "bg-muted font-medium",
+          )}
+        >
+          <SettingsIcon className="size-4 text-muted-foreground" aria-hidden="true" />
+          {tConfig("open")}
+        </button>
+      </div>
+
       <ul className="flex-1 overflow-y-auto px-2 pb-2">
         {documents.map((doc) => {
           const title = documentTitle(t, doc);
@@ -84,11 +105,11 @@ export function DocumentSidebar({
             <li key={doc.id} className="group/item relative">
               <button
                 type="button"
-                aria-current={doc.id === selectedId ? "true" : undefined}
+                aria-current={!settingsSelected && doc.id === selectedId ? "true" : undefined}
                 onClick={() => onSelect(doc.id)}
                 className={cn(
                   "flex h-8 w-full items-center truncate rounded-md px-2 pr-9 text-left text-sm hover:bg-muted",
-                  doc.id === selectedId && "bg-muted font-medium",
+                  !settingsSelected && doc.id === selectedId && "bg-muted font-medium",
                 )}
               >
                 <span className="truncate">{title}</span>

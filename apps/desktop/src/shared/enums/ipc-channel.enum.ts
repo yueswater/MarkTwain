@@ -7,6 +7,8 @@ export const IpcChannel = {
   ProjectOpen: "project:open",
   ProjectCurrent: "project:current",
   ProjectClose: "project:close",
+  ConfigGet: "config:get",
+  ConfigSet: "config:set",
   AssetImportImage: "asset:import-image",
   LabelResolve: "label:resolve",
   DialogChooseNewProject: "dialog:choose-new-project",
