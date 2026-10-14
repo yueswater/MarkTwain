@@ -49,8 +49,10 @@ export function parseDiagnostics(raw: string, lineMap: LineMap, root = ""): Diag
 export function relativize(text: string, root: string): string {
   const unix = text.replace(/\\\\\?\\/g, "").replace(/\\/g, "/");
   if (root === "") return unix;
-  const base = root.replace(/\\/g, "/").replace(/\/+$/, "");
-  return unix.split(`${base}/`).join("");
+  // Match on the build directory name, since typst may print a long path where the temp dir is a short 8.3 one.
+  const name = root.replace(/\\/g, "/").replace(/\/+$/, "").split("/").pop() ?? "";
+  const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return unix.replace(new RegExp(`(?:[A-Za-z]:)?/[^\\n]*?/${escaped}/`, "g"), "");
 }
 
 /** Finds the last block that starts on or before the line. */
