@@ -12,7 +12,10 @@ try {
   const lock = parseLock(readFileSync(join(root, LOCK_FILE), "utf8"));
   const templatesDir = join(root, ...OUTPUT_DIR);
 
-  for (const name of TEMPLATE_NAMES) {
+  // Optional arguments select templates, for example `pnpm templates:fetch typ`.
+  const wanted = process.argv.slice(2);
+  const names = wanted.length > 0 ? TEMPLATE_NAMES.filter((n) => wanted.includes(n)) : TEMPLATE_NAMES;
+  for (const name of names) {
     const entry = lock.templates[name];
     const result = fetchTemplate(name, entry, templatesDir);
     console.log(`${name}: ${result}（${entry.repo}@${entry.tag}）`);
