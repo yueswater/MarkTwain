@@ -1,5 +1,8 @@
 import MarkdownIt from "markdown-it";
 import attrs from "markdown-it-attrs";
+import footnote from "markdown-it-footnote";
+import { citationPlugin } from "./plugins/citation";
+import { footnoteResolvePlugin } from "./plugins/footnote";
 import { mathPlugin } from "./plugins/math";
 
 /**
@@ -11,5 +14,8 @@ export type MarkdownItInstance = InstanceType<typeof MarkdownIt>;
 export function createMarkdownIt(): MarkdownItInstance {
   return new MarkdownIt({ html: false, linkify: false, typographer: false, breaks: false })
     .use(attrs)
-    .use(mathPlugin);
+    .use(footnote)
+    .use(mathPlugin)
+    .use(citationPlugin)
+    .use(footnoteResolvePlugin);
 }
