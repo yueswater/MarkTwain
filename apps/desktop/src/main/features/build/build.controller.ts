@@ -25,6 +25,7 @@ export function resolveBuildPaths(): BuildPaths {
 
 export function registerBuildController(service: BuildService): void {
   handle(IpcChannel.BuildTypst, () => service.build());
+  handle(IpcChannel.BuildSetWatermark, ({ on }) => service.setWatermark(on));
 
   // marktwain-preview://page/<revision>/<index>.png
   protocol.handle(PREVIEW_SCHEME, (request) => {

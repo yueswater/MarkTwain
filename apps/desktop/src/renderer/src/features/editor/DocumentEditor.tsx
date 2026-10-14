@@ -35,6 +35,7 @@ import type { CitationInfo } from "./ref-display";
 import { findUnlabeledTargets, newLabel, type UnlabeledTarget } from "./unlabeled-targets";
 import { Toolbar } from "./Toolbar";
 import { CodeBlockWithLanguage } from "./extensions/nodes/code-block-view";
+import { LineGutter } from "./LineGutter";
 import { EquationLabelBubble } from "./EquationLabelBubble";
 import { EquationShortcut } from "./extensions/equation-shortcut";
 
@@ -104,6 +105,7 @@ function EditorSurface({
   const [find, setFind] = useState<{ open: boolean; term: string }>({ open: false, term: "" });
   const [crop, setCrop] = useState<{ pos: number; src: string } | null>(null);
   const [figure, setFigure] = useState<FigureTarget | null>(null);
+  const gutterHolder = useRef<HTMLDivElement>(null);
   const [importError, setImportError] = useState<string | null>(null);
   const [unlabeled, setUnlabeled] = useState<UnlabeledTarget[]>([]);
 
@@ -347,11 +349,13 @@ function EditorSurface({
       <div className="relative min-h-0 flex-1">
       {find.open && <FindBar key={find.term} editor={editor} initialTerm={find.term} onClose={() => setFind((c) => ({ ...c, open: false }))} />}
       <div className="h-full overflow-y-auto">
+        <div className="relative" ref={gutterHolder}>
+        {prefs.lineNumbers && <LineGutter editor={editor} container={gutterHolder} layoutKey={`${prefs.fontSize}:${prefs.lineHeight}:${prefs.contentWidth}:${prefs.fontFamily}:${prefs.codeFontSize}`} />}
         <EditorContent
           editor={editor}
           data-line-numbers={prefs.lineNumbers}
           data-font={prefs.fontFamily}
-          className={cn("mx-auto px-8 py-8", WIDTH[prefs.contentWidth])}
+          className={cn("mx-auto py-8 pr-8", prefs.lineNumbers ? "pl-20" : "pl-8", WIDTH[prefs.contentWidth])}
           style={
             {
               "--editor-font-size": `${prefs.fontSize}px`,
@@ -360,6 +364,7 @@ function EditorSurface({
             } as React.CSSProperties
           }
         />
+        </div>
       </div>
       </div>
       {importError && (

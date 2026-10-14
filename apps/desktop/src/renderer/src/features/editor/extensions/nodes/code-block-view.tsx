@@ -14,6 +14,8 @@ function CodeBlockView({ node, editor, getPos, updateAttributes }: NodeViewProps
   const { t } = useTranslation("editor");
   const [open, setOpen] = useState(false);
   const language = String(node.attrs.language ?? "");
+  // The numbers of the lines of the code count by themselves, from 1 in every block
+  const lineCount = node.textContent.split("\n").length;
 
   // The shortcut cannot reach React state directly, it sends an event with the position of the block
   useEffect(() => {
@@ -41,7 +43,7 @@ function CodeBlockView({ node, editor, getPos, updateAttributes }: NodeViewProps
     <NodeViewWrapper className="code-block">
       <div className="code-lang" contentEditable={false} data-open={open} data-testid="code-language">
         <Select value={language || PLAIN} onValueChange={choose} open={open} onOpenChange={setOpen}>
-          <SelectTrigger size="sm" aria-label={t("toolbar.codeLanguage")} className="h-6 w-auto gap-1 border-0 bg-background/80 px-2 text-xs shadow-none">
+          <SelectTrigger size="sm" aria-label={t("toolbar.codeLanguage")} className="h-7 w-auto gap-1 border border-border bg-background px-2 text-xs shadow-sm hover:bg-muted">
             <SelectValue />
           </SelectTrigger>
           <SelectContent
@@ -61,7 +63,12 @@ function CodeBlockView({ node, editor, getPos, updateAttributes }: NodeViewProps
           </SelectContent>
         </Select>
       </div>
-      <pre>
+      <pre className="code-with-lines">
+        <div className="code-lines" aria-hidden="true" contentEditable={false} data-testid="code-lines">
+          {Array.from({ length: lineCount }, (_, index) => (
+            <span key={index}>{index + 1}</span>
+          ))}
+        </div>
         <NodeViewContent<"code"> as="code" />
       </pre>
     </NodeViewWrapper>

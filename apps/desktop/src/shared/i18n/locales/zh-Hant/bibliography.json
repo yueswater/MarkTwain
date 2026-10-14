@@ -68,7 +68,12 @@
     "unreadable": "第 {{line}} 行無法讀取：{{message}}。",
     "duplicate": "代號「{{key}}」被多筆文獻使用。",
     "unknown": "文件引用了，但書目沒有：{{keys}}",
-    "createFrom": "新增「{{key}}」"
+    "createFrom": "新增「{{key}}」",
+    "reason": {
+      "missingKey": "這筆文獻沒有代號",
+      "badField": "欄位名稱缺少或不正確",
+      "badValue": "有一個值沒有結尾"
+    }
   },
   "source": {
     "label": "BibTeX 原始碼",

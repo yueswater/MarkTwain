@@ -537,6 +537,8 @@ test("code blocks take a language, are highlighted, and keep it in the Markdown"
     await expect(selector).toHaveCSS("opacity", "0");
     await editor.locator(".code-block").hover();
     await expect(selector).toHaveCSS("opacity", "1");
+    // The selector has a background of its own, so it stays readable over the code
+    await expect(page.getByRole("combobox", { name: "Code language" })).not.toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
     await page.getByRole("combobox", { name: "Code language" }).click();
     await page.getByRole("option", { name: "Python" }).click();
     await expect(page.getByRole("listbox")).toBeHidden();
@@ -776,6 +778,114 @@ test("a display formula has no number until it is named from the box next to it"
     await expect(box.getByLabel("Formula name")).toBeDisabled();
     await expect(box.getByRole("button", { name: "Remove number" })).toBeDisabled();
     await expect(box).toContainText("cannot be changed or removed");
+  } finally {
+    await app.close();
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("Ctrl or Cmd with B makes text bold, and the sidebar folds with a backslash", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "marktwain 快捷鍵 "));
+  const args = [`--user-data-dir=${join(dir, "userData")}`, "--lang=en-US"];
+  if (process.platform === "linux") args.push("--no-sandbox");
+  const app = await electron.launch({
+    executablePath: findPackagedExecutable(dist),
+    args,
+    env: { ...process.env, MARKTWAIN_TEST_DIALOG_PATH: join(dir, "p.marktwain") },
+  });
+  try {
+    const page = await app.firstWindow();
+    await page.getByRole("button", { name: "New project" }).click();
+    const sidebar = page.getByRole("complementary", { name: "Documents" });
+    const editor = page.locator(".ProseMirror");
+    await editor.click();
+    await page.keyboard.type("bold words");
+    await page.keyboard.press("ControlOrMeta+a");
+    await page.keyboard.press("ControlOrMeta+b");
+    await expect(editor.locator("strong")).toHaveText("bold words");
+    await expect(sidebar).toHaveAttribute("data-collapsed", "false");
+
+    await page.keyboard.press("ControlOrMeta+\\");
+    await expect(sidebar).toHaveAttribute("data-collapsed", "true");
+    await page.keyboard.press("ControlOrMeta+\\");
+    await expect(sidebar).toHaveAttribute("data-collapsed", "false");
+
+    // Every visual line has a number, a wrapped paragraph gets several
+    await editor.click();
+    await page.keyboard.press("ControlOrMeta+End");
+    await page.keyboard.press("Enter");
+    await page.keyboard.type("long ".repeat(200));
+    const numbers = page.getByTestId("line-gutter").locator("[data-line]");
+    await expect.poll(() => numbers.count()).toBeGreaterThan(4);
+    const first = await numbers.first().boundingBox();
+    const text = await editor.boundingBox();
+    expect(first && text && first.x + first.width <= text.x).toBe(true);
+
+    // With the preview open the editor is narrower, the numbers stay next to the text and inside the editor
+    await page.setViewportSize({ width: 1000, height: 700 });
+    await page.getByRole("button", { name: "Preview", exact: true }).click();
+    await expect(page.getByTestId("preview-pages")).toBeVisible();
+    await expect.poll(async () => {
+      const number = await numbers.first().boundingBox();
+      const box = await editor.boundingBox();
+      const aside = await sidebar.boundingBox();
+      return !!(number && box && aside && number.x >= aside.x + aside.width && number.x + number.width <= box.x + 1);
+    }).toBe(true);
+    await expect.poll(() => numbers.count()).toBeGreaterThan(4);
+  } finally {
+    await app.close();
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("only ordinary text lines are numbered, a named formula shows its number, and code has its own numbers", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "marktwain 行號 "));
+  const args = [`--user-data-dir=${join(dir, "userData")}`, "--lang=en-US"];
+  if (process.platform === "linux") args.push("--no-sandbox");
+  const app = await electron.launch({
+    executablePath: findPackagedExecutable(dist),
+    args,
+    env: { ...process.env, MARKTWAIN_TEST_DIALOG_PATH: join(dir, "p.marktwain") },
+  });
+  try {
+    const page = await app.firstWindow();
+    await page.getByRole("button", { name: "New project" }).click();
+    const editor = page.locator(".ProseMirror");
+    await editor.click();
+    await page.keyboard.type("# A heading\nFirst line.\nSecond line.\n");
+    const numbers = page.getByTestId("line-gutter").locator("[data-line]");
+    // Every short paragraph has one number, the heading has none
+    const paragraphs = await editor.locator(":scope > p").count();
+    expect(paragraphs).toBeGreaterThanOrEqual(2);
+    await expect.poll(() => numbers.count()).toBe(paragraphs);
+
+    // A table and a figure do not count either, a display formula shows its number once it has a name
+    await page.getByRole("button", { name: "Math block" }).click();
+    await page.getByRole("dialog").getByLabel("LaTeX").fill("E=mc^2");
+    await page.getByRole("dialog").getByRole("button", { name: "Insert" }).click();
+    const formula = editor.locator("[data-type='block-math']");
+    await expect(formula).toHaveCount(1);
+    await formula.hover();
+    const box = page.getByTestId("equation-label-box");
+    await box.getByLabel("Formula name").fill("energy");
+    await box.getByRole("button", { name: "Set name" }).click();
+    await expect(formula).toHaveAttribute("data-eq-number", /^\d+(\.\d+)?$/);
+    const before = await formula.getAttribute("data-eq-number");
+    // The numbers can follow the chapter, and then they carry the chapter number
+    await box.getByRole("switch", { name: /Number by chapter/ }).click();
+    await expect.poll(() => formula.getAttribute("data-eq-number")).not.toBe(before);
+    await expect(formula).toHaveAttribute("data-eq-number", /\./);
+    await page.mouse.move(5, 5);
+
+    // Code has its own numbers, from 1 inside the block
+    const beforeCode = await numbers.count();
+    await editor.locator("p").last().click();
+    await page.keyboard.press("End");
+    await page.getByRole("button", { name: "Code block" }).click();
+    await page.keyboard.type("one\ntwo\nthree");
+    await expect(page.getByTestId("code-lines").locator("span")).toHaveText(["1", "2", "3"]);
+    // The lines of the code are not in the gutter of the text, the paragraph that became code even left it
+    await expect.poll(() => numbers.count()).toBeLessThanOrEqual(beforeCode);
   } finally {
     await app.close();
     rmSync(dir, { recursive: true, force: true });

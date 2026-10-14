@@ -10,7 +10,8 @@
   "filter": {
     "project": "MarkTwain 專案",
     "image": "圖片",
-    "pdf": "PDF 文件"
+    "pdf": "PDF 文件",
+    "watermark": "圖片與 PDF"
   },
   "openImage": {
     "title": "選擇圖片",
@@ -23,5 +24,9 @@
   "exportFolder": {
     "title": "選擇匯出專案的位置",
     "button": "匯出到這裡"
+  },
+  "openWatermark": {
+    "title": "選擇浮水印",
+    "button": "使用"
   }
 }

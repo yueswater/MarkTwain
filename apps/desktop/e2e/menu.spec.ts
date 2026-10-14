@@ -54,8 +54,7 @@ test("the native menu follows the interface language and drives the app", async 
     await expect(page.getByRole("button", { name: "新增專案" })).toBeVisible();
 
     // The menu follows a language switch
-    await page.getByRole("combobox").click();
-    await page.getByRole("option", { name: "English" }).click();
+    await page.getByTestId("language-toggle").click();
     await expect.poll(fileMenuItems).toEqual(expect.arrayContaining(["New Project…", "Open Project…", "Close Project"]));
     expect((await labels()).filter(Boolean)).toEqual(expect.arrayContaining(["File", "Edit", "View", "Window", "Help"]));
   } finally {

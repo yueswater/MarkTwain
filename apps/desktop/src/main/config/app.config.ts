@@ -14,6 +14,10 @@ export const PROJECT_EXTENSION = "marktwain";
 
 /** Image limits, allowed extensions without the dot and the size cap. */
 export const IMAGE_EXTENSIONS = ["png", "jpg", "jpeg", "svg"] as const;
+
+/** Files that can be a watermark, a PDF is allowed for the logos that schools give as vector files. */
+export const WATERMARK_EXTENSIONS = ["png", "jpg", "jpeg", "svg", "pdf"] as const;
+export const WATERMARK_MAX_BYTES = 10 * 1024 * 1024;
 export const IMAGE_MAX_BYTES = 25 * 1024 * 1024;
 
 /** Custom protocol that serves project files to the editor, see core/asset-protocol. */
@@ -34,3 +38,6 @@ export const TEST_DIALOG_PATH_ENV = "MARKTWAIN_TEST_DIALOG_PATH";
 
 /** Test hook: when set, export dialogs are skipped and this path is used. */
 export const TEST_EXPORT_PATH_ENV = "MARKTWAIN_TEST_EXPORT_PATH";
+
+/** Test hook, when set to 1 a new project does not ask for the facts of the thesis. */
+export const TEST_NO_PROFILE_DIALOG_ENV = "MARKTWAIN_TEST_NO_PROFILE_DIALOG";

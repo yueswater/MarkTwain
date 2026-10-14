@@ -206,6 +206,7 @@
     "taken": "Another target already has this name.",
     "locked": "This formula is referred to, so its name cannot be changed or removed.",
     "hint": "A formula with a name is numbered and can be referred to.",
-    "numbered": "Numbered {{number}}"
+    "numbered": "Numbered {{number}}",
+    "perChapter": "Number by chapter, (3.1) instead of (1)"
   }
 }

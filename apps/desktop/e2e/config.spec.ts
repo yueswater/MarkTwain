@@ -6,11 +6,11 @@ import { findPackagedExecutable } from "./find-app";
 
 const dist = resolve(__dirname, "../dist");
 
-/** Opens the settings window on the thesis section. */
-async function openThesisSettings(page: import("@playwright/test").Page): Promise<void> {
+/** Opens the settings window on a page of the thesis section. */
+async function openThesisSettings(page: import("@playwright/test").Page, name = "基本資料"): Promise<void> {
   const dialog = page.getByRole("dialog");
-  if (!(await dialog.isVisible())) await page.locator("header").getByRole("button", { name: "設定" }).click();
-  await dialog.getByRole("button", { name: "論文", exact: true }).click();
+  if (!(await dialog.isVisible())) await page.getByRole("button", { name: "設定", exact: true }).click();
+  await dialog.getByRole("button", { name, exact: true }).click();
 }
 
 test("project settings are filled in, validated, saved and restored", async () => {
@@ -36,6 +36,8 @@ test("project settings are filled in, validated, saved and restored", async () =
     await page.getByLabel("作者（中文）").fill("王小明");
     await page.getByLabel("學號").fill("112345678");
     await page.getByLabel("關鍵字（中文）").fill("機器學習，自然語言處理, 論文");
+    // The school, department and language are on the other page
+    await openThesisSettings(page, "學校與格式");
     await page.getByRole("combobox", { name: "學校格式" }).click();
     await page.getByRole("option", { name: "國立臺灣大學" }).click();
 
@@ -49,9 +51,10 @@ test("project settings are filled in, validated, saved and restored", async () =
     await page.getByRole("combobox", { name: "論文語言" }).click();
     await page.getByRole("option", { name: "英文" }).click();
 
-    // A bad date shows below the field and disappears once fixed
-    await page.getByLabel("口試日期").fill("2026/06/15");
-    await expect(page.getByRole("alert")).toHaveText("請使用 YYYY-MM-DD 格式。");
+    // Dates are picked, so a badly written date cannot be typed
+    await openThesisSettings(page, "基本資料");
+    await expect(page.getByLabel("口試日期")).toHaveAttribute("type", "date");
+    await expect(page.getByLabel("出版日期")).toHaveAttribute("type", "date");
     await page.getByLabel("口試日期").fill("2026-06-15");
     await expect(page.getByRole("alert")).toHaveCount(0);
     await expect(page.getByRole("status")).toHaveText("已儲存");
@@ -65,6 +68,7 @@ test("project settings are filled in, validated, saved and restored", async () =
     await expect(page.getByLabel("學號")).toHaveValue("112345678");
     await expect(page.getByLabel("口試日期")).toHaveValue("2026-06-15");
     await expect(page.getByLabel("關鍵字（中文）")).toHaveValue("機器學習, 自然語言處理, 論文");
+    await openThesisSettings(page, "學校與格式");
     await expect(page.getByRole("combobox", { name: "學校格式" })).toContainText("國立臺灣大學");
 
     const state = await page.evaluate(async () => {

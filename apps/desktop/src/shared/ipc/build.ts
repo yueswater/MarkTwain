@@ -23,6 +23,8 @@ export type BuildOutcome = {
 };
 
 export type BuildContract = {
+  /** Turns the watermark of the thesis on or off for the builds of the preview, off by default */
+  [IpcChannel.BuildSetWatermark]: { req: { on: boolean }; res: void };
   /** Builds the thesis PDF with the Typst template */
   [IpcChannel.BuildTypst]: { req: void; res: BuildOutcome };
 };

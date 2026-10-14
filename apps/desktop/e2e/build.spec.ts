@@ -115,7 +115,7 @@ test("the PDF and the whole Typst project can be exported", async () => {
     await page.getByRole("button", { name: "Preview" }).click();
     // The PDF is built at export time, no preview is needed first
     await page.getByRole("button", { name: "Export" }).click();
-    await page.getByRole("menuitem", { name: "Export PDF…" }).click();
+    await page.getByRole("menuitem", { name: "Export draft PDF…" }).click();
     await expect(page.getByRole("status").filter({ hasText: "Exported to" })).toBeVisible();
     expect(readFileSync(pdfPath).subarray(0, 5).toString()).toBe("%PDF-");
   } finally {

@@ -6,6 +6,10 @@ import { Input } from "@/components/ui/input";
 import type { LabelIndex } from "../../../../shared/ipc";
 import { checkName, isLabelUsed, labelOfName, nameOfLabel } from "./equation-name";
 import { existingLabels } from "./unlabeled-targets";
+import { IpcChannel } from "../../../../shared/enums/ipc-channel.enum";
+import { Switch } from "@/components/ui/switch";
+import { api } from "../../shared/api";
+import { LABELS_CHANGED } from "./use-label-index";
 
 /** Event sent by the shortcut so the box opens for the selected formula. */
 export const OPEN_EQUATION_LABEL_EVENT = "marktwain:equation-label";
@@ -140,6 +144,25 @@ function Box({ editor, pos, label, rect, labels, onEnter, onLeave, onClose, t, r
     return found;
   }, [editor]);
 
+  // Whether equation numbers restart in each chapter is a setting of the thesis, it is shown here where the numbers are
+  const [perChapter, setPerChapter] = useState<boolean | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    api
+      .invoke(IpcChannel.ConfigGetAdvanced)
+      .then((state) => !cancelled && setPerChapter((state.values["layout.equation-per-chapter"] ?? state.inherited["layout.equation-per-chapter"]) === true))
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  async function changePerChapter(checked: boolean): Promise<void> {
+    setPerChapter(checked);
+    await api.invoke(IpcChannel.ConfigSetAdvanced, { values: { "layout.equation-per-chapter": checked } });
+    window.dispatchEvent(new Event(LABELS_CHANGED));
+  }
+
   const locked = label !== null && isLabelUsed(label, labels.used, inDocument);
   const problem = name === "" ? null : checkName(name, taken, label);
   const unchanged = labelOfName(name) === label;
@@ -208,6 +231,12 @@ function Box({ editor, pos, label, rect, labels, onEnter, onLeave, onClose, t, r
       )}
       {locked && <p className="text-xs text-muted-foreground">{t("equation.locked")}</p>}
       {label === null && !problem && <p className="text-xs text-muted-foreground">{t("equation.hint")}</p>}
+      {perChapter !== null && (
+        <label className="flex items-center justify-between gap-2 border-t pt-1.5 text-xs text-muted-foreground">
+          {t("equation.perChapter")}
+          <Switch checked={perChapter} aria-label={t("equation.perChapter")} onCheckedChange={(checked) => void changePerChapter(checked)} />
+        </label>
+      )}
       {label !== null && number !== undefined && (
         <p className="text-xs text-muted-foreground" data-testid="equation-number">
           {t("equation.numbered", { number })}

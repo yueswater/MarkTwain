@@ -9,7 +9,7 @@ export type Target = CountedTarget | HeadingTarget;
 export type NumberingOptions = {
   /** Whether equations are numbered, matches layout.equation-numbering of config.yml */
   equationNumbering: "all" | "none";
-  /** Whether numbers restart per chapter, matches settings such as layout.equation-per-chapter */
+  /** Whether equation numbers restart in each chapter, matches layout.equation-per-chapter. Other numbers run through the thesis. */
   numberPerChapter: boolean;
 };
 

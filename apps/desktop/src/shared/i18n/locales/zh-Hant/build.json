@@ -14,7 +14,7 @@
   "noSource": "沒有對應的原文位置",
   "citationNoBibliography": "尚未加入書目，以純文字顯示：{{keys}}",
   "export": "匯出",
-  "exportPdf": "匯出 PDF…",
+  "exportPdf": "匯出草稿 PDF…",
   "exportProject": "匯出 Typst 專案…",
   "exported": "已匯出到 {{path}}",
   "watch": "自動更新",
@@ -22,5 +22,8 @@
   "page": "第 {{n}} 頁",
   "pages": "共 {{count}} 頁",
   "resize": "調整預覽寬度",
-  "fontMissing": "找不到字體：{{font}}。已改用其他字體，請檢查論文設定裡的字體名稱。"
+  "fontMissing": "找不到字體：{{font}}。已改用其他字體，請檢查論文設定裡的字體名稱。",
+  "watermark": "浮水印",
+  "watermarkHint": "在預覽中顯示論文的浮水印",
+  "exportFinalPdf": "匯出定稿 PDF（含浮水印）"
 }

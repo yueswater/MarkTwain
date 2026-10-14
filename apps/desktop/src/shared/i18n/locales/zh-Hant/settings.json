@@ -2,12 +2,6 @@
   "title": "設定",
   "description": "編輯器的偏好，以及論文的格式。",
   "close": "關閉",
-  "nav": {
-    "editor": "編輯器",
-    "editorAdvanced": "編輯器進階",
-    "thesis": "論文",
-    "thesisAdvanced": "論文進階"
-  },
   "reset": "恢復預設",
   "inherited": "預設：{{value}}",
   "followDefault": "跟隨預設",
@@ -24,19 +18,20 @@
     "narrow": "窄",
     "normal": "標準",
     "wide": "寬",
-    "lineNumbers": "區塊編號",
-    "lineNumbersHint": "在左側邊界替段落、標題等區塊編號。",
+    "lineNumbers": "行號",
+    "lineNumbersHint": "在左側邊界替文字的每一行編號，自動換行的每一行也算。",
     "spellcheck": "拼字檢查",
     "spellcheckHint": "輸入時在拼錯的英文字底下畫線。",
     "codeFontSize": "程式碼大小",
     "autosaveDelay": "停止輸入後儲存",
-    "autosaveDelayHint": "等待多少毫秒才儲存。",
+    "autosaveDelayHint": "往右拉，停止輸入後會更快儲存。",
     "pasteMarkdown": "貼上 Markdown 時轉成結構",
     "pasteMarkdownHint": "把貼上的 Markdown 變成標題、清單與表格。",
     "previewPpi": "預覽清晰度",
-    "previewPpiHint": "預覽頁面圖片的解析度，越高越清楚也越慢。",
+    "previewPpiHint": "預覽頁面圖片的清晰程度，越清晰建置越慢。",
     "previewDelay": "儲存後重新建置預覽",
-    "previewDelayHint": "等待多少毫秒才重新建置。"
+    "previewDelayHint": "往右拉，儲存後會更快重新建置預覽。",
+    "codeSample": "print(\"hello\")"
   },
   "group": {
     "page": "頁面",
@@ -47,11 +42,21 @@
     "pageNumber": "頁碼",
     "crossRef": "交叉引用",
     "bibliography": "參考文獻",
-    "outline": "目次"
+    "outline": "目次",
+    "watermark": "浮水印"
   },
   "advancedHint": "留空表示跟隨學校格式。修改後只會覆蓋這份論文。",
   "noProject": "開啟專案後才能調整論文格式。",
   "levels": "第 {{n}} 層",
+  "sizeLevels": {
+    "draft": "草稿",
+    "normal": "標準",
+    "sharp": "清晰",
+    "verySharp": "超清晰",
+    "small": "小",
+    "large": "大",
+    "larger": "特大"
+  },
   "field": {
     "layout": {
       "paper": "紙張大小",
@@ -100,6 +105,11 @@
     "bibliography": {
       "title": "參考文獻標題",
       "full": "也列出未引用的條目"
+    },
+    "watermark": {
+      "image": "浮水印圖片",
+      "width": "浮水印寬度",
+      "opacity": "浮水印深淺"
     }
   },
   "hint": {
@@ -138,5 +148,125 @@
     "pt": "pt",
     "cm": "cm",
     "em": "em"
+  },
+  "section": {
+    "editor": "編輯器",
+    "thesis": "論文"
+  },
+  "page": {
+    "editorAppearance": {
+      "title": "外觀",
+      "description": "編輯區文字的樣子。"
+    },
+    "editorWriting": {
+      "title": "寫作",
+      "description": "區塊編號、拼字檢查、貼上與儲存。"
+    },
+    "editorPreview": {
+      "title": "預覽",
+      "description": "論文預覽的建置方式。"
+    },
+    "thesisSchool": {
+      "title": "學校與格式",
+      "description": "學校決定論文格式。變更會立即儲存。"
+    },
+    "thesisInfo": {
+      "title": "基本資料",
+      "description": "封面與題名頁會用到的資料。變更會立即儲存。"
+    },
+    "thesisPage": {
+      "title": "頁面",
+      "description": "紙張大小與邊界。"
+    },
+    "thesisText": {
+      "title": "文字",
+      "description": "內文的字型、大小與間距。"
+    },
+    "thesisHeadings": {
+      "title": "標題與編號",
+      "description": "標題的大小與對齊，以及腳註、公式的編號。"
+    },
+    "thesisCaptions": {
+      "title": "圖表與引用",
+      "description": "圖表標題，以及交叉引用使用的文字。"
+    },
+    "thesisPageNumber": {
+      "title": "頁碼與目次",
+      "description": "前置部分與正文的頁碼，以及目次。"
+    },
+    "thesisBibliography": {
+      "title": "參考文獻",
+      "description": "參考文獻的標題與列出方式。"
+    },
+    "editorProfile": {
+      "title": "關於你",
+      "description": "每一篇論文都一樣的資料，新專案會自動帶入。"
+    }
+  },
+  "search": {
+    "label": "搜尋設定",
+    "placeholder": "搜尋設定",
+    "results": "搜尋結果",
+    "none": "沒有符合的設定。"
+  },
+  "changedDot": "這一頁有和學校格式不同的設定",
+  "diagram": {
+    "page": "頁面與邊界",
+    "noRoom": "邊界太大，沒有空間放文字。",
+    "headings": "標題範例",
+    "sampleHeading": {
+      "1": "章標題",
+      "2": "節標題",
+      "3": "小節標題",
+      "4": "小小節標題"
+    },
+    "outline": "目次",
+    "outlineLine": {
+      "1": "章",
+      "2": "節",
+      "3": "小節",
+      "4": "小小節"
+    },
+    "printedAs": "印出來是",
+    "tildeHint": "波浪號（~）會在字與字之間加上空白。",
+    "uncited": "列出的條目",
+    "listCited": "只列被引用的",
+    "listAll": "全部條目",
+    "placeholder": {
+      "C": "章號",
+      "S": "節號",
+      "B": "小節號"
+    },
+    "example": "範例：",
+    "badPattern": "{{problem}} 不是可以使用的代號，請用 {C}、{S}、{B}。"
+  },
+  "watermark": {
+    "title": "浮水印",
+    "hint": "畫在定稿正文頁上，開啟預覽中的浮水印開關時預覽也會顯示。",
+    "school": "跟隨學校",
+    "schoolHas": "學校的浮水印：{{name}}",
+    "schoolNone": "這間學校的模板沒有附浮水印。",
+    "none": "不使用浮水印",
+    "noneBody": "論文建置時不加浮水印。",
+    "custom": "自己的圖片",
+    "customBody": "從電腦選擇 PNG、JPEG、SVG 或 PDF。",
+    "choose": "選擇檔案",
+    "preview": "浮水印在頁面上的樣子",
+    "noPicture": "沒有圖片",
+    "rule": "論文是否需要浮水印，依學校規定。",
+    "replace": "更換檔案"
+  },
+  "steps": {
+    "slowest": "從容",
+    "fastest": "立即",
+    "level": "第 {{n}} 級，共 {{total}} 級",
+    "custom": "自訂",
+    "describeSave": "停止輸入約 {{seconds}} 後儲存。",
+    "describePreview": "儲存約 {{seconds}} 後重新建置預覽。"
+  },
+  "profile": {
+    "ask": "建立專案時詢問",
+    "askHint": "關閉後，新專案會直接帶入這些資料，不再詢問。",
+    "local": "這些資料只存在這台電腦的 App 設定裡。"
   }
 }

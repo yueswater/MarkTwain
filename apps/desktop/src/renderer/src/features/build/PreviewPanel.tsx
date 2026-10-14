@@ -1,5 +1,5 @@
-import { AlertTriangleIcon, DownloadIcon, EyeIcon, RefreshCwIcon, XIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { AlertTriangleIcon, DownloadIcon, EyeIcon, RefreshCwIcon, StampIcon, XIcon } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,17 +15,29 @@ import { IpcChannel } from "../../../../shared/enums/ipc-channel.enum";
 import { api } from "../../shared/api";
 import { errorMessage } from "../../shared/error-message";
 import { showNotes, warningItems } from "./build-notes";
+import { placeAt, readPlace, scrollFor, writePlace, type Place } from "./preview-place";
 import type { BuildState } from "./use-build";
 
 type Props = {
   build: BuildState;
   /** Changes whenever something was saved, a watching preview rebuilds on it */
   saveTick: number;
+  /** Tells projects apart, the place in the preview is kept for each */
+  placeKey: string;
   onClose: () => void;
   onJump: (documentId: string, block: number) => void;
 };
 
 const WATCH_KEY = "marktwain.preview.watch";
+const WATERMARK_KEY = "marktwain.preview.watermark";
+
+function readWatermark(): boolean {
+  try {
+    return localStorage.getItem(WATERMARK_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
 
 function readWatch(): boolean {
   try {
@@ -35,11 +47,19 @@ function readWatch(): boolean {
   }
 }
 
-export function PreviewPanel({ build, saveTick, onClose, onJump }: Props) {
+export function PreviewPanel({ build, saveTick, placeKey, onClose, onJump }: Props) {
   const { t } = useTranslation("build");
   const { t: tRoot } = useTranslation();
   const [exportNote, setExportNote] = useState<{ ok: boolean; text: string } | null>(null);
   const [watch, setWatch] = useState(readWatch);
+  const [watermark, setWatermark] = useState(readWatermark);
+  const started = useRef(false);
+  const scroller = useRef<HTMLDivElement>(null);
+  const place = useRef<Place | null>(readPlace(placeKey));
+  /** Pages whose picture has loaded, the place is restored once the pages above it have their height */
+  const loaded = useRef(new Set<number>());
+  const heights = useRef<number[]>([]);
+  const restoring = useRef(true);
   const { outcome, building, error, run } = build;
   const { prefs } = usePrefs();
   const { width, separator } = useResizableWidth("marktwain.preview.width", 520, 320, 0.7);
@@ -55,6 +75,56 @@ export function PreviewPanel({ build, saveTick, onClose, onJump }: Props) {
     // The outcome only decides the first delay, it must not retrigger the build
   }, [watch, saveTick, run]);
 
+  // The builds of the preview draw the watermark only while the switch is on, a change builds again
+  useEffect(() => {
+    void api.invoke(IpcChannel.BuildSetWatermark, { on: watermark }).then(() => {
+      if (started.current) void run();
+      started.current = true;
+    });
+    try {
+      localStorage.setItem(WATERMARK_KEY, watermark ? "1" : "0");
+    } catch {
+      // The choice is only a convenience
+    }
+    // Only the switch matters, run is stable
+  }, [watermark]);
+
+  const pageBoxes = () =>
+    Array.from(scroller.current?.querySelectorAll<HTMLElement>("li[data-page]") ?? []).map((li) => ({ top: li.offsetTop, height: li.offsetHeight }));
+
+  /** Scrolls back to the remembered place when the pages above it are drawn. */
+  function restore(): void {
+    const target = place.current;
+    const view = scroller.current;
+    if (!restoring.current) return;
+    // With no place to return to the reader is free to scroll at once
+    if (!target || !view) {
+      restoring.current = false;
+      return;
+    }
+    const boxes = pageBoxes();
+    const last = Math.min(target.page, boxes.length - 1);
+    for (let index = 0; index <= last; index += 1) if (!loaded.current.has(index)) return;
+    view.scrollTop = scrollFor(boxes, target);
+    // The scroll that this causes is not a move of the reader
+    requestAnimationFrame(() => {
+      restoring.current = false;
+    });
+  }
+
+  // A new build draws new pictures, the place is found again once they are in
+  useEffect(() => {
+    loaded.current = new Set();
+    restoring.current = true;
+    requestAnimationFrame(restore);
+  }, [outcome?.revision]);
+
+  function onScroll(): void {
+    if (restoring.current || !scroller.current) return;
+    place.current = placeAt(pageBoxes(), scroller.current.scrollTop);
+    writePlace(placeKey, place.current);
+  }
+
   function toggleWatch(): void {
     setWatch((value) => {
       try {
@@ -66,7 +136,7 @@ export function PreviewPanel({ build, saveTick, onClose, onJump }: Props) {
     });
   }
 
-  async function exportTo(channel: typeof IpcChannel.ExportPdf | typeof IpcChannel.ExportProject): Promise<void> {
+  async function exportTo(channel: typeof IpcChannel.ExportPdf | typeof IpcChannel.ExportFinalPdf | typeof IpcChannel.ExportProject): Promise<void> {
     try {
       const result = await api.invoke(channel);
       setExportNote(result ? { ok: true, text: t("exported", { path: result.path }) } : null);
@@ -80,7 +150,7 @@ export function PreviewPanel({ build, saveTick, onClose, onJump }: Props) {
       <div
         {...separator}
         aria-label={t("resize")}
-        className="absolute inset-y-0 -left-1 z-10 w-2 cursor-col-resize touch-none hover:bg-foreground/10 focus-visible:bg-foreground/20 active:bg-foreground/20"
+        className="resize-handle absolute inset-y-0 -left-1.5 z-10 w-3 cursor-col-resize touch-none outline-none"
       />
       <div className="flex h-10 shrink-0 items-center justify-between gap-2 px-3">
         <h2 className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
@@ -99,6 +169,16 @@ export function PreviewPanel({ build, saveTick, onClose, onJump }: Props) {
             <EyeIcon aria-hidden="true" />
             {t("watch")}
           </Button>
+          <Button
+            variant={watermark ? "secondary" : "outline"}
+            size="sm"
+            aria-pressed={watermark}
+            title={t("watermarkHint")}
+            onClick={() => setWatermark((value) => !value)}
+          >
+            <StampIcon aria-hidden="true" />
+            {t("watermark")}
+          </Button>
           {!watch && (
             <Button size="sm" onClick={() => void run()} disabled={building}>
               {building ? t("building") : t("build")}
@@ -113,6 +193,7 @@ export function PreviewPanel({ build, saveTick, onClose, onJump }: Props) {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem onSelect={() => void exportTo(IpcChannel.ExportPdf)}>{t("exportPdf")}</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => void exportTo(IpcChannel.ExportFinalPdf)}>{t("exportFinalPdf")}</DropdownMenuItem>
               <DropdownMenuItem onSelect={() => void exportTo(IpcChannel.ExportProject)}>{t("exportProject")}</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -136,15 +217,27 @@ export function PreviewPanel({ build, saveTick, onClose, onJump }: Props) {
         </p>
       )}
 
-      <div className="min-h-0 flex-1 overflow-y-auto bg-muted/40" data-testid="preview-pages">
+      <div ref={scroller} onScroll={onScroll} className="min-h-0 flex-1 overflow-y-auto bg-muted/40" data-testid="preview-pages">
         {outcome && outcome.pageCount > 0 ? (
           <ol className="flex flex-col items-center gap-4 p-4">
             {Array.from({ length: outcome.pageCount }, (_, index) => (
-              <li key={index} className="w-full max-w-[760px]">
+              <li
+                key={index}
+                data-page={index}
+                className="w-full max-w-[760px]"
+                // While a new picture loads the page keeps the height it had, so the scroll position does not jump
+                style={{ minHeight: heights.current[index] }}
+              >
                 <img
                   src={`marktwain-preview://page/${outcome.revision}/${index}.png`}
                   alt={t("page", { n: index + 1 })}
                   decoding="async"
+                  onLoad={(event) => {
+                    loaded.current.add(index);
+                    const li = event.currentTarget.closest("li");
+                    if (li) heights.current[index] = li.offsetHeight;
+                    restore();
+                  }}
                   className="block w-full rounded-sm border bg-white shadow-sm"
                 />
                 <p className="mt-1 text-center text-[11px] text-muted-foreground">{t("page", { n: index + 1 })}</p>

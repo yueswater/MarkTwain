@@ -159,23 +159,6 @@
 [data-font="serif"] .ProseMirror { font-family: "Noto Serif TC", "Songti TC", "PMingLiU", Georgia, serif; }
 .ProseMirror pre, .ProseMirror pre code { font-size: var(--editor-code-size, 0.875rem); }
 
-/* Block numbers in the left margin, counted over the top level blocks */
-[data-line-numbers="true"] .ProseMirror { counter-reset: block; position: relative; }
-[data-line-numbers="true"] .ProseMirror > * { counter-increment: block; position: relative; }
-[data-line-numbers="true"] .ProseMirror > *::before {
-  content: counter(block);
-  position: absolute;
-  right: calc(100% + 0.9rem);
-  top: 0;
-  min-width: 1.5rem;
-  text-align: right;
-  font-size: 0.7rem;
-  line-height: 2.4;
-  font-variant-numeric: tabular-nums;
-  color: var(--muted-foreground);
-  user-select: none;
-  pointer-events: none;
-}
 
 .ProseMirror > * + * { margin-top: 0; }
 .ProseMirror h1 { font-size: 2rem; line-height: 1.2; font-weight: 600; letter-spacing: -0.03em; margin: 2rem 0 1rem; }
@@ -281,3 +264,30 @@
 .ProseMirror figure .figure-handle-sw { bottom: -5px; left: -5px; cursor: nesw-resize; }
 .ProseMirror figure .figure-handle-se { bottom: -5px; right: -5px; cursor: nwse-resize; }
 .ProseMirror figure figcaption { line-height: 1.5; }
+
+/* A setting found by search is marked for a moment */
+.settings-flash { outline: 2px solid var(--ring); outline-offset: 4px; border-radius: 0.375rem; }
+
+/* The lines of a code block are numbered inside the block, apart from the lines of the text */
+.ProseMirror .code-with-lines { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 0.75rem; overflow-x: auto; }
+.ProseMirror .code-with-lines code { white-space: pre !important; line-height: 1.5; }
+.ProseMirror .code-lines { display: none; flex-direction: column; text-align: right; line-height: 1.5; color: var(--muted-foreground); font-size: var(--editor-code-size, 0.875rem); user-select: none; padding-right: 0.75rem; border-right: 1px solid var(--border); }
+[data-line-numbers="true"] .ProseMirror .code-lines { display: flex; }
+.ProseMirror .code-lines span { display: block; }
+
+/* The number of a display formula, at the right edge of the formula */
+.ProseMirror [data-type="block-math"][data-eq-number] { position: relative; }
+.ProseMirror [data-type="block-math"][data-eq-number]::after { content: "(" attr(data-eq-number) ")"; position: absolute; right: 0; top: 50%; transform: translateY(-50%); font-size: 0.9em; }
+
+/* A resizable edge shows a line that thickens under the pointer */
+.resize-handle::after { content: ""; position: absolute; top: 0; bottom: 0; left: 50%; width: 1px; transform: translateX(-50%); border-radius: 2px; background: transparent; transition: width 120ms, background-color 120ms; }
+.resize-handle:hover::after, .resize-handle:focus-visible::after, .resize-handle:active::after { width: 4px; background: color-mix(in oklab, var(--foreground) 35%, transparent); }
+
+/* BibTeX source, the colors follow the code colors of the editor */
+.bib-source .bib-type { color: #d73a49; }
+.bib-source .bib-key { color: #4b69c6; }
+.bib-source .bib-field { color: #1d6fa5; }
+.bib-source .bib-string { color: #298e0d; }
+.bib-source .bib-number { color: #b60157; }
+.bib-source .bib-comment { color: #8a8a8a; font-style: italic; }
+.bib-source .bib-punct { color: var(--muted-foreground); }

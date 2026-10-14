@@ -3,14 +3,17 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 /** A label with its hint on the left and the control on the right, like the settings of AnvilNote. */
-export function SettingsRow({ label, hint, control, id }: { label: string; hint?: string; control: ReactNode; id?: string }) {
+export function SettingsRow({ label, hint, control, id, below }: { label: string; hint?: string; control: ReactNode; id?: string; below?: ReactNode }) {
   return (
-    <div id={id} className="flex items-center justify-between gap-6 border-b py-3 first:pt-0 last:border-b-0">
-      <div className="min-w-0 space-y-0.5">
-        <p className="text-sm font-medium">{label}</p>
-        {hint ? <p className="text-xs text-muted-foreground">{hint}</p> : null}
+    <div id={id} className="border-b py-3 first:pt-0 last:border-b-0">
+      <div className="flex items-center justify-between gap-6">
+        <div className="min-w-0 space-y-0.5">
+          <p className="text-sm font-medium">{label}</p>
+          {hint ? <p className="text-xs text-muted-foreground">{hint}</p> : null}
+        </div>
+        <div className="shrink-0">{control}</div>
       </div>
-      <div className="shrink-0">{control}</div>
+      {below}
     </div>
   );
 }

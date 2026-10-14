@@ -17,7 +17,7 @@ function writeText(root: string, path: string, text: string): void {
   writeFileSync(full, text);
 }
 
-function run(command: string, args: string[], cwd: string, timeoutMs: number): Promise<{ code: number | null; stderr: string }> {
+export function run(command: string, args: string[], cwd: string, timeoutMs: number): Promise<{ code: number | null; stderr: string }> {
   return new Promise((resolve) => {
     const child = spawn(command, args, { cwd, windowsHide: true });
     let stderr = "";
@@ -79,6 +79,11 @@ function prepare(input: BuildInput, root: string, link: boolean): Prepared {
   writeText(root, "config.yml", completed.text);
   for (const file of input.files) {
     const target = join(root, "figures", file.path);
+    mkdirSync(dirname(target), { recursive: true });
+    writeFileSync(target, file.data);
+  }
+  for (const file of input.watermarkFiles ?? []) {
+    const target = join(root, "assets/watermarks", file.path);
     mkdirSync(dirname(target), { recursive: true });
     writeFileSync(target, file.data);
   }
@@ -144,6 +149,7 @@ export async function buildTypst(input: BuildInput): Promise<BuildResult> {
         ...(png ? ["--format", "png", "--ppi", String(input.ppi ?? 110)] : []),
         "--font-path",
         fonts,
+        ...(input.watermark ? ["--input", "watermark=true"] : []),
         "--diagnostic-format",
         "human",
       ],

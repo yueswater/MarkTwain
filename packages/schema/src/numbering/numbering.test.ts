@@ -32,25 +32,21 @@ describe("resolveNumbers", () => {
     expect(numbers.get("sec:m")).toBe("研究方法");
   });
 
-  it("逐章重編時，編號會帶章號，且每章從 1 開始", () => {
-    const targets = [
-      cha("cha:1", "一"),
-      fig("fig:a"),
-      fig("fig:b"),
-      cha("cha:2", "二"),
-      fig("fig:c"),
-      tbl("tbl:a"),
-    ];
+  it("只有公式可以逐章重編，編號會帶章號，圖表整篇連續", () => {
+    const eq = (label: string) => ({ kind: "eq" as const, label });
+    const targets = [cha("cha:1", "一"), eq("eq:a"), eq("eq:b"), fig("fig:a"), cha("cha:2", "二"), eq("eq:c"), fig("fig:b"), tbl("tbl:a")];
     const { numbers } = resolveNumbers(targets, [], { ...options, numberPerChapter: true });
-    expect(numbers.get("fig:a")).toBe("1.1");
-    expect(numbers.get("fig:b")).toBe("1.2");
-    expect(numbers.get("fig:c")).toBe("2.1");
-    expect(numbers.get("tbl:a")).toBe("2.1");
+    expect(numbers.get("eq:a")).toBe("1.1");
+    expect(numbers.get("eq:b")).toBe("1.2");
+    expect(numbers.get("eq:c")).toBe("2.1");
+    expect(numbers.get("fig:a")).toBe("1");
+    expect(numbers.get("fig:b")).toBe("2");
+    expect(numbers.get("tbl:a")).toBe("1");
   });
 
-  it("逐章重編但還沒有任何章時，視為第 0 章", () => {
-    const { numbers } = resolveNumbers([fig("fig:a")], [], { ...options, numberPerChapter: true });
-    expect(numbers.get("fig:a")).toBe("0.1");
+  it("公式逐章重編但還沒有任何章時，視為第 0 章", () => {
+    const { numbers } = resolveNumbers([{ kind: "eq", label: "eq:a" }], [], { ...options, numberPerChapter: true });
+    expect(numbers.get("eq:a")).toBe("0.1");
   });
 
   it("引用不存在的目標時列為失效", () => {

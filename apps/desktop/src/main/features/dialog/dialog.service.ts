@@ -1,6 +1,6 @@
 import { basename, extname } from "node:path";
 import type { TFunction } from "i18next";
-import { IMAGE_EXTENSIONS, PROJECT_EXTENSION } from "../../config/app.config";
+import { IMAGE_EXTENSIONS, PROJECT_EXTENSION, WATERMARK_EXTENSIONS } from "../../config/app.config";
 
 /** Smallest abstraction over the Electron dialog, for testing. */
 export type DialogPort = {
@@ -53,6 +53,17 @@ export class DialogService {
       title: t("openImage.title"),
       buttonLabel: t("openImage.button"),
       filters: [{ name: t("filter.image"), extensions: [...IMAGE_EXTENSIONS] }],
+    });
+  }
+
+  async chooseWatermark(): Promise<string | null> {
+    const forced = this.forcedImagePath();
+    if (forced) return forced;
+    const t = this.translator();
+    return this.port.showOpen({
+      title: t("openWatermark.title"),
+      buttonLabel: t("openWatermark.button"),
+      filters: [{ name: t("filter.watermark"), extensions: [...WATERMARK_EXTENSIONS] }],
     });
   }
 

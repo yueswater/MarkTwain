@@ -68,7 +68,12 @@
     "unreadable": "Line {{line}} cannot be read: {{message}}.",
     "duplicate": "The key “{{key}}” is used by more than one entry.",
     "unknown": "Cited but not in the bibliography: {{keys}}",
-    "createFrom": "Add “{{key}}”"
+    "createFrom": "Add “{{key}}”",
+    "reason": {
+      "missingKey": "the entry has no key",
+      "badField": "a field name is missing or wrong",
+      "badValue": "a value is not closed"
+    }
   },
   "source": {
     "label": "BibTeX source",

@@ -17,7 +17,7 @@ export type AdvancedKind =
   /** Four choices, one for each heading level */
   | "select4";
 
-export type AdvancedGroup = "page" | "text" | "numbering" | "captions" | "headings" | "pageNumber" | "crossRef" | "bibliography" | "outline";
+export type AdvancedGroup = "page" | "text" | "numbering" | "captions" | "headings" | "pageNumber" | "crossRef" | "bibliography" | "outline" | "watermark";
 
 export type AdvancedField = {
   path: string;
@@ -72,6 +72,11 @@ export const ADVANCED_FIELDS: readonly AdvancedField[] = [
   { path: "cross-ref.subsection", group: "crossRef", kind: "text" },
 
   { path: "outline.depth", group: "outline", kind: "number", min: 1, max: 4 },
+
+  // The image is chosen with a picker, the value is a path in the project, none, or absent to follow the school
+  { path: "watermark.image", group: "watermark", kind: "text" },
+  { path: "watermark.width", group: "watermark", kind: "number", min: 10, max: 100, unit: "%" },
+  { path: "watermark.opacity", group: "watermark", kind: "number", min: 5, max: 100, unit: "%" },
 
   { path: "bibliography.title", group: "bibliography", kind: "text" },
   { path: "bibliography.full", group: "bibliography", kind: "bool" },

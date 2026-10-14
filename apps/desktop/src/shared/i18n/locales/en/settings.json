@@ -2,12 +2,6 @@
   "title": "Settings",
   "description": "Preferences of the editor, and the format of the thesis.",
   "close": "Close",
-  "nav": {
-    "editor": "Editor",
-    "editorAdvanced": "Editor, advanced",
-    "thesis": "Thesis",
-    "thesisAdvanced": "Thesis, advanced"
-  },
   "reset": "Use the default",
   "inherited": "Default: {{value}}",
   "followDefault": "Follow the default",
@@ -24,19 +18,20 @@
     "narrow": "Narrow",
     "normal": "Normal",
     "wide": "Wide",
-    "lineNumbers": "Block numbers",
-    "lineNumbersHint": "Number the paragraphs, headings and other blocks in the margin.",
+    "lineNumbers": "Line numbers",
+    "lineNumbersHint": "Numbers every line of the text in the left margin, wrapped lines included.",
     "spellcheck": "Spell check",
     "spellcheckHint": "Underline misspelled words while typing.",
     "codeFontSize": "Code size",
     "autosaveDelay": "Save after typing stops",
-    "autosaveDelayHint": "Milliseconds to wait before the text is saved.",
+    "autosaveDelayHint": "Slide to the right to save sooner after you stop typing.",
     "pasteMarkdown": "Paste Markdown as structure",
     "pasteMarkdownHint": "Turn pasted Markdown into headings, lists and tables.",
     "previewPpi": "Preview sharpness",
-    "previewPpiHint": "Pixels per inch of the page images, higher is sharper and slower.",
+    "previewPpiHint": "The sharpness of the page pictures of the preview. A sharper picture takes longer to build.",
     "previewDelay": "Rebuild the preview after a save",
-    "previewDelayHint": "Milliseconds to wait before the preview rebuilds."
+    "previewDelayHint": "Slide to the right to rebuild the preview sooner after a save.",
+    "codeSample": "print(\"hello\")"
   },
   "group": {
     "page": "Page",
@@ -47,11 +42,21 @@
     "pageNumber": "Page numbers",
     "crossRef": "Cross-references",
     "bibliography": "References",
-    "outline": "Table of contents"
+    "outline": "Table of contents",
+    "watermark": "Watermark"
   },
   "advancedHint": "Empty fields follow the school format. Changing a value overrides it for this thesis only.",
   "noProject": "Open a project to change the format of its thesis.",
   "levels": "Level {{n}}",
+  "sizeLevels": {
+    "draft": "Draft",
+    "normal": "Normal",
+    "sharp": "Sharp",
+    "verySharp": "Very sharp",
+    "small": "Small",
+    "large": "Large",
+    "larger": "Larger"
+  },
   "field": {
     "layout": {
       "paper": "Paper size",
@@ -100,6 +105,11 @@
     "bibliography": {
       "title": "References title",
       "full": "List uncited entries too"
+    },
+    "watermark": {
+      "image": "Watermark image",
+      "width": "Watermark width",
+      "opacity": "Watermark opacity"
     }
   },
   "hint": {
@@ -138,5 +148,125 @@
     "pt": "pt",
     "cm": "cm",
     "em": "em"
+  },
+  "section": {
+    "editor": "Editor",
+    "thesis": "Thesis"
+  },
+  "page": {
+    "editorAppearance": {
+      "title": "Appearance",
+      "description": "How the text looks in the editor."
+    },
+    "editorWriting": {
+      "title": "Writing",
+      "description": "Block numbers, spell check, pasting and saving."
+    },
+    "editorPreview": {
+      "title": "Preview",
+      "description": "How the preview of the thesis is built."
+    },
+    "thesisSchool": {
+      "title": "School and format",
+      "description": "The school decides the format. Changes are saved at once."
+    },
+    "thesisInfo": {
+      "title": "Information",
+      "description": "What goes on the cover and the title page. Changes are saved at once."
+    },
+    "thesisPage": {
+      "title": "Page",
+      "description": "Paper size and margins."
+    },
+    "thesisText": {
+      "title": "Text",
+      "description": "Fonts, size and spacing of the body text."
+    },
+    "thesisHeadings": {
+      "title": "Headings and numbering",
+      "description": "Heading sizes and alignment, and the numbering of footnotes and formulas."
+    },
+    "thesisCaptions": {
+      "title": "Figures, tables and references",
+      "description": "Captions and the words used for cross-references."
+    },
+    "thesisPageNumber": {
+      "title": "Page numbers and outline",
+      "description": "Page numbers of the front and the main part, and the table of contents."
+    },
+    "thesisBibliography": {
+      "title": "Bibliography",
+      "description": "Title and listing of the references."
+    },
+    "editorProfile": {
+      "title": "About you",
+      "description": "What is true of you in every thesis. A new project starts with it."
+    }
+  },
+  "search": {
+    "label": "Search settings",
+    "placeholder": "Search settings",
+    "results": "Search results",
+    "none": "No setting matches."
+  },
+  "changedDot": "This page has settings that differ from the school format",
+  "diagram": {
+    "page": "The page with its margins",
+    "noRoom": "The margins leave no room for text.",
+    "headings": "Sample headings",
+    "sampleHeading": {
+      "1": "Chapter heading",
+      "2": "Section heading",
+      "3": "Subsection heading",
+      "4": "Sub-subsection heading"
+    },
+    "outline": "A table of contents",
+    "outlineLine": {
+      "1": "Chapter",
+      "2": "Section",
+      "3": "Subsection",
+      "4": "Sub-subsection"
+    },
+    "printedAs": "Printed as",
+    "tildeHint": "A tilde (~) adds space between characters.",
+    "uncited": "Entries that are listed",
+    "listCited": "Only cited",
+    "listAll": "All entries",
+    "placeholder": {
+      "C": "Chapter number",
+      "S": "Section number",
+      "B": "Subsection number"
+    },
+    "example": "Example:",
+    "badPattern": "{{problem}} is not a placeholder that can be used. Use {C}, {S} and {B}."
+  },
+  "watermark": {
+    "title": "Watermark",
+    "hint": "Drawn on the body pages of a final copy, and in the preview when you turn it on there.",
+    "school": "Follow the school",
+    "schoolHas": "The school's watermark: {{name}}",
+    "schoolNone": "This school has no watermark in the template.",
+    "none": "No watermark",
+    "noneBody": "The thesis is built without one.",
+    "custom": "My own image",
+    "customBody": "Choose a PNG, JPEG, SVG or PDF from your computer.",
+    "choose": "Choose a file",
+    "preview": "Preview of the watermark on a page",
+    "noPicture": "No picture",
+    "rule": "Whether a thesis needs a watermark depends on the school.",
+    "replace": "Replace file"
+  },
+  "steps": {
+    "slowest": "Relaxed",
+    "fastest": "Immediate",
+    "level": "Step {{n}} of {{total}}",
+    "custom": "Custom",
+    "describeSave": "Saves about {{seconds}} after you stop typing.",
+    "describePreview": "Builds the preview about {{seconds}} after a save."
+  },
+  "profile": {
+    "ask": "Ask when a project is created",
+    "askHint": "Turn it off and a new project starts with this, without a question.",
+    "local": "This stays on this computer, in the settings of the app."
   }
 }
