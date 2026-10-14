@@ -5,6 +5,11 @@
 export const ErrorCode = {
   Unknown: "app.unknown",
   InvalidLocale: "settings.invalid-locale",
+  ProjectNotFound: "project.not-found",
+  ProjectInvalid: "project.invalid",
+  ProjectTooNew: "project.too-new",
+  ProjectNoneOpen: "project.none-open",
+  DocumentNotFound: "document.not-found",
 } as const;
 
 export type ErrorCode = (typeof ErrorCode)[keyof typeof ErrorCode];
