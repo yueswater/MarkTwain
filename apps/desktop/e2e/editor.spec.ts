@@ -537,6 +537,8 @@ test("code blocks take a language, are highlighted, and keep it in the Markdown"
     await expect(selector).toHaveCSS("opacity", "0");
     await editor.locator(".code-block").hover();
     await expect(selector).toHaveCSS("opacity", "1");
+    // The selector has a background of its own, so it stays readable over the code
+    await expect(page.getByRole("combobox", { name: "Code language" })).not.toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
     await page.getByRole("combobox", { name: "Code language" }).click();
     await page.getByRole("option", { name: "Python" }).click();
     await expect(page.getByRole("listbox")).toBeHidden();
