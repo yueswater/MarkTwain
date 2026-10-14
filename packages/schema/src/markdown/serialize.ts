@@ -57,6 +57,24 @@ function inlineLatex(latex: string): string {
   return out;
 }
 
+const SIMPLE_KEY = /^[A-Za-z0-9_](?:[A-Za-z0-9_]|[:.\-/+](?=[A-Za-z0-9_]))*$/;
+
+/** 腳註在這次序列化中的內容，依出現順序；序列化是同步的，所以模組層級的暫存是安全的。 */
+let footnotes: string[] = [];
+
+function keyToken(key: string, forceBraces: boolean): string {
+  return forceBraces || !SIMPLE_KEY.test(key) ? `@{${key}}` : `@${key}`;
+}
+
+/** 前一個與後一個兄弟節點的文字邊界，用來決定敘述式引用要不要加大括號。 */
+function neighbors(parent: Node, index: number): { previousWord: boolean; nextConflicts: boolean } {
+  const previous = index > 0 ? parent.child(index - 1) : null;
+  const next = index + 1 < parent.childCount ? parent.child(index + 1) : null;
+  const previousWord = Boolean(previous?.isText && /\w$/.test(previous.text ?? ""));
+  const nextConflicts = Boolean(next?.isText && /^[\w.:\-/+]/.test(next.text ?? ""));
+  return { previousWord, nextConflicts };
+}
+
 const serializer = new MarkdownSerializer(
   {
     [NodeName.Paragraph](state, node) {
@@ -132,6 +150,36 @@ const serializer = new MarkdownSerializer(
       state.closeBlock(node);
     },
 
+    [NodeName.Footnote](state, node) {
+      const text = String(node.attrs.text).replace(/\s*\n\s*/g, " ").trim();
+      if (text === "") return;
+      footnotes.push(text);
+      state.write(`[^${footnotes.length}]`);
+    },
+
+    [NodeName.Citation](state, node, parent, index) {
+      const keys = node.attrs.keys as string[];
+      const form = node.attrs.form as string;
+      if (keys.length === 0) return;
+
+      if (form === "prose" && keys.length === 1) {
+        const { previousWord, nextConflicts } = neighbors(parent, index);
+        state.write(keyToken(keys[0] ?? "", previousWord || nextConflicts));
+      } else if (form === "year") {
+        state.write(`[${keys.map((key) => `-${keyToken(key, false)}`).join("; ")}]`);
+      } else if (form === "author" && keys.length === 1) {
+        state.write(`[${keyToken(keys[0] ?? "", false)}]{.author}`);
+      } else {
+        state.write(`[${keys.map((key) => keyToken(key, false)).join("; ")}]`);
+      }
+    },
+
+    [NodeName.CrossRef](state, node, parent, index) {
+      const label = String(node.attrs.label);
+      const { previousWord, nextConflicts } = neighbors(parent, index);
+      state.write(keyToken(label, previousWord || nextConflicts));
+    },
+
     [NodeName.HardBreak](state, node, parent, index) {
       // 段落結尾的換行沒有意義，不輸出
       for (let i = index + 1; i < parent.childCount; i += 1) {
@@ -175,6 +223,10 @@ const serializer = new MarkdownSerializer(
 
 /** 把 ProseMirror／TipTap 的 JSON 序列化成規範形式的 Markdown。文件結尾有一個換行。 */
 export function serializeMarkdown(doc: DocJson): string {
-  const text = serializer.serialize(Node.fromJSON(schema, doc));
-  return text === "" ? "" : `${text}\n`;
+  footnotes = [];
+  const body = serializer.serialize(Node.fromJSON(schema, doc));
+  const definitions = footnotes.map((text, i) => `[^${i + 1}]: ${text}`);
+  footnotes = [];
+  if (body === "" && definitions.length === 0) return "";
+  return `${[body, ...(definitions.length > 0 ? [definitions.join("\n")] : [])].join("\n\n")}\n`;
 }

@@ -46,6 +46,15 @@ const markdownParser = new MarkdownParser(schema, createMarkdownIt() as unknown 
   },
   code_inline: { mark: MarkName.Code, noCloseToken: true },
   math_inline: { node: NodeName.InlineMath, getAttrs: (token) => ({ latex: token.content }) },
+  footnote_ref: {
+    node: NodeName.Footnote,
+    getAttrs: (token) => ({ text: String(token.meta?.text ?? "") }),
+  },
+  citation: {
+    node: NodeName.Citation,
+    getAttrs: (token) => ({ keys: token.meta?.keys ?? [], form: token.meta?.form ?? "paren" }),
+  },
+  cross_ref: { node: NodeName.CrossRef, getAttrs: (token) => ({ label: token.content }) },
   math_block: {
     node: NodeName.BlockMath,
     getAttrs: (token) => ({ latex: token.content, label: token.attrGet("id") }),

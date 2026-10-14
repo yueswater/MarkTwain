@@ -16,6 +16,9 @@ export const NodeName = {
   HardBreak: "hardBreak",
   InlineMath: "inlineMath",
   BlockMath: "blockMath",
+  Footnote: "footnote",
+  Citation: "citation",
+  CrossRef: "crossRef",
 } as const;
 
 export type NodeName = (typeof NodeName)[keyof typeof NodeName];

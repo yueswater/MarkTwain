@@ -53,6 +53,30 @@ const nodes: Record<NodeName, NodeSpec> = {
     atom: true,
     attrs: { latex: { default: "" }, label: { default: null } },
   },
+
+  // 腳註的內容是行內 Markdown 原文（單一段落）；編號在序列化時依出現順序產生。
+  [NodeName.Footnote]: {
+    inline: true,
+    group: "inline",
+    atom: true,
+    attrs: { text: { default: "" } },
+  },
+
+  // 文獻引用：keys 是書目的 key；form 是 paren、prose、year、author 其中之一（規格 4.3 節）。
+  [NodeName.Citation]: {
+    inline: true,
+    group: "inline",
+    atom: true,
+    attrs: { keys: { default: [] }, form: { default: "paren" } },
+  },
+
+  // 交叉引用：label 是 cha、sec、fig、tbl、eq、lst 開頭的標籤。
+  [NodeName.CrossRef]: {
+    inline: true,
+    group: "inline",
+    atom: true,
+    attrs: { label: { default: "" } },
+  },
 };
 
 const marks: Record<MarkName, MarkSpec> = {
