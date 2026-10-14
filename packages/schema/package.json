@@ -8,5 +8,17 @@
   "scripts": {
     "test": "jest",
     "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "markdown-it": "^15.0.2",
+    "markdown-it-attrs": "^5.0.1",
+    "markdown-it-deflist": "^4.0.0",
+    "markdown-it-footnote": "^4.0.0",
+    "prosemirror-markdown": "^1.13.8",
+    "prosemirror-model": "^1.25.12"
+  },
+  "devDependencies": {
+    "@types/markdown-it": "^14.2.0",
+    "fast-check": "^4.10.2"
   }
 }
