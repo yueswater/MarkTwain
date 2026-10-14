@@ -24,13 +24,14 @@
     "spellcheckHint": "輸入時在拼錯的英文字底下畫線。",
     "codeFontSize": "程式碼大小",
     "autosaveDelay": "停止輸入後儲存",
-    "autosaveDelayHint": "等待多少毫秒才儲存。",
+    "autosaveDelayHint": "往右拉，停止輸入後會更快儲存。",
     "pasteMarkdown": "貼上 Markdown 時轉成結構",
     "pasteMarkdownHint": "把貼上的 Markdown 變成標題、清單與表格。",
     "previewPpi": "預覽清晰度",
-    "previewPpiHint": "預覽頁面圖片的解析度，越高越清楚也越慢。",
+    "previewPpiHint": "預覽頁面圖片的清晰程度，越清晰建置越慢。",
     "previewDelay": "儲存後重新建置預覽",
-    "previewDelayHint": "等待多少毫秒才重新建置。"
+    "previewDelayHint": "往右拉，儲存後會更快重新建置預覽。",
+    "codeSample": "print(\"hello\")"
   },
   "group": {
     "page": "頁面",
@@ -47,6 +48,15 @@
   "advancedHint": "留空表示跟隨學校格式。修改後只會覆蓋這份論文。",
   "noProject": "開啟專案後才能調整論文格式。",
   "levels": "第 {{n}} 層",
+  "sizeLevels": {
+    "draft": "草稿",
+    "normal": "標準",
+    "sharp": "清晰",
+    "verySharp": "超清晰",
+    "small": "小",
+    "large": "大",
+    "larger": "特大"
+  },
   "field": {
     "layout": {
       "paper": "紙張大小",
@@ -241,5 +251,13 @@
     "noPicture": "沒有圖片",
     "rule": "論文是否需要浮水印，依學校規定。",
     "replace": "更換檔案"
+  },
+  "steps": {
+    "slowest": "從容",
+    "fastest": "立即",
+    "level": "第 {{n}} 級，共 {{total}} 級",
+    "custom": "自訂",
+    "describeSave": "停止輸入約 {{seconds}} 後儲存。",
+    "describePreview": "儲存約 {{seconds}} 後重新建置預覽。"
   }
 }

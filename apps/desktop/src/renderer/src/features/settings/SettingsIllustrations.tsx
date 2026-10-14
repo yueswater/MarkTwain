@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { NumberField } from "./fields";
+import { ClickNumber } from "./SettingsControls";
 import {
   expandPattern,
   outlineLines,
@@ -45,14 +45,13 @@ export function PageDiagram({
       onBlur={() => setHover(null)}
       className={cn("inline-flex rounded-md", hover === side && "ring-2 ring-ring")}
     >
-      <NumberField
+      <ClickNumber
         label={label(side)}
         value={overridden.has(side) ? margins[side] : null}
-        placeholder={String(margins[side])}
+        fallback={margins[side]}
         min={0}
         max={10}
         unit="cm"
-        className="w-16"
         onCommit={(value) => onCommit(side, value)}
       />
     </span>

@@ -67,7 +67,7 @@ test("editor preferences apply at once and survive a restart, thesis format is k
     await dialog.getByRole("textbox", { name: "Search settings" }).fill("top margin");
     await dialog.getByRole("list", { name: "Search results" }).getByRole("button", { name: /Top margin/ }).click();
     await expect(dialog.getByRole("heading", { name: "Page", exact: true, level: 2 })).toBeVisible();
-    await expect(dialog.getByLabel("Top margin", { exact: true })).toBeVisible();
+    await expect(dialog.getByRole("button", { name: "Top margin", exact: true })).toBeVisible();
     await expect(dialog.getByRole("textbox", { name: "Search settings" })).toHaveValue("");
     // Closing and opening again returns to the page that was open last
     await page.keyboard.press("Escape");
@@ -111,18 +111,24 @@ test("layout settings are shown as small drawings and examples that follow the v
     await dialog.getByRole("button", { name: "Page", exact: true }).click();
     const area = dialog.getByTestId("page-text-area");
     const before = await area.evaluate((el) => (el as HTMLElement).style.left);
-    await dialog.getByLabel("Left margin", { exact: true }).fill("5");
-    await dialog.getByLabel("Left margin", { exact: true }).press("Enter");
+    // The margins are shown as text, a field opens when one is clicked
+    await expect(dialog.getByRole("textbox", { name: "Left margin", exact: true })).toHaveCount(0);
+    await dialog.getByRole("button", { name: "Left margin", exact: true }).click();
+    await dialog.getByRole("textbox", { name: "Left margin", exact: true }).fill("5");
+    await dialog.getByRole("textbox", { name: "Left margin", exact: true }).press("Enter");
+    await expect(dialog.getByRole("button", { name: "Left margin", exact: true })).toContainText("5");
     await expect.poll(async () => (await values())?.["layout.margin.left"]).toBe(5);
     await expect.poll(() => area.evaluate((el) => (el as HTMLElement).style.left)).not.toBe(before);
     // Pointing at a field shades the margin it sets
-    await dialog.getByLabel("Top margin", { exact: true }).hover();
+    await dialog.getByRole("button", { name: "Top margin", exact: true }).hover();
     await expect(dialog.getByTestId("margin-band-top")).toHaveAttribute("data-active", "true");
     // Margins that leave no room are said so
-    await dialog.getByLabel("Left margin", { exact: true }).fill("10");
-    await dialog.getByLabel("Left margin", { exact: true }).press("Enter");
-    await dialog.getByLabel("Right margin", { exact: true }).fill("10");
-    await dialog.getByLabel("Right margin", { exact: true }).press("Enter");
+    await dialog.getByRole("button", { name: "Left margin", exact: true }).click();
+    await dialog.getByRole("textbox", { name: "Left margin", exact: true }).fill("10");
+    await dialog.getByRole("textbox", { name: "Left margin", exact: true }).press("Enter");
+    await dialog.getByRole("button", { name: "Right margin", exact: true }).click();
+    await dialog.getByRole("textbox", { name: "Right margin", exact: true }).fill("10");
+    await dialog.getByRole("textbox", { name: "Right margin", exact: true }).press("Enter");
     await expect(dialog.getByText("The margins leave no room for text.")).toBeVisible();
 
     // Headings are drawn with the sizes and alignments that are set
@@ -235,6 +241,54 @@ test("the school's watermark is shown, an image of your own can replace it, and 
     const draft = await size("export:pdf");
     const final = await size("export:final-pdf");
     expect(final).toBeGreaterThan(draft);
+  } finally {
+    await app.close();
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("delays are chosen with ten step sliders and sizes with named levels", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "marktwain 滑桿 "));
+  const args = [`--user-data-dir=${join(dir, "userData")}`, "--lang=en-US"];
+  if (process.platform === "linux") args.push("--no-sandbox");
+  const app = await electron.launch({
+    executablePath: findPackagedExecutable(dist),
+    args,
+    env: { ...process.env, MARKTWAIN_TEST_DIALOG_PATH: join(dir, "p.marktwain") },
+  });
+  try {
+    const page = await app.firstWindow();
+    await page.getByRole("button", { name: "New project" }).click();
+    await page.keyboard.press("ControlOrMeta+,");
+    const dialog = page.getByRole("dialog", { name: "Settings" });
+    const prefs = () =>
+      page.evaluate(async () => {
+        const r = await window.marktwain.invoke("prefs:get");
+        return r.ok ? r.data : null;
+      });
+
+    await dialog.getByRole("button", { name: "Writing", exact: true }).click();
+    const slider = dialog.getByRole("slider", { name: "Save after typing stops" });
+    await expect(slider).toHaveAttribute("min", "1");
+    await expect(slider).toHaveAttribute("max", "10");
+    await expect(dialog.getByTestId("step-description").first()).toContainText("Saves about 0.8 s after you stop typing");
+    // The fastest step is the last one
+    await slider.fill("10");
+    await expect.poll(async () => (await prefs())?.autosaveDelayMs).toBe(200);
+    await expect(dialog.getByTestId("step-description").first()).toContainText("Step 10 of 10");
+    await slider.fill("1");
+    await expect.poll(async () => (await prefs())?.autosaveDelayMs).toBe(5000);
+
+    // Code size is a choice of named levels with a sample
+    await dialog.getByRole("radio", { name: "Large", exact: true }).click();
+    await expect.poll(async () => (await prefs())?.codeFontSize).toBe(16);
+
+    // The preview has its own slider and sharpness levels
+    await dialog.getByRole("button", { name: "Preview", exact: true }).click();
+    await dialog.getByRole("slider", { name: "Rebuild the preview after a save" }).fill("9");
+    await expect.poll(async () => (await prefs())?.previewDelayMs).toBe(250);
+    await dialog.getByRole("radio", { name: "Sharp", exact: true }).click();
+    await expect.poll(async () => (await prefs())?.previewPpi).toBe(150);
   } finally {
     await app.close();
     rmSync(dir, { recursive: true, force: true });
