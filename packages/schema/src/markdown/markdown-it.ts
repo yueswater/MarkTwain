@@ -1,3 +1,4 @@
+/// <reference path="./plugins.d.ts" />
 import MarkdownIt from "markdown-it";
 import attrs from "markdown-it-attrs";
 import footnote from "markdown-it-footnote";
