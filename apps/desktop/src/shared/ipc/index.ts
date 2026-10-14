@@ -1,4 +1,5 @@
 import type { AppContract } from "./app";
+import type { BuildContract } from "./build";
 import type { ConfigContract } from "./config";
 import type { DialogContract } from "./dialog";
 import type { DocumentContract } from "./document";
@@ -14,11 +15,12 @@ export type { IpcErrorPayload, IpcResult } from "./result";
 export type { LocaleView } from "./settings";
 export type { DocumentData, DocumentSummary } from "./document";
 export type { ProjectInfo } from "./project";
+export type { BuildDiagnostic, BuildOutcome } from "./build";
 export type { ConfigState } from "./config";
 export type { LabelIndex, LabelTarget } from "./label";
 
 /** 所有功能的契約合併於此；新增 feature 時在這裡加 `& XxxContract`。 */
-export type IpcContract = AppContract & SettingsContract & ProjectContract & DocumentContract & DialogContract & LabelContract & AssetContract & ConfigContract;
+export type IpcContract = AppContract & SettingsContract & ProjectContract & DocumentContract & DialogContract & LabelContract & AssetContract & ConfigContract & BuildContract;
 
 export type IpcChannelName = keyof IpcContract;
 export type IpcRequest<C extends IpcChannelName> = IpcContract[C]["req"];

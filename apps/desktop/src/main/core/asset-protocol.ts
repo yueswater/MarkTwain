@@ -1,10 +1,11 @@
 import { protocol } from "electron";
-import { ASSET_SCHEME } from "../config/app.config";
+import { ASSET_SCHEME, PREVIEW_SCHEME } from "../config/app.config";
 
 /** 必須在 app ready 之前呼叫：宣告這個協定是標準、安全的，圖片才能在頁面裡載入。 */
 export function declareAssetScheme(): void {
   protocol.registerSchemesAsPrivileged([
     { scheme: ASSET_SCHEME, privileges: { standard: true, secure: true, supportFetchAPI: true } },
+    { scheme: PREVIEW_SCHEME, privileges: { standard: true, secure: true, supportFetchAPI: true, stream: true } },
   ]);
 }
 

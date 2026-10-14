@@ -1,0 +1,15 @@
+{
+  "preview": "預覽",
+  "build": "建置 PDF",
+  "building": "建置中…",
+  "empty": "建置 PDF 以查看論文的樣子。",
+  "close": "關閉預覽",
+  "failed": "建置失敗。",
+  "errors": "錯誤",
+  "warnings": "警告",
+  "goTo": "前往原文",
+  "previewTitle": "PDF 預覽",
+  "configMissing": "專案設定尚未填寫：{{field}}",
+  "mathFailed": "這個公式無法轉換，已改以原始碼顯示：{{latex}}",
+  "noSource": "沒有對應的原文位置"
+}

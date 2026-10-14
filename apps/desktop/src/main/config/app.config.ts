@@ -23,4 +23,11 @@ export const ASSET_SCHEME = "marktwain-asset";
 export const TEST_IMAGE_PATH_ENV = "MARKTWAIN_TEST_IMAGE_PATH";
 
 /** 測試鉤子：設定後，檔案對話框不會顯示，直接回傳這個路徑。 */
+/** Overrides where the typst executable and the Typst template are found. */
+export const TYPST_PATH_ENV = "MARKTWAIN_TYPST";
+export const TEMPLATE_DIR_ENV = "MARKTWAIN_TEMPLATE_DIR";
+
+/** URL scheme that serves the last built PDF to the preview. */
+export const PREVIEW_SCHEME = "marktwain-preview";
+
 export const TEST_DIALOG_PATH_ENV = "MARKTWAIN_TEST_DIALOG_PATH";

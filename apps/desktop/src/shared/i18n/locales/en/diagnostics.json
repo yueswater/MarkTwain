@@ -13,6 +13,11 @@
       "none-open": "No project is open.",
       "exists": "A file already exists at that location and will not be overwritten."
     },
+    "build": {
+      "busy": "A build is already running.",
+      "typst-missing": "Typst was not found. Install it or set MARKTWAIN_TYPST to its path.",
+      "template-missing": "The thesis template was not found. Run pnpm templates:fetch."
+    },
     "config": {
       "invalid": "The project settings (config.yml) are not valid YAML."
     },

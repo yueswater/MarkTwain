@@ -26,10 +26,10 @@ import { useLabelIndex } from "./use-label-index";
 import { findUnlabeledTargets, newLabel, type UnlabeledTarget } from "./unlabeled-targets";
 import { Toolbar } from "./Toolbar";
 
-type Props = { documentId: string };
+type Props = { documentId: string; scrollTo?: { block: number; nonce: number } | null };
 
 /** 載入一份文件；換文件時由呼叫端以 `key` 重新掛載，讓每份文件有獨立的編輯器與復原紀錄。 */
-export function DocumentEditor({ documentId }: Props) {
+export function DocumentEditor({ documentId, scrollTo }: Props) {
   const { t } = useTranslation();
   const [doc, setDoc] = useState<DocumentData | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -54,12 +54,12 @@ export function DocumentEditor({ documentId }: Props) {
     );
   }
   if (!doc) return null;
-  return <EditorSurface doc={doc} />;
+  return <EditorSurface doc={doc} scrollTo={scrollTo ?? null} />;
 }
 
 const ATOM_TYPES = new Set(["footnote", "citation", "crossRef"]);
 
-function EditorSurface({ doc }: { doc: DocumentData }) {
+function EditorSurface({ doc, scrollTo }: { doc: DocumentData; scrollTo: { block: number; nonce: number } | null }) {
   const { t } = useTranslation("editor");
   const { t: tCommon } = useTranslation();
   const [status, setStatus] = useState<SaveStatus>("idle");
@@ -136,6 +136,19 @@ function EditorSurface({ doc }: { doc: DocumentData }) {
     },
     [doc.id],
   );
+
+  // Move the cursor to the top level block named by a build error
+  useEffect(() => {
+    if (!editor || editor.isDestroyed || !scrollTo) return;
+    let pos = 0;
+    editor.state.doc.forEach((_node, offset, index) => {
+      if (index === scrollTo.block) pos = offset;
+    });
+    const node = editor.state.doc.nodeAt(pos);
+    const chain = editor.chain().focus();
+    // Atom blocks such as figures have no text, so select the whole node
+    (node?.isAtom ? chain.setNodeSelection(pos) : chain.setTextSelection(Math.min(pos + 1, editor.state.doc.content.size))).scrollIntoView().run();
+  }, [editor, scrollTo]);
 
   // 編號改變時，通知編輯器重算交叉引用的顯示文字
   useEffect(() => {
