@@ -58,9 +58,13 @@
   "citation": {
     "insertTitle": "插入文獻引用",
     "editTitle": "編輯文獻引用",
-    "keys": "書目代號",
-    "keysHint": "多個代號以逗號分隔，例如 wang2020, lee2019。",
+    "keys": "其他代號",
+    "keysHint": "尚未收進書目的代號，多個以逗號分隔，例如 wang2020, lee2019。",
     "form": "樣式",
+    "pick": "從書目選擇",
+    "filter": "以作者、題名或代號搜尋",
+    "noMatch": "沒有符合的文獻。",
+    "noBibliography": "書目是空的。請到側邊欄的「參考文獻」新增，或在下方直接輸入代號。沒有對應條目的引用在 PDF 中會維持純文字。",
     "forms": {
       "paren": "（作者，年份）",
       "prose": "作者（年份）",

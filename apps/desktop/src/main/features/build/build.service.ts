@@ -7,6 +7,7 @@ import type { BuildOutcome } from "../../../shared/ipc";
 import type { DatabaseSession } from "../../core/database-session";
 import { AppError } from "../../core/errors";
 import { AssetRepository } from "../asset/asset.repository";
+import type { BibliographyService } from "../bibliography/bibliography.service";
 import type { ConfigService } from "../config/config.service";
 import type { DocumentService } from "../document/document.service";
 
@@ -30,6 +31,7 @@ export class BuildService {
     private readonly workDir: string = tmpdir(),
     private readonly exporter: Exporter = exportTypstProject,
     private readonly previewPpi: () => number = () => 110,
+    private readonly bibliography?: Pick<BibliographyService, "buildFiles">,
   ) {}
 
   /** A page image of the latest successful build, for the preview protocol. */
@@ -52,7 +54,7 @@ export class BuildService {
       config: this.config.text(),
       documents,
       files: new AssetRepository(this.session.db).list(),
-      bibliography: [],
+      bibliography: this.bibliography?.buildFiles() ?? [],
     };
   }
 

@@ -21,6 +21,9 @@ export const ErrorCode = {
   AssetUnsupported: "asset.unsupported",
   AssetTooLarge: "asset.too-large",
   AssetUnreadable: "asset.unreadable",
+  BibliographyInvalidKey: "bibliography.invalid-key",
+  BibliographyDuplicateKey: "bibliography.duplicate-key",
+  BibliographyNotFound: "bibliography.not-found",
 } as const;
 
 export type ErrorCode = (typeof ErrorCode)[keyof typeof ErrorCode];

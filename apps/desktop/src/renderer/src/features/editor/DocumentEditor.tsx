@@ -30,6 +30,8 @@ import { MathDialog, type MathTarget } from "./MathDialog";
 import { MarkdownPaste } from "./extensions/markdown-paste";
 import { RefDecorations, REFS_CHANGED } from "./extensions/ref-decorations";
 import { useLabelIndex } from "./use-label-index";
+import { useBibliography } from "../bibliography/bibliography-context";
+import type { CitationInfo } from "./ref-display";
 import { findUnlabeledTargets, newLabel, type UnlabeledTarget } from "./unlabeled-targets";
 import { Toolbar } from "./Toolbar";
 
@@ -103,6 +105,13 @@ function EditorSurface({
   const [unlabeled, setUnlabeled] = useState<UnlabeledTarget[]>([]);
 
   const labels = useLabelIndex(status);
+  const { view: bibliography } = useBibliography();
+  const citations = useMemo(
+    () => Object.fromEntries(bibliography.items.map((item): [string, CitationInfo] => [item.key, { author: item.author, year: item.year }])),
+    [bibliography.items],
+  );
+  const citationsRef = useRef(citations);
+  citationsRef.current = citations;
   const savedRef = useRef(onSaved);
   savedRef.current = onSaved;
   useEffect(() => {
@@ -147,6 +156,7 @@ function EditorSurface({
           getNumbers: () => labelsRef.current.numbers,
           kindName: (kind) => tRef.current(`crossRef.kind.${kind}`),
           brokenText: t("crossRef.broken"),
+          getCitations: () => citationsRef.current,
         }),
       ],
       content: parseMarkdown(doc.text) as JSONContent,
@@ -208,7 +218,7 @@ function EditorSurface({
   useEffect(() => {
     if (!editor || editor.isDestroyed) return;
     editor.view.dispatch(editor.state.tr.setMeta(REFS_CHANGED, true));
-  }, [editor, labels]);
+  }, [editor, labels, citations]);
 
   // Save pending changes before switching documents, closing the project or closing the window
   useEffect(() => {

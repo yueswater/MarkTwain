@@ -3,6 +3,8 @@ import { useTranslation } from "react-i18next";
 import type { BuildState } from "../build/use-build";
 import { PreviewPanel } from "../build/PreviewPanel";
 import type { ProjectState } from "./use-project";
+import { BibliographyPage } from "../bibliography/BibliographyPage";
+import { BibliographyProvider, useBibliography } from "../bibliography/bibliography-context";
 import { DocumentEditor } from "../editor/DocumentEditor";
 import { DocumentSidebar } from "./DocumentSidebar";
 import { SearchDialog } from "./SearchDialog";
@@ -19,10 +21,20 @@ type Props = {
   onClosePreview: () => void;
 };
 
-export function Workspace({ state, build, previewOpen, onClosePreview, onOpenSettings, saveTick, onSaved }: Props) {
+export function Workspace(props: Props) {
+  return (
+    <BibliographyProvider saveTick={props.saveTick}>
+      <WorkspaceBody {...props} />
+    </BibliographyProvider>
+  );
+}
+
+function WorkspaceBody({ state, build, previewOpen, onClosePreview, onOpenSettings, saveTick, onSaved }: Props) {
   const { t } = useTranslation("project");
   const project = state.project;
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [showBibliography, setShowBibliography] = useState(false);
+  const { view: bibliography } = useBibliography();
   const [collapsed, setCollapsed] = useState(() => {
     try {
       return localStorage.getItem("marktwain.sidebar.collapsed") === "1";
@@ -82,7 +94,11 @@ export function Workspace({ state, build, previewOpen, onClosePreview, onOpenSet
         selectedId={selected?.id ?? null}
         onSelect={(id) => {
           setSelectedId(id);
+          setShowBibliography(false);
         }}
+        bibliographyActive={showBibliography}
+        bibliographyCount={bibliography.items.length}
+        onOpenBibliography={() => setShowBibliography(true)}
         onOpenSettings={onOpenSettings}
         onOpenSearch={() => setSearchOpen(true)}
         onReorder={(id, targetId, placement) => void state.reorderDocument(id, targetId, placement)}
@@ -94,7 +110,15 @@ export function Workspace({ state, build, previewOpen, onClosePreview, onOpenSet
         onDelete={(id) => void state.removeDocument(id)}
       />
       <section className="min-h-0 min-w-0 flex-1 overflow-hidden">
-        {selected ? (
+        {showBibliography ? (
+          <BibliographyPage
+            documents={documents}
+            onOpenDocument={(id) => {
+              setSelectedId(id);
+              setShowBibliography(false);
+            }}
+          />
+        ) : selected ? (
           <DocumentEditor key={selected.id} documentId={selected.id} scrollTo={target} onSaved={onSaved} registerFlush={registerFlush} />
         ) : (
           <p className="p-8 text-sm text-muted-foreground">{t("workspace.empty")}</p>
@@ -108,6 +132,7 @@ export function Workspace({ state, build, previewOpen, onClosePreview, onOpenSet
           await flush.current?.();
         }}
         onOpenHit={(hit, term) => {
+          setShowBibliography(false);
           setSelectedId(hit.documentId);
           setTarget({ block: hit.block, nonce: Date.now(), term });
         }}
@@ -118,6 +143,7 @@ export function Workspace({ state, build, previewOpen, onClosePreview, onOpenSet
           saveTick={saveTick}
           onClose={onClosePreview}
           onJump={(documentId, block) => {
+            setShowBibliography(false);
             setSelectedId(documentId);
             setTarget({ block, nonce: Date.now() });
           }}

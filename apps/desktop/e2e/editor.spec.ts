@@ -168,7 +168,7 @@ test("footnotes, citations and cross-references can be inserted, shown, and save
     // Citation
     await page.keyboard.type(" see ");
     await page.getByRole("button", { name: "Citation" }).click();
-    await dialog.getByLabel("Bibliography keys").fill("wang2020, lee2019");
+    await dialog.getByLabel("Other keys").fill("wang2020, lee2019");
     await dialog.getByRole("button", { name: "Insert" }).click();
     await settle();
     await expect(editor.locator("[data-citation]")).toHaveAttribute("data-display", "(wang2020; lee2019)");

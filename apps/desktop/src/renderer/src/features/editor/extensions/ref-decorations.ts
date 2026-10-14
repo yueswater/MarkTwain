@@ -1,7 +1,7 @@
 import { Extension } from "@tiptap/core";
 import { Plugin, PluginKey } from "@tiptap/pm/state";
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
-import { citationText, describeRef } from "../ref-display";
+import { citationDisplay, describeRef, type CitationInfo } from "../ref-display";
 
 export const REFS_CHANGED = "marktwain:refs-changed";
 const key = new PluginKey("marktwainRefs");
@@ -10,17 +10,19 @@ export type RefDecorationOptions = {
   getNumbers: () => Readonly<Record<string, string>>;
   kindName: (kind: string) => string;
   brokenText: string;
+  /** Author and year of every key of the bibliography */
+  getCitations: () => Readonly<Record<string, CitationInfo>>;
 };
 
 /**
- * Adds display text to footnotes, which get a number, cross-references, which get the number of the target, and citations, which get the keys, without changing the document.
+ * Adds display text to footnotes, which get a number, cross-references, which get the number of the target, and citations, which get the author and the year, without changing the document.
  * Display text lives in data attributes of the node and CSS ::after renders it. It is recomputed when content changes or REFS_CHANGED arrives.
  */
 export const RefDecorations = Extension.create<RefDecorationOptions>({
   name: "refDecorations",
 
   addOptions() {
-    return { getNumbers: () => ({}), kindName: (kind) => kind, brokenText: "?" };
+    return { getNumbers: () => ({}), kindName: (kind) => kind, brokenText: "?", getCitations: () => ({}) };
   },
 
   addProseMirrorPlugins() {
@@ -46,9 +48,11 @@ export const RefDecorations = Extension.create<RefDecorationOptions>({
                   }),
                 );
               } else if (node.type.name === "citation") {
+                const cite = citationDisplay(node.attrs.keys as string[], String(node.attrs.form), options.getCitations());
                 decorations.push(
                   Decoration.node(pos, pos + node.nodeSize, {
-                    "data-display": citationText(node.attrs.keys as string[], String(node.attrs.form)),
+                    "data-display": cite.text,
+                    ...(cite.broken ? { "data-broken": "" } : {}),
                   }),
                 );
               }

@@ -1,6 +1,7 @@
 import {
   ArrowDownIcon,
   ArrowUpIcon,
+  BookMarkedIcon,
   BookOpenIcon,
   FileTextIcon,
   GripVerticalIcon,
@@ -44,6 +45,10 @@ type Props = {
   onDelete: (id: string) => void;
   onOpenSettings: () => void;
   onOpenSearch: () => void;
+  /** The bibliography page is shown instead of a document */
+  bibliographyActive: boolean;
+  bibliographyCount: number;
+  onOpenBibliography: () => void;
   collapsed: boolean;
   onToggleCollapsed: () => void;
 };
@@ -62,11 +67,15 @@ export function DocumentSidebar({
   onDelete,
   onOpenSettings,
   onOpenSearch,
+  bibliographyActive,
+  bibliographyCount,
+  onOpenBibliography,
   collapsed,
   onToggleCollapsed,
 }: Props) {
   const { t } = useTranslation("project");
   const { t: tConfig } = useTranslation("config");
+  const { t: tBib } = useTranslation("bibliography");
   const [pending, setPending] = useState<Pending | null>(null);
   const [dragId, setDragId] = useState<string | null>(null);
   const [drop, setDrop] = useState<Drop | null>(null);
@@ -109,7 +118,7 @@ export function DocumentSidebar({
 
   const row = (doc: DocumentSummary, compact: boolean) => {
     const title = documentTitle(t, doc);
-    const current = doc.id === selectedId;
+    const current = doc.id === selectedId && !bibliographyActive;
     const indicator = drop?.targetId === doc.id ? drop.placement : null;
     return (
       <li
@@ -257,7 +266,27 @@ export function DocumentSidebar({
       )}
       {collapsed && <div className="flex-1" />}
 
-      <div className="border-t p-2">
+      <div className="grid gap-1 border-t p-2">
+        <button
+          type="button"
+          aria-current={bibliographyActive ? "true" : undefined}
+          aria-label={collapsed ? tBib("open") : undefined}
+          title={collapsed ? tBib("open") : undefined}
+          onClick={onOpenBibliography}
+          className={cn(
+            "flex h-8 w-full items-center gap-2 rounded-md text-left text-sm hover:bg-muted",
+            collapsed ? "justify-center" : "px-2",
+            bibliographyActive && "bg-muted font-medium",
+          )}
+        >
+          <BookMarkedIcon className="size-4 text-muted-foreground" aria-hidden="true" />
+          {!collapsed && (
+            <>
+              {tBib("open")}
+              {bibliographyCount > 0 && <span className="ml-auto text-xs text-muted-foreground">{bibliographyCount}</span>}
+            </>
+          )}
+        </button>
         <button
           type="button"
           aria-label={collapsed ? tConfig("open") : undefined}
