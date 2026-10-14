@@ -1,4 +1,5 @@
-const FENCE_OPEN = /^(`{3,}|~{3,})/;
+import { fenceMarker, isFenceClose } from "./fence";
+
 const DIV_OPEN = /^:{3,}\s*\S/;
 const DIV_CLOSE = /^:{3,}\s*$/;
 
@@ -25,10 +26,7 @@ export function splitBlocks(markdown: string): string[] {
   for (const line of lines) {
     if (fence !== null) {
       current.push(line);
-      const bare = line.trim();
-      if (bare.length >= fence.length && bare === fence.charAt(0).repeat(bare.length)) {
-        fence = null;
-      }
+      if (isFenceClose(line, fence)) fence = null;
       continue;
     }
 
@@ -44,9 +42,9 @@ export function splitBlocks(markdown: string): string[] {
       continue;
     }
 
-    const fenceOpen = FENCE_OPEN.exec(line);
-    if (fenceOpen) {
-      fence = fenceOpen[1] ?? "```";
+    const opening = fenceMarker(line);
+    if (opening) {
+      fence = opening;
     } else if (line.trim() === "$$") {
       inMath = true;
     } else if (DIV_OPEN.test(line)) {

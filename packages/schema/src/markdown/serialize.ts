@@ -233,6 +233,20 @@ const serializer = new MarkdownSerializer(
       }
     },
 
+    [NodeName.DefinitionList](state, node) {
+      state.renderContent(node);
+    },
+
+    [NodeName.DefinitionTerm](state, node) {
+      state.renderInline(node);
+      state.closeBlock(node);
+    },
+
+    [NodeName.DefinitionDescription](state, node) {
+      endLine(state); // 詞與說明之間只換一行
+      state.wrapBlock("  ", ": ", node, () => state.renderContent(node));
+    },
+
     [NodeName.Figure](state, node) {
       const label = node.attrs.label as string | null;
       const width = node.attrs.width as string | null;

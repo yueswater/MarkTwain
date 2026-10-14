@@ -26,6 +26,9 @@ export const NodeName = {
   TableRow: "tableRow",
   TableHeader: "tableHeader",
   TableCell: "tableCell",
+  DefinitionList: "definitionList",
+  DefinitionTerm: "definitionTerm",
+  DefinitionDescription: "definitionDescription",
 } as const;
 
 export type NodeName = (typeof NodeName)[keyof typeof NodeName];

@@ -96,6 +96,9 @@ const markdownParser = new MarkdownParser(schema, createMarkdownIt() as unknown 
   tr: { block: NodeName.TableRow },
   th: { block: NodeName.TableHeader, getAttrs: cellAttrs },
   td: { block: NodeName.TableCell, getAttrs: cellAttrs },
+  dl: { block: NodeName.DefinitionList },
+  dt: { block: NodeName.DefinitionTerm },
+  dd: { block: NodeName.DefinitionDescription },
   footnote_ref: {
     node: NodeName.Footnote,
     getAttrs: (token) => ({ text: String(token.meta?.text ?? "") }),

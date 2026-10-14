@@ -1,4 +1,5 @@
 import { parseAttributes, type Attributes } from "../attributes";
+import { fenceMarker, isFenceClose } from "../fence";
 import type { MarkdownItInstance } from "../markdown-it";
 
 type StateBlock = InstanceType<MarkdownItInstance["block"]["State"]>;
@@ -6,7 +7,6 @@ type StateBlock = InstanceType<MarkdownItInstance["block"]["State"]>;
 /** 開頭的圍欄：三個以上的冒號，後面接屬性或一個單字。 */
 const OPENING = /^(:{3,})\s*(\S.*)$/;
 const CLOSING = /^:{3,}\s*$/;
-const FENCE = /^(`{3,}|~{3,})/;
 
 function lineText(state: StateBlock, line: number): string {
   return state.src.slice((state.bMarks[line] ?? 0) + (state.tShift[line] ?? 0), state.eMarks[line] ?? 0);
@@ -42,13 +42,12 @@ function div(state: StateBlock, startLine: number, endLine: number, silent: bool
   for (; line < endLine; line += 1) {
     const text = lineText(state, line);
     if (fence !== null) {
-      const bare = text.trim();
-      if (bare.length >= fence.length && bare === fence.charAt(0).repeat(bare.length)) fence = null;
+      if (isFenceClose(text, fence)) fence = null;
       continue;
     }
-    const fenceOpen = FENCE.exec(text);
-    if (fenceOpen) {
-      fence = fenceOpen[1] ?? null;
+    const opening = fenceMarker(text);
+    if (opening) {
+      fence = opening;
     } else if (CLOSING.test(text)) {
       depth -= 1;
       if (depth === 0) break;
