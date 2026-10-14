@@ -1,4 +1,4 @@
-<p align="center"><img src="brand/logo.png" alt="MarkTwain" width="160"></p>
+<p align="center"><img src="assets/brand/logo.png" alt="MarkTwain" width="160"></p>
 
 # MarkTwain
 
