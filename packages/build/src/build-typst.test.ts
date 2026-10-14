@@ -107,7 +107,7 @@ maybe("buildTypst with the real template", () => {
       );
       expect(result.ok).toBe(false);
       const error = result.diagnostics.find((d) => d.severity === "error");
-      expect(error?.source).toEqual({ documentId: "c1", block: 2 });
+      expect({ source: error?.source, all: result.diagnostics }).toMatchObject({ source: { documentId: "c1", block: 2 } });
     } finally {
       rmSync(work, { recursive: true, force: true });
     }
