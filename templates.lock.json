@@ -1,0 +1,14 @@
+{
+  "templates": {
+    "typ": {
+      "repo": "TW-Thesis/tw-thesis-typ",
+      "tag": "v1.0.0",
+      "commit": "61ca45c47da54e11600a6af2b1f4c03775f1a569"
+    },
+    "tex": {
+      "repo": "TW-Thesis/tw-thesis-tex",
+      "tag": "v1.0.0",
+      "commit": "24361d4889be478f73ac86976417e0a2acb29dfc"
+    }
+  }
+}
