@@ -14,6 +14,11 @@ describe("escapeText：任何位置", () => {
     expect(escapeText("_x_ a_ _b", mid)).toBe("\\_x\\_ a\\_ \\_b");
   });
 
+  it("連續的底線每一個都要跳脫（底線本身不算字中間的鄰居）", () => {
+    expect(escapeText("a___b", mid)).toBe("a\\_\\_\\_b");
+    expect(escapeText("a*___*b", mid)).toBe("a\\*\\_\\_\\_\\*b");
+  });
+
   it("看起來像字元實體的 & 要跳脫", () => {
     expect(escapeText("&amp; &#35; &#x23; &copy;", mid)).toBe("\\&amp; \\&#35; \\&#x23; \\&copy;");
     expect(escapeText("A & B &c", mid)).toBe("A & B &c");
