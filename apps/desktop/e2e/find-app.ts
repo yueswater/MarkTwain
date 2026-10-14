@@ -22,8 +22,9 @@ export function findPackagedExecutable(distDir: string): string {
 
   const found = candidates.find((path) => existsSync(path));
   if (!found) {
+    const present = existsSync(distDir) ? readdirSync(distDir).join(", ") : "（dist 不存在）";
     throw new Error(
-      `找不到打包後的程式。已檢查：\n${candidates.join("\n")}\n（先執行 pnpm build:unpacked）`,
+      `找不到打包後的程式。已檢查：\n${candidates.join("\n")}\ndist 內有：${present}\n（先執行 pnpm build:unpacked）`,
     );
   }
   return found;

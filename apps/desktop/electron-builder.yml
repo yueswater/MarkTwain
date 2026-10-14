@@ -9,3 +9,6 @@ mac:
   # Development and CI builds are not signed. Signing and notarization are
   # decided with the release workflow (design spec section 12, item 13).
   identity: null
+linux:
+  # Without this the executable is named after the scoped package name.
+  executableName: marktwain
