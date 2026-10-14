@@ -209,3 +209,11 @@ describe("文件種類", () => {
     expect(blockLines.map((n) => lines[(n ?? 1) - 1])).toEqual(["= 標題", "段落一", "段落二"]);
   });
 });
+
+describe("code languages", () => {
+  it("writes the language that Typst knows, and plain text without one", () => {
+    expect(render("```shell\nls\n```\n").body).toBe("```bash\nls\n```\n");
+    expect(render("```python\nx = 1\n```\n").body).toBe("```python\nx = 1\n```\n");
+    expect(render("```\nplain\n```\n").body).toBe("```\nplain\n```\n");
+  });
+});

@@ -33,7 +33,9 @@
     "crossRef": "交叉引用",
     "definitionList": "定義清單",
     "addDefinition": "新增詞條",
-    "image": "插入圖片"
+    "image": "插入圖片",
+    "codeLanguage": "程式語言",
+    "plainText": "純文字"
   },
   "math": {
     "insertTitle": "插入公式",

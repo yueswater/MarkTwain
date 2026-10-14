@@ -33,7 +33,9 @@
     "crossRef": "Cross-reference",
     "definitionList": "Definition list",
     "addDefinition": "Add term",
-    "image": "Insert image"
+    "image": "Insert image",
+    "codeLanguage": "Code language",
+    "plainText": "Plain text"
   },
   "math": {
     "insertTitle": "Insert math",

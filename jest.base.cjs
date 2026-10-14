@@ -3,7 +3,7 @@ module.exports = {
   testEnvironment: "node",
   testMatch: ["<rootDir>/src/**/*.test.ts", "<rootDir>/src/**/*.test.tsx"],
   // markdown-it-cjk-friendly and its dependency are published as ESM only, other packages stay untransformed
-  transformIgnorePatterns: ["/node_modules/(?!.*(markdown-it-cjk-friendly|get-east-asian-width|tex2typst))"],
+  transformIgnorePatterns: ["/node_modules/(?!.*(markdown-it-cjk-friendly|get-east-asian-width|tex2typst|lowlight|devlop))"],
   transform: {
     "^.+\\.(t|j)sx?$": [
       "@swc/jest",
