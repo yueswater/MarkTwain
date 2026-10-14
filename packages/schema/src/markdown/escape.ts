@@ -33,8 +33,12 @@ export function escapeText(text: string, context: EscapeContext): string {
     if ("`*\\~[]<{}$".includes(ch)) {
       out += `\\${ch}`;
     } else if (ch === "_") {
+      // 字中間的底線（snake_case）不用跳脫；鄰居必須是英數字，連續的底線彼此不算
       const intraword =
-        i > 0 && i + 1 < text.length && /\w/.test(text.charAt(i - 1)) && /\w/.test(text.charAt(i + 1));
+        i > 0 &&
+        i + 1 < text.length &&
+        /[A-Za-z0-9]/.test(text.charAt(i - 1)) &&
+        /[A-Za-z0-9]/.test(text.charAt(i + 1));
       out += intraword ? ch : "\\_";
     } else if (ch === "@" && startsCitation(text, i)) {
       out += "\\@";
