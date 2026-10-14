@@ -22,7 +22,7 @@ beforeEach(() => {
 describe("LabelService.resolve", () => {
   it("沒有文件內容時什麼都沒有", () => {
     documents.seedDefaults();
-    expect(labels.resolve()).toEqual({ numbers: {}, broken: [], duplicates: [], targets: [] });
+    expect(labels.resolve()).toEqual({ numbers: {}, broken: [], duplicates: [], targets: [], used: [] });
   });
 
   it("圖表公式逐章編號，沒標籤的也佔編號；章標題顯示標題文字", () => {
@@ -47,6 +47,7 @@ describe("LabelService.resolve", () => {
     documents.save("id-2", "![一](a.png){#fig:a}\n\n![二](b.png){#fig:a}\n\n見 @fig:a 與 @fig:gone。\n");
     const index = labels.resolve();
     expect(index.broken).toEqual(["fig:gone"]);
+    expect(index.used).toContain("fig:gone");
     expect(index.duplicates).toEqual(["fig:a"]);
   });
 });

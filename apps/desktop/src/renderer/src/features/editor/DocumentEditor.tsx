@@ -35,6 +35,8 @@ import type { CitationInfo } from "./ref-display";
 import { findUnlabeledTargets, newLabel, type UnlabeledTarget } from "./unlabeled-targets";
 import { Toolbar } from "./Toolbar";
 import { CodeBlockWithLanguage } from "./extensions/nodes/code-block-view";
+import { EquationLabelBubble } from "./EquationLabelBubble";
+import { EquationShortcut } from "./extensions/equation-shortcut";
 
 type Props = {
   documentId: string;
@@ -152,6 +154,7 @@ function EditorSurface({
             height: (points) => tRef.current("table.dragHeight", { value: points }),
           },
         }),
+        EquationShortcut,
         MarkdownPaste.configure({ enabled: () => prefsRef.current.pasteMarkdown }),
         Placeholder.configure({ placeholder: t("placeholder") }),
         RefDecorations.configure({
@@ -476,6 +479,7 @@ function EditorSurface({
           onRestoreFocus={() => editor.commands.focus()}
         />
       )}
+      <EquationLabelBubble editor={editor} labels={labels} />
       {atom?.type === "footnote" && (
         <FootnoteDialog
           target={atom}

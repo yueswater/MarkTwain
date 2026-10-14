@@ -18,7 +18,7 @@ describe("collectTargets", () => {
     expect(collect("# 標題 {#fig:oops}\n").targets).toEqual([]);
   });
 
-  it("圖、表、公式、程式碼依文件順序，沒有標籤的也佔一個編號", () => {
+  it("圖、表、公式、程式碼依文件順序，沒有標籤的圖表佔一個編號，沒有標籤的公式不編號", () => {
     const md = [
       "![說明](a.png){#fig:a}",
       "",
@@ -39,11 +39,11 @@ describe("collectTargets", () => {
       ": 表標題 {#tbl:t}",
     ].join("\n");
     const { targets } = collect(md);
-    expect(targets.map((t) => t.kind)).toEqual(["fig", "fig", "eq", "eq", "tbl"]);
+    expect(targets.map((t) => t.kind)).toEqual(["fig", "fig", "eq", "tbl"]);
     expect(targets[0]?.label).toBe("fig:a");
     expect(targets[1]?.label).toMatch(/^fig:~d1~\d+$/);
     expect(targets[2]?.label).toBe("eq:x");
-    expect(targets[4]?.label).toBe("tbl:t");
+    expect(targets[3]?.label).toBe("tbl:t");
   });
 
   it("沒有標題也沒有標籤的程式碼區塊不編號，有標題的才算", () => {
@@ -83,5 +83,18 @@ describe("collectCitations", () => {
 
   it("ignores cross-references and text without citations", () => {
     expect(collectCitations(parseMarkdown("見 @fig:one 與 email a@b.com"))).toEqual([]);
+  });
+});
+
+describe("公式只有在有標籤時才編號", () => {
+  it("沒有標籤的公式不佔編號，後面的公式接續", () => {
+    const md = ["$$", "a", "$$", "", "$$", "b", "$$ {#eq:one}", "", "$$", "c", "$$", "", "$$", "d", "$$ {#eq:two}"].join("\n");
+    const { targets } = collect(md);
+    expect(targets.map((t) => t.label)).toEqual(["eq:one", "eq:two"]);
+    const result = resolveNumbers(targets, [], { equationNumbering: "all", numberPerChapter: false });
+    expect([...result.numbers.entries()]).toEqual([
+      ["eq:one", "1"],
+      ["eq:two", "2"],
+    ]);
   });
 });

@@ -93,6 +93,10 @@ describe("區塊", () => {
     expect(render("```js\nx\n```\n").body).toBe("```js\nx\n```\n");
   });
 
+  it("獨立公式沒有標籤時不編號", () => {
+    expect(render("$$\nx^2\n$$\n").body).toBe("#[\n#set math.equation(numbering: none)\n$ x^2 $\n]\n");
+  });
+
   it("獨立公式帶標籤", () => {
     expect(render("$$\nx^2\n$$ {#eq:e}\n").body).toBe("$ x^2 $ <eq:e>\n");
   });
