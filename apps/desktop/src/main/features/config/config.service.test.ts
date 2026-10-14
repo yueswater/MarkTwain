@@ -57,3 +57,38 @@ describe("ConfigService", () => {
     expect(new ConfigRepository(db).read()).toBe("title: [oops");
   });
 });
+
+describe("advanced settings", () => {
+  const withTemplate = () => {
+    const session = new DatabaseSession();
+    const db2 = openDatabase(":memory:");
+    migrate(db2, MIGRATIONS);
+    new ProjectRepository(db2).insert("論文", 0);
+    session.open(db2, ":memory:");
+    const files: Record<string, string> = {
+      "schools/default.yml": "layout:\n  font-size: 12\n  margin:\n    top: 3\n",
+      "schools/ntu.yml": "layout:\n  margin:\n    top: 2\n",
+    };
+    return new ConfigService(session, () => new Date(1), (path) => files[path] ?? null);
+  };
+
+  it("shows overrides next to what the template and the school give", () => {
+    const service = withTemplate();
+    service.set({ ...defaultFields(), title: "t", school: "ntu" });
+    expect(service.advanced()).toEqual({ values: {}, inherited: { "layout.font-size": 12, "layout.margin.top": 2 } });
+  });
+
+  it("sets overrides, removes them with null and keeps the basic fields", () => {
+    const service = withTemplate();
+    service.set({ ...defaultFields(), title: "題目", author: "王" });
+    expect(service.setAdvanced({ "layout.font-size": 14, "page-number.align": "left" }).values).toEqual({ "layout.font-size": 14, "page-number.align": "left" });
+    expect(service.setAdvanced({ "layout.font-size": null }).values).toEqual({ "page-number.align": "left" });
+    expect(service.get().fields).toMatchObject({ title: "題目", author: "王" });
+  });
+
+  it("works on a project that has no config.yml yet", () => {
+    const service = withTemplate();
+    expect(service.setAdvanced({ "layout.justify": false }).values).toEqual({ "layout.justify": false });
+    expect(service.get().fields.title).toBe("論文");
+  });
+});

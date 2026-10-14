@@ -37,3 +37,18 @@ export {
   type Named,
 } from "./config/options";
 export { SCHOOLS, isKnownSchool, type School } from "./config/schools";
+export {
+  ADVANCED_FIELDS,
+  advancedField,
+  getPath,
+  inheritedValues,
+  isValidAdvanced,
+  mergeConfigs,
+  readAdvanced,
+  writeAdvanced,
+  type AdvancedField,
+  type AdvancedGroup,
+  type AdvancedKind,
+  type AdvancedValue,
+  type AdvancedValues,
+} from "./config/advanced";

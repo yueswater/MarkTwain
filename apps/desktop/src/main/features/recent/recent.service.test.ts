@@ -3,6 +3,7 @@ import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { SettingsRepository } from "../settings/settings.repository";
+import { DEFAULT_SETTINGS } from "../settings/settings.types";
 import { SettingsService } from "../settings/settings.service";
 import { RecentService } from "./recent.service";
 
@@ -61,6 +62,6 @@ describe("RecentService", () => {
   });
 
   it("ignores a damaged settings file", () => {
-    expect(new SettingsRepository("/nonexistent/settings.json").read()).toEqual({ locale: null, recentProjects: [], lastProject: null });
+    expect(new SettingsRepository("/nonexistent/settings.json").read()).toEqual(DEFAULT_SETTINGS);
   });
 });
