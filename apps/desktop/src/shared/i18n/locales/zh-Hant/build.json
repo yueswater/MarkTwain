@@ -20,5 +20,6 @@
   "watch": "自動更新",
   "watchHint": "每次儲存後自動重新建置",
   "page": "第 {{n}} 頁",
-  "pages": "共 {{count}} 頁"
+  "pages": "共 {{count}} 頁",
+  "resize": "調整預覽寬度"
 }

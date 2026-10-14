@@ -20,5 +20,6 @@
   "watch": "Auto update",
   "watchHint": "Rebuild after every save",
   "page": "Page {{n}}",
-  "pages": "{{count}} pages"
+  "pages": "{{count}} pages",
+  "resize": "Resize the preview"
 }

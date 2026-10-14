@@ -103,6 +103,23 @@ export class DocumentService {
     });
   }
 
+  /** Puts a document before or after another one of the same kind and renumbers the kind. */
+  reorder(id: string, targetId: string, placement: "before" | "after"): void {
+    this.session.db.transaction(() => {
+      const repository = this.repository();
+      const row = repository.get(id);
+      const target = repository.get(targetId);
+      if (!row || !target) throw new AppError(ErrorCode.DocumentNotFound);
+      if (row.kind !== target.kind || row.id === target.id) return;
+      const order = repository.listByKind(row.kind).filter((doc) => doc.id !== id);
+      const at = order.findIndex((doc) => doc.id === targetId) + (placement === "after" ? 1 : 0);
+      order.splice(at, 0, row);
+      order.forEach((doc, index) => {
+        if (doc.position !== index + 1) repository.updatePosition(doc.id, index + 1);
+      });
+    });
+  }
+
   move(id: string, delta: -1 | 1): void {
     this.session.db.transaction(() => {
       const repository = this.repository();

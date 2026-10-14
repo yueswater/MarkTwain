@@ -73,8 +73,8 @@ export function Workspace({ state, build, previewOpen, onClosePreview }: Props) 
           setSettings(false);
           setSelectedId(id);
         }}
-        settingsSelected={settings}
-        onSelectSettings={() => setSettings(true)}
+        onOpenSettings={() => setSettings(true)}
+        onReorder={(id, targetId, placement) => void state.reorderDocument(id, targetId, placement)}
         collapsed={collapsed}
         onToggleCollapsed={toggleCollapsed}
         onAdd={(kind) => void state.addDocument(kind)}
