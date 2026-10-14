@@ -82,7 +82,8 @@
       "lst": "Listing"
     },
     "broken": "Missing target",
-    "chooseHint": "Choose what to refer to."
+    "chooseHint": "Choose what to refer to.",
+    "placeholder": "Choose a target to refer to"
   },
   "atom": {
     "insert": "Insert",

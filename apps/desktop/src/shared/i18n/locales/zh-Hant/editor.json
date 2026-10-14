@@ -82,7 +82,8 @@
       "lst": "程式"
     },
     "broken": "找不到目標",
-    "chooseHint": "選擇要引用的目標。"
+    "chooseHint": "選擇要引用的目標。",
+    "placeholder": "請選擇欲引用目標"
   },
   "atom": {
     "insert": "插入",
