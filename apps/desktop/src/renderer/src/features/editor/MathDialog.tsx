@@ -25,6 +25,7 @@ type Props = {
   onSubmit: (latex: string) => void;
   onRemove: () => void;
   onClose: () => void;
+  onRestoreFocus: () => void;
 };
 
 /** 以 KaTeX 渲染；語法錯誤時回傳 null。 */
@@ -36,7 +37,7 @@ export function renderLatex(latex: string, displayMode: boolean): string | null 
   }
 }
 
-export function MathDialog({ target, onSubmit, onRemove, onClose }: Props) {
+export function MathDialog({ target, onSubmit, onRemove, onClose, onRestoreFocus }: Props) {
   const { t } = useTranslation("editor");
   const [latex, setLatex] = useState(target.latex);
   const editing = target.pos !== null;
@@ -48,7 +49,13 @@ export function MathDialog({ target, onSubmit, onRemove, onClose }: Props) {
 
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent
+        className="sm:max-w-lg"
+        onCloseAutoFocus={(event) => {
+          event.preventDefault();
+          onRestoreFocus();
+        }}
+      >
         <form
           className="grid gap-4"
           onSubmit={(event) => {

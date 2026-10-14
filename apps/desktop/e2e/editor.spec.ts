@@ -120,3 +120,76 @@ test("math can be inserted from the dialog, typed with $…$, edited, and saved 
     rmSync(dir, { recursive: true, force: true });
   }
 });
+
+test("footnotes, citations and cross-references can be inserted, shown, and saved as Markdown", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "marktwain 引用 "));
+  const file = join(dir, "論文.marktwain");
+  const args = [`--user-data-dir=${join(dir, "userData")}`, "--lang=en-US"];
+  if (process.platform === "linux") args.push("--no-sandbox");
+
+  const app = await electron.launch({
+    executablePath: findPackagedExecutable(dist),
+    args,
+    env: { ...process.env, MARKTWAIN_TEST_DIALOG_PATH: file },
+  });
+  try {
+    const page = await app.firstWindow();
+    await page.getByRole("button", { name: "New project" }).click();
+    const editor = page.locator(".ProseMirror");
+    await editor.click();
+    const dialog = page.getByRole("dialog");
+    // 對話框關閉、焦點回到編輯器之後才繼續打字
+    const settle = async () => {
+      await expect(dialog).toBeHidden();
+      await expect(editor).toBeFocused();
+    };
+
+    await page.keyboard.type("## Motivation");
+    await page.keyboard.press("Enter");
+    await page.keyboard.type("As shown in ");
+
+    // 交叉引用：選尚未有標籤的標題，會自動加上標籤
+    await page.getByRole("button", { name: "Cross-reference" }).click();
+    await dialog.getByRole("combobox", { name: "Target" }).click();
+    await page.getByRole("option", { name: "Section · Motivation" }).click();
+    await dialog.getByRole("button", { name: "Insert" }).click();
+    await settle();
+    await expect(editor.locator("[data-cross-ref]")).toHaveAttribute("data-display", "Motivation");
+
+    // 腳註
+    await page.keyboard.type(" and noted");
+    await page.getByRole("button", { name: "Footnote" }).click();
+    await dialog.getByLabel("Footnote text").fill("A **bold** remark.");
+    await dialog.getByRole("button", { name: "Insert" }).click();
+    await settle();
+    await expect(editor.locator("sup[data-footnote]")).toHaveAttribute("data-n", "1");
+
+    // 文獻引用
+    await page.keyboard.type(" see ");
+    await page.getByRole("button", { name: "Citation" }).click();
+    await dialog.getByLabel("Bibliography keys").fill("wang2020, lee2019");
+    await dialog.getByRole("button", { name: "Insert" }).click();
+    await settle();
+    await expect(editor.locator("[data-citation]")).toHaveAttribute("data-display", "(wang2020; lee2019)");
+
+    // 點擊腳註可以再編輯
+    await editor.locator("sup[data-footnote]").click();
+    await dialog.getByLabel("Footnote text").fill("Edited.");
+    await dialog.getByRole("button", { name: "Update" }).click();
+    await expect(page.getByRole("status")).toHaveText("Saved");
+
+    const text = await page.evaluate(async () => {
+      const list = await window.marktwain.invoke("document:list");
+      if (!list.ok) return "";
+      const chapter = list.data.find((d) => d.kind === "chapter");
+      const doc = chapter && (await window.marktwain.invoke("document:get", { id: chapter.id }));
+      return doc && doc.ok ? doc.data.text : "";
+    });
+    expect(text).toMatch(/^## Motivation \{#sec:[0-9a-f]{4}\}\n/);
+    expect(text).toMatch(/As shown in @sec:[0-9a-f]{4} and noted\[\^1\] see \[@wang2020; @lee2019\]/);
+    expect(text).toContain("[^1]: Edited.");
+  } finally {
+    await app.close();
+    rmSync(dir, { recursive: true, force: true });
+  }
+});

@@ -8,7 +8,13 @@ export const Footnote = Node.create({
   atom: true,
 
   addAttributes() {
-    return { text: { default: "" } };
+    return {
+      text: {
+        default: "",
+        parseHTML: (element: HTMLElement) => element.getAttribute("data-text") ?? "",
+        renderHTML: (attributes: Record<string, unknown>) => ({ "data-text": String(attributes.text ?? "") }),
+      },
+    };
   },
 
   parseHTML() {

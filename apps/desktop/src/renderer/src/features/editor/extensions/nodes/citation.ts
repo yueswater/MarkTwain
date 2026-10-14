@@ -9,8 +9,20 @@ export const Citation = Node.create({
 
   addAttributes() {
     return {
-      keys: { default: [] },
-      form: { default: "paren" },
+      keys: {
+        default: [],
+        // 複製貼上時要還原成陣列；書目 key 不含逗號
+        parseHTML: (element: HTMLElement) =>
+          (element.getAttribute("data-keys") ?? "").split(",").filter(Boolean),
+        renderHTML: (attributes: Record<string, unknown>) => ({
+          "data-keys": ((attributes.keys as string[] | undefined) ?? []).join(","),
+        }),
+      },
+      form: {
+        default: "paren",
+        parseHTML: (element: HTMLElement) => element.getAttribute("data-form") ?? "paren",
+        renderHTML: (attributes: Record<string, unknown>) => ({ "data-form": String(attributes.form) }),
+      },
     };
   },
 
