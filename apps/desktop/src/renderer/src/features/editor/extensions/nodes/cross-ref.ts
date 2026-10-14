@@ -8,7 +8,13 @@ export const CrossRef = Node.create({
   atom: true,
 
   addAttributes() {
-    return { label: { default: "" } };
+    return {
+      label: {
+        default: "",
+        parseHTML: (element: HTMLElement) => element.getAttribute("data-label") ?? "",
+        renderHTML: (attributes: Record<string, unknown>) => ({ "data-label": String(attributes.label ?? "") }),
+      },
+    };
   },
 
   parseHTML() {

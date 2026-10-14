@@ -27,7 +27,10 @@
     "rule": "Horizontal rule",
     "table": "Insert table",
     "inlineMath": "Inline math",
-    "blockMath": "Math block"
+    "blockMath": "Math block",
+    "footnote": "Footnote",
+    "citation": "Citation",
+    "crossRef": "Cross-reference"
   },
   "math": {
     "insertTitle": "Insert math",
@@ -40,5 +43,47 @@
     "update": "Update",
     "remove": "Remove",
     "hint": "Example: \\frac{a}{b} or \\sum_{i=1}^{n} x_i"
+  },
+  "footnote": {
+    "insertTitle": "Insert footnote",
+    "editTitle": "Edit footnote",
+    "text": "Footnote text",
+    "hint": "Inline Markdown is allowed, for example **bold** or $x^2$."
+  },
+  "citation": {
+    "insertTitle": "Insert citation",
+    "editTitle": "Edit citation",
+    "keys": "Bibliography keys",
+    "keysHint": "Separate several keys with commas, for example wang2020, lee2019.",
+    "form": "Style",
+    "forms": {
+      "paren": "(Author, Year)",
+      "prose": "Author (Year)",
+      "year": "Year only",
+      "author": "Author only"
+    }
+  },
+  "crossRef": {
+    "insertTitle": "Insert cross-reference",
+    "editTitle": "Edit cross-reference",
+    "target": "Target",
+    "labeled": "Labeled",
+    "unlabeled": "Not labeled yet (a label is added automatically)",
+    "none": "There is nothing to refer to yet. Add a labeled heading, figure, table or equation first.",
+    "kind": {
+      "cha": "Chapter",
+      "sec": "Section",
+      "fig": "Figure",
+      "tbl": "Table",
+      "eq": "Equation",
+      "lst": "Listing"
+    },
+    "broken": "Missing target",
+    "chooseHint": "Choose what to refer to."
+  },
+  "atom": {
+    "insert": "Insert",
+    "update": "Update",
+    "remove": "Remove"
   }
 }

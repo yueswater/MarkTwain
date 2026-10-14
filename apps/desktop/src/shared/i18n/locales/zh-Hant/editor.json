@@ -27,7 +27,10 @@
     "rule": "分隔線",
     "table": "插入表格",
     "inlineMath": "行內公式",
-    "blockMath": "獨立公式"
+    "blockMath": "獨立公式",
+    "footnote": "腳註",
+    "citation": "文獻引用",
+    "crossRef": "交叉引用"
   },
   "math": {
     "insertTitle": "插入公式",
@@ -40,5 +43,47 @@
     "update": "更新",
     "remove": "移除",
     "hint": "例如：\\frac{a}{b} 或 \\sum_{i=1}^{n} x_i"
+  },
+  "footnote": {
+    "insertTitle": "插入腳註",
+    "editTitle": "編輯腳註",
+    "text": "腳註內容",
+    "hint": "可以使用行內 Markdown，例如 **粗體** 或 $x^2$。"
+  },
+  "citation": {
+    "insertTitle": "插入文獻引用",
+    "editTitle": "編輯文獻引用",
+    "keys": "書目代號",
+    "keysHint": "多個代號以逗號分隔，例如 wang2020, lee2019。",
+    "form": "樣式",
+    "forms": {
+      "paren": "（作者，年份）",
+      "prose": "作者（年份）",
+      "year": "只有年份",
+      "author": "只有作者"
+    }
+  },
+  "crossRef": {
+    "insertTitle": "插入交叉引用",
+    "editTitle": "編輯交叉引用",
+    "target": "目標",
+    "labeled": "已有標籤",
+    "unlabeled": "尚未加標籤（會自動加上）",
+    "none": "目前沒有可以引用的目標。請先加入有標籤的標題、圖、表或公式。",
+    "kind": {
+      "cha": "章",
+      "sec": "節",
+      "fig": "圖",
+      "tbl": "表",
+      "eq": "式",
+      "lst": "程式"
+    },
+    "broken": "找不到目標",
+    "chooseHint": "選擇要引用的目標。"
+  },
+  "atom": {
+    "insert": "插入",
+    "update": "更新",
+    "remove": "移除"
   }
 }

@@ -1,10 +1,13 @@
 import type { Editor } from "@tiptap/core";
 import { useEditorState } from "@tiptap/react";
 import {
+  AsteriskIcon,
   BoldIcon,
+  BookMarkedIcon,
   CodeIcon,
   FileCodeIcon,
   ItalicIcon,
+  Link2Icon,
   ListIcon,
   ListOrderedIcon,
   MinusIcon,
@@ -31,6 +34,7 @@ import { cn } from "@/lib/utils";
 type Props = {
   editor: Editor;
   onInsertMath: (kind: "inline" | "block") => void;
+  onInsertAtom: (type: "footnote" | "citation" | "crossRef") => void;
 };
 
 const BLOCKS = ["paragraph", "heading1", "heading2", "heading3", "heading4"] as const;
@@ -49,7 +53,7 @@ function setBlock(editor: Editor, block: Block): void {
   else chain.setHeading({ level: Number(block.slice(-1)) as 1 | 2 | 3 | 4 }).run();
 }
 
-export function Toolbar({ editor, onInsertMath }: Props) {
+export function Toolbar({ editor, onInsertMath, onInsertAtom }: Props) {
   const { t } = useTranslation("editor");
 
   // 選取範圍或內容改變時重新計算按鈕狀態
@@ -162,6 +166,10 @@ export function Toolbar({ editor, onInsertMath }: Props) {
       <span className="mx-1 h-5 w-px bg-border" aria-hidden="true" />
       {button(t("toolbar.inlineMath"), SigmaIcon, () => onInsertMath("inline"))}
       {button(t("toolbar.blockMath"), RadicalIcon, () => onInsertMath("block"))}
+      {button(t("toolbar.footnote"), AsteriskIcon, () => onInsertAtom("footnote"))}
+      {button(t("toolbar.citation"), BookMarkedIcon, () => onInsertAtom("citation"))}
+      {button(t("toolbar.crossRef"), Link2Icon, () => onInsertAtom("crossRef"))}
+      <span className="mx-1 h-5 w-px bg-border" aria-hidden="true" />
       {button(t("toolbar.rule"), MinusIcon, () => editor.chain().focus().setHorizontalRule().run())}
       {button(t("toolbar.table"), TableIcon, () =>
         editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run(),

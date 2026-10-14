@@ -182,3 +182,15 @@
 .tiptap-mathematics-render:hover { background: var(--muted); }
 .tiptap-mathematics-render[data-type="block-math"] { display: block; text-align: center; padding: 0.5rem 0; margin: 0.75rem 0; overflow-x: auto; }
 .inline-math-error { color: var(--destructive); font-family: "Geist Mono Variable", ui-monospace, monospace; }
+
+/* 腳註、文獻引用、交叉引用：顯示文字由 ref-decorations 放在 data 屬性，這裡呈現 */
+
+.ProseMirror sup[data-footnote] { cursor: pointer; color: var(--foreground); font-size: 0.75em; padding: 0 0.1em; border-radius: 0.25rem; }
+.ProseMirror sup[data-footnote]::after { content: "[" attr(data-n) "]"; }
+.ProseMirror sup[data-footnote]:hover, .ProseMirror span[data-citation]:hover, .ProseMirror span[data-cross-ref]:hover { background: var(--muted); }
+.ProseMirror span[data-citation] { cursor: pointer; border-radius: 0.25rem; }
+.ProseMirror span[data-citation]::after { content: attr(data-display); }
+.ProseMirror span[data-cross-ref] { cursor: pointer; border-radius: 0.25rem; text-decoration: underline; text-decoration-style: dotted; text-underline-offset: 3px; }
+.ProseMirror span[data-cross-ref]::after { content: attr(data-display); }
+.ProseMirror span[data-cross-ref][data-broken] { color: var(--destructive); }
+.ProseMirror .ProseMirror-selectednode[data-footnote], .ProseMirror .ProseMirror-selectednode[data-citation], .ProseMirror .ProseMirror-selectednode[data-cross-ref] { outline: 2px solid var(--ring); outline-offset: 1px; }
