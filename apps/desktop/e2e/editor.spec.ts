@@ -151,6 +151,10 @@ test("footnotes, citations and cross-references can be inserted, shown, and save
 
     // Cross-reference, pick an unlabeled heading and a label is added automatically
     await page.getByRole("button", { name: "Cross-reference" }).click();
+    // The target list stays closed until a type is chosen, and then lists only that type
+    await expect(dialog.getByRole("combobox", { name: "Target" })).toBeDisabled();
+    await dialog.getByRole("combobox", { name: "Type" }).click();
+    await page.getByRole("option", { name: "Heading" }).click();
     await dialog.getByRole("combobox", { name: "Target" }).click();
     await page.getByRole("option", { name: "Section · Motivation" }).click();
     await dialog.getByRole("button", { name: "Insert" }).click();
@@ -527,9 +531,29 @@ test("code blocks take a language, are highlighted, and keep it in the Markdown"
     const editor = page.locator(".ProseMirror");
     await editor.click();
     await page.getByRole("button", { name: "Code block" }).click();
+    // The language selector is on the block, hidden until the mouse moves over it
+    const selector = page.getByTestId("code-language");
+    await page.mouse.move(5, 5);
+    await expect(selector).toHaveCSS("opacity", "0");
+    await editor.locator(".code-block").hover();
+    await expect(selector).toHaveCSS("opacity", "1");
     await page.getByRole("combobox", { name: "Code language" }).click();
     await page.getByRole("option", { name: "Python" }).click();
+    await expect(page.getByRole("listbox")).toBeHidden();
+    await expect(editor).toBeFocused();
+    // The cursor is back in the block, and while typing the selector stays hidden even under the pointer
     await page.keyboard.type('def hello():\n    return "hi"');
+    await expect(selector).toHaveCSS("opacity", "0");
+    // Moving the mouse shows it again
+    await page.mouse.move(60, 400);
+    await editor.locator(".code-block").hover();
+    await expect(selector).toHaveCSS("opacity", "1");
+    await expect(page.getByRole("combobox", { name: "Code language" })).toContainText("Python");
+    // The shortcut opens the list for the block that holds the cursor
+    await editor.locator("pre code").click();
+    await page.keyboard.press("ControlOrMeta+Alt+l");
+    await expect(page.getByRole("option", { name: "Plain text" })).toBeVisible();
+    await page.keyboard.press("Escape");
     await expect(editor.locator("pre code .hljs-keyword").first()).toHaveText("def");
     await expect(editor.locator("pre code .hljs-string")).toHaveCount(1);
     await expect(page.getByRole("status")).toHaveText("Saved");
@@ -678,6 +702,80 @@ test("a picture is resized by its corners and cropped, in the manner of Word", a
     const natural = await figure.locator("img").evaluate((el: HTMLImageElement) => [el.naturalWidth, el.naturalHeight]);
     expect(natural[0]).toBeLessThan(120);
     expect(natural[1]).toBe(100);
+  } finally {
+    await app.close();
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("a display formula has no number until it is named from the box next to it", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "marktwain 公式名稱 "));
+  const file = join(dir, "論文.marktwain");
+  const args = [`--user-data-dir=${join(dir, "userData")}`, "--lang=en-US"];
+  if (process.platform === "linux") args.push("--no-sandbox");
+  const app = await electron.launch({
+    executablePath: findPackagedExecutable(dist),
+    args,
+    env: { ...process.env, MARKTWAIN_TEST_DIALOG_PATH: file },
+  });
+  try {
+    const page = await app.firstWindow();
+    await page.getByRole("button", { name: "New project" }).click();
+    const editor = page.locator(".ProseMirror");
+    await editor.click();
+    await page.keyboard.type("Intro ");
+    await page.getByRole("button", { name: "Math block" }).click();
+    await page.getByRole("dialog").getByLabel("LaTeX").fill("E=mc^2");
+    await page.getByRole("dialog").getByRole("button", { name: "Insert" }).click();
+    const formula = editor.locator("[data-type='block-math']");
+    await expect(formula).toHaveCount(1);
+    await expect(page.getByRole("status")).toHaveText("Saved");
+
+    const markdown = () =>
+      page.evaluate(async () => {
+        const list = await window.marktwain.invoke("document:list");
+        if (!list.ok) return "";
+        const chapter = list.data.find((d) => d.kind === "chapter");
+        const doc = chapter && (await window.marktwain.invoke("document:get", { id: chapter.id }));
+        return doc && doc.ok ? doc.data.text : "";
+      });
+    // A new formula has no label, so it has no number
+    expect(await markdown()).not.toContain("{#eq:");
+
+    // Hovering shows the box, a name with other characters is refused
+    await formula.hover();
+    const box = page.getByTestId("equation-label-box");
+    await expect(box).toBeVisible();
+    await box.getByLabel("Formula name").fill("pay-off");
+    await expect(box.getByRole("alert")).toHaveText("Use letters and digits only.");
+    await expect(box.getByRole("button", { name: "Set name" })).toBeDisabled();
+
+    // A good name gives the formula its label, and the box shows the number once it is saved
+    await box.getByLabel("Formula name").fill("energy1");
+    await box.getByRole("button", { name: "Set name" }).click();
+    await expect.poll(markdown).toContain("$$ {#eq:energy1}");
+    await expect(box.getByTestId("equation-number")).toContainText("Numbered 1");
+
+    // Moving the pointer away closes the box
+    await page.mouse.move(5, 5);
+    await expect(box).toBeHidden();
+
+    // Once something refers to the formula its name is locked
+    await editor.locator("p").first().click();
+    await page.keyboard.press("End");
+    await page.keyboard.type(" see ");
+    await page.getByRole("button", { name: "Cross-reference" }).click();
+    const dialog = page.getByRole("dialog");
+    await dialog.getByRole("combobox", { name: "Type" }).click();
+    await page.getByRole("option", { name: "Formula" }).click();
+    await dialog.getByRole("combobox", { name: "Target" }).click();
+    await page.getByRole("option", { name: /Eq/ }).first().click();
+    await dialog.getByRole("button", { name: "Insert" }).click();
+    await expect(editor.locator("[data-cross-ref]")).toHaveCount(1);
+    await formula.hover();
+    await expect(box.getByLabel("Formula name")).toBeDisabled();
+    await expect(box.getByRole("button", { name: "Remove number" })).toBeDisabled();
+    await expect(box).toContainText("cannot be changed or removed");
   } finally {
     await app.close();
     rmSync(dir, { recursive: true, force: true });

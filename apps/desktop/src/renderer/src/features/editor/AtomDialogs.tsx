@@ -22,6 +22,7 @@ import { Textarea } from "@/components/ui/textarea";
 import type { LabelTarget } from "../../../../shared/ipc";
 import { useBibliography } from "../bibliography/bibliography-context";
 import type { UnlabeledTarget } from "./unlabeled-targets";
+import { REF_KINDS, buildRefOptions, kindsWithTargets, readLastKind, refKindOfLabel, rememberKind, type RefKind } from "./crossref-options";
 
 /** Editing state shared by the three inline atom nodes, footnote, citation and cross-reference. */
 export type AtomTarget =
@@ -264,22 +265,26 @@ export function CrossRefDialog({
   const [value, setValue] = useState(target.label ? `l:${target.label}` : "");
 
   const options = useMemo(
-    () => [
-      ...labeled.map((item) => ({
-        value: `l:${item.label}`,
-        text: `${t(`crossRef.kind.${item.kind}`)} ${item.display}`,
-        group: "labeled" as const,
-      })),
-      ...unlabeled.map((item) => ({
-        value: `u:${item.pos}:${item.kind}`,
-        text: `${t(`crossRef.kind.${item.kind}`)} · ${item.text || "…"}`,
-        group: "unlabeled" as const,
-      })),
-    ],
+    () => buildRefOptions(labeled, unlabeled, (kind) => t(`crossRef.kind.${kind}`)),
     [labeled, unlabeled, t],
   );
+  const available = kindsWithTargets(options);
+  // The kind comes from the label when editing, otherwise from the last choice if it still has targets
+  const [kind, setKind] = useState<RefKind | "">(() => {
+    if (target.label) return refKindOfLabel(target.label) ?? "";
+    const last = readLastKind();
+    return last && available.has(last) ? last : "";
+  });
+  const shown = options.filter((option) => option.kind === kind);
   // When editing, the target may be gone and missing from the list, keep the old value so the user can see it
   const known = options.some((option) => option.value === value);
+
+  function pickKind(next: string): void {
+    setKind(next as RefKind);
+    rememberKind(next as RefKind);
+    // A target of another kind no longer applies
+    if (!options.some((option) => option.value === value && option.kind === next)) setValue("");
+  }
 
   function submit(): void {
     if (value.startsWith("l:")) onSubmit({ kind: "existing", label: value.slice(2) });
@@ -301,25 +306,43 @@ export function CrossRefDialog({
       {options.length === 0 ? (
         <p className="text-sm text-muted-foreground">{t("crossRef.none")}</p>
       ) : (
-        <div className="grid gap-2">
-          <Label>{t("crossRef.target")}</Label>
-          <Select value={value} onValueChange={setValue}>
-            <SelectTrigger aria-label={t("crossRef.target")}>
-              <SelectValue placeholder={t("crossRef.placeholder")} />
-            </SelectTrigger>
-            <SelectContent>
-              {!known && value !== "" && (
-                <SelectItem value={value}>
-                  {t("crossRef.broken")} {value.slice(2)}
-                </SelectItem>
-              )}
-              {options.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.text}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        <div className="grid grid-cols-[9rem_minmax(0,1fr)] gap-3">
+          <div className="grid gap-2">
+            <Label>{t("crossRef.type")}</Label>
+            <Select value={kind} onValueChange={pickKind}>
+              <SelectTrigger aria-label={t("crossRef.type")}>
+                <SelectValue placeholder={t("crossRef.typePlaceholder")} />
+              </SelectTrigger>
+              <SelectContent>
+                {REF_KINDS.map((item) => (
+                  <SelectItem key={item} value={item} disabled={!available.has(item)}>
+                    {t(`crossRef.types.${item}`)}
+                    {available.has(item) ? "" : ` · ${t("crossRef.noneOfKind")}`}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="grid min-w-0 gap-2">
+            <Label>{t("crossRef.target")}</Label>
+            <Select value={value} onValueChange={setValue} disabled={kind === ""}>
+              <SelectTrigger aria-label={t("crossRef.target")} className="w-full min-w-0 [&>span]:truncate">
+                <SelectValue placeholder={t(kind === "" ? "crossRef.chooseTypeFirst" : "crossRef.placeholder")} />
+              </SelectTrigger>
+              <SelectContent>
+                {!known && value !== "" && (
+                  <SelectItem value={value}>
+                    {t("crossRef.broken")} {value.slice(2)}
+                  </SelectItem>
+                )}
+                {shown.map((option) => (
+                  <SelectItem key={option.value} value={option.value} title={option.full}>
+                    {option.text}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       )}
     </Frame>

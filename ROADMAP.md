@@ -2,7 +2,7 @@
 
 MarkTwain is developed against version milestones. Each version maps to a [GitHub Milestone](../../milestones), and the work items are tracked as issues.
 
-Current version: v0.3.2.
+Current version: v0.3.3.
 
 | Version | Theme | Status |
 |---|---|---|
@@ -10,6 +10,7 @@ Current version: v0.3.2.
 | [v0.2.0](#v020--editor) | Editor | Released |
 | [v0.3.0](#v030--typst-output) | Typst output | Released |
 | [v0.3.2](#v032--editor-and-bibliography-polish) | Editor and bibliography polish | Released |
+| [v0.3.3](#v033--editor-fixes) | Editor fixes | Released |
 | [v0.4.0](#v040--version-control) | Version control | Not started |
 | [v0.5.0](#v050--latex-output) | LaTeX output | Not started |
 | [v0.6.0](#v060--thesis-features) | Thesis features | Not started |
@@ -74,6 +75,16 @@ Work on the editor and the project window, plus a bibliography manager that was 
 - Bibliography: a manager with a list and a form, a BibTeX source view, import from BibTeX, CSL JSON and Hayagriva, a citation picker, and citations that are highlighted and flagged when the key is unknown
 
 **Not done:** keeping several bibliography files, custom `.csl` styles and the `bibliography.style` menu stay in v0.6.0.
+
+## v0.3.3 · Editor Fixes
+
+Fixes and small changes to the editor and the preview.
+
+- The preview lists every warning, including the ones from Typst such as a missing font, and the warning area appears only when it has content
+- Reordering documents in the sidebar uses a pointer drag that accepts the edges of the list, scrolls the list, says why a drop is refused, and also works with Alt and the arrow keys
+- The cross-reference dialog picks the kind first and then the target, and long formulas end with `...` without breaking a command
+- The language of a code block is chosen on the block, shown on hover and hidden while typing
+- A display formula has no number until it is given a name from a small box that opens on hover, and a formula that is referred to keeps its name
 
 ## v0.4.0 · Version Control
 

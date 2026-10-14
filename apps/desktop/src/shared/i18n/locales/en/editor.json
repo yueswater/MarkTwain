@@ -89,7 +89,18 @@
     },
     "broken": "Missing target",
     "chooseHint": "Choose what to refer to.",
-    "placeholder": "Choose a target to refer to"
+    "placeholder": "Choose a target to refer to",
+    "type": "Type",
+    "typePlaceholder": "Choose a type",
+    "chooseTypeFirst": "Choose a type first",
+    "noneOfKind": "none",
+    "types": {
+      "heading": "Heading",
+      "figure": "Figure",
+      "table": "Table",
+      "formula": "Formula",
+      "code": "Code block"
+    }
   },
   "atom": {
     "insert": "Insert",
@@ -184,5 +195,17 @@
     "previous": "Previous match",
     "close": "Close the find bar",
     "caseSensitive": "Match case"
+  },
+  "equation": {
+    "title": "Formula name",
+    "name": "Formula name",
+    "placeholder": "Name, letters and digits only",
+    "apply": "Set name",
+    "remove": "Remove number",
+    "chars": "Use letters and digits only.",
+    "taken": "Another target already has this name.",
+    "locked": "This formula is referred to, so its name cannot be changed or removed.",
+    "hint": "A formula with a name is numbered and can be referred to.",
+    "numbered": "Numbered {{number}}"
   }
 }

@@ -187,6 +187,8 @@ export function renderBlock(block: Block, ctx: BlockContext): string[] {
         ctx.onMathFailure(block.latex);
         return [mathFallback(block.latex, true)];
       }
+      // The template numbers every equation, so a formula without a label turns the numbering off for itself
+      if (block.label === null) return ["#[", "#set math.equation(numbering: none)", `$ ${result.typst} $`, "]"];
       return [`$ ${result.typst} $${label(block.label)}`];
     }
 

@@ -10,7 +10,7 @@ type JsonNode = {
 };
 
 export type CollectedTargets = {
-  /** Targets in document order, unlabeled figures, tables and formulas are included so numbering is right */
+  /** Targets in document order, a figure or table without a caption and a formula without a label are left out */
   targets: Target[];
   /** Labels that cross-references in the document point to, in order of appearance and possibly repeated */
   references: string[];
@@ -73,8 +73,9 @@ export function collectTargets(doc: DocJson, scope: string): CollectedTargets {
       case "table":
         if (hasCaption(node)) counted("tbl", node);
         return;
+      // A formula is numbered only when it has a label, so most formulas stay without a number
       case "blockMath":
-        counted("eq", node);
+        if (labelOf(node)) counted("eq", node);
         return;
       case "codeBlock":
         if (labelOf(node) || node.attrs?.caption) counted("lst", node);

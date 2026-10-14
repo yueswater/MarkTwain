@@ -1,4 +1,4 @@
-import type { Extensions } from "@tiptap/core";
+import type { Extension, Extensions, Node } from "@tiptap/core";
 import { Mathematics } from "@tiptap/extension-mathematics";
 import { Table, TableCell, TableHeader, TableRow } from "@tiptap/extension-table";
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
@@ -14,6 +14,7 @@ import { Figure } from "./nodes/figure";
 import { figureNodeView } from "./figure-view";
 import { MathInputRules } from "./math-input";
 import { Find } from "./find";
+import { TypingState } from "./typing-state";
 import { TableExtras } from "./table-extras";
 import { TableResize, type ResizeLabels } from "./table-resize";
 import { Footnote } from "./nodes/footnote";
@@ -39,10 +40,12 @@ export type SchemaExtensionOptions = {
   figureLabel?: (percent: number) => string;
   /** Called when a formula is clicked, the view layer uses it to open the edit dialog. Not needed in tests or pure schema use. */
   onMathClick?: (kind: "inline" | "block", latex: string, pos: number) => void;
+  /** The code block extension of the view layer, with its language selector. Pure schema use keeps the plain one. */
+  codeBlock?: Extension | Node;
 };
 
 export function createSchemaExtensions(options: SchemaExtensionOptions = {}): Extensions {
-  const { onMathClick, resizeLabels, figureLabel } = options;
+  const { onMathClick, resizeLabels, figureLabel, codeBlock } = options;
   return [
     StarterKit.configure({
       heading: { levels: [1, 2, 3, 4] },
@@ -59,7 +62,8 @@ export function createSchemaExtensions(options: SchemaExtensionOptions = {}): Ex
     CjkBold,
     CjkItalic,
     CjkStrike,
-    CodeBlockLowlight.configure({ lowlight, defaultLanguage: null }),
+    codeBlock ?? CodeBlockLowlight.configure({ lowlight, defaultLanguage: null }),
+    TypingState,
     GlobalAttributes,
     Find,
     Mathematics.configure({

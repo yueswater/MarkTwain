@@ -13,7 +13,7 @@ import {
   SettingsIcon,
   Trash2Icon,
 } from "lucide-react";
-import { useState, type DragEvent } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,6 +24,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { autoScrollStep, dropTarget, type DropTarget, type RowBox } from "@/lib/row-drag";
 import {
   DOCUMENT_KIND_ORDER,
   SINGLETON_KINDS,
@@ -54,7 +55,10 @@ type Props = {
 };
 
 type Pending = { type: "rename" | "delete"; doc: DocumentSummary };
-type Drop = { targetId: string; placement: "before" | "after" };
+type Drop = DropTarget;
+
+/** A press that moves farther than this many pixels starts a drag, a shorter one is a click. */
+const DRAG_THRESHOLD = 5;
 
 export function DocumentSidebar({
   documents,
@@ -79,10 +83,12 @@ export function DocumentSidebar({
   const [pending, setPending] = useState<Pending | null>(null);
   const [dragId, setDragId] = useState<string | null>(null);
   const [drop, setDrop] = useState<Drop | null>(null);
+  // Set while the pointer is over a place that does not accept the dragged document
+  const [refused, setRefused] = useState<{ x: number; y: number } | null>(null);
+  const press = useRef<{ id: string; startY: number; active: boolean; list: HTMLElement | null; y: number } | null>(null);
+  const suppressClick = useRef(false);
 
   const kindCount = (kind: DocumentKind) => documents.filter((d) => d.kind === kind).length;
-  const dragged = documents.find((d) => d.id === dragId) ?? null;
-
   const addMenu = (
     <DropdownMenuContent align="end">
       {DOCUMENT_KIND_ORDER.map((kind) => (
@@ -97,23 +103,91 @@ export function DocumentSidebar({
     </DropdownMenuContent>
   );
 
-  /** Above the middle of a row means before it, below means after it. */
-  function placementAt(event: DragEvent<HTMLLIElement>): "before" | "after" {
-    const box = event.currentTarget.getBoundingClientRect();
-    return event.clientY < box.top + box.height / 2 ? "before" : "after";
-  }
-
-  function onDragOver(event: DragEvent<HTMLLIElement>, doc: DocumentSummary): void {
-    // Only a document of the same kind can be dropped here
-    if (!dragged || dragged.kind !== doc.kind || dragged.id === doc.id) return;
-    event.preventDefault();
-    const placement = placementAt(event);
-    setDrop((current) => (current?.targetId === doc.id && current.placement === placement ? current : { targetId: doc.id, placement }));
+  function boxes(list: HTMLElement): RowBox[] {
+    return [...list.querySelectorAll<HTMLElement>("li[data-doc-id]")].flatMap((element) => {
+      const doc = documents.find((d) => d.id === element.dataset.docId);
+      if (!doc) return [];
+      const rect = element.getBoundingClientRect();
+      return [{ id: doc.id, kind: doc.kind, top: rect.top, bottom: rect.bottom }];
+    });
   }
 
   function endDrag(): void {
+    press.current = null;
     setDragId(null);
     setDrop(null);
+    setRefused(null);
+  }
+
+  function onRowPointerDown(event: PointerEvent<HTMLLIElement>, doc: DocumentSummary): void {
+    // The menu of a row is rendered in a portal, and its events still reach the row through React
+    if (!event.currentTarget.contains(event.target as Node)) return;
+    if (event.button !== 0 || (event.target as HTMLElement).closest("[data-no-drag]")) return;
+    press.current = { id: doc.id, startY: event.clientY, active: false, list: event.currentTarget.parentElement, y: event.clientY };
+  }
+
+  function onRowPointerMove(event: PointerEvent<HTMLLIElement>): void {
+    const current = press.current;
+    if (!current) return;
+    current.y = event.clientY;
+    if (!current.active) {
+      if (Math.abs(event.clientY - current.startY) < DRAG_THRESHOLD) return;
+      current.active = true;
+      // The pointer is captured only once it is a drag, a plain press must still reach the button as a click
+      event.currentTarget.setPointerCapture(event.pointerId);
+      setDragId(current.id);
+    }
+    if (!current.list) return;
+    const target = dropTarget(boxes(current.list), current.id, event.clientY);
+    setDrop((previous) => (previous?.targetId === target?.targetId && previous?.placement === target?.placement ? previous : target));
+    setRefused(target ? null : { x: event.clientX, y: event.clientY });
+  }
+
+  function onRowPointerUp(event: PointerEvent<HTMLLIElement>): void {
+    const current = press.current;
+    if (!current) return;
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
+    if (!current.active) {
+      press.current = null;
+      return;
+    }
+    // The click that follows a drag must not select the row
+    suppressClick.current = true;
+    setTimeout(() => {
+      suppressClick.current = false;
+    }, 0);
+    if (current.list) {
+      const target = dropTarget(boxes(current.list), current.id, event.clientY);
+      if (target) onReorder(current.id, target.targetId, target.placement);
+    }
+    endDrag();
+  }
+
+  // The list scrolls while a dragged row is held near its top or bottom edge, and Escape cancels the drag
+  useEffect(() => {
+    if (!dragId) return;
+    const timer = setInterval(() => {
+      const current = press.current;
+      if (!current?.active || !current.list) return;
+      const rect = current.list.getBoundingClientRect();
+      current.list.scrollTop += autoScrollStep(current.y, rect.top, rect.bottom);
+    }, 16);
+    const onKey = (event: globalThis.KeyboardEvent) => {
+      if (event.key === "Escape") endDrag();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [dragId]);
+
+  /** Alt with an arrow moves the document and keeps the focus on it. */
+  function onRowKeyDown(event: KeyboardEvent<HTMLButtonElement>, doc: DocumentSummary): void {
+    if (!event.altKey || (event.key !== "ArrowUp" && event.key !== "ArrowDown")) return;
+    event.preventDefault();
+    onMove(doc.id, event.key === "ArrowUp" ? -1 : 1);
+    setTimeout(() => document.querySelector<HTMLElement>(`li[data-doc-id="${doc.id}"] button`)?.focus(), 80);
   }
 
   const row = (doc: DocumentSummary, compact: boolean) => {
@@ -128,35 +202,32 @@ export function DocumentSidebar({
           indicator === "before" && "before:absolute before:inset-x-1 before:top-0 before:h-0.5 before:rounded before:bg-foreground",
           indicator === "after" && "after:absolute after:inset-x-1 after:bottom-0 after:h-0.5 after:rounded after:bg-foreground",
           dragId === doc.id && "opacity-40",
+          dragId && "select-none",
         )}
-        draggable={!compact}
-        onDragStart={(event) => {
-          event.dataTransfer.effectAllowed = "move";
-          event.dataTransfer.setData("text/plain", doc.id);
-          setDragId(doc.id);
+        data-doc-id={doc.id}
+        onPointerDown={(event) => onRowPointerDown(event, doc)}
+        onPointerMove={onRowPointerMove}
+        onPointerUp={onRowPointerUp}
+        onPointerCancel={endDrag}
+        onClickCapture={(event) => {
+          if (suppressClick.current) {
+            event.preventDefault();
+            event.stopPropagation();
+          }
         }}
-        onDragOver={(event) => onDragOver(event, doc)}
-        onDrop={(event) => {
-          event.preventDefault();
-          // The placement is read from the drop itself, state may lag behind a fast drag
-          const id = dragId ?? event.dataTransfer.getData("text/plain");
-          const source = documents.find((d) => d.id === id);
-          if (source && source.kind === doc.kind && source.id !== doc.id) onReorder(source.id, doc.id, placementAt(event));
-          endDrag();
-        }}
-        onDragEnd={endDrag}
       >
         <button
           type="button"
           aria-current={current ? "true" : undefined}
           onClick={() => onSelect(doc.id)}
+          onKeyDown={(event) => onRowKeyDown(event, doc)}
           className={cn(
             "flex h-8 w-full items-center truncate rounded-md px-2 text-left text-sm hover:bg-muted",
             !compact && "pr-9",
             current && "bg-muted font-medium",
           )}
         >
-          {!compact && <GripVerticalIcon className="-ml-1 mr-0.5 size-3.5 shrink-0 cursor-grab text-muted-foreground/50" aria-hidden="true" />}
+          {!compact && <GripVerticalIcon className="-ml-1 mr-0.5 size-3.5 shrink-0 text-muted-foreground/50" aria-hidden="true" />}
           <span className="truncate">{title}</span>
         </button>
         {!compact && (
@@ -165,6 +236,7 @@ export function DocumentSidebar({
               <Button
                 variant="ghost"
                 size="icon-xs"
+                data-no-drag
                 aria-label={t("document.actions", { title })}
                 className="absolute top-1 right-1 opacity-0 group-hover/item:opacity-100 focus-visible:opacity-100 data-[state=open]:opacity-100"
               >
@@ -299,6 +371,15 @@ export function DocumentSidebar({
         </button>
       </div>
 
+      {refused && (
+        <div
+          role="status"
+          className="pointer-events-none fixed z-50 rounded-md border bg-popover px-2 py-1 text-xs text-muted-foreground shadow-md"
+          style={{ left: refused.x + 14, top: refused.y + 14 }}
+        >
+          {t("document.dragSameKind")}
+        </div>
+      )}
       {pending?.type === "rename" && (
         <RenameDialog
           initialTitle={pending.doc.title}

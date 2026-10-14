@@ -57,6 +57,7 @@ export class LabelService {
       broken: result.broken,
       duplicates: result.duplicates,
       targets: pickable,
+      used: [...new Set(references)],
     };
   }
 }
