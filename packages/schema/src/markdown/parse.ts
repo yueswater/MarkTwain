@@ -122,3 +122,9 @@ export function parseMarkdown(text: string): DocJson {
   // 空文件沒有任何區塊；編輯器的文件至少要有一個段落
   return { type: "doc", content: json.content ?? [{ type: NodeName.Paragraph }] };
 }
+
+/** 行內 Markdown（圖說、腳註、表格附註）解析成行內節點；內容是單一段落。 */
+export function parseInlineMarkdown(text: string): unknown[] {
+  const first = parseMarkdown(text).content[0] as { type?: string; content?: unknown[] } | undefined;
+  return first?.type === "paragraph" ? (first.content ?? []) : [];
+}
