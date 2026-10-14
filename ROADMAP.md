@@ -2,7 +2,7 @@
 
 MarkTwain is developed against version milestones. Each version maps to a [GitHub Milestone](../../milestones), and the work items are tracked as issues.
 
-Current version: v0.3.3.
+Current version: v0.3.4.
 
 | Version | Theme | Status |
 |---|---|---|
@@ -11,6 +11,7 @@ Current version: v0.3.3.
 | [v0.3.0](#v030--typst-output) | Typst output | Released |
 | [v0.3.2](#v032--editor-and-bibliography-polish) | Editor and bibliography polish | Released |
 | [v0.3.3](#v033--editor-fixes) | Editor fixes | Released |
+| [v0.3.4](#v034--settings-and-watermark) | Settings and watermark | Released |
 | [v0.4.0](#v040--version-control) | Version control | Not started |
 | [v0.5.0](#v050--latex-output) | LaTeX output | Not started |
 | [v0.6.0](#v060--thesis-features) | Thesis features | Not started |
@@ -85,6 +86,18 @@ Fixes and small changes to the editor and the preview.
 - The cross-reference dialog picks the kind first and then the target, and long formulas end with `...` without breaking a command
 - The language of a code block is chosen on the block, shown on hover and hidden while typing
 - A display formula has no number until it is given a name from a small box that opens on hover, and a formula that is referred to keeps its name
+
+## v0.3.4 · Settings and Watermark
+
+The settings window and the small things around it.
+
+- The settings window has sections with a page per topic, a search, and a page that is remembered
+- Margins, headings, numbering, captions, cross-references, the table of contents and the bibliography title are shown as drawings and examples, margins are edited on click
+- Delays are chosen with ten step sliders, sharpness and code size with named levels, and the dates are picked
+- The watermark of the school is shown next to the school, can be replaced by an image of the author's own, and is drawn in the preview on request and in a final copy
+- A new project asks for the basic thesis information, can be skipped, and what is about the author is remembered
+- The preview keeps its place, the header is simpler, and the bibliography source is colored and numbered
+- Line numbers count the lines of ordinary text, code blocks and formulas are numbered on their own, and Cmd/Ctrl+B is bold again
 
 ## v0.4.0 · Version Control
 
