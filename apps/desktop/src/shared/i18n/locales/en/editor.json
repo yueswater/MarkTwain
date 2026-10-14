@@ -115,7 +115,13 @@
     "rowHeightInvalid": "Use a number with a unit such as pt, cm, mm, in or em.",
     "alignColumnLeft": "Align column left",
     "alignColumnCenter": "Align column center",
-    "alignColumnRight": "Align column right"
+    "alignColumnRight": "Align column right",
+    "insertTitle": "Insert table",
+    "insertHint": "A caption is optional. Without one the table has no number.",
+    "rows": "Rows",
+    "columns": "Columns",
+    "captionPlaceholder": "Table caption, optional",
+    "insert": "Insert"
   },
   "caption": {
     "tableTitle": "Table caption",
@@ -130,8 +136,9 @@
     "insertTitle": "Insert image",
     "editTitle": "Edit image",
     "caption": "Caption",
-    "captionHint": "Inline Markdown is allowed. Leave empty for no caption.",
+    "captionHint": "Inline Markdown is allowed. Without a caption the image has no number.",
     "width": "Width",
-    "widthAuto": "Original size"
+    "widthAuto": "Original size",
+    "captionPlaceholder": "Figure caption, optional"
   }
 }
