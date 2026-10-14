@@ -145,5 +145,11 @@
     "width": "寬度",
     "widthAuto": "原始大小",
     "captionPlaceholder": "圖說，選填"
+  },
+  "bubble": {
+    "label": "選取工具",
+    "merge": "合併",
+    "mergeHint": "合併選取的儲存格",
+    "sizeHint": "選擇表格大小"
   }
 }

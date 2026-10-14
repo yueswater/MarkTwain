@@ -20,6 +20,7 @@ import {
 } from "./AtomDialogs";
 import { CaptionDialog, type CaptionTarget } from "./CaptionDialog";
 import { FigureDialog, type FigureTarget } from "./FigureDialog";
+import { EditorBubbleMenu } from "./EditorBubbleMenu";
 import { TableInsertDialog } from "./TableInsertDialog";
 import { MathDialog, type MathTarget } from "./MathDialog";
 import { MarkdownPaste } from "./extensions/markdown-paste";
@@ -258,6 +259,7 @@ function EditorSurface({ doc, scrollTo }: { doc: DocumentData; scrollTo: { block
           });
         }}
       />
+      <EditorBubbleMenu editor={editor} onInsertMath={() => setMath({ kind: "inline", latex: "", pos: null })} />
       <div className="min-h-0 flex-1 overflow-y-auto">
         <EditorContent editor={editor} className="mx-auto max-w-3xl px-8 py-8" />
       </div>

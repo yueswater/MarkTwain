@@ -66,7 +66,7 @@ export function TableTools({ editor, onEditCaption }: Props) {
     <div
       role="toolbar"
       aria-label={t("table.label")}
-      className="flex shrink-0 flex-wrap items-center gap-0.5 border-b bg-muted/30 px-3 py-1"
+      className="flex shrink-0 items-center gap-0.5 overflow-x-auto border-b bg-muted/30 px-3 py-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
     >
       {button(t("table.addRow"), RowsIcon, () => editor.chain().focus().addRowAfter().run())}
       {button(t("table.addColumn"), ColumnsIcon, () => editor.chain().focus().addColumnAfter().run())}
@@ -93,7 +93,7 @@ export function TableTools({ editor, onEditCaption }: Props) {
       )}
       {button(t("table.caption"), TypeIcon, onEditCaption)}
       {button(t("table.deleteTable"), Trash2Icon, () => editor.chain().focus().deleteTable().run())}
-      <div className="flex basis-full flex-wrap items-center gap-x-4 gap-y-1 pt-1 text-xs text-muted-foreground" data-testid="table-readout">
+      <div className="ml-3 flex shrink-0 items-center gap-x-4 whitespace-nowrap text-xs text-muted-foreground" data-testid="table-readout">
         <span>{t("table.position", { row: state.metrics.row, rows: state.metrics.rows, column: state.metrics.column, columns: state.metrics.columns })}</span>
         <label className="flex items-center gap-1.5">
           {t("table.columnWidth")}

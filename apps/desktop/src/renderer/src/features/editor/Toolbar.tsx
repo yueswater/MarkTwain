@@ -149,7 +149,7 @@ export function Toolbar({ editor, onInsertMath, onInsertAtom, onEditCaption, onI
     <div
       role="toolbar"
       aria-label={t("toolbar.label")}
-      className="flex shrink-0 flex-wrap items-center gap-0.5 border-b px-3 py-1.5"
+      className="flex shrink-0 items-center gap-0.5 overflow-x-auto border-b px-3 py-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
     >
       {button(t("toolbar.undo"), Undo2Icon, () => editor.chain().focus().undo().run(), {
         disabled: !state.canUndo,

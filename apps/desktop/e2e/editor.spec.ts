@@ -391,12 +391,13 @@ test("tables can be merged, aligned, restyled and given a row height", async () 
     const row2 = editor.locator("tr").nth(1).locator("td");
     await row2.nth(0).click();
     await row2.nth(1).click({ modifiers: ["Shift"] });
-    await page.getByRole("button", { name: "Merge cells" }).click();
+    // Selecting two cells suggests merging them right next to the selection
+    await page.getByRole("button", { name: "Merge the selected cells" }).click();
     await expect(editor.locator("tr").nth(1).locator("td").first()).toHaveAttribute("colspan", "2");
 
     // Align the third column to the right, switch to grid lines and set the height of the second row
     await editor.locator("tr").nth(0).locator("th").nth(2).click();
-    await page.getByRole("button", { name: "Align column right" }).click();
+    await page.getByRole("toolbar", { name: "Table tools" }).getByRole("button", { name: "Align column right" }).click();
     await page.getByRole("button", { name: "Switch to grid lines" }).click();
     await expect(editor.locator(".tableWrapper")).toHaveAttribute("data-table-style", "grid");
 
@@ -476,6 +477,33 @@ test("a table or figure without a caption has no number, and an image never land
     });
     expect(text).toMatch(/\|\n\n!\[\]\(images\/[0-9a-f]{16}\.png\)\n$/);
     expect(text).not.toContain(": !");
+  } finally {
+    await app.close();
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("selecting text shows a floating menu with the marks", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "marktwain 浮動 "));
+  const file = join(dir, "論文.marktwain");
+  const args = [`--user-data-dir=${join(dir, "userData")}`, "--lang=en-US"];
+  if (process.platform === "linux") args.push("--no-sandbox");
+  const app = await electron.launch({
+    executablePath: findPackagedExecutable(dist),
+    args,
+    env: { ...process.env, MARKTWAIN_TEST_DIALOG_PATH: file },
+  });
+  try {
+    const page = await app.firstWindow();
+    await page.getByRole("button", { name: "New project" }).click();
+    const editor = page.locator(".ProseMirror");
+    await editor.click();
+    await page.keyboard.type("hello world");
+    await editor.getByText("hello world").dblclick();
+    const bubble = page.getByLabel("Selection tools");
+    await expect(bubble).toBeVisible();
+    await bubble.getByRole("button", { name: "Bold" }).click();
+    await expect(editor.locator("strong")).toHaveCount(1);
   } finally {
     await app.close();
     rmSync(dir, { recursive: true, force: true });
