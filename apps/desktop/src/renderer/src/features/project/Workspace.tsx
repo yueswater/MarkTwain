@@ -65,7 +65,7 @@ export function Workspace({ state, build, previewOpen, onClosePreview }: Props) 
   if (!project) return null;
 
   return (
-    <div className="flex h-full min-h-0">
+    <div className="flex h-full min-h-0 overflow-hidden">
       <DocumentSidebar
         documents={documents}
         selectedId={selected?.id ?? null}
@@ -82,7 +82,7 @@ export function Workspace({ state, build, previewOpen, onClosePreview }: Props) 
         onMove={(id, delta) => void state.moveDocument(id, delta)}
         onDelete={(id) => void state.removeDocument(id)}
       />
-      <section className="min-w-0 flex-1">
+      <section className="min-h-0 min-w-0 flex-1 overflow-hidden">
         {settings ? (
           <ConfigForm onSaved={bumpSaved} />
         ) : selected ? (

@@ -61,7 +61,9 @@ export function App() {
           {error}
         </p>
       )}
-      <div className="min-h-0 flex-1">
+      {/* The page never scrolls, each panel scrolls inside this frame */}
+      <div className="relative min-h-0 flex-1">
+        <div className="absolute inset-0 overflow-hidden">
         {state.loading ? null : state.project ? (
           <Workspace state={state} build={build} previewOpen={previewOpen} onClosePreview={() => setPreviewOpen(false)} />
         ) : (
@@ -73,6 +75,7 @@ export function App() {
             onOpen={() => void state.openProject()}
           />
         )}
+        </div>
       </div>
     </AppShell>
   );

@@ -15,7 +15,7 @@ import {
   ListOrderedIcon,
   MinusIcon,
   QuoteIcon,
-  RadicalIcon,
+  VariableIcon,
   SigmaIcon,
   Redo2Icon,
   StrikethroughIcon,
@@ -213,8 +213,8 @@ export function Toolbar({ editor, onInsertMath, onInsertAtom, onEditCaption, onI
       )}
       {state.codeBlock && button(t("caption.codeTitle"), TypeIcon, onEditCaption)}
       <span className="mx-1 h-5 w-px bg-border" aria-hidden="true" />
-      {button(t("toolbar.inlineMath"), SigmaIcon, () => onInsertMath("inline"))}
-      {button(t("toolbar.blockMath"), RadicalIcon, () => onInsertMath("block"))}
+      {button(t("toolbar.inlineMath"), VariableIcon, () => onInsertMath("inline"))}
+      {button(t("toolbar.blockMath"), SigmaIcon, () => onInsertMath("block"))}
       {button(t("toolbar.footnote"), AsteriskIcon, () => onInsertAtom("footnote"))}
       {button(t("toolbar.citation"), BookMarkedIcon, () => onInsertAtom("citation"))}
       {button(t("toolbar.crossRef"), Link2Icon, () => onInsertAtom("crossRef"))}

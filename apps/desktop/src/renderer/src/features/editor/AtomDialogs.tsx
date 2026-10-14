@@ -255,7 +255,7 @@ export function CrossRefDialog({
           <Label>{t("crossRef.target")}</Label>
           <Select value={value} onValueChange={setValue}>
             <SelectTrigger aria-label={t("crossRef.target")}>
-              <SelectValue />
+              <SelectValue placeholder={t("crossRef.placeholder")} />
             </SelectTrigger>
             <SelectContent>
               {!known && value !== "" && (

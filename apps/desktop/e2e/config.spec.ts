@@ -74,3 +74,37 @@ test("project settings are filled in, validated, saved and restored", async () =
     rmSync(dir, { recursive: true, force: true });
   }
 });
+
+test("editing the last field of the settings never scrolls the whole window", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "marktwain 捲動 "));
+  const file = join(dir, "論文.marktwain");
+  const args = [`--user-data-dir=${join(dir, "userData")}`, "--lang=zh-TW"];
+  if (process.platform === "linux") args.push("--no-sandbox");
+  const app = await electron.launch({
+    executablePath: findPackagedExecutable(dist),
+    args,
+    env: { ...process.env, MARKTWAIN_TEST_DIALOG_PATH: file },
+  });
+  try {
+    const page = await app.firstWindow();
+    await page.getByRole("button", { name: "新增專案" }).click();
+    await page.getByRole("button", { name: "專案設定" }).click();
+    await page.getByLabel("關鍵字（英文）").fill("one, two");
+    await page.getByLabel("關鍵字（英文）").press("End");
+    const state = await page.evaluate(() => ({
+      pageScroll: document.scrollingElement?.scrollTop ?? 0,
+      bodyScroll: document.body.scrollTop,
+      headerTop: document.querySelector("header")?.getBoundingClientRect().top ?? -1,
+      sidebarBottom: document.querySelector("aside")?.getBoundingClientRect().bottom ?? 0,
+      innerHeight: window.innerHeight,
+    }));
+    expect(state.pageScroll).toBe(0);
+    expect(state.bodyScroll).toBe(0);
+    expect(state.headerTop).toBe(0);
+    // The sidebar still reaches the bottom of the window
+    expect(Math.round(state.sidebarBottom)).toBe(state.innerHeight);
+  } finally {
+    await app.close();
+    rmSync(dir, { recursive: true, force: true });
+  }
+});

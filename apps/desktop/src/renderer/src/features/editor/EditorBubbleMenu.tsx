@@ -11,7 +11,7 @@ import {
   ColumnsIcon,
   ItalicIcon,
   RowsIcon,
-  SigmaIcon,
+  VariableIcon,
   StrikethroughIcon,
   TableCellsMergeIcon,
   TableCellsSplitIcon,
@@ -98,7 +98,7 @@ export function EditorBubbleMenu({ editor, onInsertMath }: Props) {
         <Item icon={StrikethroughIcon} label={t("toolbar.strike")} active={state.strike} onClick={run(() => editor.chain().toggleStrike().run())} />
         <Item icon={CodeIcon} label={t("toolbar.code")} active={state.code} onClick={run(() => editor.chain().toggleCode().run())} />
         {divider}
-        <Item icon={SigmaIcon} label={t("toolbar.inlineMath")} onClick={onInsertMath} />
+        <Item icon={VariableIcon} label={t("toolbar.inlineMath")} onClick={onInsertMath} />
       </BubbleMenu>
 
       <BubbleMenu editor={editor} className={MENU_CLASS} shouldShow={() => state.cells} aria-label={t("bubble.label")}>
