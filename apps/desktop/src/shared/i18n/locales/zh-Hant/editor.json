@@ -121,7 +121,12 @@
     "rows": "列數",
     "columns": "欄數",
     "captionPlaceholder": "表格標題，選填",
-    "insert": "插入"
+    "insert": "插入",
+    "position": "第 {{row}} 列（共 {{rows}} 列），第 {{column}} 欄（共 {{columns}} 欄）",
+    "columnWidth": "欄寬",
+    "rowHeightShort": "列高",
+    "auto": "自動",
+    "percent": "%"
   },
   "caption": {
     "tableTitle": "表格標題",

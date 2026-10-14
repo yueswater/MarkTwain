@@ -401,11 +401,17 @@ test("tables can be merged, aligned, restyled and given a row height", async () 
     await expect(editor.locator(".tableWrapper")).toHaveAttribute("data-table-style", "grid");
 
     await row2.first().click();
-    await page.getByRole("button", { name: "Row height" }).click();
-    await dialog.getByLabel("Height").fill("2cm");
-    await dialog.getByRole("button", { name: "Save" }).click();
-    await expect(dialog).toBeHidden();
+    // The tools show where the cursor is and the size of its row and column, and let you type new values
+    await expect(page.getByTestId("table-readout")).toContainText("Row 2 of 3, column 1 of 3");
+    await page.getByLabel("Row height").fill("2cm");
+    await page.getByLabel("Row height").press("Enter");
     await expect(editor.locator("tr").nth(1)).toHaveAttribute("data-height", "2cm");
+    await row2.first().click();
+    await expect(page.getByLabel("Row height")).toHaveValue("2cm");
+    await page.getByLabel("Column width").fill("30");
+    await page.getByLabel("Column width").press("Enter");
+    await row2.first().click();
+    await expect(page.getByLabel("Column width")).toHaveValue("30");
     await expect(page.getByRole("status")).toHaveText("Saved");
 
     const text = await page.evaluate(async () => {
@@ -419,6 +425,7 @@ test("tables can be merged, aligned, restyled and given a row height", async () 
     expect(text).toContain("---:");
     expect(text).toContain("cells=2.1:colspan=2");
     expect(text).toContain("heights=2:2cm");
+    expect(text).toMatch(/widths=30%,/);
     expect(text).toContain("style=grid");
   } finally {
     await app.close();
