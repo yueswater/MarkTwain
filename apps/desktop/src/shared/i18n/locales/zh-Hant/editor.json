@@ -129,7 +129,9 @@
     "columnWidth": "欄寬",
     "rowHeightShort": "列高",
     "auto": "自動",
-    "percent": "%"
+    "percent": "%",
+    "dragWidth": "欄寬 {{value}}%",
+    "dragHeight": "列高 {{value}} pt"
   },
   "caption": {
     "tableTitle": "表格標題",

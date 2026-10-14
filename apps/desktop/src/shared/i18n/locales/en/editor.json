@@ -129,7 +129,9 @@
     "columnWidth": "Column width",
     "rowHeightShort": "Row height",
     "auto": "auto",
-    "percent": "%"
+    "percent": "%",
+    "dragWidth": "Column width {{value}}%",
+    "dragHeight": "Row height {{value}} pt"
   },
   "caption": {
     "tableTitle": "Table caption",
