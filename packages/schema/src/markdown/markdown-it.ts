@@ -1,6 +1,7 @@
 /// <reference path="./plugins.d.ts" />
 import MarkdownIt from "markdown-it";
 import attrs from "markdown-it-attrs";
+import cjkFriendly from "markdown-it-cjk-friendly";
 import footnote from "markdown-it-footnote";
 import { citationPlugin } from "./plugins/citation";
 import { deflistPlugin } from "./plugins/deflist";
@@ -24,6 +25,7 @@ export function createMarkdownIt(): MarkdownItInstance {
   md.normalizeLinkText = (url) => url;
 
   return md
+    .use(cjkFriendly) // 說**「重點」**：中文標點緊貼強調符號時仍成立（#71）
     .use(attrs)
     .use(footnote)
     .use(deflistPlugin)
