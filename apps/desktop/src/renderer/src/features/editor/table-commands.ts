@@ -84,3 +84,68 @@ export function widthsFromTable(table: PmNode): string {
 export function focusFirstCell(editor: Editor, tablePos: number): void {
   editor.view.dispatch(editor.state.tr.setSelection(TextSelection.near(editor.state.doc.resolve(tablePos + 3))));
 }
+
+export type TableMetrics = {
+  /** 1 based position of the cell that holds the cursor, 0 when outside a table */
+  row: number;
+  column: number;
+  rows: number;
+  columns: number;
+  /** Width of the column as a percentage of the table, null when automatic */
+  widthPercent: number | null;
+  /** Height of the row such as 30pt, empty when automatic */
+  height: string;
+};
+
+const EMPTY_METRICS: TableMetrics = { row: 0, column: 0, rows: 0, columns: 0, widthPercent: null, height: "" };
+
+/** Where the cursor is in a table and the size of that row and column. */
+export function tableMetrics(editor: Editor): TableMetrics {
+  const { $from } = editor.state.selection;
+  const table = findTable($from);
+  if (!table) return EMPTY_METRICS;
+  const map = TableMap.get(table.node);
+  let cellOffset = -1;
+  let rowNode: PmNode | null = null;
+  for (let depth = $from.depth; depth > 0; depth -= 1) {
+    const node = $from.node(depth);
+    if (node.type.name === "tableCell" || node.type.name === "tableHeader") cellOffset = $from.before(depth) - table.start;
+    if (node.type.name === "tableRow") rowNode = node;
+  }
+  if (cellOffset < 0) return EMPTY_METRICS;
+  const rect = map.findCell(cellOffset);
+  const widths = String(table.node.attrs.widths ?? "").split(",");
+  const stored = widths[rect.left]?.trim() ?? "";
+  const percent = /^(\d+(?:\.\d+)?)%$/.exec(stored);
+  return {
+    row: rect.top + 1,
+    column: rect.left + 1,
+    rows: map.height,
+    columns: map.width,
+    widthPercent: percent ? Number(percent[1]) : null,
+    height: String(rowNode?.attrs.height ?? ""),
+  };
+}
+
+/** Sets the width of the column of the cursor in percent, null makes it automatic. */
+export function setColumnWidth(editor: Editor, percent: number | null): boolean {
+  const { state } = editor;
+  const table = findTable(state.selection.$from);
+  if (!table) return false;
+  const metrics = tableMetrics(editor);
+  if (metrics.column === 0) return false;
+  const map = TableMap.get(table.node);
+  const tr = state.tr;
+  const seen = new Set<number>();
+  for (let row = 0; row < map.height; row += 1) {
+    const offset = map.map[row * map.width + (metrics.column - 1)];
+    if (offset === undefined || seen.has(offset)) continue;
+    seen.add(offset);
+    const cell = table.node.nodeAt(offset);
+    if (!cell || Number(cell.attrs.colspan) > 1) continue;
+    const colwidth = percent === null ? null : [Math.max(20, Math.round((percent / 100) * EDITOR_TABLE_PX))];
+    tr.setNodeMarkup(table.start + offset, undefined, { ...cell.attrs, colwidth });
+  }
+  editor.view.dispatch(tr);
+  return true;
+}

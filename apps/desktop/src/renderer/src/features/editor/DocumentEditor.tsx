@@ -21,8 +21,6 @@ import {
 import { CaptionDialog, type CaptionTarget } from "./CaptionDialog";
 import { FigureDialog, type FigureTarget } from "./FigureDialog";
 import { TableInsertDialog } from "./TableInsertDialog";
-import { RowHeightDialog } from "./RowHeightDialog";
-import { currentRowHeight, setRowHeight } from "./table-commands";
 import { MathDialog, type MathTarget } from "./MathDialog";
 import { MarkdownPaste } from "./extensions/markdown-paste";
 import { RefDecorations, REFS_CHANGED } from "./extensions/ref-decorations";
@@ -71,7 +69,6 @@ function EditorSurface({ doc, scrollTo }: { doc: DocumentData; scrollTo: { block
   const [atom, setAtom] = useState<AtomTarget | null>(null);
   const [caption, setCaption] = useState<CaptionTarget | null>(null);
   const [tableDialog, setTableDialog] = useState(false);
-  const [rowHeight, setRowHeightState] = useState<string | null>(null);
   const [figure, setFigure] = useState<FigureTarget | null>(null);
   const [importError, setImportError] = useState<string | null>(null);
   const [unlabeled, setUnlabeled] = useState<UnlabeledTarget[]>([]);
@@ -242,7 +239,6 @@ function EditorSurface({ doc, scrollTo }: { doc: DocumentData; scrollTo: { block
         editor={editor}
         onInsertMath={(kind) => setMath({ kind, latex: "", pos: null })}
         onInsertAtom={openAtom}
-        onEditRowHeight={() => setRowHeightState(currentRowHeight(editor))}
         onInsertTable={() => setTableDialog(true)}
         onInsertImage={() => {
           setImportError(null);
@@ -320,14 +316,6 @@ function EditorSurface({ doc, scrollTo }: { doc: DocumentData; scrollTo: { block
             if (caption) editor.chain().updateAttributes("table", { caption }).run();
           }}
           onClose={() => setTableDialog(false)}
-          onRestoreFocus={() => editor.commands.focus()}
-        />
-      )}
-      {rowHeight !== null && (
-        <RowHeightDialog
-          initial={rowHeight}
-          onSubmit={(height) => setRowHeight(editor, height)}
-          onClose={() => setRowHeightState(null)}
           onRestoreFocus={() => editor.commands.focus()}
         />
       )}

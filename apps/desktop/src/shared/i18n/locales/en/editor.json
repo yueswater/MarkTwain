@@ -121,7 +121,12 @@
     "rows": "Rows",
     "columns": "Columns",
     "captionPlaceholder": "Table caption, optional",
-    "insert": "Insert"
+    "insert": "Insert",
+    "position": "Row {{row}} of {{rows}}, column {{column}} of {{columns}}",
+    "columnWidth": "Column width",
+    "rowHeightShort": "Row height",
+    "auto": "auto",
+    "percent": "%"
   },
   "caption": {
     "tableTitle": "Table caption",
