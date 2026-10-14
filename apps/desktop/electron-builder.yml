@@ -10,6 +10,17 @@ files:
 extraResources:
   - from: build/icon.png
     to: icon.png
+  # The Typst template travels with the app. Folders only needed for development are left out.
+  - from: ../../resources/templates/typ
+    to: resources/templates/typ
+    filter:
+      - "**/*"
+      - "!.git/**"
+      - "!.github/**"
+      - "!.vscode/**"
+      - "!docs/**"
+      - "!tests/**"
+
 mac:
   icon: build/icon.icns
   # Development and CI builds are not signed. Signing and notarization are
