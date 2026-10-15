@@ -455,8 +455,6 @@
     "removeAnyway": "仍然移除",
     "keep": "保留",
     "sampleCjk": "論文的字體 永字八法 0123456789",
-    "sampleLatin": "The quick brown fox jumps over the lazy dog",
-    "pick": "從字體清單選",
-    "pickNone": "沒有可選的字體"
+    "sampleLatin": "The quick brown fox jumps over the lazy dog"
   }
 }

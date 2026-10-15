@@ -3,6 +3,14 @@ import { Plugin } from "@tiptap/pm/state";
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
 import { widthsFromTable } from "../table-commands";
 
+/** The share of the text width and the text size that a table asks for, as the style of its wrapper. */
+export function tableBoxStyle(width: unknown, size: unknown): string {
+  const parts: string[] = [];
+  if (typeof width === "string" && width) parts.push(`width: ${width}`, "margin-inline: auto");
+  if (typeof size === "string" && size) parts.push(`font-size: ${size}`);
+  return parts.join("; ");
+}
+
 /**
  * Keeps the widths attribute of a table in step with the column widths that the user drags.
  * The editor stores pixels on the cells and the document stores percentages on the table.
@@ -19,7 +27,10 @@ export const TableExtras = Extension.create({
             const decorations: Decoration[] = [];
             state.doc.descendants((node, pos) => {
               if (node.type.name !== "table") return true;
-              decorations.push(Decoration.node(pos, pos + node.nodeSize, { "data-table-style": String(node.attrs.style) }));
+              const attrs: Record<string, string> = { "data-table-style": String(node.attrs.style) };
+              const style = tableBoxStyle(node.attrs.width, node.attrs.size);
+              if (style) attrs.style = style;
+              decorations.push(Decoration.node(pos, pos + node.nodeSize, attrs));
               return false;
             });
             return DecorationSet.create(state.doc, decorations);

@@ -157,6 +157,8 @@
     "insert": "Insert",
     "position": "Row {{row}} of {{rows}}, column {{column}} of {{columns}}",
     "columnWidth": "Column width",
+    "tableWidth": "Table width",
+    "tableSize": "Text size",
     "rowHeightShort": "Row height",
     "auto": "auto",
     "percent": "%",

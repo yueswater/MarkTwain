@@ -17,7 +17,7 @@ import type { AdvancedState } from "../../../../shared/ipc";
 import { LABELS_CHANGED } from "../editor/use-label-index";
 import { api } from "../../shared/api";
 import { errorMessage } from "../../shared/error-message";
-import { FontPicker } from "./FontPicker";
+import { FontSelect } from "./FontSelect";
 import { NumberField, SettingsHeading, SettingsRow } from "./fields";
 import { CaptionPicker, HeadingsPreview, OutlinePreview, PageDiagram, PatternInput, TitlePreview, UncitedPreview, WithExample } from "./SettingsIllustrations";
 import { perChapterExample, type Margins } from "./settings-previews";
@@ -129,7 +129,12 @@ export function AdvancedForm({ groups, state, error, onSave }: Props) {
       case "text":
         return <TextControl label={label} value={typeof current === "string" ? current : ""} placeholder={display(fallback)} onCommit={(v) => set(v === "" ? null : v)} />;
       case "list": {
-        const text = (
+        // The font names are chosen from the fonts that exist, other lists are written as text
+        if (field.path === "layout.font-latin" || field.path === "layout.font-cjk") {
+          const effective = (Array.isArray(current) ? current : Array.isArray(fallback) ? fallback : []) as string[];
+          return <FontSelect label={label} effective={effective} written={Array.isArray(current)} onChange={set} />;
+        }
+        return (
           <TextControl
             label={label}
             wide
@@ -140,16 +145,6 @@ export function AdvancedForm({ groups, state, error, onSave }: Props) {
               set(list.length === 0 ? null : list);
             }}
           />
-        );
-        // The font names can be chosen from the fonts that exist, the free text stays for a name that is not listed
-        if (field.path !== "layout.font-latin" && field.path !== "layout.font-cjk") return text;
-        const base = (Array.isArray(current) ? current : Array.isArray(fallback) ? fallback : []) as string[];
-        return (
-          <div className="flex items-center gap-2">
-            {text}
-            <FontPicker label={label} // A font that is chosen goes first, so that it is the one that the thesis uses
-            onPick={(name) => set([name, ...base.filter((item) => item.toLowerCase() !== name.toLowerCase())])} />
-          </div>
         );
       }
       case "bool":

@@ -94,3 +94,63 @@ test("a table in the editor has the width, columns, lines and caption of the one
     rmSync(dir, { recursive: true, force: true });
   }
 });
+
+test("a table can be made narrower and smaller, and the toolbar shows what it has", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "marktwain 表寬 "));
+  const args = [`--user-data-dir=${join(dir, "userData")}`, "--lang=zh-TW"];
+  if (process.platform === "linux") args.push("--no-sandbox");
+  const app = await electron.launch({
+    executablePath: findPackagedExecutable(dist),
+    args,
+    env: { ...process.env, MARKTWAIN_TEST_DIALOG_PATH: join(dir, "p.marktwain"), MARKTWAIN_TEST_NO_PROFILE_DIALOG: "1" },
+  });
+  try {
+    const page = await app.firstWindow();
+    await page.getByRole("button", { name: "新增專案" }).click();
+    await page.evaluate(async () => {
+      const list = await window.marktwain.invoke("document:list");
+      if (!list.ok) return;
+      const chapter = list.data.find((d) => d.kind === "chapter")!;
+      await window.marktwain.invoke("document:save", {
+        id: chapter.id,
+        text: ["# 表", "", "| 甲 | 乙 |", "|---|---|", "| 1 | 2 |", "", ": 小表 {#tbl:w width=50% size=80%}"].join("\n"),
+      });
+    });
+    await page.getByRole("button", { name: "關閉專案" }).click();
+    await page.getByRole("region", { name: "最近的專案" }).getByRole("button").first().click();
+    const editor = page.locator(".ProseMirror");
+    const wrapper = editor.locator(".tableWrapper").first();
+    const ratio = async () =>
+      wrapper.evaluate((el) => ({ width: el.getBoundingClientRect().width / (el.parentElement as HTMLElement).clientWidth, size: Number.parseFloat(getComputedStyle(el).fontSize) }));
+    const before = await ratio();
+    expect(before.width).toBeCloseTo(0.5, 1);
+
+    // The toolbar reads the values and a new one is written into the document
+    await editor.locator("td").first().click();
+    const width = page.getByRole("textbox", { name: "表寬" });
+    await expect(width).toHaveValue("50");
+    await expect(page.getByRole("textbox", { name: "字級" })).toHaveValue("80");
+    await width.fill("80");
+    await width.press("Enter");
+    await expect.poll(async () => (await ratio()).width).toBeCloseTo(0.8, 1);
+    await expect
+      .poll(() =>
+        page.evaluate(async () => {
+          const list = await window.marktwain.invoke("document:list");
+          if (!list.ok) return "";
+          const chapter = list.data.find((d) => d.kind === "chapter")!;
+          const doc = await window.marktwain.invoke("document:get", { id: chapter.id });
+          return doc.ok ? doc.data.text : "";
+        }),
+      )
+      .toContain("width=80%");
+
+    // A blank value goes back to the full width
+    await page.getByRole("textbox", { name: "表寬" }).fill("");
+    await page.getByRole("textbox", { name: "表寬" }).press("Enter");
+    await expect.poll(async () => (await ratio()).width).toBeCloseTo(1, 1);
+  } finally {
+    await app.close();
+    rmSync(dir, { recursive: true, force: true });
+  }
+});

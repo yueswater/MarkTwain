@@ -157,6 +157,8 @@
     "insert": "插入",
     "position": "第 {{row}} 列（共 {{rows}} 列），第 {{column}} 欄（共 {{columns}} 欄）",
     "columnWidth": "欄寬",
+    "tableWidth": "表寬",
+    "tableSize": "字級",
     "rowHeightShort": "列高",
     "auto": "自動",
     "percent": "%",

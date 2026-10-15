@@ -37,7 +37,7 @@ export function TableInsertDialog({ onSubmit, onSubmitTemplate, onClose, onResto
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
       <DialogContent
-        className={mode === "template" ? "sm:max-w-3xl" : undefined}
+        className={mode === "template" ? "sm:max-w-5xl" : undefined}
         onCloseAutoFocus={(event) => {
           event.preventDefault();
           onRestoreFocus();

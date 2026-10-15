@@ -455,8 +455,6 @@
     "removeAnyway": "Remove anyway",
     "keep": "Keep it",
     "sampleCjk": "論文的字體 永字八法 0123456789",
-    "sampleLatin": "The quick brown fox jumps over the lazy dog",
-    "pick": "Choose from the fonts",
-    "pickNone": "No font to choose"
+    "sampleLatin": "The quick brown fox jumps over the lazy dog"
   }
 }

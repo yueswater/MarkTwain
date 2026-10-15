@@ -84,7 +84,7 @@ const table = fc
   )
   .map(([head, body, label, caption]): Json => ({
     type: "table",
-    attrs: { label, caption, notes: "", style: "three-line", widths: "", borders: "", placement: null },
+    attrs: { label, caption, notes: "", style: "three-line", widths: "", borders: "", width: null, size: null, placement: null },
     content: [{ type: "tableRow", attrs: { height: null }, content: head }, ...body.map((cells) => ({ type: "tableRow", attrs: { height: null }, content: cells }))],
   }));
 

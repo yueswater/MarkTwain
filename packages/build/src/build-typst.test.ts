@@ -268,6 +268,34 @@ maybe("buildTypst with the real template", () => {
     }
   }, 120_000);
 
+  it("draws a table at the share of the text width that it asks for, with a reference that still resolves", async () => {
+    const work = mkdtempSync(join(tmpdir(), "marktwain 表寬 "));
+    try {
+      const result = await buildTypst({
+        ...input(work, {
+          documents: [
+            {
+              id: "c1",
+              kind: "chapter",
+              text: ["# 表", "", "見 @tbl:w。", "", "| 甲 | 乙 | 丙 |", "|---|---|---|", "| 1 | 2 | 3 |", "| 4 | 5 | 6 |", "| 7 | 8 | 9 |", "", ": 窄表 {#tbl:w style=grid width=60% size=80%}"].join("\n"),
+            },
+          ],
+        }),
+        format: "png",
+        ppi: 110,
+      });
+      expect(result.ok).toBe(true);
+      if (!result.ok) return;
+      const page = decodeGray(result.pages.at(-1) as Uint8Array);
+      const lines = verticalLines(page, 40);
+      expect(lines).toHaveLength(4);
+      // 60% of the 15 cm text width is 9 cm of the 21 cm paper
+      expect(((lines[3] as number) - (lines[0] as number)) / page.width).toBeCloseTo((15 * 0.6) / 21, 1);
+    } finally {
+      rmSync(work, { recursive: true, force: true });
+    }
+  }, 120_000);
+
   it("writes the numbers of every list style as the editor does, well past ten", async () => {
     const work = mkdtempSync(join(tmpdir(), "marktwain 清單數字 "));
     try {

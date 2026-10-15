@@ -50,9 +50,9 @@ test("a font is added to the project, chosen in the settings, used by the build 
     await page.keyboard.press("ControlOrMeta+,");
     const settings = page.getByRole("dialog", { name: "Settings" });
     await settings.getByRole("button", { name: "Text", exact: true }).click();
-    await settings.getByRole("button", { name: /Latin font.*Choose from the fonts/ }).click();
-    await page.getByRole("menuitem", { name: "My Test Face" }).click();
-    await expect(settings.getByRole("textbox", { name: /Latin font/ })).toHaveValue(/^My Test Face, /);
+    await settings.getByRole("combobox", { name: /Latin font/ }).click();
+    await page.getByRole("option", { name: "My Test Face" }).click();
+    await expect(settings.getByRole("combobox", { name: /Latin font/ })).toContainText("My Test Face");
     await page.keyboard.press("Escape");
     await expect(list.locator('[data-font="My Test Face"]')).toContainText("In use");
 

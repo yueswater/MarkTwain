@@ -56,7 +56,16 @@ function isPlain(table: TableBlock): boolean {
   );
 }
 
+/** The table with the width and the text size that it asks for. A table of its own width sits in a block, and a float cannot sit in one, so it stays in the text. */
 function renderTable(block: TableBlock, ctx: BlockContext): string[] {
+  const lines = renderTableBody(block, ctx);
+  if (block.width === null && block.size === null) return lines;
+  const em = block.size ? `${Number.parseInt(block.size, 10) / 100}em` : null;
+  const framed = block.width ? [`#block(width: ${block.width})[`, ...indent(lines, "  "), "]"] : lines;
+  return ["#[", ...(em ? [`#set text(size: ${em})`] : []), ...framed, "]"];
+}
+
+function renderTableBody(block: TableBlock, ctx: BlockContext): string[] {
   const columns = block.columns;
   const first: Cell[] = block.header ?? block.rows[0] ?? [];
   const columnAlign = Array.from({ length: columns }, (_, i) => first[i]?.align ?? "center");
@@ -64,7 +73,7 @@ function renderTable(block: TableBlock, ctx: BlockContext): string[] {
   const caption = `caption: ${content(block.caption, ctx)}`;
   const notes = block.notes.length > 0 ? content(block.notes, ctx) : null;
 
-  const placement = typstPlacement(effectivePlacement(block.placement, (ctx.defaultPlacement ?? HERE).table));
+  const placement = block.width ? null : typstPlacement(effectivePlacement(block.placement, (ctx.defaultPlacement ?? HERE).table));
 
   if (isPlain(block) && captioned) {
     const row = (cells: Cell[]) =>

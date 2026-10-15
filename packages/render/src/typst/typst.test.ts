@@ -248,6 +248,28 @@ describe("placement", () => {
   });
 });
 
+describe("width and size of a table", () => {
+  const table = (props: string) => `| a | b |\n|---|---|\n| 1 | 2 |\n\n: 表 {#tbl:t ${props}}\n`;
+
+  it("a table of its own width sits in a block of that width, with its label inside so that it can be referred to", () => {
+    const out = render(table("width=80%")).body;
+    expect(out).toContain("#block(width: 80%)[");
+    expect(out).toContain(") <tbl:t>");
+    expect(out.trimEnd().endsWith("]\n]") || out.trimEnd().endsWith("]")).toBe(true);
+  });
+
+  it("the text size is a set rule around the table", () => {
+    const out = render(table("size=90%")).body;
+    expect(out).toContain("#set text(size: 0.9em)");
+    expect(out).not.toContain("#block(width");
+  });
+
+  it("a table of its own width does not float, and one of full width keeps what it had", () => {
+    expect(render(table("width=70% placement=top")).body).not.toContain("placement");
+    expect(render(table("placement=top")).body).toContain("#set figure(placement: top)");
+  });
+});
+
 describe("table borders", () => {
   const table = (borders: string) => `| a | b |\n|---|---|\n| 1 | 2 |\n| 3 | 4 |\n\n: 表 {#tbl:t ${borders}}\n`;
 

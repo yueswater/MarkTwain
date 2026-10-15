@@ -129,6 +129,9 @@ const nodes: Record<NodeName, NodeSpec> = {
       widths: { default: "" },
       // Lines that differ from the preset, see table-borders, an empty string means the preset as it is
       borders: { default: "" },
+      // The width of the whole table as a share of the text width and its text size as a share of the text of the page, such as 80%
+      width: { default: null },
+      size: { default: null },
       placement: { default: null },
     },
   },

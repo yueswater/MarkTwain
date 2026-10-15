@@ -74,8 +74,8 @@ export function TemplatePicker({ onChange }: Props) {
   }, [picked, values, language]);
 
   return (
-    <div className="grid gap-3 sm:grid-cols-[13rem_1fr]" data-testid="template-picker">
-      <div className="grid content-start gap-2">
+    <div className="grid h-[min(34rem,62vh)] gap-3 sm:grid-cols-[11rem_15rem_1fr]" data-testid="template-picker">
+      <div className="grid min-h-0 content-start gap-2 overflow-y-auto">
         <Input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t("tableTemplates.search")} aria-label={t("tableTemplates.search")} className="h-8" />
         <div role="tablist" aria-label={t("tableTemplates.fields")} aria-orientation="vertical" className="grid gap-0.5">
           {[{ id: "all", name: t("tableTemplates.all") }, ...(fields ?? [])].map((entry) => (
@@ -93,25 +93,25 @@ export function TemplatePicker({ onChange }: Props) {
         </div>
       </div>
 
-      <div className="grid min-h-72 content-start gap-3">
-        <ul className="grid max-h-36 gap-1 overflow-y-auto" aria-label={t("tableTemplates.list")}>
-          {fields !== null && shown.length === 0 && <li className="text-sm text-muted-foreground">{t("tableTemplates.none")}</li>}
-          {shown.map((template) => (
-            <li key={template.id}>
-              <button
-                type="button"
-                aria-pressed={picked?.id === template.id}
-                onClick={() => choose(template)}
-                className={cn("w-full rounded-md border px-2.5 py-1.5 text-left text-sm", picked?.id === template.id ? "border-foreground bg-muted/60" : "hover:bg-muted/40")}
-              >
-                <span className="font-medium">{template.title}</span>
-              </button>
-            </li>
-          ))}
-        </ul>
+      <ul className="grid min-h-0 content-start gap-1 overflow-y-auto sm:border-x sm:px-3" aria-label={t("tableTemplates.list")}>
+        {fields !== null && shown.length === 0 && <li className="text-sm text-muted-foreground">{t("tableTemplates.none")}</li>}
+        {shown.map((template) => (
+          <li key={template.id}>
+            <button
+              type="button"
+              aria-pressed={picked?.id === template.id}
+              onClick={() => choose(template)}
+              className={cn("w-full rounded-md border px-2.5 py-1.5 text-left text-sm", picked?.id === template.id ? "border-foreground bg-muted/60" : "hover:bg-muted/40")}
+            >
+              <span className="font-medium">{template.title}</span>
+            </button>
+          </li>
+        ))}
+      </ul>
 
+      <div className="grid min-h-0 content-start gap-3 overflow-y-auto">
         {picked ? (
-          <div className="grid gap-3 border-t pt-3">
+          <div className="grid gap-3">
             <p className="text-sm text-muted-foreground">{picked.description}</p>
             <div className="flex flex-wrap items-end gap-4">
               {Object.entries(picked.params).map(([name, param]) =>

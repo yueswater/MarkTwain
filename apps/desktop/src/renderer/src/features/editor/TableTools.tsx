@@ -29,6 +29,15 @@ import { setColumnAlign, setColumnWidth, setRowHeight, tableMetrics } from "./ta
 
 type Props = { editor: Editor; onEditCaption: () => void };
 
+/** Sets the width or the text size of the table, a blank or full value clears it and a value below the least is ignored. */
+function setTableShare(editor: Editor, name: "width" | "size", raw: string, least: number): void {
+  const value = Number(raw.trim());
+  if (raw.trim() === "" || value === 100) editor.chain().focus().updateAttributes("table", { [name]: null }).run();
+  else if (Number.isFinite(value) && value >= least && value < 100) {
+    editor.chain().focus().updateAttributes("table", { [name]: `${Math.round(value)}%` }).run();
+  }
+}
+
 /** Second toolbar shown while the cursor is in a table, most commands come from the TipTap table extension. */
 export function TableTools({ editor, onEditCaption }: Props) {
   const { t } = useTranslation("editor");
@@ -38,6 +47,8 @@ export function TableTools({ editor, onEditCaption }: Props) {
     selector: ({ editor: e }) => ({
       grid: e.getAttributes("table").style === "grid",
       placement: (e.getAttributes("table").placement as Placement | null | undefined) ?? null,
+      width: (e.getAttributes("table").width as string | null | undefined) ?? null,
+      size: (e.getAttributes("table").size as string | null | undefined) ?? null,
       canMerge: e.can().mergeCells(),
       canSplit: e.can().splitCell(),
       metrics: tableMetrics(e),
@@ -117,6 +128,34 @@ export function TableTools({ editor, onEditCaption }: Props) {
               if (value === "") setColumnWidth(editor, null);
               else if (Number(value) > 0 && Number(value) <= 100) setColumnWidth(editor, Number(value));
             }}
+          />
+          {t("table.percent")}
+        </label>
+        <label className="flex items-center gap-1.5">
+          {t("table.tableWidth")}
+          <Input
+            key={`tw${state.width}`}
+            aria-label={t("table.tableWidth")}
+            className="h-6 w-14 px-1.5 text-xs md:text-xs"
+            inputMode="numeric"
+            placeholder="100"
+            defaultValue={state.width ? state.width.replace("%", "") : ""}
+            onKeyDown={(event) => event.key === "Enter" && event.currentTarget.blur()}
+            onBlur={(event) => setTableShare(editor, "width", event.currentTarget.value, 20)}
+          />
+          {t("table.percent")}
+        </label>
+        <label className="flex items-center gap-1.5">
+          {t("table.tableSize")}
+          <Input
+            key={`ts${state.size}`}
+            aria-label={t("table.tableSize")}
+            className="h-6 w-14 px-1.5 text-xs md:text-xs"
+            inputMode="numeric"
+            placeholder="100"
+            defaultValue={state.size ? state.size.replace("%", "") : ""}
+            onKeyDown={(event) => event.key === "Enter" && event.currentTarget.blur()}
+            onBlur={(event) => setTableShare(editor, "size", event.currentTarget.value, 50)}
           />
           {t("table.percent")}
         </label>
