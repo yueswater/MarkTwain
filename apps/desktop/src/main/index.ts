@@ -8,6 +8,8 @@ import { DatabaseSession } from "./core/database-session";
 import { registerWatermarkController } from "./features/watermark/watermark.controller";
 import { WatermarkService } from "./features/watermark/watermark.service";
 import { FontService } from "./features/font/font.service";
+import { TableTemplateService } from "./features/table-template/table-template.service";
+import { registerTableTemplateController, tableTemplatesFolder } from "./features/table-template/table-template.controller";
 import { registerFontController } from "./features/font/font.controller";
 import { registerBibliographyController } from "./features/bibliography/bibliography.controller";
 import { BibliographyService } from "./features/bibliography/bibliography.service";
@@ -66,6 +68,7 @@ const recent = new RecentService(settingsRepository);
 const prefs = new PrefsService(settingsRepository);
 const profile = new ProfileService(settingsRepository);
 const watermarks = new WatermarkService(session, config, resolveBuildPaths);
+const tableTemplates = new TableTemplateService(tableTemplatesFolder);
 const fonts = new FontService(session, config, resolveBuildPaths);
 const build = new BuildService(session, documents, config, resolveBuildPaths, undefined, undefined, undefined, bibliography, watermarks, fonts);
 let dialogs: DialogService;
@@ -92,6 +95,7 @@ bootstrap([
   () => registerBibliographyController(bibliography),
   () => registerWatermarkController(watermarks, dialogs),
   () => registerFontController(fonts),
+  () => registerTableTemplateController(tableTemplates),
   () => registerBuildController(build),
   () => registerExportController(build, dialogs),
 ]);

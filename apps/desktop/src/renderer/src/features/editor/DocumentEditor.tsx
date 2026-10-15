@@ -592,6 +592,17 @@ function EditorSurface({
             chain.insertTable({ rows, cols: columns, withHeaderRow: true }).run();
             if (caption) editor.chain().updateAttributes("table", { caption }).run();
           }}
+          onSubmitTemplate={(markdown) => {
+            // The table of a template is a normal table, written as Markdown by the template and read here
+            const table = parseMarkdown(markdown).content?.[0];
+            if (!table) return;
+            const chain = editor.chain().focus();
+            const inside = findTable(editor.state.selection.$from);
+            if (inside) {
+              const after = inside.pos + inside.node.nodeSize;
+              chain.insertContentAt(after, [table as JSONContent, { type: "paragraph" }]).run();
+            } else chain.insertContent(table as JSONContent).run();
+          }}
           onClose={() => setTableDialog(false)}
           onRestoreFocus={() => editor.commands.focus()}
         />

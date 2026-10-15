@@ -12,9 +12,12 @@ import {
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import { TemplatePicker } from "./TemplatePicker";
 
 type Props = {
   onSubmit: (values: { rows: number; columns: number; caption: string }) => void;
+  /** A table from a template, given as the Markdown that the template builds */
+  onSubmitTemplate: (markdown: string) => void;
   onClose: () => void;
   onRestoreFocus: () => void;
 };
@@ -22,16 +25,19 @@ type Props = {
 const PICKER = 10;
 
 /** Asks for the size and the optional caption before a table is inserted. */
-export function TableInsertDialog({ onSubmit, onClose, onRestoreFocus }: Props) {
+export function TableInsertDialog({ onSubmit, onSubmitTemplate, onClose, onRestoreFocus }: Props) {
   const { t } = useTranslation("editor");
   const [rows, setRows] = useState(3);
   const [columns, setColumns] = useState(3);
   const [hover, setHover] = useState<{ rows: number; cols: number } | null>(null);
   const [caption, setCaption] = useState("");
+  const [mode, setMode] = useState<"grid" | "template">("grid");
+  const [template, setTemplate] = useState<string | null>(null);
 
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
       <DialogContent
+        className={mode === "template" ? "sm:max-w-3xl" : undefined}
         onCloseAutoFocus={(event) => {
           event.preventDefault();
           onRestoreFocus();
@@ -41,7 +47,10 @@ export function TableInsertDialog({ onSubmit, onClose, onRestoreFocus }: Props) 
           className="grid gap-4"
           onSubmit={(event) => {
             event.preventDefault();
-            onSubmit({ rows, columns, caption: caption.trim() });
+            if (mode === "template") {
+              if (!template) return;
+              onSubmitTemplate(template);
+            } else onSubmit({ rows, columns, caption: caption.trim() });
             onClose();
           }}
         >
@@ -49,6 +58,22 @@ export function TableInsertDialog({ onSubmit, onClose, onRestoreFocus }: Props) 
             <DialogTitle>{t("table.insertTitle")}</DialogTitle>
             <DialogDescription>{t("table.insertHint")}</DialogDescription>
           </DialogHeader>
+          <div role="tablist" aria-label={t("tableTemplates.mode")} className="flex w-fit rounded-lg border p-0.5">
+            {(["grid", "template"] as const).map((name) => (
+              <button
+                key={name}
+                type="button"
+                role="tab"
+                aria-selected={mode === name}
+                onClick={() => setMode(name)}
+                className={cn("rounded-md px-3 py-1 text-sm", mode === name ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground")}
+              >
+                {t(`tableTemplates.mode_${name}`)}
+              </button>
+            ))}
+          </div>
+          {mode === "template" && <TemplatePicker onChange={setTemplate} />}
+          {mode === "grid" && (<>
           <div className="flex flex-col gap-2">
             <div className="text-center text-xs font-medium text-muted-foreground tabular-nums" aria-live="polite">
               {hover ? `${hover.rows} × ${hover.cols}` : `${rows} × ${columns}`}
@@ -93,11 +118,12 @@ export function TableInsertDialog({ onSubmit, onClose, onRestoreFocus }: Props) 
               onChange={(event) => setCaption(event.target.value)}
             />
           </div>
+          </>)}
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>
               {t("action.cancel", { ns: "common" })}
             </Button>
-            <Button type="submit">{t("table.insert")}</Button>
+            <Button type="submit" disabled={mode === "template" && !template}>{t("table.insert")}</Button>
           </DialogFooter>
         </form>
       </DialogContent>

@@ -1,0 +1,8 @@
+{
+  "id": "statistics",
+  "name": {
+    "zh-Hant": "統計與資料科學",
+    "en": "Statistics and data science"
+  },
+  "order": 2
+}

@@ -1,0 +1,59 @@
+{
+  "id": "three-line-table",
+  "field": "common",
+  "shape": "plain",
+  "title": {
+    "zh-Hant": "三線表",
+    "en": "Three-line table"
+  },
+  "description": {
+    "zh-Hant": "標題列加上空白內容的三線表，先選大小再填內容。",
+    "en": "A three-line table with a header row and empty cells, choose its size and fill it in."
+  },
+  "tags": [
+    "table",
+    "三線表",
+    "basic"
+  ],
+  "params": {
+    "rows": {
+      "type": "int",
+      "default": 3,
+      "min": 1,
+      "max": 30,
+      "label": {
+        "zh-Hant": "內容列數",
+        "en": "Body rows"
+      }
+    },
+    "columns": {
+      "type": "int",
+      "default": 3,
+      "min": 1,
+      "max": 10,
+      "label": {
+        "zh-Hant": "欄數",
+        "en": "Columns"
+      }
+    },
+    "header": {
+      "type": "bool",
+      "default": true,
+      "label": {
+        "zh-Hant": "有標題列",
+        "en": "Header row"
+      }
+    }
+  },
+  "labels": {
+    "zh-Hant": {
+      "column": "欄位 {n}",
+      "caption": "表格標題"
+    },
+    "en": {
+      "column": "Column {n}",
+      "caption": "Table title"
+    }
+  },
+  "needs": []
+}

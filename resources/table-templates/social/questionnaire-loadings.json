@@ -1,0 +1,62 @@
+{
+  "id": "questionnaire-loadings",
+  "field": "social",
+  "shape": "loadings",
+  "title": {
+    "zh-Hant": "問卷因素負荷量",
+    "en": "Questionnaire factor loadings"
+  },
+  "description": {
+    "zh-Hant": "題項在各因素上的負荷量與共同性，底部有特徵值與解釋變異量。",
+    "en": "The loading of each item on each factor and its communality, with the eigenvalue and the variance explained at the bottom."
+  },
+  "tags": [
+    "factor",
+    "questionnaire",
+    "問卷",
+    "因素分析"
+  ],
+  "params": {
+    "items": {
+      "type": "int",
+      "default": 6,
+      "min": 3,
+      "max": 20,
+      "label": {
+        "zh-Hant": "題項數",
+        "en": "Items"
+      }
+    },
+    "factors": {
+      "type": "int",
+      "default": 2,
+      "min": 1,
+      "max": 5,
+      "label": {
+        "zh-Hant": "因素數",
+        "en": "Factors"
+      }
+    }
+  },
+  "labels": {
+    "zh-Hant": {
+      "item": "題項",
+      "factor": "因素 {n}",
+      "communality": "共同性",
+      "itemName": "題項 {n}",
+      "eigenvalue": "特徵值",
+      "variance": "解釋變異量",
+      "caption": "因素分析的負荷量"
+    },
+    "en": {
+      "item": "Item",
+      "factor": "Factor {n}",
+      "communality": "Communality",
+      "itemName": "Item {n}",
+      "eigenvalue": "Eigenvalue",
+      "variance": "Variance explained",
+      "caption": "Factor loadings"
+    }
+  },
+  "needs": []
+}

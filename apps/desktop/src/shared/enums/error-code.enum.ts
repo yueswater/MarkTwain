@@ -24,6 +24,7 @@ export const ErrorCode = {
   BibliographyInvalidKey: "bibliography.invalid-key",
   BibliographyDuplicateKey: "bibliography.duplicate-key",
   BibliographyNotFound: "bibliography.not-found",
+  TableTemplateUnknown: "table-template.unknown",
 } as const;
 
 export type ErrorCode = (typeof ErrorCode)[keyof typeof ErrorCode];

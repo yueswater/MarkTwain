@@ -1,0 +1,42 @@
+{
+  "id": "literature-summary",
+  "field": "management",
+  "shape": "literature",
+  "title": {
+    "zh-Hant": "文獻整理",
+    "en": "Literature summary"
+  },
+  "description": {
+    "zh-Hant": "作者年份、方法、樣本與發現四欄的文獻摘要，發現欄最寬。",
+    "en": "A summary of the literature in four columns, author and year, method, sample and finding, with the widest column for the finding."
+  },
+  "tags": [
+    "literature",
+    "review",
+    "文獻",
+    "整理"
+  ],
+  "params": {
+    "rows": {
+      "type": "int",
+      "default": 5,
+      "min": 1,
+      "max": 25,
+      "label": {
+        "zh-Hant": "文獻數",
+        "en": "Studies"
+      }
+    }
+  },
+  "labels": {
+    "zh-Hant": {
+      "columns": "作者與年份,研究方法,樣本,主要發現",
+      "caption": "文獻整理"
+    },
+    "en": {
+      "columns": "Author and year,Method,Sample,Main finding",
+      "caption": "Summary of the literature"
+    }
+  },
+  "needs": []
+}

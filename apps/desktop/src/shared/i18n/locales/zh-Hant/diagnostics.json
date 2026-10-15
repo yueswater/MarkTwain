@@ -38,6 +38,7 @@
     "document": {
       "not-found": "找不到這份文件。",
       "singleton": "這個專案已經有這種文件了。"
-    }
+    },
+    "table-template.unknown": "找不到這個表格範本。"
   }
 }

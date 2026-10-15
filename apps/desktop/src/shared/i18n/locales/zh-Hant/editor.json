@@ -446,5 +446,17 @@
     "color": "線的顏色",
     "applyPen": "套用到選取範圍內的線",
     "points": "{{value}} pt"
+  },
+  "tableTemplates": {
+    "mode": "插入方式",
+    "mode_grid": "指定大小",
+    "mode_template": "範本",
+    "search": "搜尋範本",
+    "fields": "領域",
+    "all": "全部",
+    "list": "範本",
+    "none": "沒有符合的範本。",
+    "choose": "選一個範本，會看到它的樣子。",
+    "needs": "這個範本需要：{{what}}。"
   }
 }

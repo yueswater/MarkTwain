@@ -311,6 +311,37 @@ maybe("buildTypst with the real template", () => {
     }
   }, 120_000);
 
+  it("builds every table template, at its defaults and at the limits of its parameters, in both languages", async () => {
+    const work = mkdtempSync(join(tmpdir(), "marktwain 範本 "));
+    try {
+      const { buildTable, loadLibrary } = await import("@marktwain/table-templates");
+      const library = loadLibrary(resolve(__dirname, "../../../resources/table-templates"));
+      const templates = library.fields.flatMap((field) => field.templates);
+      const tables: string[] = [];
+      let n = 0;
+      for (const language of ["zh-Hant", "en"] as const) {
+        for (const template of templates) {
+          const max = Object.fromEntries(Object.entries(template.params).map(([name, p]) => [name, p.type === "int" ? p.max : true]));
+          const min = Object.fromEntries(Object.entries(template.params).map(([name, p]) => [name, p.type === "int" ? p.min : false]));
+          for (const given of [{}, max, min]) {
+            n += 1;
+            // Every table gets a label of its own so that no two are the same
+            const lines = buildTable(template, language, given).trimEnd().split("\n");
+            const caption = lines.pop() as string;
+            tables.push([...lines, caption.endsWith("}") ? caption.replace(" {", ` {#tbl:t${n} `) : `${caption} {#tbl:t${n}}`].join("\n"));
+          }
+        }
+      }
+      const result = await buildTypst(
+        input(work, { documents: [{ id: "c1", kind: "chapter", text: ["# 範本", "", ...tables.flatMap((table) => [table, ""])].join("\n") }] }),
+      );
+      expect(result.diagnostics.filter((d) => d.severity === "error")).toEqual([]);
+      expect(result.ok).toBe(true);
+    } finally {
+      rmSync(work, { recursive: true, force: true });
+    }
+  }, 240_000);
+
   it("reports a typst error against the source block", async () => {
     const work = mkdtempSync(join(tmpdir(), "marktwain 錯誤 "));
     try {

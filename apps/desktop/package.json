@@ -20,6 +20,7 @@
     "@marktwain/build": "workspace:*",
     "@marktwain/render": "workspace:*",
     "@marktwain/schema": "workspace:*",
+    "@marktwain/table-templates": "workspace:*",
     "@playwright/test": "^1.64.0",
     "@tailwindcss/vite": "^4.3.3",
     "@tiptap/core": "^3.31.4",

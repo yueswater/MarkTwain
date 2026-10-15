@@ -10,6 +10,9 @@ files:
 extraResources:
   - from: build/icon.png
     to: icon.png
+  # The library of table templates, one folder for each field of study
+  - from: ../../resources/table-templates
+    to: table-templates
   # The PDF viewer of the preview reads its engine from here, so it works offline
   - from: node_modules/@embedpdf/snippet/dist/pdfium.wasm
     to: pdfium.wasm

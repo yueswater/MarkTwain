@@ -36,6 +36,8 @@ export const IpcChannel = {
   LabelResolve: "label:resolve",
   LabelPreview: "label:preview",
   LabelReferences: "label:references",
+  TableTemplateList: "table-template:list",
+  TableTemplateBuild: "table-template:build",
   FontList: "font:list",
   FontAdd: "font:add",
   FontRemove: "font:remove",
