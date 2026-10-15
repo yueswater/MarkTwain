@@ -34,7 +34,7 @@ export type { EditorPrefs } from "../prefs";
 export type { AuthorProfile } from "../profile";
 export type { BuildAnchor, BuildDiagnostic, BuildOutcome } from "./build";
 export type { AdvancedState, ConfigState } from "./config";
-export type { LabelIndex, LabelPreview, LabelPreviewContent, LabelReference, LabelTarget } from "./label";
+export type { LabelIndex, LabelPreview, LabelPreviewContent, LabelReference, LabelTarget, UnlabeledRemote } from "./label";
 
 /** Contracts of all features are merged here, add & XxxContract when adding a feature. */
 export type IpcContract = AppContract & SettingsContract & ProjectContract & DocumentContract & DialogContract & LabelContract & AssetContract & ConfigContract & BuildContract & ExportContract & RecentContract & PrefsContract & SearchContract & BibliographyContract & WatermarkContract & ProfileContract & FontContract & TableTemplateContract;

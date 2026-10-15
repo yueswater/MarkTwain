@@ -29,7 +29,7 @@ import { TableInsertDialog } from "./TableInsertDialog";
 import { MathDialog, type MathTarget } from "./MathDialog";
 import { MarkdownPaste } from "./extensions/markdown-paste";
 import { RefDecorations, REFS_CHANGED } from "./extensions/ref-decorations";
-import { useLabelIndex } from "./use-label-index";
+import { LABELS_CHANGED, useLabelIndex } from "./use-label-index";
 import { useBibliography } from "../bibliography/bibliography-context";
 import type { CitationInfo } from "./ref-display";
 import { findUnlabeledTargets, newLabel, type UnlabeledTarget } from "./unlabeled-targets";
@@ -449,10 +449,16 @@ function EditorSurface({
     if (node) editor.chain().focus().deleteRange({ from: pos, to: pos + node.nodeSize }).run();
   };
 
-  const submitCrossRef = (choice: CrossRefChoice, pos: number | null) => {
+  const submitCrossRef = async (choice: CrossRefChoice, pos: number | null) => {
     let label: string;
     if (choice.kind === "existing") label = choice.label;
-    else {
+    else if (choice.kind === "remote") {
+      // The other document gets its label first, and is saved, so that the reference has something to point to
+      const made = await api.invoke(IpcChannel.LabelEnsure, { documentId: choice.documentId, block: choice.block, kind: choice.labelKind });
+      if (!made) return;
+      label = made.label;
+      window.dispatchEvent(new Event(LABELS_CHANGED));
+    } else {
       // Add a label to a target that has none, positions do not change, then write the reference
       label = newLabel(
         choice.labelKind,
@@ -696,6 +702,7 @@ function EditorSurface({
       {atom?.type === "crossRef" && (
         <CrossRefDialog
           target={atom}
+          documentId={doc.id}
           labeled={labels.targets}
           unlabeled={unlabeled}
           onSubmit={(choice) => submitCrossRef(choice, atom.pos)}

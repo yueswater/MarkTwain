@@ -38,3 +38,17 @@ describe("buildRefOptions", () => {
     expect([...kindsWithTargets(options)].sort()).toEqual(["figure", "formula", "heading"]);
   });
 });
+
+describe("buildRefOptions with blocks of other documents", () => {
+  it("names the document and keeps where the block is in the value", () => {
+    const options = buildRefOptions(
+      [],
+      [],
+      name,
+      [{ documentId: "d2", block: 3, kind: "cha", text: "Method", document: { kind: "chapter", position: 1, title: "Chapter 2" } }],
+    );
+    expect(options).toEqual([
+      { value: "r:d2:3:cha", kind: "heading", text: "Chapter · Method (Chapter 2)", full: "Chapter · Method (Chapter 2)", labeled: false },
+    ]);
+  });
+});

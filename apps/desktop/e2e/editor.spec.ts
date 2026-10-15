@@ -1085,3 +1085,58 @@ test("hovering a reference or a footnote opens a card with what it points to", a
     rmSync(dir, { recursive: true, force: true });
   }
 });
+
+test("a heading of another document that has no label can be referenced, and gets its label there", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "marktwain xref "));
+  const args = [`--user-data-dir=${join(dir, "userData")}`, "--lang=en-US"];
+  if (process.platform === "linux") args.push("--no-sandbox");
+  const app = await electron.launch({
+    executablePath: findPackagedExecutable(dist),
+    args,
+    env: { ...process.env, MARKTWAIN_TEST_DIALOG_PATH: join(dir, "p.marktwain"), MARKTWAIN_TEST_NO_PROFILE_DIALOG: "1" },
+  });
+  try {
+    const page = await app.firstWindow();
+    await page.getByRole("button", { name: "New project" }).click();
+    const ids = await page.evaluate(async () => {
+      const created = await window.marktwain.invoke("document:create", { kind: "chapter" });
+      const list = await window.marktwain.invoke("document:list");
+      if (!list.ok || !created.ok) return null;
+      const chapters = list.data.filter((d) => d.kind === "chapter");
+      await window.marktwain.invoke("document:save", { id: chapters[0]!.id, text: "# Introduction\n\nSee " });
+      await window.marktwain.invoke("document:save", { id: chapters[1]!.id, text: "# Method\n\n## Sampling\n" });
+      return chapters.map((d) => d.id);
+    });
+    expect(ids).toHaveLength(2);
+    await page.getByRole("button", { name: "Close project" }).click();
+    await page.getByRole("region", { name: "Recent projects" }).getByRole("button").first().click();
+
+    const editor = page.locator(".ProseMirror");
+    await editor.click();
+    await page.keyboard.press("ControlOrMeta+End");
+    await page.getByRole("button", { name: "Cross-reference" }).click();
+    const dialog = page.getByRole("dialog");
+    await dialog.getByRole("combobox", { name: "Type" }).click();
+    await page.getByRole("option", { name: "Heading" }).click();
+    await dialog.getByRole("combobox", { name: "Target" }).click();
+    await page.getByRole("option", { name: /Section · Sampling/ }).click();
+    await dialog.getByRole("button", { name: "Insert" }).click();
+    await expect(dialog).toBeHidden();
+    await expect(editor.locator("[data-cross-ref]")).toHaveAttribute("data-display", "Sampling");
+
+    // The other document was saved with the label, and it is a target of the index now
+    const saved = await page.evaluate(async (id) => {
+      const doc = await window.marktwain.invoke("document:get", { id });
+      return doc.ok ? doc.data.text : "";
+    }, ids![1]!);
+    expect(saved).toMatch(/## Sampling \{#sec:[0-9a-f]{4}\}/);
+    const index = await page.evaluate(async () => {
+      const result = await window.marktwain.invoke("label:resolve");
+      return result.ok ? result.data.targets.map((t) => t.kind) : [];
+    });
+    expect(index).toContain("sec");
+  } finally {
+    await app.close();
+    rmSync(dir, { recursive: true, force: true });
+  }
+});

@@ -97,3 +97,39 @@ describe("LabelService.references", () => {
     expect(labels.references("eq:none")).toEqual([]);
   });
 });
+
+describe("LabelService.unlabeled and ensure", () => {
+  const seed = () => {
+    documents.seedDefaults();
+    const [first, second] = documents.list().filter((d) => d.kind === "chapter");
+    const chapter = first ?? documents.create("chapter" as never);
+    const other = second ?? documents.create("chapter" as never);
+    documents.save(chapter.id, "# 緒論\n\n## 動機\n");
+    documents.save(other.id, "# 方法\n\n## 資料 {#sec:data}\n");
+    return { chapter, other };
+  };
+
+  it("lists the unlabeled blocks of the other documents only", () => {
+    const { chapter, other } = seed();
+    const found = labels.unlabeled(chapter.id);
+    expect(found.map((item) => [item.documentId, item.kind, item.text])).toEqual([[other.id, "cha", "方法"]]);
+    expect(labels.unlabeled(null).map((item) => item.text)).toEqual(["緒論", "動機", "方法"]);
+  });
+
+  it("writes a label into the saved document, so that it can be referenced, and gives the same one again", () => {
+    const { chapter, other } = seed();
+    const block = labels.unlabeled(chapter.id)[0]!.block;
+    const made = labels.ensure(other.id, block, "cha");
+    expect(made?.label).toMatch(/^cha:[0-9a-f]{4}$/);
+    expect(documents.get(other.id).text).toContain(`{#${made?.label}}`);
+    expect(labels.resolve().targets.some((target) => target.label === made?.label)).toBe(true);
+    expect(labels.ensure(other.id, block, "cha")).toEqual(made);
+    expect(labels.unlabeled(chapter.id)).toEqual([]);
+  });
+
+  it("refuses a block that moved, is gone or is of another kind", () => {
+    const { other } = seed();
+    expect(labels.ensure(other.id, 0, "sec")).toBeNull();
+    expect(labels.ensure(other.id, 99, "cha")).toBeNull();
+  });
+});
