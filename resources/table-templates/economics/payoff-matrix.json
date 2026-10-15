@@ -44,7 +44,7 @@
       "columnPlayer": "玩家 2",
       "row": "策略 {n}",
       "column": "策略 {n}",
-      "payoff": "(0, 0)",
+      "payoff": "$(x, y)$",
       "caption": "報酬矩陣"
     },
     "en": {
@@ -52,7 +52,7 @@
       "columnPlayer": "Player 2",
       "row": "Strategy {n}",
       "column": "Strategy {n}",
-      "payoff": "(0, 0)",
+      "payoff": "$(x, y)$",
       "caption": "Payoff matrix"
     }
   },
