@@ -12,6 +12,7 @@ import type { PrefsContract } from "./prefs";
 import type { ProfileContract } from "./profile";
 import type { SearchContract } from "./search";
 import type { WatermarkContract } from "./watermark";
+import type { FontContract } from "./font";
 import type { ProjectContract } from "./project";
 import type { RecentContract } from "./recent";
 import type { IpcResult } from "./result";
@@ -25,6 +26,7 @@ export type { ProjectInfo } from "./project";
 export type { RecentProject } from "./recent";
 export type { SearchHit } from "./search";
 export type { WatermarkInfo, WatermarkMode, WatermarkPicture } from "./watermark";
+export type { FontAddResult, FontFamilyEntry, FontFileInput, FontRemoveResult, FontSkipReason, FontSource, FontsView, MissingFont } from "./font";
 export type { BibEntryInput, BibImportOutcome, BibItem, BibliographyView } from "./bibliography";
 export type { EditorPrefs } from "../prefs";
 export type { AuthorProfile } from "../profile";
@@ -33,7 +35,7 @@ export type { AdvancedState, ConfigState } from "./config";
 export type { LabelIndex, LabelPreview, LabelPreviewContent, LabelReference, LabelTarget } from "./label";
 
 /** Contracts of all features are merged here, add & XxxContract when adding a feature. */
-export type IpcContract = AppContract & SettingsContract & ProjectContract & DocumentContract & DialogContract & LabelContract & AssetContract & ConfigContract & BuildContract & ExportContract & RecentContract & PrefsContract & SearchContract & BibliographyContract & WatermarkContract & ProfileContract;
+export type IpcContract = AppContract & SettingsContract & ProjectContract & DocumentContract & DialogContract & LabelContract & AssetContract & ConfigContract & BuildContract & ExportContract & RecentContract & PrefsContract & SearchContract & BibliographyContract & WatermarkContract & ProfileContract & FontContract;
 
 export type IpcChannelName = keyof IpcContract;
 export type IpcRequest<C extends IpcChannelName> = IpcContract[C]["req"];

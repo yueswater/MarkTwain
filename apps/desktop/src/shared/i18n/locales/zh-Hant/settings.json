@@ -421,5 +421,42 @@
       "togglePreview": "顯示或隱藏預覽",
       "shortcuts": "快捷鍵一覽"
     }
+  },
+  "fonts": {
+    "open": "字體",
+    "title": "字體",
+    "description": "論文可以使用的字體：模板附的、這份專案帶的，以及這台電腦裝的。",
+    "add": "新增字體",
+    "addFile": "加入字體檔",
+    "license": "加入的字體會存進專案檔，分享專案或匯出 Typst 專案時也會一起帶走。請確認字體的授權允許這樣使用。",
+    "added": "已加入：{{names}}",
+    "skipped": {
+      "notFont": "{{name}} 不是字體檔，沒有加入。",
+      "notEmbeddable": "{{name}} 的授權資料禁止嵌入文件，沒有加入。",
+      "duplicate": "{{name}} 這個字體已經有了，沒有加入。",
+      "tooLarge": "{{name}} 太大了，沒有加入。"
+    },
+    "missing": "找不到的字體",
+    "missingHint": "設定裡用到這些名稱，但沒有任何字體叫這個名字，建置時會改用別的字體。加入字體檔，或到設定改用別的字體。",
+    "search": "搜尋字體名稱",
+    "filter": "來源",
+    "sources": {
+      "all": "全部",
+      "project": "專案",
+      "template": "模板",
+      "system": "這台電腦"
+    },
+    "used": "使用中",
+    "size": "專案裡的字體共 {{size}} MB。",
+    "sizeWarning": "檔案很大，會讓專案變慢。",
+    "none": "沒有符合的字體。",
+    "remove": "移除字體 {{name}}",
+    "inUse": "{{name}} 正被「{{where}}」使用。",
+    "removeAnyway": "仍然移除",
+    "keep": "保留",
+    "sampleCjk": "論文的字體 永字八法 0123456789",
+    "sampleLatin": "The quick brown fox jumps over the lazy dog",
+    "pick": "從字體清單選",
+    "pickNone": "沒有可選的字體"
   }
 }

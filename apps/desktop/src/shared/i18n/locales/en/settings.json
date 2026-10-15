@@ -421,5 +421,42 @@
       "togglePreview": "Show or hide the preview",
       "shortcuts": "Keyboard shortcuts"
     }
+  },
+  "fonts": {
+    "open": "Fonts",
+    "title": "Fonts",
+    "description": "The fonts that the thesis can use: those of the template, those that this project brings, and those installed on this computer.",
+    "add": "Add fonts",
+    "addFile": "Add a font file",
+    "license": "A font that you add is stored in the project file, and goes along when the project is shared or a Typst project is exported. Make sure its license allows that.",
+    "added": "Added: {{names}}",
+    "skipped": {
+      "notFont": "{{name}} is not a font file and was not added.",
+      "notEmbeddable": "The license data of {{name}} forbids embedding it in a document, so it was not added.",
+      "duplicate": "{{name}} is there already and was not added.",
+      "tooLarge": "{{name}} is too large and was not added."
+    },
+    "missing": "Fonts that are missing",
+    "missingHint": "The settings use these names but no font has them, so the build uses another font. Add a font file, or choose another font in the settings.",
+    "search": "Search a font name",
+    "filter": "Source",
+    "sources": {
+      "all": "All",
+      "project": "Project",
+      "template": "Template",
+      "system": "This computer"
+    },
+    "used": "In use",
+    "size": "The fonts of the project take {{size}} MB.",
+    "sizeWarning": "That is a lot and slows the project down.",
+    "none": "No font matches.",
+    "remove": "Remove the font {{name}}",
+    "inUse": "{{name}} is used by {{where}}.",
+    "removeAnyway": "Remove anyway",
+    "keep": "Keep it",
+    "sampleCjk": "論文的字體 永字八法 0123456789",
+    "sampleLatin": "The quick brown fox jumps over the lazy dog",
+    "pick": "Choose from the fonts",
+    "pickNone": "No font to choose"
   }
 }

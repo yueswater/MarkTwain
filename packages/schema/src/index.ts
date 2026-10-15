@@ -131,3 +131,4 @@ export {
   type StatementKind,
   type StatementStyle,
 } from "./statements/kinds";
+export { FontFormatError, readFonts, type FontFace } from "./fonts/sfnt";
