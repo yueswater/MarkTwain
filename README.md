@@ -63,7 +63,8 @@ pnpm test             # unit tests
 pnpm typecheck        # type checks
 pnpm lint             # includes the rule against hard-coded UI text (i18n)
 pnpm build:unpacked   # build the real, unpacked app into apps/desktop/dist/
-pnpm e2e              # run the end-to-end tests against the packaged app
+pnpm e2e              # run the end-to-end tests against the packaged app, with no window on the screen
+pnpm e2e:headed       # the same, with the windows of the app shown
 ```
 
 ## Layout

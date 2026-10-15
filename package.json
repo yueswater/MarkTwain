@@ -13,7 +13,8 @@
     "templates:fetch": "pnpm --filter @marktwain/fetch-templates start",
     "typst:fetch": "pnpm --filter @marktwain/fetch-typst start",
     "build:unpacked": "pnpm --filter @marktwain/desktop build:unpacked",
-    "e2e": "pnpm --filter @marktwain/desktop e2e"
+    "e2e": "pnpm --filter @marktwain/desktop e2e",
+    "e2e:headed": "pnpm --filter @marktwain/desktop e2e:headed"
   },
   "devDependencies": {
     "@jest/globals": "^30.0.0",

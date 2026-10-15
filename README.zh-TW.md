@@ -63,7 +63,8 @@ pnpm test             # 單元測試
 pnpm typecheck        # 型別檢查
 pnpm lint             # 包含禁止把介面文字寫死的規則（i18n）
 pnpm build:unpacked   # 建置真正的未打包 App，輸出到 apps/desktop/dist/
-pnpm e2e              # 對打包後的 App 執行端對端測試
+pnpm e2e              # 對打包後的 App 執行端對端測試，不會在螢幕上顯示視窗
+pnpm e2e:headed       # 同上，但顯示 App 的視窗
 ```
 
 ## 專案結構
