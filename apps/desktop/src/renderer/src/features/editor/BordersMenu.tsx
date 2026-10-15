@@ -190,7 +190,6 @@ export function BordersMenu({ editor, compact }: Props) {
                 onChange={(event) => choose({ ...pen, color: event.target.value === "#000000" ? null : event.target.value.toUpperCase() })}
               />
             </div>
-            {pen.style === "double" && <p className="text-xs text-muted-foreground">{t("borders.doubleNote")}</p>}
             <Button type="button" variant="outline" size="sm" className="h-7 text-xs" onClick={() => applyBorderPen(editor, pen)}>
               {t("borders.applyPen")}
             </Button>

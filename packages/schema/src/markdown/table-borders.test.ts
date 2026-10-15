@@ -78,3 +78,10 @@ describe("table borders lines", () => {
     expect(normalizeBorders(grid, edges).borders).toBe("h2.0=1");
   });
 });
+
+describe("old double lines", () => {
+  it("a double line of an old document is read as a solid one", () => {
+    expect(parseBorders("h1.*=1/double")[0]?.edge).toEqual({ width: 1, style: "solid", color: null });
+    expect(parseBorders("h1.*=1/wavy")).toEqual([]);
+  });
+});

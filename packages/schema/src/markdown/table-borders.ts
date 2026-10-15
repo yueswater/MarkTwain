@@ -7,14 +7,14 @@
  * Numbers start at 0 and -1 means the last line, so a line at the bottom stays at the bottom when rows are added.
  * A line between two cells is one piece, so the two cells never disagree.
  */
-export type LineStyle = "solid" | "dashed" | "dotted" | "double";
+export type LineStyle = "solid" | "dashed" | "dotted";
 
 export type Line = { width: number; style: LineStyle; color: string | null };
 
 /** null is no line. */
 export type Edge = Line | null;
 
-export const LINE_STYLES: readonly LineStyle[] = ["solid", "dashed", "dotted", "double"];
+export const LINE_STYLES: readonly LineStyle[] = ["solid", "dashed", "dotted"];
 
 /** Widths offered in the menu, in points, the usual values of a word processor. */
 export const LINE_WIDTHS: readonly number[] = [0.25, 0.5, 0.75, 1, 1.5, 2.25, 3];
@@ -55,9 +55,11 @@ export function parseLine(spec: string): Edge | undefined {
   const [w = "", style, color] = text.split("/");
   const width = Number(w.replace(/pt$/, ""));
   if (!Number.isFinite(width) || width <= 0 || width > 20) return undefined;
-  if (style !== undefined && !(LINE_STYLES as readonly string[]).includes(style)) return undefined;
+  // A double line was offered once and no output draws it, so an old document gets a solid line
+  const kind = style === "double" ? "solid" : style;
+  if (kind !== undefined && !(LINE_STYLES as readonly string[]).includes(kind)) return undefined;
   if (color !== undefined && !COLOR.test(color)) return undefined;
-  return { width, style: (style as LineStyle | undefined) ?? "solid", color: color ? color.toUpperCase() : null };
+  return { width, style: (kind as LineStyle | undefined) ?? "solid", color: color ? color.toUpperCase() : null };
 }
 
 export function formatLine(edge: Edge): string {
