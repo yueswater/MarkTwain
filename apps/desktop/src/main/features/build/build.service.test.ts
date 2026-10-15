@@ -68,6 +68,15 @@ describe("BuildService", () => {
     expect(seen[0]?.config).toContain("title: 我的論文");
   });
 
+  it("hands the typst path and the package folder of the paths to the builder", async () => {
+    const s = new BuildService(session, documents, config, () => ({ typst: "/r/typst", templateDir, packageCachePath: "/r/typst-packages" }), async (input) => {
+      seen.push(input);
+      return { ok: true, pdf: new Uint8Array(), pages: [], diagnostics: [], mathFailures: [], anchors: [] };
+    });
+    await s.build();
+    expect(seen[0]).toMatchObject({ typst: "/r/typst", packageCachePath: "/r/typst-packages" });
+  });
+
   it("keeps the latest PDF and bumps the revision on each success", async () => {
     const s = service({ ok: true, pdf: new Uint8Array([1, 2]), pages: [], diagnostics: [], mathFailures: [], anchors: [] });
     expect(s.latestPdf()).toBeNull();

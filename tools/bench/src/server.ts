@@ -8,6 +8,7 @@ import { SHAPES, makeThesis, type ShapeName } from "./thesis.js";
 const PORT = Number(process.env.PORT ?? 8787);
 const TEMPLATE_DIR = process.env.MARKTWAIN_TEMPLATE_DIR ?? resolve(process.cwd(), "../../resources/templates/typ");
 const TYPST = process.env.MARKTWAIN_TYPST ?? "typst";
+const PACKAGES = process.env.MARKTWAIN_TYPST_PACKAGES;
 /** Maximum builds running at once, the rest wait, 0 means no limit. */
 const MAX_CONCURRENCY = Number(process.env.MAX_CONCURRENCY ?? 0);
 
@@ -65,6 +66,7 @@ const server = createServer((req, res) => {
         templateDir: TEMPLATE_DIR,
         workDir: work,
         typst: TYPST,
+        packageCachePath: PACKAGES,
         config: CONFIG,
         documents: makeThesis(SHAPES[shape]),
         files: [{ path: "images/a.png", data: PNG }],

@@ -25,6 +25,8 @@ coverage/
 resources/bin/
 resources/fonts/
 resources/templates/
+resources/typst/
+resources/typst-packages/
 
 # local data: user documents and the version-control database
 *.sqlite

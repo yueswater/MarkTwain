@@ -1,0 +1,15 @@
+{
+  "name": "@marktwain/fetch-typst",
+  "version": "0.3.5",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/cli.ts",
+    "test": "jest",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.20.0"
+  }
+}

@@ -17,9 +17,20 @@ function writeText(root: string, path: string, text: string): void {
   writeFileSync(full, text);
 }
 
-export function run(command: string, args: string[], cwd: string, timeoutMs: number): Promise<{ code: number | null; stderr: string; stdout: string }> {
+/** Arguments that make typst read packages from the bundled folder, so nothing is downloaded. */
+export function packageArgs(packageCachePath: string | undefined): string[] {
+  return packageCachePath ? ["--package-cache-path", packageCachePath] : [];
+}
+
+export function run(
+  command: string,
+  args: string[],
+  cwd: string,
+  timeoutMs: number,
+  env?: Record<string, string>,
+): Promise<{ code: number | null; stderr: string; stdout: string }> {
   return new Promise((resolve) => {
-    const child = spawn(command, args, { cwd, windowsHide: true });
+    const child = spawn(command, args, { cwd, windowsHide: true, env: env ? { ...process.env, ...env } : process.env });
     let stderr = "";
     let stdout = "";
     child.stderr.on("data", (chunk: Buffer) => (stderr += chunk.toString("utf8")));
@@ -151,14 +162,14 @@ function warnings(prepared: Prepared): Diagnostic[] {
 
 /** Reads the markers back from the same project, a failure only means the preview cannot follow the editor. */
 async function readAnchors(input: BuildInput, root: string, fontArgs: string[]): Promise<Anchor[]> {
-  const options = [...fontArgs, ...(input.watermark ? ["--input", "watermark=true"] : [])];
+  const options = [...fontArgs, ...packageArgs(input.packageCachePath), ...(input.watermark ? ["--input", "watermark=true"] : [])];
   // Newer typst moved query to eval, so the old form is tried first and then the new one
   const attempts = [
     ["query", "main.typ", "<mtpos>", "--field", "value", ...options],
     ["eval", "query(<mtpos>).map(it => it.value)", "--in", "main.typ", ...options],
   ];
   for (const args of attempts) {
-    const out = await run(input.typst, args, root, input.timeoutMs ?? 120_000);
+    const out = await run(input.typst, args, root, input.timeoutMs ?? 120_000, input.env);
     if (out.code !== 0) continue;
     try {
       const values = JSON.parse(out.stdout) as Partial<Anchor>[];
@@ -189,12 +200,14 @@ export async function buildTypst(input: BuildInput): Promise<BuildResult> {
         output,
         ...(png ? ["--format", "png", "--ppi", String(input.ppi ?? 110)] : []),
         ...fontArgs,
+        ...packageArgs(input.packageCachePath),
         ...(input.watermark ? ["--input", "watermark=true"] : []),
         "--diagnostic-format",
         "human",
       ],
       root,
       input.timeoutMs ?? 120_000,
+      input.env,
     );
     const diagnostics = [...warnings(prepared), ...parseDiagnostics(stderr, prepared.lineMap, root)];
     const mathFailures = prepared.mathFailures;
