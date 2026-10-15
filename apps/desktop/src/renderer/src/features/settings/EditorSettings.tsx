@@ -15,7 +15,7 @@ import { isHexColor, STATEMENT_KINDS } from "@marktwain/schema";
 import { PREF_LIMITS } from "../../../../shared/prefs";
 import { NumberField, SettingsRow } from "./fields";
 import { LevelPicker, StepSlider } from "./SettingsControls";
-import { AUTOSAVE_STEPS, CODE_SIZE_LEVELS, PPI_LEVELS, PREVIEW_STEPS } from "./settings-steps";
+import { AUTOSAVE_STEPS, CODE_SIZE_LEVELS, PREVIEW_STEPS } from "./settings-steps";
 
 function Choice<T extends string>({ value, options, label, onChange }: { value: T; options: { value: T; label: string }[]; label: string; onChange: (value: T) => void }) {
   return (
@@ -154,21 +154,6 @@ export function EditorPreviewSettings() {
   const { prefs, setPrefs } = usePrefs();
   return (
     <div>
-      <SettingsRow
-        id="setting-editor-previewPpi"
-        label={t("editor.previewPpi")}
-        hint={t("editor.previewPpiHint")}
-        control={
-          <LevelPicker
-            label={t("editor.previewPpi")}
-            levels={PPI_LEVELS}
-            value={prefs.previewPpi}
-            unit="ppi"
-            name={(id) => t(`sizeLevels.${id}`)}
-            onChange={(previewPpi) => setPrefs({ previewPpi })}
-          />
-        }
-      />
       <SettingsRow
         id="setting-editor-previewDelay"
         label={t("editor.previewDelay")}

@@ -1,5 +1,5 @@
 import { app, protocol } from "electron";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join, resolve } from "node:path";
 import { IpcChannel } from "../../../shared/enums/ipc-channel.enum";
@@ -23,15 +23,25 @@ export function resolveBuildPaths(): BuildPaths {
   };
 }
 
+/** The engine of the PDF viewer, packaged next to the app so the preview works offline. */
+function pdfiumPath(): string {
+  return app.isPackaged ? join(process.resourcesPath, "pdfium.wasm") : join(app.getAppPath(), "node_modules", "@embedpdf", "snippet", "dist", "pdfium.wasm");
+}
+
 export function registerBuildController(service: BuildService): void {
   handle(IpcChannel.BuildTypst, () => service.build());
   handle(IpcChannel.BuildSetWatermark, ({ on }) => service.setWatermark(on));
 
-  // marktwain-preview://page/<revision>/<index>.png
+  // marktwain-preview://pdf/<revision>.pdf is the latest build, marktwain-preview://wasm/pdfium.wasm is the engine of the viewer
   protocol.handle(PREVIEW_SCHEME, (request) => {
-    const match = /\/(\d+)\.png$/.exec(new URL(request.url).pathname);
-    const page = match ? service.page(Number(match[1])) : null;
-    if (!page) return new Response(null, { status: 404 });
-    return new Response(page as unknown as BodyInit, { headers: { "content-type": "image/png", "cache-control": "no-store" } });
+    const url = new URL(request.url);
+    if (url.hostname === "wasm") {
+      const path = pdfiumPath();
+      if (!existsSync(path)) return new Response(null, { status: 404 });
+      return new Response(readFileSync(path) as unknown as BodyInit, { headers: { "content-type": "application/wasm", "cache-control": "max-age=3600" } });
+    }
+    const pdf = /\/\d+\.pdf$/.test(url.pathname) ? service.latestPdf() : null;
+    if (!pdf) return new Response(null, { status: 404 });
+    return new Response(pdf as unknown as BodyInit, { headers: { "content-type": "application/pdf", "cache-control": "no-store" } });
   });
 }

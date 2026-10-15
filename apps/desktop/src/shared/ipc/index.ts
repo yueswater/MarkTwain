@@ -28,7 +28,7 @@ export type { WatermarkInfo, WatermarkMode, WatermarkPicture } from "./watermark
 export type { BibEntryInput, BibImportOutcome, BibItem, BibliographyView } from "./bibliography";
 export type { EditorPrefs } from "../prefs";
 export type { AuthorProfile } from "../profile";
-export type { BuildDiagnostic, BuildOutcome } from "./build";
+export type { BuildAnchor, BuildDiagnostic, BuildOutcome } from "./build";
 export type { AdvancedState, ConfigState } from "./config";
 export type { LabelIndex, LabelPreview, LabelPreviewContent, LabelReference, LabelTarget } from "./label";
 

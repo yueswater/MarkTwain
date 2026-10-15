@@ -27,8 +27,6 @@
     "autosaveDelayHint": "往右拉，停止輸入後會更快儲存。",
     "pasteMarkdown": "貼上 Markdown 時轉成結構",
     "pasteMarkdownHint": "把貼上的 Markdown 變成標題、清單與表格。",
-    "previewPpi": "預覽清晰度",
-    "previewPpiHint": "預覽頁面圖片的清晰程度，越清晰建置越慢。",
     "previewDelay": "儲存後重新建置預覽",
     "previewDelayHint": "往右拉，儲存後會更快重新建置預覽。",
     "codeSample": "print(\"hello\")",

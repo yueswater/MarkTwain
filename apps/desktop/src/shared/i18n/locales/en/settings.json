@@ -27,8 +27,6 @@
     "autosaveDelayHint": "Slide to the right to save sooner after you stop typing.",
     "pasteMarkdown": "Paste Markdown as structure",
     "pasteMarkdownHint": "Turn pasted Markdown into headings, lists and tables.",
-    "previewPpi": "Preview sharpness",
-    "previewPpiHint": "The sharpness of the page pictures of the preview. A sharper picture takes longer to build.",
     "previewDelay": "Rebuild the preview after a save",
     "previewDelayHint": "Slide to the right to rebuild the preview sooner after a save.",
     "codeSample": "print(\"hello\")",

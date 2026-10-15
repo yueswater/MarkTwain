@@ -90,7 +90,6 @@ const EDITOR_ENTRIES: readonly [SettingsPageId, string][] = [
   ["editorWriting", "pasteMarkdown"],
   ["editorWriting", "autosaveDelay"],
   ["editorStatements", "statementStyle"],
-  ["editorPreview", "previewPpi"],
   ["editorPreview", "previewDelay"],
 ];
 

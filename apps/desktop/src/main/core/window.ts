@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from "electron";
+import { app, BrowserWindow, shell } from "electron";
 import { join } from "node:path";
 import { RENDERER_URL_ENV, WINDOW_SIZE } from "../config/app.config";
 
@@ -19,6 +19,12 @@ export function createMainWindow(): BrowserWindow {
       nodeIntegration: false,
       sandbox: true,
     },
+  });
+
+  // A link in the page or in the PDF preview opens in the browser of the computer, and only web addresses do
+  win.webContents.setWindowOpenHandler(({ url }) => {
+    if (/^(https?|mailto):/i.test(url)) void shell.openExternal(url);
+    return { action: "deny" };
   });
 
   const devUrl = process.env[RENDERER_URL_ENV];

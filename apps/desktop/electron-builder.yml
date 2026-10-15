@@ -10,6 +10,9 @@ files:
 extraResources:
   - from: build/icon.png
     to: icon.png
+  # The PDF viewer of the preview reads its engine from here, so it works offline
+  - from: node_modules/@embedpdf/snippet/dist/pdfium.wasm
+    to: pdfium.wasm
   # The Typst template travels with the app. Folders only needed for development are left out.
   - from: ../../resources/templates/typ
     to: resources/templates/typ

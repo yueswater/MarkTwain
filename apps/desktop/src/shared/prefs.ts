@@ -16,8 +16,6 @@ export type EditorPrefs = {
   autosaveDelayMs: number;
   /** Turn pasted Markdown text into document structure */
   pasteMarkdown: boolean;
-  /** Resolution of the preview pages */
-  previewPpi: number;
   /** Pause after a save before the preview rebuilds */
   previewDelayMs: number;
   /** How definitions, lemmas and theorems look in the editor, the PDF is not affected */
@@ -36,7 +34,6 @@ export const DEFAULT_PREFS: EditorPrefs = {
   codeFontSize: 14,
   autosaveDelayMs: 800,
   pasteMarkdown: true,
-  previewPpi: 110,
   previewDelayMs: 700,
   statementStyle: "callout",
   statementColors: {},
@@ -47,7 +44,6 @@ export const PREF_LIMITS = {
   lineHeight: [1.2, 2.4],
   codeFontSize: [10, 24],
   autosaveDelayMs: [200, 5000],
-  previewPpi: [60, 220],
   previewDelayMs: [200, 5000],
 } as const;
 
@@ -82,7 +78,6 @@ export function sanitizePrefs(input: unknown, base: EditorPrefs = DEFAULT_PREFS)
     codeFontSize: Math.round(clamp(data.codeFontSize ?? base.codeFontSize, PREF_LIMITS.codeFontSize, base.codeFontSize)),
     autosaveDelayMs: Math.round(clamp(data.autosaveDelayMs ?? base.autosaveDelayMs, PREF_LIMITS.autosaveDelayMs, base.autosaveDelayMs)),
     pasteMarkdown: bool(data.pasteMarkdown ?? base.pasteMarkdown, base.pasteMarkdown),
-    previewPpi: Math.round(clamp(data.previewPpi ?? base.previewPpi, PREF_LIMITS.previewPpi, base.previewPpi)),
     previewDelayMs: Math.round(clamp(data.previewDelayMs ?? base.previewDelayMs, PREF_LIMITS.previewDelayMs, base.previewDelayMs)),
     statementStyle: pick(data.statementStyle ?? base.statementStyle, ["callout", "colored"], base.statementStyle),
     statementColors: colors(data.statementColors ?? base.statementColors, base.statementColors),

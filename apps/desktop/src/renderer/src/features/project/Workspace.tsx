@@ -71,6 +71,9 @@ function WorkspaceBody({ state, build, previewOpen, onClosePreview, onOpenSettin
   }, []);
   const [target, setTarget] = useState<{ block: number; nonce: number; term?: string } | null>(null);
   const [searchOpen, setSearchOpen] = useState(false);
+  // The preview follows the caret of the editor, and a click in the preview takes the caret to a block. A jump from the preview must not send the preview back.
+  const [follow, setFollow] = useState<{ documentId: string; block: number; nonce: number; mode: "caret" | "scroll"; fraction: number } | null>(null);
+  const quietUntil = useRef(0);
   const flush = useRef<(() => Promise<void>) | null>(null);
   const registerFlush = useCallback((fn: (() => Promise<void>) | null) => {
     flush.current = fn;
@@ -126,6 +129,12 @@ function WorkspaceBody({ state, build, previewOpen, onClosePreview, onOpenSettin
             scrollTo={target}
             onSaved={onSaved}
             registerFlush={registerFlush}
+            onCaretBlock={(block) => {
+              if (previewOpen && Date.now() > quietUntil.current) setFollow({ documentId: selected.id, block, nonce: Date.now(), mode: "caret", fraction: 0 });
+            }}
+            onTopBlock={(block, fraction) => {
+              if (previewOpen && Date.now() > quietUntil.current) setFollow({ documentId: selected.id, block, nonce: Date.now(), mode: "scroll", fraction });
+            }}
             onOpenTarget={(documentId, block) => {
               setSelectedId(documentId);
               setTarget({ block, nonce: Date.now() });
@@ -154,6 +163,13 @@ function WorkspaceBody({ state, build, previewOpen, onClosePreview, onOpenSettin
           saveTick={saveTick}
           placeKey={project.path}
           onClose={onClosePreview}
+          follow={follow}
+          onPick={(documentId, block) => {
+            quietUntil.current = Date.now() + 1500;
+            setShowBibliography(false);
+            setSelectedId(documentId);
+            setTarget({ block, nonce: Date.now() });
+          }}
           onJump={(documentId, block) => {
             setShowBibliography(false);
             setSelectedId(documentId);

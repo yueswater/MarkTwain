@@ -64,7 +64,7 @@ const recent = new RecentService(settingsRepository);
 const prefs = new PrefsService(settingsRepository);
 const profile = new ProfileService(settingsRepository);
 const watermarks = new WatermarkService(session, config, resolveBuildPaths);
-const build = new BuildService(session, documents, config, resolveBuildPaths, undefined, undefined, undefined, () => prefs.get().previewPpi, bibliography, watermarks);
+const build = new BuildService(session, documents, config, resolveBuildPaths, undefined, undefined, undefined, bibliography, watermarks);
 let dialogs: DialogService;
 
 // The custom protocol must be declared before app ready

@@ -61,10 +61,14 @@ type Props = {
   onSaved?: () => void;
   /** Goes to a block of a document from a card over a reference, opening the document first */
   onOpenTarget?: (documentId: string, block: number) => void;
+  /** The top level block that the caret moved to, the preview follows it */
+  onCaretBlock?: (block: number) => void;
+  /** The top level block at the top of the editor while it scrolls, and how far into the block the top is, 0 to 1 */
+  onTopBlock?: (block: number, fraction: number) => void;
 };
 
 /** Loads one document. The caller remounts with key when the document changes, so each document has its own editor and undo history. */
-export function DocumentEditor({ documentId, scrollTo, onSaved, registerFlush, onOpenTarget }: Props) {
+export function DocumentEditor({ documentId, scrollTo, onSaved, registerFlush, onOpenTarget, onCaretBlock, onTopBlock }: Props) {
   const { t } = useTranslation();
   const [doc, setDoc] = useState<DocumentData | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -89,7 +93,7 @@ export function DocumentEditor({ documentId, scrollTo, onSaved, registerFlush, o
     );
   }
   if (!doc) return null;
-  return <EditorSurface doc={doc} scrollTo={scrollTo ?? null} onSaved={onSaved} registerFlush={registerFlush} onOpenTarget={onOpenTarget} />;
+  return <EditorSurface doc={doc} scrollTo={scrollTo ?? null} onSaved={onSaved} registerFlush={registerFlush} onOpenTarget={onOpenTarget} onCaretBlock={onCaretBlock} onTopBlock={onTopBlock} />;
 }
 
 const WIDTH = { narrow: "max-w-xl", normal: "max-w-3xl", wide: "max-w-5xl" } as const;
@@ -118,12 +122,16 @@ function EditorSurface({
   onSaved,
   registerFlush,
   onOpenTarget,
+  onCaretBlock,
+  onTopBlock,
 }: {
   doc: DocumentData;
   scrollTo: { block: number; nonce: number; term?: string } | null;
   onSaved?: () => void;
   registerFlush?: (flush: (() => Promise<void>) | null) => void;
   onOpenTarget?: (documentId: string, block: number) => void;
+  onCaretBlock?: (block: number) => void;
+  onTopBlock?: (block: number, fraction: number) => void;
 }) {
   const { t } = useTranslation("editor");
   const { t: tCommon } = useTranslation();
@@ -173,6 +181,13 @@ function EditorSurface({
     [doc.id],
   );
   const editorRef = useRef<Editor | null>(null);
+  const caretRef = useRef(onCaretBlock);
+  caretRef.current = onCaretBlock;
+  const topRef = useRef(onTopBlock);
+  topRef.current = onTopBlock;
+  const scroller = useRef<HTMLDivElement>(null);
+  /** When a person last used the wheel, a key or the pointer in the editor, a scroll without one is the page settling and not a reader */
+  const lastInput = useRef(0);
   // What the slash menu asks the view to do, the same functions the toolbar uses
   const slashRef = useRef<SlashHandlers>({ insertMath: () => undefined, insertAtom: () => undefined, insertImage: () => undefined, insertTable: () => undefined });
   const flushRef = useRef(autosaver);
@@ -231,6 +246,11 @@ function EditorSurface({
       ],
       content: parseMarkdown(doc.text) as JSONContent,
       onUpdate: ({ editor: e }) => autosaver.schedule(() => serializeMarkdown(e.getJSON())),
+      // Where the caret is, only when a person moved it in the editor, the preview follows
+      onSelectionUpdate: ({ editor: e }) => {
+        if (!e.isFocused) return;
+        caretRef.current?.(e.state.selection.$from.index(0));
+      },
       editorProps: {
         attributes: { "aria-label": doc.title || doc.kind, spellcheck: "false" },
         // A double click on a figure edits its caption, a single click only selects it
@@ -281,7 +301,16 @@ function EditorSurface({
     const node = editor.state.doc.nodeAt(pos);
     const chain = editor.chain().focus();
     // Atom blocks such as figures have no text, so select the whole node
-    (node?.isAtom ? chain.setNodeSelection(pos) : chain.setTextSelection(Math.min(pos + 1, editor.state.doc.content.size))).scrollIntoView().run();
+    (node?.isAtom ? chain.setNodeSelection(pos) : chain.setTextSelection(Math.min(pos + 1, editor.state.doc.content.size))).run();
+    // The block is shown in the middle of the editor, a block taller than the editor from near its top
+    const dom = editor.view.nodeDOM(pos);
+    const box = scroller.current;
+    if (dom instanceof HTMLElement && box) {
+      const place = dom.getBoundingClientRect();
+      const frame = box.getBoundingClientRect();
+      const toTop = place.height > frame.height * 0.8 ? place.top - (frame.top + frame.height * 0.15) : place.top + place.height / 2 - (frame.top + frame.height / 2);
+      box.scrollTo({ top: box.scrollTop + toTop, behavior: "smooth" });
+    }
   }, [editor, scrollTo]);
 
   // Tell the editor to recompute the display text of cross-references when numbers change
@@ -327,6 +356,38 @@ function EditorSurface({
   }, [autosaver]);
 
   editorRef.current = editor;
+
+  /** Tells which top level block is at the top of the editor, once for every frame of scrolling, so the preview scrolls with it. */
+  const frame = useRef<number | null>(null);
+  function reportTopBlock(): void {
+    if (frame.current !== null || !topRef.current || Date.now() - lastInput.current > 1000) return;
+    frame.current = requestAnimationFrame(() => {
+      frame.current = null;
+      const view = editorRef.current;
+      const box = scroller.current;
+      if (!view || view.isDestroyed || !box) return;
+      const top = box.getBoundingClientRect().top + 8;
+      // The blocks are in order down the page, so the first one whose bottom is below the top edge is the one at the top
+      let found = -1;
+      let low = 0;
+      let high = view.state.doc.childCount - 1;
+      let rect: DOMRect | null = null;
+      while (low <= high) {
+        const middle = (low + high) >> 1;
+        let offset = 0;
+        for (let i = 0; i < middle; i += 1) offset += view.state.doc.child(i).nodeSize;
+        const dom = view.view.nodeDOM(offset);
+        const box2 = dom instanceof HTMLElement ? dom.getBoundingClientRect() : null;
+        if (box2 && box2.bottom > top) {
+          found = middle;
+          rect = box2;
+          high = middle - 1;
+        } else low = middle + 1;
+      }
+      if (found >= 0 && rect) topRef.current?.(found, rect.height > 0 ? (top - rect.top) / rect.height : 0);
+    });
+  }
+
   if (!editor) return null;
 
   const insertImage = () => {
@@ -428,7 +489,14 @@ function EditorSurface({
       />
       <div className="relative min-h-0 flex-1">
       {find.open && <FindBar key={find.term} editor={editor} initialTerm={find.term} onClose={() => setFind((c) => ({ ...c, open: false }))} />}
-      <div className="h-full overflow-y-auto">
+      <div
+        ref={scroller}
+        className="h-full overflow-y-auto"
+        onScroll={reportTopBlock}
+        onWheel={() => (lastInput.current = Date.now())}
+        onKeyDown={() => (lastInput.current = Date.now())}
+        onPointerDown={() => (lastInput.current = Date.now())}
+      >
         <div className="relative" ref={gutterHolder}>
         {prefs.lineNumbers && <LineGutter editor={editor} container={gutterHolder} layoutKey={`${prefs.fontSize}:${prefs.lineHeight}:${prefs.contentWidth}:${prefs.fontFamily}:${prefs.codeFontSize}`} />}
         <EditorContent

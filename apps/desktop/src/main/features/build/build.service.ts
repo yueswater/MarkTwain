@@ -12,6 +12,14 @@ import type { WatermarkService } from "../watermark/watermark.service";
 import type { ConfigService } from "../config/config.service";
 import type { DocumentService } from "../document/document.service";
 
+/** The number of pages from the page tree of a PDF, the root has the largest count. */
+export function pageCountOf(pdf: Uint8Array): number {
+  const text = Buffer.from(pdf).toString("latin1");
+  let count = 0;
+  for (const match of text.matchAll(/\/Count (\d+)/g)) count = Math.max(count, Number(match[1]));
+  return count;
+}
+
 export type BuildPaths = { typst: string; templateDir: string };
 
 type Runner = typeof buildTypst;
@@ -23,7 +31,7 @@ export class BuildService {
   private revision = 0;
   /** Whether the builds of the preview draw the watermark */
   private previewWatermark = false;
-  private pages: Uint8Array[] = [];
+  private pdf: Uint8Array | null = null;
 
   constructor(
     private readonly session: DatabaseSession,
@@ -33,14 +41,13 @@ export class BuildService {
     private readonly run: Runner = buildTypst,
     private readonly workDir: string = tmpdir(),
     private readonly exporter: Exporter = exportTypstProject,
-    private readonly previewPpi: () => number = () => 110,
     private readonly bibliography?: Pick<BibliographyService, "buildFiles">,
     private readonly watermarks?: Pick<WatermarkService, "files">,
   ) {}
 
-  /** A page image of the latest successful build, for the preview protocol. */
-  page(index: number): Uint8Array | null {
-    return this.pages[index] ?? null;
+  /** The PDF of the latest successful build, for the preview protocol. */
+  latestPdf(): Uint8Array | null {
+    return this.pdf;
   }
 
   /** Everything the builder needs, read from the open project. */
@@ -100,13 +107,13 @@ export class BuildService {
 
     this.running = true;
     try {
-      const result: BuildResult = await this.run({ ...input, format: "png", ppi: this.previewPpi(), watermark: this.previewWatermark });
+      const result: BuildResult = await this.run({ ...input, format: "pdf", watermark: this.previewWatermark, anchors: true });
 
       if (!result.ok && result.diagnostics.some((d) => /ENOENT/.test(d.message))) {
         throw new AppError(ErrorCode.BuildTypstMissing);
       }
       if (result.ok) {
-        this.pages = result.pages;
+        this.pdf = result.pdf;
         this.revision += 1;
       }
       return {
@@ -120,7 +127,8 @@ export class BuildService {
           source: d.source,
         })),
         mathFailures: result.mathFailures,
-        pageCount: result.ok ? result.pages.length : 0,
+        pageCount: result.ok ? pageCountOf(result.pdf) : 0,
+        anchors: result.ok ? result.anchors : [],
         revision: this.revision,
       };
     } finally {

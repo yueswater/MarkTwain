@@ -283,12 +283,11 @@ test("delays are chosen with ten step sliders and sizes with named levels", asyn
     await dialog.getByRole("radio", { name: "Large", exact: true }).click();
     await expect.poll(async () => (await prefs())?.codeFontSize).toBe(16);
 
-    // The preview has its own slider and sharpness levels
+    // The preview has its own slider, and no sharpness since the PDF is drawn from its vectors
     await dialog.getByRole("button", { name: "Preview", exact: true }).click();
     await dialog.getByRole("slider", { name: "Rebuild the preview after a save" }).fill("9");
     await expect.poll(async () => (await prefs())?.previewDelayMs).toBe(250);
-    await dialog.getByRole("radio", { name: "Sharp", exact: true }).click();
-    await expect.poll(async () => (await prefs())?.previewPpi).toBe(150);
+    await expect(dialog.getByText("Preview sharpness")).toHaveCount(0);
   } finally {
     await app.close();
     rmSync(dir, { recursive: true, force: true });
