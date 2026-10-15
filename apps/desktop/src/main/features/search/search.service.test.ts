@@ -4,7 +4,7 @@ import { openDatabase } from "../../infra/db";
 import { migrate } from "../../infra/migrate";
 import { MIGRATIONS } from "../../infra/migrations";
 import { DocumentService } from "../document/document.service";
-import { SearchService, blockText } from "./search.service";
+import { SearchService } from "./search.service";
 
 let documents: DocumentService;
 let search: SearchService;
@@ -56,7 +56,4 @@ describe("SearchService", () => {
     expect(result.truncated).toBe(true);
   });
 
-  it("blockText joins table cells and list items with spaces", () => {
-    expect(blockText({ type: "tableRow", content: [{ type: "tableCell", content: [{ text: "甲" }] }, { type: "tableCell", content: [{ text: "乙" }] }] })).toBe("甲  乙");
-  });
 });

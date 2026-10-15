@@ -1,7 +1,7 @@
 import { Extension } from "@tiptap/core";
 import { Plugin } from "@tiptap/pm/state";
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
-import { widthsFromTable } from "../table-commands";
+import { widthsFromTable } from "../tables/table-commands";
 
 /** The share of the text width and the text size that a table asks for, as the style of its wrapper. */
 export function tableBoxStyle(width: unknown, size: unknown): string {

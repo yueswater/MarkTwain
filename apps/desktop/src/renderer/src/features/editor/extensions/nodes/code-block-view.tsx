@@ -3,7 +3,7 @@ import { NodeViewContent, NodeViewWrapper, ReactNodeViewRenderer, type NodeViewP
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CODE_LANGUAGES, lowlight, languageLabel } from "../../code-languages";
+import { CODE_LANGUAGES, lowlight, languageLabel } from "../../code/code-languages";
 
 const PLAIN = "plain";
 

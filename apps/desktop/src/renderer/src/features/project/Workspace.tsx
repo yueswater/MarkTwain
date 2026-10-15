@@ -7,10 +7,10 @@ import { BibliographyPage } from "../bibliography/BibliographyPage";
 import { BibliographyProvider, useBibliography } from "../bibliography/bibliography-context";
 import { DocumentEditor } from "../editor/DocumentEditor";
 import { FontsPage } from "../fonts/FontsPage";
-import { DocumentSidebar } from "./DocumentSidebar";
+import { DocumentSidebar } from "./sidebar/DocumentSidebar";
 import { SearchDialog } from "./SearchDialog";
-import { documentTitle } from "./document-title";
-import type { Edge } from "../editor/edge-flip";
+import { documentTitle } from "./sidebar/document-title";
+import type { Edge } from "../editor/navigation/edge-flip";
 
 type Props = {
   state: ProjectState;

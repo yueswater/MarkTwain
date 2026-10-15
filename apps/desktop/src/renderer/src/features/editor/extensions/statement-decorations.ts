@@ -2,7 +2,7 @@ import { Extension } from "@tiptap/core";
 import { Plugin, PluginKey } from "@tiptap/pm/state";
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
 import type { StatementKind } from "@marktwain/schema";
-import { findStatementHeads } from "../statement-heads";
+import { findStatementHeads } from "../blocks/statement-heads";
 
 export const STATEMENTS_CHANGED = "marktwain:statements-changed";
 const key = new PluginKey("marktwainStatements");

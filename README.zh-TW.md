@@ -63,7 +63,8 @@ pnpm test             # 單元測試
 pnpm typecheck        # 型別檢查
 pnpm lint             # 包含禁止把介面文字寫死的規則（i18n）
 pnpm build:unpacked   # 建置真正的未打包 App，輸出到 apps/desktop/dist/
-pnpm e2e              # 對打包後的 App 執行端對端測試
+pnpm e2e              # 對打包後的 App 執行端對端測試，不會在螢幕上顯示視窗
+pnpm e2e:headed       # 同上，但顯示 App 的視窗
 ```
 
 ## 專案結構
@@ -73,6 +74,7 @@ pnpm e2e              # 對打包後的 App 執行端對端測試
 - `resources/*`：表格範本，以及由 `pnpm typst:fetch` 和 `pnpm templates:fetch` 放進來的 Typst、套件與模板。
 - `tools/*`：只在開發時使用的工具（下載模板與 Typst、效能測試），不會隨 App 發佈。
 
+各部分怎麼切分、用哪些規則避免互相牽扯，寫在 [ARCHITECTURE.md](ARCHITECTURE.md)。
 ## 持續整合
 
 每次 push 和 pull request 都會在 Ubuntu 與 Windows 上執行 lint、型別檢查和單元測試。接著 CI 會建置真正的 App（用它內建的 Typst），並對它執行端對端測試。兩種語言、100% 與 150% 縮放的截圖會上傳成 artifact，未打包的 Windows App 也會上傳，所以用 Mac 就能檢查 Windows 的介面：

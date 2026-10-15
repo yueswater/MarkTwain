@@ -23,6 +23,9 @@ export const IMAGE_MAX_BYTES = 25 * 1024 * 1024;
 /** Custom protocol that serves project files to the editor, see core/asset-protocol. */
 export const ASSET_SCHEME = "marktwain-asset";
 
+/** Test hook, when set to 1 the window is never shown and the app keeps out of the dock, so the end-to-end tests do not take the screen. */
+export const HEADLESS_ENV = "MARKTWAIN_HEADLESS";
+
 /** Test hook, when set the image dialog is skipped and this path is used. */
 export const TEST_IMAGE_PATH_ENV = "MARKTWAIN_TEST_IMAGE_PATH";
 

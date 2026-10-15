@@ -1,6 +1,6 @@
 import { app, BrowserWindow, shell } from "electron";
 import { join } from "node:path";
-import { RENDERER_URL_ENV, WINDOW_SIZE } from "../config/app.config";
+import { HEADLESS_ENV, RENDERER_URL_ENV, WINDOW_SIZE } from "../config/app.config";
 
 /** Window icon for Windows and Linux, macOS uses the app icon. Packaged as resources/icon.png. */
 function windowIconPath(): string {
@@ -10,8 +10,12 @@ function windowIconPath(): string {
 }
 
 export function createMainWindow(): BrowserWindow {
+  const headless = process.env[HEADLESS_ENV] === "1";
+  // The window of a test run still exists and renders, it is only not put on the screen
+  if (headless) app.dock?.hide();
   const win = new BrowserWindow({
     ...WINDOW_SIZE,
+    show: !headless,
     icon: windowIconPath(),
     webPreferences: {
       preload: join(__dirname, "../preload/index.js"),

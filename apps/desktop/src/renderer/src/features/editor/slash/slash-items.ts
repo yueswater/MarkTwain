@@ -20,8 +20,8 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { STATEMENT_KINDS } from "@marktwain/schema";
-import { insertLandscape, insertStatement } from "../statement-commands";
-import { statementIcon } from "../statement-icons";
+import { insertLandscape, insertStatement } from "../blocks/statement-commands";
+import { statementIcon } from "../blocks/statement-icons";
 
 /** What the menu asks the editor view to do, the same functions the toolbar uses. */
 export type SlashHandlers = {

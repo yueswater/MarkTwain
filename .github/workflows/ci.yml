@@ -78,10 +78,10 @@ jobs:
       - run: pnpm build:unpacked
       - name: End-to-end tests (Linux needs a virtual display)
         if: runner.os == 'Linux'
-        run: xvfb-run -a pnpm e2e
+        run: xvfb-run -a pnpm e2e:headed
       - name: End-to-end tests
         if: runner.os != 'Linux'
-        run: pnpm e2e
+        run: pnpm e2e:headed
       - name: Upload screenshots
         if: always()
         uses: actions/upload-artifact@v4

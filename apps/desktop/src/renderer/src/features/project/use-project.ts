@@ -5,7 +5,7 @@ import { IpcChannel } from "../../../../shared/enums/ipc-channel.enum";
 import type { ProjectInfo, RecentProject } from "../../../../shared/ipc";
 import { api } from "../../shared/api";
 import { errorMessage } from "../../shared/error-message";
-import { projectNameFromPath } from "./document-title";
+import { projectNameFromPath } from "./sidebar/document-title";
 
 /** The open project and every action that changes it, errors become text in the current language. */
 export function useProject() {

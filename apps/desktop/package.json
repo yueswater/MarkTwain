@@ -10,7 +10,8 @@
     "test": "jest",
     "typecheck": "tsc --noEmit",
     "build:unpacked": "electron-vite build && electron-builder --dir",
-    "e2e": "playwright test --config e2e/playwright.config.ts"
+    "e2e": "playwright test --config e2e/playwright.config.ts",
+    "e2e:headed": "playwright test --config e2e/playwright.headed.config.ts"
   },
   "devDependencies": {
     "@floating-ui/dom": "^1.8.0",

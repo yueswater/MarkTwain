@@ -11,6 +11,7 @@ import type { BibliographyService } from "../bibliography/bibliography.service";
 import type { FontService } from "../font/font.service";
 import type { WatermarkService } from "../watermark/watermark.service";
 import type { ConfigService } from "../config/config.service";
+import type { BuildPaths } from "../toolchain/build-paths";
 import type { DocumentService } from "../document/document.service";
 
 /** The number of pages from the page tree of a PDF, the root has the largest count. */
@@ -21,7 +22,6 @@ export function pageCountOf(pdf: Uint8Array): number {
   return count;
 }
 
-export type BuildPaths = { typst: string; templateDir: string; packageCachePath?: string };
 
 type Runner = typeof buildTypst;
 type Exporter = typeof exportTypstProject;

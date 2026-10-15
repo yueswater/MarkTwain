@@ -23,9 +23,9 @@ import {
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
-import { setColumnAlign } from "./table-commands";
-import { BordersMenu } from "./BordersMenu";
-import { PlacementPicker } from "./PlacementPicker";
+import { setColumnAlign } from "./tables/table-commands";
+import { BordersMenu } from "./tables/BordersMenu";
+import { PlacementPicker } from "./figures/PlacementPicker";
 import type { Placement } from "@marktwain/schema";
 
 type ItemProps = {
