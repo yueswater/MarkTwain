@@ -446,5 +446,17 @@
     "color": "Line color",
     "applyPen": "Apply to the lines of the selection",
     "points": "{{value}} pt"
+  },
+  "tableTemplates": {
+    "mode": "How to insert",
+    "mode_grid": "By size",
+    "mode_template": "Templates",
+    "search": "Search the templates",
+    "fields": "Fields",
+    "all": "All",
+    "list": "Templates",
+    "none": "No template matches.",
+    "choose": "Choose a template to see what it looks like.",
+    "needs": "This template needs: {{what}}."
   }
 }

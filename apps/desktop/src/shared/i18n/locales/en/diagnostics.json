@@ -38,6 +38,7 @@
     "document": {
       "not-found": "The document could not be found.",
       "singleton": "This project already has a document of that kind."
-    }
+    },
+    "table-template.unknown": "This table template does not exist."
   }
 }
