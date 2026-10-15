@@ -1,0 +1,33 @@
+{
+  "version": "0.15.1",
+  "platforms": {
+    "mac-arm64": {
+      "asset": "typst-aarch64-apple-darwin.tar.xz",
+      "sha256": "48f62ed034aa3a7978309579ac6ca00045e2ef0da73114e8af27cfd8e74dc05a"
+    },
+    "mac-x64": {
+      "asset": "typst-x86_64-apple-darwin.tar.xz",
+      "sha256": "7f9fdd9584866245de9a79e0add8f9236fae6f40a8a45e2c4771ccc14db4e0fa"
+    },
+    "win-x64": {
+      "asset": "typst-x86_64-pc-windows-msvc.zip",
+      "sha256": "19ce3551153c2fe7ee9fa2f95208310c8f4d3209fedb699e0333faf8913f6736"
+    },
+    "linux-x64": {
+      "asset": "typst-x86_64-unknown-linux-musl.tar.xz",
+      "sha256": "a6d077d0a95eed5a2eba715b2dae06be954f624ccbf85758a03f389ded33118c"
+    }
+  },
+  "packages": [
+    {
+      "name": "kouhu",
+      "version": "0.2.0",
+      "sha256": "e98e36f0364c59c2572d417cb2e259312cd6af49469ce97dd07a6e6b92351601"
+    },
+    {
+      "name": "ipsum",
+      "version": "0.1.0",
+      "sha256": "fdf80a6341573ca9b85fb89b3525cf2b34794b0d4b58a0b9c146b771515090aa"
+    }
+  ]
+}
