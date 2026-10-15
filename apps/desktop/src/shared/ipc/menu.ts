@@ -3,6 +3,7 @@ export const MenuCommand = {
   NewProject: "project:new",
   OpenProject: "project:open",
   CloseProject: "project:close",
+  Shortcuts: "help:shortcuts",
 } as const;
 
 export type MenuCommand = (typeof MenuCommand)[keyof typeof MenuCommand];

@@ -41,6 +41,7 @@ import { ReferenceCard } from "./ReferenceCard";
 import { SlashCommand } from "./slash/slash-command";
 import type { SlashHandlers } from "./slash/slash-items";
 import { EquationShortcut } from "./extensions/equation-shortcut";
+import { ThesisShortcuts } from "./extensions/thesis-shortcuts";
 import type { Placement } from "@marktwain/schema";
 import { TableBorders } from "./extensions/table-borders";
 import { TableCaptions } from "./extensions/table-captions";
@@ -217,6 +218,7 @@ function EditorSurface({
           },
         }),
         EquationShortcut,
+        ThesisShortcuts.configure({ handlers: () => slashRef.current }),
         SlashCommand.configure({
           handlers: () => slashRef.current,
           nameOf: (item) => {

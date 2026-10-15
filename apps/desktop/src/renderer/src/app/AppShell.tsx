@@ -1,6 +1,7 @@
 import { FileTextIcon, LanguagesIcon, SettingsIcon, XIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
+import { withShortcut } from "@/lib/shortcut-label";
 import logo from "@/assets/logo.png";
 import { Button } from "@/components/ui/button";
 import { SUPPORTED_LOCALES, type Locale } from "../../../shared/enums/locale.enum";
@@ -50,7 +51,7 @@ export function AppShell({
         )}
         <div className="ml-auto flex items-center gap-1">
           {onTogglePreview && (
-            <Button variant={previewOpen ? "secondary" : "ghost"} size="sm" aria-pressed={previewOpen} onClick={onTogglePreview}>
+            <Button variant={previewOpen ? "secondary" : "ghost"} size="sm" aria-pressed={previewOpen} title={withShortcut(t("preview", { ns: "build" }), "togglePreview")} onClick={onTogglePreview}>
               <FileTextIcon aria-hidden="true" />
               {t("preview", { ns: "build" })}
             </Button>

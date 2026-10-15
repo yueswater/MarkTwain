@@ -11,6 +11,7 @@ import { api } from "../shared/api";
 import { errorMessage } from "../shared/error-message";
 import { useEffect, useRef, useState } from "react";
 import { SettingsDialog } from "../features/settings/SettingsDialog";
+import { ShortcutsDialog } from "../features/shortcuts/ShortcutsDialog";
 import { AppShell } from "./AppShell";
 
 export function App() {
@@ -19,6 +20,7 @@ export function App() {
   const build = useBuild();
   const [previewOpen, setPreviewOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [shortcutsOpen, setShortcutsOpen] = useState(false);
   // Grows whenever a document or the thesis settings were saved, the preview watches it
   const [saveTick, setSaveTick] = useState(0);
   const bumpSaved = () => setSaveTick((n) => n + 1);
@@ -44,16 +46,21 @@ export function App() {
         if (command === MenuCommand.NewProject) void current.createProject(t("welcome.defaultName", { ns: "project" }));
         else if (command === MenuCommand.OpenProject) void current.openProject();
         else if (command === MenuCommand.CloseProject) void current.closeProject();
+        else if (command === MenuCommand.Shortcuts) setShortcutsOpen(true);
       }),
     [t],
   );
 
-  // Ctrl or Cmd plus comma opens the settings, as in most apps
+  // Ctrl or Cmd plus comma opens the settings, as in most apps, and plus Shift and P shows or hides the preview
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
+      if (event.isComposing) return;
       if ((event.ctrlKey || event.metaKey) && event.key === ",") {
         event.preventDefault();
         setSettingsOpen(true);
+      } else if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key.toLowerCase() === "p" && stateRef.current.project) {
+        event.preventDefault();
+        setPreviewOpen((open) => !open);
       }
     };
     window.addEventListener("keydown", onKey);
@@ -105,6 +112,7 @@ export function App() {
         </div>
       </div>
       {state.project && state.justCreated && <NewProjectDialog onClose={state.finishCreation} />}
+      <ShortcutsDialog open={shortcutsOpen} onOpenChange={setShortcutsOpen} />
       <SettingsDialog
         open={settingsOpen}
         onOpenChange={setSettingsOpen}

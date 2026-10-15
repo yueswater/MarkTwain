@@ -28,6 +28,7 @@ import {
 import { STATEMENT_KINDS } from "@marktwain/schema";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { usePrefs } from "@/lib/prefs";
+import { withShortcut } from "@/lib/shortcut-label";
 import { headingName } from "./heading-names";
 import { insertStatement } from "./statement-commands";
 import { statementIcon } from "./statement-icons";
@@ -51,6 +52,27 @@ type Props = {
   onEditCaption: () => void;
   onInsertImage: () => void;
   onInsertTable: () => void;
+};
+
+/** The shortcut command of each toolbar button, by the key of its name, so that the tooltip can show the keys. */
+const TOOLBAR_COMMAND: Record<string, string> = {
+  undo: "undo",
+  redo: "redo",
+  bold: "bold",
+  italic: "italic",
+  strike: "strike",
+  code: "code",
+  bulletList: "bulletList",
+  orderedList: "orderedList",
+  blockquote: "blockquote",
+  codeBlock: "codeBlock",
+  inlineMath: "inlineMath",
+  blockMath: "displayMath",
+  footnote: "footnote",
+  citation: "citation",
+  crossRef: "crossRef",
+  image: "image",
+  table: "table",
 };
 
 const BLOCKS = ["paragraph", "heading2", "heading3", "heading4"] as const;
@@ -131,6 +153,7 @@ export function Toolbar({ editor, onInsertMath, onInsertAtom, onEditCaption, onI
     }),
   });
 
+  const commandOfLabel = new Map(Object.entries(TOOLBAR_COMMAND).map(([key, id]) => [t(`toolbar.${key}`), id]));
   const button = (
     label: string,
     Icon: LucideIcon,
@@ -142,7 +165,7 @@ export function Toolbar({ editor, onInsertMath, onInsertAtom, onEditCaption, onI
       variant="ghost"
       size="icon-sm"
       aria-label={label}
-      title={label}
+      title={withShortcut(label, commandOfLabel.get(label))}
       aria-pressed={options.active}
       disabled={options.disabled}
       className={cn(options.active && "bg-muted")}
