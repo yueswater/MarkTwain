@@ -1019,6 +1019,16 @@ test("hovering a reference or a footnote opens a card with what it points to", a
     await expect(editor.locator("[data-cross-ref]")).toHaveCount(3);
 
     // A formula and a table are drawn in a card next to the reference
+    // The page settles after it opens, the numbers and the captions arrive, and a reference that moves from under the pointer closes its card
+    let seen = "";
+    await expect
+      .poll(async () => {
+        const now = JSON.stringify(await editor.locator("[data-cross-ref]").nth(0).boundingBox());
+        const same = now === seen;
+        seen = now;
+        return same;
+      }, { intervals: [300] })
+      .toBe(true);
     await editor.locator("[data-cross-ref]").nth(0).hover();
     const card = page.getByTestId("reference-card");
     await expect(card).toBeVisible();
@@ -1036,6 +1046,24 @@ test("hovering a reference or a footnote opens a card with what it points to", a
     await expect(card).toBeHidden();
     await editor.locator("[data-cross-ref]").nth(2).hover();
     await expect(card).toContainText("points to nothing");
+
+    // A citation tells which work it points to, with its title
+    await page.evaluate(async () => {
+      await window.marktwain.invoke("bibliography:set-text", { text: "@article{smith2020,\n  title = {A {Study} of Things},\n  author = {Smith, Ann and Lee, Bo},\n  journal = {Journal of Things},\n  year = {2020}\n}\n" });
+    });
+    await page.keyboard.press("ControlOrMeta+End");
+    await page.keyboard.type(" and ");
+    await page.getByRole("button", { name: "Citation" }).click();
+    await page.getByRole("dialog").getByLabel("Other keys").fill("smith2020");
+    await page.getByRole("dialog").getByRole("button", { name: "Insert" }).click();
+    await editor.locator("span[data-citation]").first().hover();
+    const cite = page.getByTestId("citation-card");
+    await expect(cite).toBeVisible();
+    await expect(cite).toContainText("A Study of Things");
+    await expect(cite).toContainText("Smith, Ann; Lee, Bo · 2020");
+    await expect(cite).toContainText("Journal of Things");
+    await page.mouse.move(5, 5);
+    await expect(cite).toBeHidden();
 
     // A footnote has a tooltip of a fixed size with the start of its text, cut with three dots
     await page.mouse.move(5, 5);

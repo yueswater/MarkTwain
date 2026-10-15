@@ -367,7 +367,8 @@
     "footnote": "Footnote",
     "broken": "This reference points to nothing.",
     "goTo": "Go to",
-    "moreRows": "…more rows"
+    "moreRows": "…more rows",
+    "citationMissing": "This entry is not in the bibliography."
   },
   "statement": {
     "editTitle": "Edit block",
