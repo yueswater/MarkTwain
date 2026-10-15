@@ -13,6 +13,10 @@ export type BuildInput = {
   workDir: string;
   /** Path of the typst executable */
   typst: string;
+  /** Folder with the Typst packages the template imports, laid out as preview/<name>/<version>, typst downloads them when omitted */
+  packageCachePath?: string;
+  /** Environment variables added for the typst process, the tests use it to hide the cache of the user */
+  env?: Record<string, string>;
   /** Content of config.yml */
   config: string;
   /** Documents in output order */
