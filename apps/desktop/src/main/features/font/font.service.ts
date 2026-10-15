@@ -4,7 +4,7 @@ import { basename, extname, join } from "node:path";
 import { run } from "@marktwain/build";
 import type { FontAddResult, FontFamilyEntry, FontFileInput, FontRemoveResult, FontSkipReason, FontsView, MissingFont } from "../../../shared/ipc";
 import type { DatabaseSession } from "../../core/database-session";
-import type { BuildPaths } from "../build/build.service";
+import type { BuildPaths } from "../toolchain/build-paths";
 import type { ConfigService } from "../config/config.service";
 
 const PREFIX = "fonts/";

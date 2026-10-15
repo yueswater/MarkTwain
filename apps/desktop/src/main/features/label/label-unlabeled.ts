@@ -1,5 +1,5 @@
 import { isValidLabel, statementOfClasses, type LabelKind } from "@marktwain/schema";
-import { blockText } from "../search/search.service";
+import { blockText } from "../../helpers/block-text.helper";
 
 type JsonNode = { type?: string; text?: string; attrs?: Record<string, unknown>; content?: JsonNode[] };
 

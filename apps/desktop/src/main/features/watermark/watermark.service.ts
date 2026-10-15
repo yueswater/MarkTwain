@@ -7,7 +7,7 @@ import type { WatermarkInfo, WatermarkMode, WatermarkPicture } from "../../../sh
 import { WATERMARK_EXTENSIONS, WATERMARK_MAX_BYTES } from "../../config/app.config";
 import type { DatabaseSession } from "../../core/database-session";
 import { AppError } from "../../core/errors";
-import type { BuildPaths } from "../build/build.service";
+import type { BuildPaths } from "../toolchain/build-paths";
 import type { ConfigService } from "../config/config.service";
 import type { DialogService } from "../dialog/dialog.service";
 
