@@ -9,7 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { assetUrl } from "./extensions/nodes/figure";
+import { assetUrl } from "../extensions/nodes/figure";
 import { FULL, isFull, moveRect, pixelBox, resizeRect, type Corner, type Rect } from "./crop-geometry";
 
 type Props = {

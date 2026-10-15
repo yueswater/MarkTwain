@@ -3,15 +3,15 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { IpcChannel } from "../../../../shared/enums/ipc-channel.enum";
-import type { LabelIndex, LabelPreview } from "../../../../shared/ipc";
-import { api } from "../../shared/api";
-import { documentTitle } from "../project/document-title";
-import { renderLatex, placeBox } from "./MathDialog";
+import { IpcChannel } from "../../../../../shared/enums/ipc-channel.enum";
+import type { LabelIndex, LabelPreview } from "../../../../../shared/ipc/index";
+import { api } from "../../../shared/api";
+import { documentTitle } from "../../project/document-title";
+import { renderLatex, placeBox } from "../math/MathDialog";
 import { entryCard, footnoteExcerpt } from "./reference-card";
-import { useBibliography } from "../bibliography/bibliography-context";
+import { useBibliography } from "../../bibliography/bibliography-context";
 import { describeRef } from "./ref-display";
-import { assetUrl } from "./extensions/nodes/figure";
+import { assetUrl } from "../extensions/nodes/figure";
 
 /** Event sent by the shortcut so the card opens for the selected reference. */
 export const OPEN_REFERENCE_CARD_EVENT = "marktwain:reference-card";

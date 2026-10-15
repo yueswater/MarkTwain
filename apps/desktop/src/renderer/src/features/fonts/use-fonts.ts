@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { IpcChannel } from "../../../../shared/enums/ipc-channel.enum";
 import type { FontAddResult, FontRemoveResult, FontsView } from "../../../../shared/ipc";
-import { LABELS_CHANGED } from "../editor/use-label-index";
+import { LABELS_CHANGED } from "../editor/references/use-label-index";
 import { api } from "../../shared/api";
 
 const EMPTY: FontsView = { families: [], missing: [], projectBytes: 0 };

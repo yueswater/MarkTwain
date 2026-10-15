@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { IpcChannel } from "../../../../shared/enums/ipc-channel.enum";
-import { api } from "../../shared/api";
-import { LABELS_CHANGED } from "./use-label-index";
+import { IpcChannel } from "../../../../../shared/enums/ipc-channel.enum";
+import { api } from "../../../shared/api";
+import { LABELS_CHANGED } from "../references/use-label-index";
 
 export type TableLayoutSettings = {
   position: "top" | "bottom";

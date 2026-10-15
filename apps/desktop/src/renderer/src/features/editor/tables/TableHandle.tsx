@@ -3,7 +3,7 @@ import { CellSelection, TableMap, findTable } from "@tiptap/pm/tables";
 import { LayoutTemplateIcon, MoveIcon } from "lucide-react";
 import { useCallback, useEffect, useRef, useState, type RefObject } from "react";
 import { useTranslation } from "react-i18next";
-import { endNodeDrag, startNodeDrag } from "./block-drag";
+import { endNodeDrag, startNodeDrag } from "../blocks/block-drag";
 
 type Place = { left: number; top: number };
 

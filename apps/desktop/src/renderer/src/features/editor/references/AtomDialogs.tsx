@@ -19,10 +19,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { IpcChannel } from "../../../../shared/enums/ipc-channel.enum";
-import type { LabelTarget, UnlabeledRemote } from "../../../../shared/ipc";
-import { api } from "../../shared/api";
-import { useBibliography } from "../bibliography/bibliography-context";
+import { IpcChannel } from "../../../../../shared/enums/ipc-channel.enum";
+import type { LabelTarget, UnlabeledRemote } from "../../../../../shared/ipc/index";
+import { api } from "../../../shared/api";
+import { useBibliography } from "../../bibliography/bibliography-context";
 import type { UnlabeledTarget } from "./unlabeled-targets";
 import { REF_KINDS, buildRefOptions, kindsWithTargets, readLastKind, refKindOfLabel, rememberKind, type RefKind } from "./crossref-options";
 

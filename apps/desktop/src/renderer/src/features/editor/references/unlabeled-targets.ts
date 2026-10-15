@@ -1,6 +1,6 @@
 import type { Node as PmNode } from "@tiptap/pm/model";
 import { createLabel, isValidLabel, type LabelKind } from "@marktwain/schema";
-import { statementOf } from "./statement-heads";
+import { statementOf } from "../blocks/statement-heads";
 
 export type UnlabeledTarget = {
   pos: number;

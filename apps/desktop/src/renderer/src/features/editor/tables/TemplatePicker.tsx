@@ -4,9 +4,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
-import { IpcChannel } from "../../../../shared/enums/ipc-channel.enum";
-import type { TemplateField, TemplateLanguage, TemplateSummary } from "../../../../shared/ipc";
-import { api } from "../../shared/api";
+import { IpcChannel } from "../../../../../shared/enums/ipc-channel.enum";
+import type { TemplateField, TemplateLanguage, TemplateSummary } from "../../../../../shared/ipc/index";
+import { api } from "../../../shared/api";
 import { TablePreview } from "./TablePreview";
 
 type Props = {

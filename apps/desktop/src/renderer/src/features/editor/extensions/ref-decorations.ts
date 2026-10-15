@@ -1,7 +1,7 @@
 import { Extension } from "@tiptap/core";
 import { Plugin, PluginKey } from "@tiptap/pm/state";
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
-import { citationDisplay, describeRef, type CitationInfo } from "../ref-display";
+import { citationDisplay, describeRef, type CitationInfo } from "../references/ref-display";
 
 export const REFS_CHANGED = "marktwain:refs-changed";
 const key = new PluginKey("marktwainRefs");

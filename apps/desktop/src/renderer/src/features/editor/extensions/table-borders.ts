@@ -2,7 +2,7 @@ import { Extension } from "@tiptap/core";
 import { Plugin } from "@tiptap/pm/state";
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
 import { dKey, hKey, vKey, type Edge } from "@marktwain/schema";
-import { edgesOf } from "../table-border-commands";
+import { edgesOf } from "../tables/table-border-commands";
 
 const PX_PER_PT = 4 / 3;
 

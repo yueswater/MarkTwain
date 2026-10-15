@@ -1,5 +1,5 @@
 import { STATEMENT_PREFIXES } from "@marktwain/schema";
-import type { LabelTarget, UnlabeledRemote } from "../../../../shared/ipc";
+import type { LabelTarget, UnlabeledRemote } from "../../../../../shared/ipc/index";
 import { shortenMath, shortenText } from "@/lib/shorten";
 import type { UnlabeledTarget } from "./unlabeled-targets";
 

@@ -2,7 +2,7 @@ import { Extension } from "@tiptap/core";
 import { Fragment, type Node as PmNode, type Schema } from "@tiptap/pm/model";
 import { Plugin, TextSelection } from "@tiptap/pm/state";
 import { dropPoint } from "@tiptap/pm/transform";
-import { endNodeDrag, nodeDrag } from "../block-drag";
+import { endNodeDrag, nodeDrag } from "../blocks/block-drag";
 
 /** The text of a block that can be written into a table cell, which holds a single line of text and no blocks. Null when the block has no such form. */
 export function inlineOf(node: PmNode, schema: Schema): Fragment | null {

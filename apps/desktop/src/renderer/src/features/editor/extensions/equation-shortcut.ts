@@ -1,7 +1,7 @@
 import { Extension } from "@tiptap/core";
 import { NodeSelection } from "@tiptap/pm/state";
-import { OPEN_EQUATION_LABEL_EVENT } from "../EquationLabelBubble";
-import { OPEN_REFERENCE_CARD_EVENT } from "../ReferenceCard";
+import { OPEN_EQUATION_LABEL_EVENT } from "../references/EquationLabelBubble";
+import { OPEN_REFERENCE_CARD_EVENT } from "../references/ReferenceCard";
 
 /** Mod-Alt-N opens the name box of the selected display formula, for the keyboard. */
 export const EquationShortcut = Extension.create({

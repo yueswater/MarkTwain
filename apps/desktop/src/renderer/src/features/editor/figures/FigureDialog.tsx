@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { assetUrl } from "./extensions/nodes/figure";
+import { assetUrl } from "../extensions/nodes/figure";
 import { PlacementPicker } from "./PlacementPicker";
 import type { Placement } from "@marktwain/schema";
 

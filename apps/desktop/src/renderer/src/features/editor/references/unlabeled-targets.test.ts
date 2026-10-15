@@ -1,7 +1,7 @@
 import { describe, expect, it } from "@jest/globals";
 import { getSchema } from "@tiptap/core";
 import { parseMarkdown } from "@marktwain/schema";
-import { createSchemaExtensions } from "./extensions/schema-extensions";
+import { createSchemaExtensions } from "../extensions/schema-extensions";
 import { existingLabels, findUnlabeledTargets, newLabel } from "./unlabeled-targets";
 
 const schema = getSchema(createSchemaExtensions());

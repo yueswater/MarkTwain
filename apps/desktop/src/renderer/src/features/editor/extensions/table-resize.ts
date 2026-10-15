@@ -2,7 +2,7 @@ import { Extension } from "@tiptap/core";
 import { Plugin, PluginKey } from "@tiptap/pm/state";
 import { columnResizingPluginKey } from "@tiptap/pm/tables";
 import type { EditorView } from "@tiptap/pm/view";
-import { EDITOR_TABLE_PX } from "../table-commands";
+import { EDITOR_TABLE_PX } from "../tables/table-commands";
 import { createValueTip } from "./value-tip";
 
 /** Pixels to points, a CSS pixel is 0.75 point. */

@@ -10,7 +10,7 @@ import { FontsPage } from "../fonts/FontsPage";
 import { DocumentSidebar } from "./DocumentSidebar";
 import { SearchDialog } from "./SearchDialog";
 import { documentTitle } from "./document-title";
-import type { Edge } from "../editor/edge-flip";
+import type { Edge } from "../editor/navigation/edge-flip";
 
 type Props = {
   state: ProjectState;

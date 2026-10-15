@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { IpcChannel } from "../../../../shared/enums/ipc-channel.enum";
-import type { LabelIndex } from "../../../../shared/ipc";
-import { api } from "../../shared/api";
-import type { SaveStatus } from "./autosaver";
+import { IpcChannel } from "../../../../../shared/enums/ipc-channel.enum";
+import type { LabelIndex } from "../../../../../shared/ipc/index";
+import { api } from "../../../shared/api";
+import type { SaveStatus } from "../../../shared/autosaver";
 
 /** Sent on the window when the numbers have to be read again. */
 export const LABELS_CHANGED = "marktwain:labels-changed";

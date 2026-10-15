@@ -3,7 +3,7 @@ import { Mathematics } from "@tiptap/extension-mathematics";
 import { Table, TableCell, TableHeader, TableRow } from "@tiptap/extension-table";
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import StarterKit from "@tiptap/starter-kit";
-import { lowlight } from "../code-languages";
+import { lowlight } from "../code/code-languages";
 import { GlobalAttributes } from "./global-attributes";
 import { Citation } from "./nodes/citation";
 import { CrossRef } from "./nodes/cross-ref";

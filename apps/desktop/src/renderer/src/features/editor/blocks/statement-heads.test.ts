@@ -1,7 +1,7 @@
 import { describe, expect, it } from "@jest/globals";
 import { getSchema } from "@tiptap/core";
 import { Node } from "@tiptap/pm/model";
-import { createSchemaExtensions } from "./extensions/schema-extensions";
+import { createSchemaExtensions } from "../extensions/schema-extensions";
 import { findStatementHeads } from "./statement-heads";
 
 const schema = getSchema(createSchemaExtensions());

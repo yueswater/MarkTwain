@@ -30,12 +30,12 @@ import { STATEMENT_KINDS } from "@marktwain/schema";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { usePrefs } from "@/lib/prefs";
 import { withShortcut } from "@/lib/shortcut-label";
-import { headingName } from "./heading-names";
-import { insertLandscape, insertStatement } from "./statement-commands";
-import { statementIcon } from "./statement-icons";
+import { headingName } from "../../shared/heading-names";
+import { insertLandscape, insertStatement } from "./blocks/statement-commands";
+import { statementIcon } from "./blocks/statement-icons";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
-import { TableTools } from "./TableTools";
+import { TableTools } from "./tables/TableTools";
 
 import {
   Select,

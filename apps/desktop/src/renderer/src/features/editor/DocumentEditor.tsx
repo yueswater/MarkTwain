@@ -11,7 +11,7 @@ import { IpcChannel } from "../../../../shared/enums/ipc-channel.enum";
 import type { DocumentData } from "../../../../shared/ipc";
 import { api } from "../../shared/api";
 import { errorMessage } from "../../shared/error-message";
-import { Autosaver, type SaveStatus } from "./autosaver";
+import { Autosaver, type SaveStatus } from "../../shared/autosaver";
 import { createSchemaExtensions } from "./extensions/schema-extensions";
 import {
   CitationDialog,
@@ -19,25 +19,25 @@ import {
   FootnoteDialog,
   type AtomTarget,
   type CrossRefChoice,
-} from "./AtomDialogs";
-import { CaptionDialog, type CaptionTarget } from "./CaptionDialog";
-import { FigureDialog, type FigureTarget } from "./FigureDialog";
-import { CropDialog } from "./CropDialog";
-import { FindBar } from "./FindBar";
+} from "./references/AtomDialogs";
+import { CaptionDialog, type CaptionTarget } from "./figures/CaptionDialog";
+import { FigureDialog, type FigureTarget } from "./figures/FigureDialog";
+import { CropDialog } from "./figures/CropDialog";
+import { FindBar } from "./find/FindBar";
 import { EditorBubbleMenu } from "./EditorBubbleMenu";
-import { TableInsertDialog } from "./TableInsertDialog";
-import { MathDialog, type MathTarget } from "./MathDialog";
+import { TableInsertDialog } from "./tables/TableInsertDialog";
+import { MathDialog, type MathTarget } from "./math/MathDialog";
 import { MarkdownPaste } from "./extensions/markdown-paste";
 import { RefDecorations, REFS_CHANGED } from "./extensions/ref-decorations";
-import { LABELS_CHANGED, useLabelIndex } from "./use-label-index";
+import { LABELS_CHANGED, useLabelIndex } from "./references/use-label-index";
 import { useBibliography } from "../bibliography/bibliography-context";
-import type { CitationInfo } from "./ref-display";
-import { findUnlabeledTargets, newLabel, type UnlabeledTarget } from "./unlabeled-targets";
+import type { CitationInfo } from "./references/ref-display";
+import { findUnlabeledTargets, newLabel, type UnlabeledTarget } from "./references/unlabeled-targets";
 import { Toolbar } from "./Toolbar";
 import { CodeBlockWithLanguage } from "./extensions/nodes/code-block-view";
-import { LineGutter } from "./LineGutter";
-import { EquationLabelBubble } from "./EquationLabelBubble";
-import { ReferenceCard } from "./ReferenceCard";
+import { LineGutter } from "./lines/LineGutter";
+import { EquationLabelBubble } from "./references/EquationLabelBubble";
+import { ReferenceCard } from "./references/ReferenceCard";
 import { SlashCommand } from "./slash/slash-command";
 import type { SlashHandlers } from "./slash/slash-items";
 import { EquationShortcut } from "./extensions/equation-shortcut";
@@ -46,19 +46,19 @@ import type { Placement } from "@marktwain/schema";
 import { TableBorders } from "./extensions/table-borders";
 import { TableCaptions } from "./extensions/table-captions";
 import { TableLayout } from "./extensions/table-layout";
-import { useTableLayout } from "./use-table-layout";
+import { useTableLayout } from "./tables/use-table-layout";
 import { ListMarkers } from "./extensions/list-markers";
-import { useListLevels } from "./use-list-levels";
+import { useListLevels } from "./lists/use-list-levels";
 import { PlacementMarks } from "./extensions/placement-marks";
 import { LandscapeMarks } from "./extensions/landscape-marks";
-import { EdgeFlip, type Edge } from "./edge-flip";
-import { TableHandle } from "./TableHandle";
-import { BlockHandle } from "./BlockHandle";
+import { EdgeFlip, type Edge } from "./navigation/edge-flip";
+import { TableHandle } from "./tables/TableHandle";
+import { BlockHandle } from "./blocks/BlockHandle";
 import { StatementDecorations, STATEMENTS_CHANGED } from "./extensions/statement-decorations";
-import { StatementDialog, type StatementTarget } from "./StatementDialog";
-import { statementOf } from "./statement-heads";
-import { headingName } from "./heading-names";
-import { insertLandscape, unwrapStatement, updateStatement } from "./statement-commands";
+import { StatementDialog, type StatementTarget } from "./blocks/StatementDialog";
+import { statementOf } from "./blocks/statement-heads";
+import { headingName } from "../../shared/heading-names";
+import { insertLandscape, unwrapStatement, updateStatement } from "./blocks/statement-commands";
 
 type Props = {
   documentId: string;

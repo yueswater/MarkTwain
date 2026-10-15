@@ -24,7 +24,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { BordersMenu } from "./BordersMenu";
-import { PlacementPicker } from "./PlacementPicker";
+import { PlacementPicker } from "../figures/PlacementPicker";
 import type { Placement } from "@marktwain/schema";
 import { setColumnAlign, setColumnWidth, setRowHeight, tableMetrics } from "./table-commands";
 

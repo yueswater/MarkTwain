@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { resolveListLevels } from "@marktwain/schema";
-import { IpcChannel } from "../../../../shared/enums/ipc-channel.enum";
-import { api } from "../../shared/api";
-import { LABELS_CHANGED } from "./use-label-index";
+import { IpcChannel } from "../../../../../shared/enums/ipc-channel.enum";
+import { api } from "../../../shared/api";
+import { LABELS_CHANGED } from "../references/use-label-index";
 
 export type ListLevelsState = { ordered: string[] | null; bullet: string[] | null };
 

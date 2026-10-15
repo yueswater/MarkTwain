@@ -1,7 +1,7 @@
 import { Extension } from "@tiptap/core";
 import { Plugin } from "@tiptap/pm/state";
 import type { EditorView } from "@tiptap/pm/view";
-import { EDITOR_TABLE_PX } from "../table-commands";
+import { EDITOR_TABLE_PX } from "../tables/table-commands";
 
 /**
  * A table fills the text column as it does in the PDF, with its columns in the shares that the widths say.

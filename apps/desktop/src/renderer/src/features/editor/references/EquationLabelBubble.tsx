@@ -3,12 +3,12 @@ import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } fro
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import type { LabelIndex, LabelReference } from "../../../../shared/ipc";
+import type { LabelIndex, LabelReference } from "../../../../../shared/ipc/index";
 import { checkName, isLabelUsed, labelOfName, nameOfLabel } from "./equation-name";
 import { existingLabels } from "./unlabeled-targets";
-import { IpcChannel } from "../../../../shared/enums/ipc-channel.enum";
-import { api } from "../../shared/api";
-import { documentTitle } from "../project/document-title";
+import { IpcChannel } from "../../../../../shared/enums/ipc-channel.enum";
+import { api } from "../../../shared/api";
+import { documentTitle } from "../../project/document-title";
 
 /** Event sent by the shortcut so the box opens for the selected formula. */
 export const OPEN_EQUATION_LABEL_EVENT = "marktwain:equation-label";

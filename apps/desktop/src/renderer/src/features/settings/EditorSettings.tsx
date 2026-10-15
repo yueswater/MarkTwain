@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/select";
 import { usePrefs } from "@/lib/prefs";
 import { Button } from "@/components/ui/button";
-import { NAMED_LEVELS } from "../editor/heading-names";
+import { NAMED_LEVELS } from "../../shared/heading-names";
 import { Input } from "@/components/ui/input";
 import { isHexColor, STATEMENT_KINDS } from "@marktwain/schema";
 import { PREF_LIMITS } from "../../../../shared/prefs";

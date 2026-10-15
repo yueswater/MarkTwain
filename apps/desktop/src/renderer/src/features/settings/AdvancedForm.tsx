@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/select";
 import { IpcChannel } from "../../../../shared/enums/ipc-channel.enum";
 import type { AdvancedState } from "../../../../shared/ipc";
-import { LABELS_CHANGED } from "../editor/use-label-index";
+import { LABELS_CHANGED } from "../editor/references/use-label-index";
 import { api } from "../../shared/api";
 import { errorMessage } from "../../shared/error-message";
 import { FontSelect } from "./FontSelect";
