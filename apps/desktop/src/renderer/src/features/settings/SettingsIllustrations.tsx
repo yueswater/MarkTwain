@@ -134,9 +134,9 @@ const SAMPLE_SCALE = 0.75;
 
 /** Entries of the sample reference list, the last one is not cited. */
 const SAMPLE_ENTRIES = [
-  { text: "[1] Fu, 2006", cited: true },
-  { text: "[2] Dixit, 1987", cited: true },
-  { text: "[3] Konrad, 2009", cited: false },
+  { text: "[1] Smith, 2020", cited: true },
+  { text: "[2] Chen, 2018", cited: true },
+  { text: "[3] Lee, 2015", cited: false },
 ];
 
 /** Four sample headings, drawn with the sizes and alignments that are set. */

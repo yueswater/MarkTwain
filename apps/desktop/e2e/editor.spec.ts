@@ -781,6 +781,12 @@ test("a display formula has no number until it is named from the box next to it"
     await expect(box.getByLabel("Formula name")).toBeDisabled();
     await expect(box.getByRole("button", { name: "Remove number" })).toBeDisabled();
     await expect(box).toContainText("cannot be changed or removed");
+    // The places that refer to it are listed, and one of them can be visited
+    const places = box.getByTestId("equation-references");
+    await expect(places).toContainText("Referenced in 1 place");
+    await expect(places.getByRole("button")).toHaveCount(1);
+    await places.getByRole("button").click();
+    await expect(box).toBeHidden();
   } finally {
     await app.close();
     rmSync(dir, { recursive: true, force: true });
@@ -875,8 +881,12 @@ test("only ordinary text lines are numbered, a named formula shows its number, a
     await box.getByRole("button", { name: "Set name" }).click();
     await expect(formula).toHaveAttribute("data-eq-number", /^\d+(\.\d+)?$/);
     const before = await formula.getAttribute("data-eq-number");
-    // The numbers can follow the chapter, and then they carry the chapter number
-    await box.getByRole("switch", { name: /Number by chapter/ }).click();
+    // Following the chapter is a setting of the thesis and not of this box, and then the numbers carry the chapter number
+    await expect(box.getByRole("switch")).toHaveCount(0);
+    await page.evaluate(async () => {
+      await window.marktwain.invoke("config:set-advanced", { values: { "layout.equation-per-chapter": true } });
+      window.dispatchEvent(new Event("marktwain:labels-changed"));
+    });
     await expect.poll(() => formula.getAttribute("data-eq-number")).not.toBe(before);
     await expect(formula).toHaveAttribute("data-eq-number", /\./);
     await page.mouse.move(5, 5);
@@ -990,7 +1000,7 @@ test("hovering a reference or a footnote opens a card with what it points to", a
           "",
           "| Setting | Share |",
           "|---|---|",
-          "| A | 0.4 |",
+          "| $a_1$ | 0.4 |",
           "| B | 0.6 |",
           "",
           ": Shares of the settings {#tbl:shares}",
@@ -1015,6 +1025,9 @@ test("hovering a reference or a footnote opens a card with what it points to", a
     await editor.locator("[data-cross-ref]").nth(1).hover();
     await expect(card.locator("table")).toBeVisible();
     await expect(card).toContainText("Shares of the settings");
+    // A formula in a cell is drawn, not shown as its source
+    await expect(card.locator("table .katex")).toBeVisible();
+    await expect(card).not.toContainText("$");
 
     // A reference to nothing says so, the card of the one before may lie over it, so the pointer leaves first
     await page.mouse.move(5, 5);

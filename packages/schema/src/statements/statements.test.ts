@@ -9,7 +9,7 @@ const options = { equationNumbering: "all", numberPerChapter: false } as const;
 
 describe("statement labels", () => {
   it("每個種類的前綴都是合法標籤", () => {
-    for (const label of ["def:a", "lem:ss", "alm:x", "thm:main", "prp:p", "cor:c", "cas:one", "exa:e", "rem:r"]) {
+    for (const label of ["def:a", "lem:ss", "thm:main", "prp:p", "cor:c", "cas:one", "exa:e", "rem:r"]) {
       expect(isValidLabel(label)).toBe(true);
     }
     expect(isValidLabel("prf:a")).toBe(false);

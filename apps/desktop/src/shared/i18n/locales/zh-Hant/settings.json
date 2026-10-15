@@ -124,7 +124,6 @@
       "name": {
         "definition": "名稱：定義",
         "lemma": "名稱：引理",
-        "auxlemma": "名稱：輔助引理",
         "theorem": "名稱：定理",
         "proposition": "名稱：命題",
         "corollary": "名稱：推論",

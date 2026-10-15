@@ -6,7 +6,7 @@ const blocks = (md: string) => parseMarkdown(md).content as Parameters<typeof fi
 
 describe("findPreview", () => {
   it("shows a figure with its caption in plain text", () => {
-    expect(findPreview(blocks("![**圖** $x$](images/a.png){#fig:a}\n"), "fig:a")).toEqual({ block: 0, content: { type: "figure", src: "images/a.png", caption: "圖 x" } });
+    expect(findPreview(blocks("![**圖** $x$](images/a.png){#fig:a}\n"), "fig:a")).toEqual({ block: 0, content: { type: "figure", src: "images/a.png", caption: "圖 $x$" } });
   });
 
   it("shows the first rows of a table and says when there are more", () => {
@@ -35,6 +35,6 @@ describe("findPreview", () => {
 
 describe("plainCaption", () => {
   it("takes marks and dollar signs away", () => {
-    expect(plainCaption("**粗** `code` $y$  多  空白")).toBe("粗 code y 多 空白");
+    expect(plainCaption("**粗** `code` $y$  多  空白")).toBe("粗 code $y$ 多 空白");
   });
 });

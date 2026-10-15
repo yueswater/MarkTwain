@@ -35,6 +35,7 @@ export const IpcChannel = {
   AssetStoreImage: "asset:store-image",
   LabelResolve: "label:resolve",
   LabelPreview: "label:preview",
+  LabelReferences: "label:references",
   DialogChooseNewProject: "dialog:choose-new-project",
   DialogChooseOpenProject: "dialog:choose-open-project",
   DocumentList: "document:list",
