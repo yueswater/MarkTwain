@@ -28,7 +28,8 @@ test("a font is added to the project, chosen in the settings, used by the build 
     expect(buttons.indexOf("Fonts")).toBeLessThan(buttons.findIndex((text) => text.startsWith("Bibliography")));
     await sidebar.getByRole("button", { name: "Fonts", exact: true }).click();
     const list = page.getByTestId("fonts-page");
-    await expect(list.locator('[data-font="Tinos"]')).toHaveAttribute("data-source", "template");
+    // The list also asks typst for the fonts of the computer, which takes a while on a slow runner
+    await expect(list.locator('[data-font="Tinos"]')).toHaveAttribute("data-source", "template", { timeout: 30_000 });
     await expect(list.getByTestId("font-preview").first()).toBeVisible();
 
     // A font of the project, a text file with a font name, and a font that is there already

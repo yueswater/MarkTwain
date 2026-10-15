@@ -184,6 +184,8 @@ async function readAnchors(input: BuildInput, root: string, fontArgs: string[]):
 /** Builds the thesis PDF from the project documents with the Typst template. */
 export async function buildTypst(input: BuildInput): Promise<BuildResult> {
   const root = mkdtempSync(join(input.workDir, "mt-build-"));
+  // The query for the anchors runs beside the compile and may still be running when the compile has failed
+  let anchorsRunning: Promise<unknown> = Promise.resolve();
   try {
     const prepared = prepare(input, root, true);
     const fonts = join(input.templateDir, "fonts");
@@ -192,6 +194,7 @@ export async function buildTypst(input: BuildInput): Promise<BuildResult> {
     // The fonts of the project come first, so one that has the name of a font of the template is used instead of it
     const fontArgs = [...(prepared.projectFontsDir ? ["--font-path", prepared.projectFontsDir] : []), "--font-path", fonts];
     const anchorsTask = input.anchors && !png ? readAnchors(input, root, fontArgs) : Promise.resolve<Anchor[]>([]);
+    anchorsRunning = anchorsTask.catch(() => undefined);
     const { code, stderr } = await run(
       input.typst,
       [
@@ -233,7 +236,15 @@ export async function buildTypst(input: BuildInput): Promise<BuildResult> {
     }
     return { ok: false, diagnostics, mathFailures };
   } finally {
-    if (!input.keep) rmSync(root, { recursive: true, force: true });
+    // A process that still has a file open keeps Windows from deleting the folder, so it is waited for first, and a folder that cannot be deleted is not an error of the build
+    await anchorsRunning;
+    if (!input.keep) {
+      try {
+        rmSync(root, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
+      } catch {
+        // The folder is in the temporary folder and goes with it
+      }
+    }
   }
 }
 
