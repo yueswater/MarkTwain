@@ -1,0 +1,46 @@
+{
+  "id": "confusion-matrix",
+  "field": "statistics",
+  "shape": "confusion",
+  "title": {
+    "zh-Hant": "混淆矩陣",
+    "en": "Confusion matrix"
+  },
+  "description": {
+    "zh-Hant": "實際類別在左，預測類別在上，上方有合併的標題。",
+    "en": "The actual classes at the left, the predicted ones on top under a merged heading."
+  },
+  "tags": [
+    "confusion",
+    "classification",
+    "混淆矩陣",
+    "分類"
+  ],
+  "params": {
+    "classes": {
+      "type": "int",
+      "default": 2,
+      "min": 2,
+      "max": 6,
+      "label": {
+        "zh-Hant": "類別數",
+        "en": "Classes"
+      }
+    }
+  },
+  "labels": {
+    "zh-Hant": {
+      "actualPredicted": "實際＼預測",
+      "predicted": "預測類別",
+      "class": "類別 {n}",
+      "caption": "混淆矩陣"
+    },
+    "en": {
+      "actualPredicted": "Actual / Predicted",
+      "predicted": "Predicted class",
+      "class": "Class {n}",
+      "caption": "Confusion matrix"
+    }
+  },
+  "needs": []
+}

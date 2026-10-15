@@ -1,0 +1,43 @@
+{
+  "id": "correlation-matrix",
+  "field": "statistics",
+  "shape": "correlation",
+  "title": {
+    "zh-Hant": "相關係數矩陣",
+    "en": "Correlation matrix"
+  },
+  "description": {
+    "zh-Hant": "對角線為 1，上三角留空，變數用編號對應欄位。",
+    "en": "Ones on the diagonal, the upper triangle empty, and the variables numbered so that the columns need no names."
+  },
+  "tags": [
+    "correlation",
+    "相關",
+    "matrix"
+  ],
+  "params": {
+    "variables": {
+      "type": "int",
+      "default": 4,
+      "min": 2,
+      "max": 10,
+      "label": {
+        "zh-Hant": "變數數",
+        "en": "Variables"
+      }
+    }
+  },
+  "labels": {
+    "zh-Hant": {
+      "variable": "變數 {n}",
+      "note": "*** p<0.01，** p<0.05，* p<0.1。",
+      "caption": "相關係數矩陣"
+    },
+    "en": {
+      "variable": "Variable {n}",
+      "note": "*** p<0.01, ** p<0.05, * p<0.1.",
+      "caption": "Correlation matrix"
+    }
+  },
+  "needs": []
+}

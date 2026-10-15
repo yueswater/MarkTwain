@@ -1,0 +1,60 @@
+{
+  "id": "method-comparison",
+  "field": "engineering",
+  "shape": "comparison",
+  "title": {
+    "zh-Hant": "方法比較",
+    "en": "Method comparison"
+  },
+  "description": {
+    "zh-Hant": "各方法在各項指標上的比較，最後一列是本研究的方法，最佳結果用粗體。",
+    "en": "Methods compared on several measures, the last row is the method of the thesis and holds the best results in bold."
+  },
+  "tags": [
+    "benchmark",
+    "comparison",
+    "方法比較",
+    "baseline"
+  ],
+  "params": {
+    "methods": {
+      "type": "int",
+      "default": 4,
+      "min": 2,
+      "max": 10,
+      "label": {
+        "zh-Hant": "方法數",
+        "en": "Methods"
+      }
+    },
+    "metrics": {
+      "type": "int",
+      "default": 3,
+      "min": 1,
+      "max": 8,
+      "label": {
+        "zh-Hant": "指標數",
+        "en": "Measures"
+      }
+    }
+  },
+  "labels": {
+    "zh-Hant": {
+      "method": "方法",
+      "metric": "指標 {n}",
+      "baseline": "對照方法 {n}",
+      "ours": "本研究",
+      "note": "粗體為最佳結果。",
+      "caption": "各方法的比較"
+    },
+    "en": {
+      "method": "Method",
+      "metric": "Measure {n}",
+      "baseline": "Baseline {n}",
+      "ours": "Ours",
+      "note": "Bold marks the best result.",
+      "caption": "Comparison of the methods"
+    }
+  },
+  "needs": []
+}

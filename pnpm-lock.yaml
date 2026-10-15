@@ -396,6 +396,16 @@ importers:
         specifier: ^4.10.2
         version: 4.10.2
 
+  packages/table-templates:
+    dependencies:
+      '@marktwain/schema':
+        specifier: workspace:*
+        version: link:../schema
+    devDependencies:
+      '@types/node':
+        specifier: ^22.20.5
+        version: 22.20.5
+
   tools/bench:
     dependencies:
       '@marktwain/build':

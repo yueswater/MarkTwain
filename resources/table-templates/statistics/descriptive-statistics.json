@@ -1,0 +1,45 @@
+{
+  "id": "descriptive-statistics",
+  "field": "statistics",
+  "shape": "descriptive",
+  "title": {
+    "zh-Hant": "敘述統計",
+    "en": "Descriptive statistics"
+  },
+  "description": {
+    "zh-Hant": "每個變數一列，欄位是樣本數、平均數、標準差與極值。",
+    "en": "A row for each variable, and columns for the sample size, mean, standard deviation and range."
+  },
+  "tags": [
+    "descriptive",
+    "敘述統計",
+    "summary"
+  ],
+  "params": {
+    "variables": {
+      "type": "int",
+      "default": 5,
+      "min": 1,
+      "max": 15,
+      "label": {
+        "zh-Hant": "變數數",
+        "en": "Variables"
+      }
+    }
+  },
+  "labels": {
+    "zh-Hant": {
+      "variableHeader": "變數",
+      "columns": "觀察值,平均數,標準差,最小值,最大值",
+      "variable": "變數 {n}",
+      "caption": "敘述統計"
+    },
+    "en": {
+      "variableHeader": "Variable",
+      "columns": "N,Mean,SD,Min,Max",
+      "variable": "Variable {n}",
+      "caption": "Descriptive statistics"
+    }
+  },
+  "needs": []
+}

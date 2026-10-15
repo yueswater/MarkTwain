@@ -1,0 +1,8 @@
+{
+  "id": "medicine",
+  "name": {
+    "zh-Hant": "醫學與公共衛生",
+    "en": "Medicine and public health"
+  },
+  "order": 4
+}
