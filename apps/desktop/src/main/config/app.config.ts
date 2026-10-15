@@ -27,8 +27,9 @@ export const ASSET_SCHEME = "marktwain-asset";
 export const TEST_IMAGE_PATH_ENV = "MARKTWAIN_TEST_IMAGE_PATH";
 
 /** Test hook, when set the file dialog is skipped and this path is returned. */
-/** Overrides where the typst executable and the Typst template are found. */
+/** Overrides where the typst executable, its packages and the Typst template are found. */
 export const TYPST_PATH_ENV = "MARKTWAIN_TYPST";
+export const TYPST_PACKAGES_ENV = "MARKTWAIN_TYPST_PACKAGES";
 export const TEMPLATE_DIR_ENV = "MARKTWAIN_TEMPLATE_DIR";
 
 /** URL scheme that serves the last built PDF to the preview. */

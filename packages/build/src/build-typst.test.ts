@@ -1,6 +1,6 @@
 import { describe, expect, it } from "@jest/globals";
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { buildTypst } from "./build-typst";
@@ -19,6 +19,30 @@ function findTypst(): string | null {
   } catch {
     return null;
   }
+}
+
+/** The packages the template imports, fetched by pnpm typst:fetch. */
+const packageCachePath = process.env.MARKTWAIN_TYPST_PACKAGES || resolve(__dirname, "../../../resources/typst-packages");
+const hasPackages = ["kouhu/0.2.0", "ipsum/0.1.0"].every((name) => existsSync(join(packageCachePath, "preview", name)));
+
+/**
+ * Environment that hides every cache of the user and cuts the network.
+ * Where typst keeps downloaded packages differs by system, so all of them point to the empty folder.
+ * The dead proxy makes a download fail at once instead of quietly succeeding.
+ */
+function offlineEnv(home: string): Record<string, string> {
+  const dead = "http://127.0.0.1:9";
+  return {
+    HOME: home,
+    USERPROFILE: home,
+    XDG_CACHE_HOME: join(home, "cache"),
+    XDG_DATA_HOME: join(home, "data"),
+    LOCALAPPDATA: join(home, "local"),
+    APPDATA: join(home, "roaming"),
+    HTTP_PROXY: dead,
+    HTTPS_PROXY: dead,
+    ALL_PROXY: dead,
+  };
 }
 
 const typst = findTypst();
@@ -333,6 +357,42 @@ maybe("buildTypst with the real template", () => {
       }
     } finally {
       rmSync(work, { recursive: true, force: true });
+    }
+  }, 120_000);
+
+  (hasPackages ? it : it.skip)("builds offline with the bundled packages and an empty cache of the user", async () => {
+    const work = mkdtempSync(join(tmpdir(), "marktwain 離線 "));
+    const home = mkdtempSync(join(tmpdir(), "marktwain home "));
+    try {
+      const result = await buildTypst(
+        input(work, { packageCachePath, env: offlineEnv(home), anchors: true, documents: [{ id: "c1", kind: "chapter", text: "# 標題\n\n內容。\n" }] }),
+      );
+      expect(result.diagnostics.filter((d) => d.severity === "error")).toEqual([]);
+      expect(result.ok).toBe(true);
+      // The anchors come from typst query or eval, which need the packages as well.
+      if (result.ok) expect(result.anchors.length).toBeGreaterThan(0);
+      // Nothing was downloaded into the cache of the user.
+      expect(readdirSync(home)).toEqual([]);
+    } finally {
+      rmSync(work, { recursive: true, force: true });
+      rmSync(home, { recursive: true, force: true });
+    }
+  }, 120_000);
+
+  it("fails without the packages when the cache of the user is empty and there is no network", async () => {
+    const work = mkdtempSync(join(tmpdir(), "marktwain 缺套件 "));
+    const home = mkdtempSync(join(tmpdir(), "marktwain home "));
+    const empty = mkdtempSync(join(tmpdir(), "marktwain packages "));
+    try {
+      const result = await buildTypst(
+        input(work, { packageCachePath: empty, env: offlineEnv(home), documents: [{ id: "c1", kind: "chapter", text: "# 標題\n\n內容。\n" }] }),
+      );
+      expect(result.ok).toBe(false);
+      expect(result.diagnostics.some((d) => /failed to download package/.test(d.message))).toBe(true);
+    } finally {
+      rmSync(work, { recursive: true, force: true });
+      rmSync(home, { recursive: true, force: true });
+      rmSync(empty, { recursive: true, force: true });
     }
   }, 120_000);
 

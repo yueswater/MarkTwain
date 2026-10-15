@@ -8,6 +8,9 @@ on:
 jobs:
   typst-build:
     runs-on: ubuntu-latest
+    env:
+      MARKTWAIN_TYPST: ${{ github.workspace }}/resources/typst/linux-x64/typst
+      MARKTWAIN_TYPST_PACKAGES: ${{ github.workspace }}/resources/typst-packages
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -18,8 +21,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - uses: typst-community/setup-typst@v4
       - run: pnpm install --frozen-lockfile
+      - name: Fetch the pinned Typst and its packages
+        run: pnpm typst:fetch
       - name: Fetch the pinned template
         run: pnpm templates:fetch typ
         env:

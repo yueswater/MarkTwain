@@ -13,6 +13,7 @@ Current version: v0.3.5.
 | [v0.3.3](#v033--editor-fixes) | Editor fixes | Released |
 | [v0.3.4](#v034--settings-and-watermark) | Settings and watermark | Released |
 | [v0.3.5](#v035--blocks-and-tables) | Blocks and tables | Released |
+| [v0.3.6](#v036--toolchain-and-preview) | Toolchain and preview | In progress |
 | [v0.4.0](#v040--version-control) | Version control | Not started |
 | [v0.5.0](#v050--latex-output) | LaTeX output | Not started |
 | [v0.6.0](#v060--thesis-features) | Thesis features | Not started |
@@ -110,6 +111,12 @@ Writing mathematics, and tables that look like the page.
 - The borders menu of a table works like the one of a word processor, with a width, a style and a color for each line, diagonals included, and one step of undo for each choice
 - A table in the editor has the width, the column shares, the lines, the number, the caption and the notes of the table in the PDF, and a test compares the columns of both
 
+## v0.3.6 · Toolchain and Preview
+
+The toolchain travels with the app, so a build needs nothing installed on the machine.
+
+- Typst 0.15.1 and the two `@preview` packages that the template imports (`kouhu` and `ipsum`) ship in the installer, pinned in `typst.lock.json` and fetched with `pnpm typst:fetch`. A packaged app never uses a Typst of the system, and there is no Docker. LaTeX is decided later: the system TeX Live first, then a small downloadable distribution, and Docker only as an option
+
 ## v0.4.0 · Version Control
 
 Local version control that does not depend on git.
@@ -147,7 +154,7 @@ The parts that make it a thesis.
 An installer that works without a network.
 
 - electron-builder: macOS (arm64 and x64), Windows (x64), Linux (x64); each installer is built on its own platform's CI runner
-- Bundled `typst`, templates, `@preview` package cache, and fonts
+- Bundled `typst`, templates, `@preview` package cache, and fonts. Typst 0.15.1 and the template packages are already in the installer from v0.3.6, for macOS arm64 and x64, Windows x64 and Linux x64, with no Docker. LaTeX is decided later: the system TeX Live first, then a small downloadable distribution, and Docker only as an option
 - Font license audit (commercial fonts are not bundled)
 - A `--smoke-test` mode so the packaged app can check itself, run in CI on all three platforms together with Playwright against the packaged app
 - A decision on code signing and notarization
