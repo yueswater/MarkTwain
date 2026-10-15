@@ -1,7 +1,8 @@
 import type { Editor } from "@tiptap/core";
 import { useEditorState } from "@tiptap/react";
 import { CheckIcon, SquareDashedIcon } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { LINE_STYLES, LINE_WIDTHS, type Line, type LineStyle } from "@marktwain/schema";
 import { Button } from "@/components/ui/button";
@@ -60,18 +61,21 @@ function BorderIcon({ item }: { item: BorderItem }) {
   );
 }
 
-type Props = { editor: Editor; compact?: boolean };
+type Props = { editor: Editor };
 
 /**
  * The borders button of a word processor for the selected cells, or the whole table when none are selected.
  * An item that is on turns its lines off. The pen, a width, a style and a color, is what the lines are drawn with.
  */
-export function BordersMenu({ editor, compact }: Props) {
+export function BordersMenu({ editor }: Props) {
   const { t } = useTranslation("editor");
   const [open, setOpen] = useState(false);
   const [pen, setPen] = useState<Line>(readPen);
   const [widthText, setWidthText] = useState(String(pen.width));
   const root = useRef<HTMLDivElement>(null);
+  const panel = useRef<HTMLDivElement>(null);
+  // The toolbar scrolls sideways and would cut the menu off, so the menu is drawn on the page at the place of the button
+  const [place, setPlace] = useState<{ top: number; left: number; above: boolean } | null>(null);
 
   const states = useEditorState({
     editor,
@@ -82,7 +86,8 @@ export function BordersMenu({ editor, compact }: Props) {
   useEffect(() => {
     if (!open) return;
     const close = (event: MouseEvent) => {
-      if (!root.current?.contains(event.target as Node)) setOpen(false);
+      const target = event.target as Node;
+      if (!root.current?.contains(target) && !panel.current?.contains(target)) setOpen(false);
     };
     const escape = (event: KeyboardEvent) => event.key === "Escape" && setOpen(false);
     document.addEventListener("mousedown", close);
@@ -92,6 +97,15 @@ export function BordersMenu({ editor, compact }: Props) {
       document.removeEventListener("keydown", escape);
     };
   }, [open]);
+
+  useLayoutEffect(() => {
+    if (!open || !root.current) return;
+    const box = root.current.getBoundingClientRect();
+    const height = panel.current?.offsetHeight ?? 460;
+    // Below the button when there is room, else above it, and never past the right edge
+    const above = box.bottom + height + 8 > window.innerHeight && box.top > height + 8;
+    setPlace({ top: above ? box.top - 6 : box.bottom + 6, left: Math.min(Math.max(8, box.left), window.innerWidth - 272), above });
+  }, [open, states]);
 
   const choose = (next: Line) => {
     setPen(next);
@@ -115,11 +129,14 @@ export function BordersMenu({ editor, compact }: Props) {
       >
         <SquareDashedIcon aria-hidden="true" />
       </Button>
-      {open && (
+      {open &&
+        createPortal(
         <div
+          ref={panel}
           role="menu"
           aria-label={t("borders.label")}
-          className={cn("absolute z-30 w-64 rounded-lg border bg-popover p-1.5 text-sm shadow-md", compact ? "bottom-full mb-1 left-0" : "top-full mt-1 left-0")}
+          style={place ? { position: "fixed", top: place.top, left: place.left, transform: place.above ? "translateY(-100%)" : undefined, maxHeight: "calc(100vh - 16px)", overflowY: "auto" } : { position: "fixed", visibility: "hidden", top: 0, left: 0 }}
+          className="z-50 w-64 rounded-lg border bg-popover p-1.5 text-sm shadow-md"
           onMouseDown={(event) => {
             // Fields in the panel take focus, the buttons do not
             if (!(event.target instanceof HTMLInputElement) && !(event.target instanceof HTMLSelectElement)) event.preventDefault();
@@ -194,8 +211,9 @@ export function BordersMenu({ editor, compact }: Props) {
               {t("borders.applyPen")}
             </Button>
           </div>
-        </div>
-      )}
+        </div>,
+        document.body,
+        )}
     </div>
   );
 }
