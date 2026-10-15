@@ -10,6 +10,7 @@ import { WatermarkSettings } from "./WatermarkSettings";
 import { ProfileSettings } from "./ProfileSettings";
 import { AdvancedForm, useAdvancedState } from "./AdvancedForm";
 import { ListSettings } from "./ListSettings";
+import { ShortcutsView } from "../shortcuts/ShortcutsView";
 import { EditorAppearanceSettings, EditorPreviewSettings, EditorStatementSettings, EditorWritingSettings } from "./EditorSettings";
 import {
   SETTINGS_PAGES,
@@ -198,6 +199,8 @@ function PageBody({ pageId, onThesisSaved, advanced }: { pageId: SettingsPageId;
       );
     case "thesisInfo":
       return <ConfigForm embedded part="info" onSaved={onThesisSaved} />;
+    case "editorShortcuts":
+      return <ShortcutsView />;
     case "thesisLists":
       return <ListSettings state={advanced.state} onSave={advanced.save} />;
     default:

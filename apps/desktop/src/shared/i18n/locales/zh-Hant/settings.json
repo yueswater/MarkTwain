@@ -253,6 +253,10 @@
     "thesisLists": {
       "title": "清單",
       "description": "每一層清單用什麼符號或編號。會改變 PDF，編輯器也會跟著顯示。"
+    },
+    "editorShortcuts": {
+      "title": "快捷鍵",
+      "description": "所有快捷鍵，依區域分組。工具列按鈕的提示也會顯示對應的按鍵。"
     }
   },
   "search": {
@@ -361,6 +365,61 @@
       "triangle": "三角形",
       "diamond": "菱形",
       "arrow": "箭頭"
+    }
+  },
+  "shortcuts": {
+    "title": "快捷鍵",
+    "description": "Mod 在 macOS 是 ⌘，在 Windows 與 Linux 是 Ctrl。",
+    "search": "搜尋名稱或按鍵",
+    "platform": "平台",
+    "platforms": {
+      "mac": "macOS",
+      "win": "Windows",
+      "linux": "Linux"
+    },
+    "none": "沒有符合的快捷鍵。",
+    "noKey": "沒有快捷鍵",
+    "groups": {
+      "text": "文字",
+      "blocks": "區塊",
+      "insert": "插入",
+      "edit": "編輯與搜尋",
+      "app": "應用程式"
+    },
+    "commands": {
+      "paragraph": "內文",
+      "heading2": "節標題",
+      "heading3": "小節標題",
+      "heading4": "小小節標題",
+      "bold": "粗體",
+      "italic": "斜體",
+      "strike": "刪除線",
+      "code": "行內程式碼",
+      "bulletList": "符號清單",
+      "orderedList": "編號清單",
+      "blockquote": "引文",
+      "codeBlock": "程式碼區塊",
+      "table": "插入表格",
+      "displayMath": "獨立公式",
+      "image": "插入圖片",
+      "inlineMath": "行內公式",
+      "footnote": "腳註",
+      "citation": "文獻引用",
+      "crossRef": "交叉引用",
+      "equationName": "公式名稱",
+      "peekReference": "預覽引用的內容",
+      "undo": "復原",
+      "redo": "重做",
+      "find": "在文件中尋找",
+      "searchProject": "搜尋整個專案",
+      "save": "立即儲存",
+      "newProject": "新增專案",
+      "openProject": "開啟專案",
+      "closeProject": "關閉專案",
+      "settings": "設定",
+      "toggleSidebar": "收合或展開側邊欄",
+      "togglePreview": "顯示或隱藏預覽",
+      "shortcuts": "快捷鍵一覽"
     }
   }
 }

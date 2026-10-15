@@ -253,6 +253,10 @@
     "thesisLists": {
       "title": "Lists",
       "description": "The marker of each level of a list. It changes the PDF, and the editor shows it too."
+    },
+    "editorShortcuts": {
+      "title": "Shortcuts",
+      "description": "Every shortcut by area. The tooltip of a toolbar button shows its keys too."
     }
   },
   "search": {
@@ -361,6 +365,61 @@
       "triangle": "Triangle",
       "diamond": "Diamond",
       "arrow": "Arrow"
+    }
+  },
+  "shortcuts": {
+    "title": "Keyboard shortcuts",
+    "description": "On macOS the main key is ⌘, on Windows and Linux it is Ctrl.",
+    "search": "Search a name or keys",
+    "platform": "Platform",
+    "platforms": {
+      "mac": "macOS",
+      "win": "Windows",
+      "linux": "Linux"
+    },
+    "none": "No shortcut matches.",
+    "noKey": "No shortcut",
+    "groups": {
+      "text": "Text",
+      "blocks": "Blocks",
+      "insert": "Insert",
+      "edit": "Edit and search",
+      "app": "App"
+    },
+    "commands": {
+      "paragraph": "Paragraph",
+      "heading2": "Section heading",
+      "heading3": "Subsection heading",
+      "heading4": "Sub-subsection heading",
+      "bold": "Bold",
+      "italic": "Italic",
+      "strike": "Strikethrough",
+      "code": "Inline code",
+      "bulletList": "Bullet list",
+      "orderedList": "Numbered list",
+      "blockquote": "Quote",
+      "codeBlock": "Code block",
+      "table": "Insert a table",
+      "displayMath": "Display formula",
+      "image": "Insert an image",
+      "inlineMath": "Inline formula",
+      "footnote": "Footnote",
+      "citation": "Citation",
+      "crossRef": "Cross-reference",
+      "equationName": "Name of the formula",
+      "peekReference": "Peek at what a reference points to",
+      "undo": "Undo",
+      "redo": "Redo",
+      "find": "Find in the document",
+      "searchProject": "Search the project",
+      "save": "Save now",
+      "newProject": "New project",
+      "openProject": "Open project",
+      "closeProject": "Close project",
+      "settings": "Settings",
+      "toggleSidebar": "Fold or open the sidebar",
+      "togglePreview": "Show or hide the preview",
+      "shortcuts": "Keyboard shortcuts"
     }
   }
 }

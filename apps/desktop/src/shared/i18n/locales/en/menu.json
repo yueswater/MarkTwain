@@ -30,6 +30,7 @@
   },
   "help": {
     "label": "Help",
-    "website": "MarkTwain on GitHub"
+    "website": "MarkTwain on GitHub",
+    "shortcuts": "Keyboard Shortcuts"
   }
 }
