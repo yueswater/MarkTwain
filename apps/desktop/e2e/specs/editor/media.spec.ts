@@ -2,7 +2,7 @@ import { expect, test } from "../../support/test";
 import { PNG_1X1, makePng } from "../../support/png";
 import { writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { closeProject, createProject } from "../../support/project";
+import { closeProject, createProject, savedChapter } from "../../support/project";
 
 test("an image is stored in the project, shown in the editor, and saved as Markdown", async ({ launch }) => {
   const { app, dir, file } = await launch({ name: "圖片", projectName: "論文.marktwain", env: (folder) => ({ MARKTWAIN_TEST_IMAGE_PATH: join(folder, "我的 圖.png") }) });
@@ -33,13 +33,7 @@ test("an image is stored in the project, shown in the editor, and saved as Markd
   await page.getByRole("button", { name: "Open project" }).click();
   await expect.poll(() => editor.locator("figure img").evaluate((el: HTMLImageElement) => el.naturalWidth)).toBe(1);
 
-  const text = await page.evaluate(async () => {
-    const list = await window.marktwain.invoke("document:list");
-    if (!list.ok) return "";
-    const chapter = list.data.find((d) => d.kind === "chapter");
-    const doc = chapter && (await window.marktwain.invoke("document:get", { id: chapter.id }));
-    return doc && doc.ok ? doc.data.text : "";
-  });
+  const text = await savedChapter(page);
   expect(text).toMatch(/!\[Sample\]\(images\/[0-9a-f]{16}\.png\)\{[^}]*width=60%[^}]*\}/);
 });
 

@@ -1,5 +1,5 @@
 import { expect, test } from "../../support/test";
-import { createProject } from "../../support/project";
+import { createProject, savedChapter } from "../../support/project";
 
 test("code blocks take a language, are highlighted, and keep it in the Markdown", async ({ launch }) => {
   const { app, file } = await launch({ name: "程式碼", projectName: "論文.marktwain" });
@@ -36,13 +36,7 @@ test("code blocks take a language, are highlighted, and keep it in the Markdown"
   await expect(editor.locator("pre code .hljs-keyword").first()).toHaveText("def");
   await expect(editor.locator("pre code .hljs-string")).toHaveCount(1);
   await expect(page.getByRole("status")).toHaveText("Saved");
-  const text = await page.evaluate(async () => {
-    const list = await window.marktwain.invoke("document:list");
-    if (!list.ok) return "";
-    const chapter = list.data.find((d) => d.kind === "chapter");
-    const doc = chapter && (await window.marktwain.invoke("document:get", { id: chapter.id }));
-    return doc && doc.ok ? doc.data.text : "";
-  });
+  const text = await savedChapter(page);
   expect(text).toBe('```python\ndef hello():\n    return "hi"\n```\n');
 });
 

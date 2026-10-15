@@ -1,6 +1,6 @@
 import { expect, test } from "../../support/test";
 import { resolve } from "node:path";
-import { closeProject, createProject, openRecent } from "../../support/project";
+import { closeProject, createProject, openRecent, savedChapter } from "../../support/project";
 
 test("footnotes, citations and cross-references can be inserted, shown, and saved as Markdown", async ({ launch }) => {
   const { app, file } = await launch({ name: "引用", projectName: "論文.marktwain" });
@@ -53,13 +53,7 @@ test("footnotes, citations and cross-references can be inserted, shown, and save
   await dialog.getByRole("button", { name: "Update" }).click();
   await expect(page.getByRole("status")).toHaveText("Saved");
 
-  const text = await page.evaluate(async () => {
-    const list = await window.marktwain.invoke("document:list");
-    if (!list.ok) return "";
-    const chapter = list.data.find((d) => d.kind === "chapter");
-    const doc = chapter && (await window.marktwain.invoke("document:get", { id: chapter.id }));
-    return doc && doc.ok ? doc.data.text : "";
-  });
+  const text = await savedChapter(page);
   expect(text).toMatch(/^## Motivation \{#sec:[0-9a-f]{4}\}\n/);
   expect(text).toMatch(/As shown in @sec:[0-9a-f]{4} and noted\[\^1\] see \[@wang2020; @lee2019\]/);
   expect(text).toContain("[^1]: Edited.");

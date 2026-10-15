@@ -1,5 +1,5 @@
 import { expect, test } from "../../support/test";
-import { createProject } from "../../support/project";
+import { createProject, savedChapter } from "../../support/project";
 
 test("math can be inserted from the dialog, typed with $…$, edited, and saved as Markdown", async ({ launch }) => {
   const { app, file } = await launch({ name: "公式", projectName: "論文.marktwain" });
@@ -39,13 +39,7 @@ test("math can be inserted from the dialog, typed with $…$, edited, and saved 
   await expect(editor.locator("[data-type='block-math']")).toHaveCount(1);
   await expect(page.getByRole("status")).toHaveText("Saved");
 
-  const text = await page.evaluate(async () => {
-    const list = await window.marktwain.invoke("document:list");
-    if (!list.ok) return "";
-    const chapter = list.data.find((d) => d.kind === "chapter");
-    const doc = chapter && (await window.marktwain.invoke("document:get", { id: chapter.id }));
-    return doc && doc.ok ? doc.data.text : "";
-  });
+  const text = await savedChapter(page);
   expect(text).toContain("$z^3$，且設$y=1$");
   expect(text).toContain("$$\nE=mc^2\n$$");
 });

@@ -1,5 +1,5 @@
 import { expect, test } from "../../support/test";
-import { closeProject, createProject } from "../../support/project";
+import { closeProject, createProject, savedChapter } from "../../support/project";
 
 test("typing in the editor is saved as Markdown and survives a reopen", async ({ launch }) => {
   const { app, file } = await launch({ name: "編輯", lang: "zh-TW", projectName: "論文.marktwain" });
@@ -31,13 +31,7 @@ test("typing in the editor is saved as Markdown and survives a reopen", async ({
   await expect(page.locator(".ProseMirror strong")).toHaveText("重點");
 
   // The file stores Markdown, not JSON
-  const text = await page.evaluate(async () => {
-    const list = await window.marktwain.invoke("document:list");
-    if (!list.ok) return "";
-    const chapter = list.data.find((d) => d.kind === "chapter");
-    const doc = chapter && (await window.marktwain.invoke("document:get", { id: chapter.id }));
-    return doc && doc.ok ? doc.data.text : "";
-  });
+  const text = await savedChapter(page);
   expect(text).toBe("# 緒論\n\n這是**重點**內文。\n");
 });
 

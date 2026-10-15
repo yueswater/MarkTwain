@@ -2,7 +2,7 @@ import { expect, test } from "../../support/test";
 import { PNG_1X1 } from "../../support/png";
 import { writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { createProject } from "../../support/project";
+import { createProject, savedChapter } from "../../support/project";
 
 test("tables get rows, a caption and notes; definition lists keep term and description", async ({ launch }) => {
   const { app, file } = await launch({ name: "表格", projectName: "論文.marktwain" });
@@ -44,13 +44,7 @@ test("tables get rows, a caption and notes; definition lists keep term and descr
   await expect(editor.locator("dl dd")).toHaveText("Learning rate");
   await expect(page.getByRole("status")).toHaveText("Saved");
 
-  const text = await page.evaluate(async () => {
-    const list = await window.marktwain.invoke("document:list");
-    if (!list.ok) return "";
-    const chapter = list.data.find((d) => d.kind === "chapter");
-    const doc = chapter && (await window.marktwain.invoke("document:get", { id: chapter.id }));
-    return doc && doc.ok ? doc.data.text : "";
-  });
+  const text = await savedChapter(page);
   expect(text).toContain("| A");
   expect(text).toContain("Results");
   expect(text).toContain("Source: survey");
@@ -106,13 +100,7 @@ test("tables can be merged, aligned, restyled and given a row height", async ({ 
   await expect(page.getByLabel("Column width")).toHaveValue("30");
   await expect(page.getByRole("status")).toHaveText("Saved");
 
-  const text = await page.evaluate(async () => {
-    const list = await window.marktwain.invoke("document:list");
-    if (!list.ok) return "";
-    const chapter = list.data.find((d) => d.kind === "chapter");
-    const doc = chapter && (await window.marktwain.invoke("document:get", { id: chapter.id }));
-    return doc && doc.ok ? doc.data.text : "";
-  });
+  const text = await savedChapter(page);
   expect(text).toContain("| A | B | C |");
   expect(text).toContain("---:");
   expect(text).toContain("cells=2.1:colspan=2");
@@ -147,13 +135,7 @@ test("a table or figure without a caption has no number, and an image never land
   await expect(editor.locator("figure")).toHaveCount(1);
   await expect(page.getByRole("status")).toHaveText("Saved");
 
-  const text = await page.evaluate(async () => {
-    const list = await window.marktwain.invoke("document:list");
-    if (!list.ok) return "";
-    const chapter = list.data.find((d) => d.kind === "chapter");
-    const doc = chapter && (await window.marktwain.invoke("document:get", { id: chapter.id }));
-    return doc && doc.ok ? doc.data.text : "";
-  });
+  const text = await savedChapter(page);
   expect(text).toMatch(/\|\n\n!\[\]\(images\/[0-9a-f]{16}\.png\)\n$/);
   expect(text).not.toContain(": !");
 });
