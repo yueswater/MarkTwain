@@ -11,6 +11,8 @@ type Props = {
   query: string;
   rect: DOMRect | null;
   onPick: (item: SlashItem) => void;
+  /** The name of an item, the author may have renamed the heading levels */
+  nameOf: (item: SlashItem) => string;
 };
 
 const ESCAPE_KEY = "esc";
@@ -18,7 +20,7 @@ const LIST_WIDTH = 288;
 const PANEL_WIDTH = 248;
 
 /** The list of blocks under the cursor, and at its side a description or a drawing of the one that is chosen. */
-export const SlashMenu = forwardRef<SlashMenuHandle, Props>(function SlashMenu({ items, query, rect, onPick }, ref) {
+export const SlashMenu = forwardRef<SlashMenuHandle, Props>(function SlashMenu({ items, query, rect, onPick, nameOf }, ref) {
   const { t } = useTranslation("editor");
   const [index, setIndex] = useState(0);
   const list = useRef<HTMLDivElement>(null);
@@ -94,7 +96,7 @@ export const SlashMenu = forwardRef<SlashMenuHandle, Props>(function SlashMenu({
                     className={cn("flex h-9 w-full items-center gap-2.5 rounded-md px-2 text-left text-sm", itemIndex === index && "bg-muted")}
                   >
                     <item.icon className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-                    <span className="min-w-0 flex-1 truncate">{t(`slash.items.${item.id}.name`)}</span>
+                    <span className="min-w-0 flex-1 truncate">{nameOf(item)}</span>
                     {item.markdown && <kbd className="font-mono text-xs text-muted-foreground">{item.markdown}</kbd>}
                   </button>
                 ))}
@@ -112,7 +114,7 @@ export const SlashMenu = forwardRef<SlashMenuHandle, Props>(function SlashMenu({
           <div className="mb-2 min-h-16 rounded-md bg-background p-3">
             <SlashPreview item={current} level={level} />
           </div>
-          <p className="text-sm font-medium">{t(`slash.items.${current.id}.name`)}</p>
+          <p className="text-sm font-medium">{nameOf(current)}</p>
           <p className="mt-0.5 text-xs text-muted-foreground">{t(`slash.items.${current.id}.description`)}</p>
         </aside>
       )}

@@ -47,6 +47,7 @@ export const SlashCommand = Extension.create<Options>({
             query: p.query,
             rect: p.clientRect?.() ?? null,
             onPick: p.command,
+            nameOf,
           });
           return {
             onStart: (p) => {

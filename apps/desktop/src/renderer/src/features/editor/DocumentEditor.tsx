@@ -50,6 +50,7 @@ import { PlacementMarks } from "./extensions/placement-marks";
 import { StatementDecorations, STATEMENTS_CHANGED } from "./extensions/statement-decorations";
 import { StatementDialog, type StatementTarget } from "./StatementDialog";
 import { statementOf } from "./statement-heads";
+import { headingName } from "./heading-names";
 import { unwrapStatement, updateStatement } from "./statement-commands";
 
 type Props = {
@@ -213,7 +214,12 @@ function EditorSurface({
         EquationShortcut,
         SlashCommand.configure({
           handlers: () => slashRef.current,
-          nameOf: (item) => tRef.current(`slash.items.${item.id}.name`),
+          nameOf: (item) => {
+            const own = tRef.current(`slash.items.${item.id}.name`);
+            // The author may have named the heading levels
+            const level = /^heading([234])$/.exec(item.id)?.[1];
+            return level ? headingName(Number(level) as 2 | 3 | 4, prefsRef.current.headingNames, own) : own;
+          },
         }),
         MarkdownPaste.configure({ enabled: () => prefsRef.current.pasteMarkdown }),
         Placeholder.configure({ placeholder: t("placeholder") }),

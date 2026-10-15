@@ -12,10 +12,10 @@
     "redo": "重做",
     "block": "文字樣式",
     "paragraph": "內文",
-    "heading1": "標題 1",
-    "heading2": "標題 2",
-    "heading3": "標題 3",
-    "heading4": "標題 4",
+    "heading1": "章標題",
+    "heading2": "節",
+    "heading3": "小節",
+    "heading4": "小小節",
     "bold": "粗體",
     "italic": "斜體",
     "strike": "刪除線",
@@ -241,20 +241,16 @@
         "name": "文字",
         "description": "一般的文字，內文預設的區塊。"
       },
-      "heading1": {
-        "name": "標題 1",
-        "description": "一章的標題。"
-      },
       "heading2": {
-        "name": "標題 2",
+        "name": "節",
         "description": "章裡一節的標題。"
       },
       "heading3": {
-        "name": "標題 3",
+        "name": "小節",
         "description": "一小節的標題。"
       },
       "heading4": {
-        "name": "標題 4",
+        "name": "小小節",
         "description": "小節底下較小的標題。"
       },
       "bulletList": {

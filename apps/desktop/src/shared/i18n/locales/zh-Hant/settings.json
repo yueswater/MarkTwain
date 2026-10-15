@@ -36,7 +36,10 @@
     "statementColored": "彩色",
     "statementColor": "顏色",
     "statementColorReset": "還原預設色",
-    "statementHex": "色碼"
+    "statementHex": "色碼",
+    "headingNames": "標題層級的名稱",
+    "headingNamesHint": "工具列和 / 選單裡第 2、3、4 層標題的名稱，留空就用預設。",
+    "headingLevel": "第 {{level}} 層"
   },
   "group": {
     "page": "頁面",

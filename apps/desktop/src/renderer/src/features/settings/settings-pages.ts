@@ -84,6 +84,7 @@ const EDITOR_ENTRIES: readonly [SettingsPageId, string][] = [
   ["editorAppearance", "fontSize"],
   ["editorAppearance", "lineHeight"],
   ["editorAppearance", "contentWidth"],
+  ["editorWriting", "headingNames"],
   ["editorWriting", "lineNumbers"],
   ["editorWriting", "spellcheck"],
   ["editorWriting", "codeFontSize"],

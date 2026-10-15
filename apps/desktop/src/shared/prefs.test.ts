@@ -19,6 +19,13 @@ describe("sanitizePrefs", () => {
   });
 });
 
+describe("heading names", () => {
+  it("keeps three short names and empties what is not a name", () => {
+    expect(sanitizePrefs({ headingNames: [" 節 ", "x".repeat(40), 5] }).headingNames).toEqual(["節", "x".repeat(16), ""]);
+    expect(sanitizePrefs({ headingNames: "節" }).headingNames).toEqual(["", "", ""]);
+  });
+});
+
 describe("statement prefs", () => {
   it("keeps the style and only valid colors of known kinds", () => {
     const prefs = sanitizePrefs({ statementStyle: "colored", statementColors: { lemma: "#abcdef", theorem: "red", nope: "#000000" } });

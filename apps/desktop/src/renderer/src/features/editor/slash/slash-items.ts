@@ -3,7 +3,6 @@ import {
   AsteriskIcon,
   BookMarkedIcon,
   FileCodeIcon,
-  Heading1Icon,
   Heading2Icon,
   Heading3Icon,
   Heading4Icon,
@@ -51,7 +50,6 @@ const here = (editor: Editor, range: Range) => editor.chain().focus().deleteRang
 
 const BASE_ITEMS: readonly SlashItem[] = [
   { id: "text", group: "basic", icon: TypeIcon, aliases: ["paragraph", "text", "文字", "段落", "內文"], preview: "text", run: (e, r) => here(e, r).setParagraph().run() },
-  { id: "heading1", group: "basic", icon: Heading1Icon, aliases: ["h1", "heading", "title", "標題", "章"], markdown: "#", preview: "heading", run: (e, r) => here(e, r).setHeading({ level: 1 }).run() },
   { id: "heading2", group: "basic", icon: Heading2Icon, aliases: ["h2", "heading", "section", "標題", "節"], markdown: "##", preview: "heading", run: (e, r) => here(e, r).setHeading({ level: 2 }).run() },
   { id: "heading3", group: "basic", icon: Heading3Icon, aliases: ["h3", "heading", "subsection", "標題", "小節"], markdown: "###", preview: "heading", run: (e, r) => here(e, r).setHeading({ level: 3 }).run() },
   { id: "heading4", group: "basic", icon: Heading4Icon, aliases: ["h4", "heading", "標題"], markdown: "####", preview: "heading", run: (e, r) => here(e, r).setHeading({ level: 4 }).run() },

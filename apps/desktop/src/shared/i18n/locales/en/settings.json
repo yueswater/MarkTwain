@@ -36,7 +36,10 @@
     "statementColored": "Colored",
     "statementColor": "Color",
     "statementColorReset": "Reset color",
-    "statementHex": "Hex code"
+    "statementHex": "Hex code",
+    "headingNames": "Names of the heading levels",
+    "headingNamesHint": "How levels 2, 3 and 4 are called in the toolbar and the slash menu. Empty keeps the default.",
+    "headingLevel": "Level {{level}}"
   },
   "group": {
     "page": "Page",

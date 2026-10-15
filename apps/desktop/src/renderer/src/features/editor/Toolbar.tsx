@@ -27,6 +27,8 @@ import {
 } from "lucide-react";
 import { STATEMENT_KINDS } from "@marktwain/schema";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { usePrefs } from "@/lib/prefs";
+import { headingName } from "./heading-names";
 import { insertStatement } from "./statement-commands";
 import { statementIcon } from "./statement-icons";
 import { useTranslation } from "react-i18next";
@@ -51,8 +53,8 @@ type Props = {
   onInsertTable: () => void;
 };
 
-const BLOCKS = ["paragraph", "heading1", "heading2", "heading3", "heading4"] as const;
-type Block = (typeof BLOCKS)[number];
+const BLOCKS = ["paragraph", "heading2", "heading3", "heading4"] as const;
+type Block = (typeof BLOCKS)[number] | "heading1";
 
 function currentBlock(editor: Editor): Block {
   for (let level = 1; level <= 4; level++) {
@@ -106,6 +108,8 @@ function insertDefinition(editor: Editor, inList: boolean): void {
 
 export function Toolbar({ editor, onInsertMath, onInsertAtom, onEditCaption, onInsertImage, onInsertTable }: Props) {
   const { t } = useTranslation("editor");
+  const { prefs } = usePrefs();
+  const blockName = (block: string) => (block.startsWith("heading") && block !== "heading1" ? headingName(Number(block.slice(-1)) as 2 | 3 | 4, prefs.headingNames, t(`toolbar.${block}`)) : t(`toolbar.${block}`));
 
   // Recompute button state when the selection or content changes
   const state = useEditorState({
@@ -169,9 +173,11 @@ export function Toolbar({ editor, onInsertMath, onInsertAtom, onEditCaption, onI
           <SelectValue />
         </SelectTrigger>
         <SelectContent onCloseAutoFocus={(event) => { event.preventDefault(); editor.commands.focus(); }}>
+          {/* The chapter title is not chosen here, it is listed only while the cursor is in one */}
+          {state.block === "heading1" && <SelectItem value="heading1">{t("toolbar.heading1")}</SelectItem>}
           {BLOCKS.map((block) => (
             <SelectItem key={block} value={block}>
-              {t(`toolbar.${block}`)}
+              {blockName(block)}
             </SelectItem>
           ))}
         </SelectContent>

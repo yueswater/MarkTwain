@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/select";
 import { usePrefs } from "@/lib/prefs";
 import { Button } from "@/components/ui/button";
+import { NAMED_LEVELS } from "../editor/heading-names";
 import { Input } from "@/components/ui/input";
 import { isHexColor, STATEMENT_KINDS } from "@marktwain/schema";
 import { PREF_LIMITS } from "../../../../shared/prefs";
@@ -90,9 +91,31 @@ export function EditorAppearanceSettings() {
 /** Writing, saving and pasting. */
 export function EditorWritingSettings() {
   const { t } = useTranslation("settings");
+  const { t: tEditor } = useTranslation("editor");
   const { prefs, setPrefs } = usePrefs();
   return (
     <div>
+      <SettingsRow
+        id="setting-editor-headingNames"
+        label={t("editor.headingNames")}
+        hint={t("editor.headingNamesHint")}
+        control={
+          <div className="flex gap-2">
+            {NAMED_LEVELS.map((level) => (
+              <Input
+                key={level}
+                aria-label={`${t("editor.headingNames")} ${t("editor.headingLevel", { level })}`}
+                title={t("editor.headingLevel", { level })}
+                value={prefs.headingNames[level - 2] ?? ""}
+                maxLength={16}
+                placeholder={tEditor(`toolbar.heading${level}`)}
+                className="h-8 w-24 text-sm"
+                onChange={(event) => setPrefs({ headingNames: prefs.headingNames.map((name, i) => (i === level - 2 ? event.target.value : name)) })}
+              />
+            ))}
+          </div>
+        }
+      />
       <SettingsRow
         id="setting-editor-lineNumbers"
         label={t("editor.lineNumbers")}

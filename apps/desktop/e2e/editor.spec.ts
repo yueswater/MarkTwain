@@ -926,12 +926,14 @@ test("a slash opens a list of blocks with a description or a drawing of the chos
     // The list opens at a slash, with groups, shortcuts and a panel for the chosen block
     await page.keyboard.type("/");
     await expect(menu).toBeVisible();
-    await expect(menu.getByRole("option", { name: /Heading 1/ })).toContainText("#");
+    // The title of a chapter is not in the list, the levels below it are named section and subsection
+    await expect(menu.getByRole("option", { name: /Heading 1/ })).toHaveCount(0);
+    await expect(menu.getByRole("option", { name: /^Section/ })).toContainText("##");
     await expect(preview).toContainText("Text");
     // The arrows move the choice and the panel follows
     await page.keyboard.press("ArrowDown");
-    await expect(preview).toContainText("Heading 1");
-    await expect(preview).toContainText("The title of a chapter");
+    await expect(preview).toContainText("Section");
+    await expect(preview).toContainText("The title of a section in a chapter");
 
     // Typing narrows the list in either language, Enter inserts the block and takes the slash away
     await page.keyboard.type("tab");

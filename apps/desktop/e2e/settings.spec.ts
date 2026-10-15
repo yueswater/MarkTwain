@@ -293,3 +293,38 @@ test("delays are chosen with ten step sliders and sizes with named levels", asyn
     rmSync(dir, { recursive: true, force: true });
   }
 });
+
+test("the heading menu has no heading 1, names the other levels, and the names can be changed", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "marktwain 標題名 "));
+  const args = [`--user-data-dir=${join(dir, "userData")}`, "--lang=en-US"];
+  if (process.platform === "linux") args.push("--no-sandbox");
+  const app = await electron.launch({
+    executablePath: findPackagedExecutable(dist),
+    args,
+    env: { ...process.env, MARKTWAIN_TEST_DIALOG_PATH: join(dir, "p.marktwain"), MARKTWAIN_TEST_NO_PROFILE_DIALOG: "1" },
+  });
+  try {
+    const page = await app.firstWindow();
+    await page.getByRole("button", { name: "New project" }).click();
+    await page.locator(".ProseMirror").click();
+    await page.getByRole("combobox", { name: "Text style" }).click();
+    await expect(page.getByRole("option")).toHaveText(["Paragraph", "Section", "Subsection", "Sub-subsection"]);
+    await page.keyboard.press("Escape");
+
+    // A name of the author's own replaces the default in the toolbar and in the slash menu
+    await page.keyboard.press("ControlOrMeta+,");
+    const dialog = page.getByRole("dialog", { name: "Settings" });
+    await dialog.getByRole("button", { name: "Writing", exact: true }).click();
+    await dialog.getByRole("textbox", { name: /Names of the heading levels Level 2/ }).fill("Part");
+    await page.keyboard.press("Escape");
+    await page.getByRole("combobox", { name: "Text style" }).click();
+    await expect(page.getByRole("option")).toHaveText(["Paragraph", "Part", "Subsection", "Sub-subsection"]);
+    await page.keyboard.press("Escape");
+    await page.locator(".ProseMirror").click();
+    await page.keyboard.type("/");
+    await expect(page.getByTestId("slash-menu").getByRole("option", { name: /^Part/ })).toBeVisible();
+  } finally {
+    await app.close();
+    rmSync(dir, { recursive: true, force: true });
+  }
+});

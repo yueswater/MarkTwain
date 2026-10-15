@@ -7,6 +7,8 @@ export type EditorPrefs = {
   lineHeight: number;
   /** Width of the text column */
   contentWidth: "narrow" | "normal" | "wide";
+  /** What the heading levels 2, 3 and 4 are called in the toolbar and the slash menu, an empty name keeps the default of the language */
+  headingNames: string[];
   /** Number the top level blocks in the margin */
   lineNumbers: boolean;
   spellcheck: boolean;
@@ -28,6 +30,7 @@ export const DEFAULT_PREFS: EditorPrefs = {
   fontSize: 16,
   lineHeight: 1.75,
   contentWidth: "normal",
+  headingNames: ["", "", ""],
   lineNumbers: true,
   spellcheck: false,
   fontFamily: "sans",
@@ -58,6 +61,9 @@ export function sanitizePrefs(input: unknown, base: EditorPrefs = DEFAULT_PREFS)
   const pick = <T extends string>(value: unknown, allowed: readonly T[], fallback: T): T =>
     allowed.includes(value as T) ? (value as T) : fallback;
   const bool = (value: unknown, fallback: boolean) => (typeof value === "boolean" ? value : fallback);
+  // Three short names, anything else is an empty one
+  const names = (value: unknown, fallback: string[]): string[] =>
+    Array.isArray(value) ? [0, 1, 2].map((i) => (typeof value[i] === "string" ? (value[i] as string).trim().slice(0, 16) : (fallback[i] ?? ""))) : fallback;
   // Only known kinds with a hex color are kept
   const colors = (value: unknown, fallback: Record<string, string>): Record<string, string> => {
     if (!value || typeof value !== "object") return fallback;
@@ -72,6 +78,7 @@ export function sanitizePrefs(input: unknown, base: EditorPrefs = DEFAULT_PREFS)
     fontSize: Math.round(clamp(data.fontSize ?? base.fontSize, PREF_LIMITS.fontSize, base.fontSize)),
     lineHeight: Math.round(clamp(data.lineHeight ?? base.lineHeight, PREF_LIMITS.lineHeight, base.lineHeight) * 100) / 100,
     contentWidth: pick(data.contentWidth ?? base.contentWidth, ["narrow", "normal", "wide"], base.contentWidth),
+    headingNames: names(data.headingNames ?? base.headingNames, base.headingNames),
     lineNumbers: bool(data.lineNumbers ?? base.lineNumbers, base.lineNumbers),
     spellcheck: bool(data.spellcheck ?? base.spellcheck, base.spellcheck),
     fontFamily: pick(data.fontFamily ?? base.fontFamily, ["sans", "serif"], base.fontFamily),
