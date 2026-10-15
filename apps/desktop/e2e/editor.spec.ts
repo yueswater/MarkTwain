@@ -1027,7 +1027,7 @@ test("hovering a reference or a footnote opens a card with what it points to", a
     await expect(card).toContainText("Shares of the settings");
     // A formula in a cell is drawn, not shown as its source
     await expect(card.locator("table .katex")).toBeVisible();
-    await expect(card).not.toContainText("a_1");
+    await expect(card).not.toContainText("$");
 
     // A reference to nothing says so, the card of the one before may lie over it, so the pointer leaves first
     await page.mouse.move(5, 5);
