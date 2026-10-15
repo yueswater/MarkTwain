@@ -58,7 +58,12 @@ test("the preview follows the caret of the editor, keeps its page after a rebuil
     const number = async () => (await page.evaluate(() => document.getSelection()?.anchorNode?.textContent ?? "")).match(/number (\d+)/)?.[1];
     const before = Number(await number());
     const box = (await page.getByTestId("preview-pages").boundingBox())!;
-    await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+    // The page that is shown may have the caret paragraph at its middle, so a few places are tried until one is another paragraph
+    for (const share of [0.5, 0.25, 0.75, 0.12]) {
+      await page.mouse.click(box.x + box.width / 2, box.y + box.height * share);
+      await page.waitForTimeout(1500);
+      if (Number(await number()) !== before) break;
+    }
     await expect.poll(async () => Number(await number()), { timeout: 15_000 }).not.toBe(before);
     expect(Math.abs(Number(await number()) - before)).toBeLessThan(10);
     // The paragraph is shown in the middle of the editor

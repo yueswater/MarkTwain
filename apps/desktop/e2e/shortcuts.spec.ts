@@ -36,12 +36,12 @@ test("shortcuts of thesis actions work in the editor, the buttons show their key
     await page.keyboard.press("ControlOrMeta+Shift+8");
 
     // Keys that open a dialog
-    await page.keyboard.press("ControlOrMeta+Alt+T");
+    await page.keyboard.press("ControlOrMeta+Alt+t");
     await expect(page.getByRole("dialog", { name: /table/i })).toBeVisible();
     await page.keyboard.press("Escape");
     await expect(page.getByRole("dialog")).toHaveCount(0);
     await editor.click();
-    await page.keyboard.press("ControlOrMeta+Alt+F");
+    await page.keyboard.press("ControlOrMeta+Alt+f");
     await expect(page.getByRole("dialog", { name: /footnote/i })).toBeVisible();
     await page.keyboard.press("Escape");
     await expect(page.getByRole("dialog")).toHaveCount(0);
