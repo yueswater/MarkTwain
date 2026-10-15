@@ -436,6 +436,24 @@ maybe("buildTypst with the real template", () => {
     }
   }, 120_000);
 
+  it("returns the error and leaves nothing behind when the build fails while the anchors are being read", async () => {
+    const work = mkdtempSync(join(tmpdir(), "marktwain 錯誤 "));
+    try {
+      // The query for the anchors runs beside the compile and fails too, so it is still running when the compile has returned
+      for (let round = 0; round < 3; round += 1) {
+        const result = await buildTypst({
+          ...input(work, { documents: [{ id: "c1", kind: "chapter", text: "# 標題\n\n![缺圖](images/missing.png)\n" }] }),
+          anchors: true,
+        });
+        expect(result.ok).toBe(false);
+        expect(result.diagnostics.some((d) => d.severity === "error")).toBe(true);
+        expect(readdirSync(work)).toEqual([]);
+      }
+    } finally {
+      rmSync(work, { recursive: true, force: true });
+    }
+  }, 180_000);
+
   it("falls back to source text for a formula that does not convert", async () => {
     const work = mkdtempSync(join(tmpdir(), "marktwain 公式 "));
     try {
