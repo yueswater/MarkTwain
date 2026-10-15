@@ -47,7 +47,7 @@ test("a landscape block is inserted from the slash menu and the shortcut, framed
     await expect(editor).toContainText("A wide table goes here");
 
     // The shortcut wraps the paragraph again
-    await page.keyboard.press("ControlOrMeta+Alt+L");
+    await page.keyboard.press("ControlOrMeta+Alt+w");
     await expect(editor.locator("div[data-landscape]")).toHaveCount(1);
   } finally {
     await app.close();
