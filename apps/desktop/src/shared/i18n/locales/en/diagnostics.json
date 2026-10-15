@@ -15,7 +15,7 @@
     },
     "build": {
       "busy": "A build is already running.",
-      "typst-missing": "Typst was not found. Install it or set MARKTWAIN_TYPST to its path.",
+      "typst-missing": "The bundled Typst is missing. Reinstall MarkTwain. When running from source, run pnpm typst:fetch or set MARKTWAIN_TYPST to the path of typst.",
       "template-missing": "The thesis template was not found. Run pnpm templates:fetch."
     },
     "export": {

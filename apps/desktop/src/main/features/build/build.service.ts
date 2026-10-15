@@ -20,7 +20,7 @@ export function pageCountOf(pdf: Uint8Array): number {
   return count;
 }
 
-export type BuildPaths = { typst: string; templateDir: string };
+export type BuildPaths = { typst: string; templateDir: string; packageCachePath?: string };
 
 type Runner = typeof buildTypst;
 type Exporter = typeof exportTypstProject;
@@ -52,7 +52,7 @@ export class BuildService {
 
   /** Everything the builder needs, read from the open project. */
   private input(): BuildInput {
-    const { typst, templateDir } = this.paths();
+    const { typst, templateDir, packageCachePath } = this.paths();
     if (!existsSync(templateDir)) throw new AppError(ErrorCode.BuildTemplateMissing);
     const documents = this.documents.list().map((summary) => {
       const doc = this.documents.get(summary.id);
@@ -62,6 +62,7 @@ export class BuildService {
       templateDir,
       workDir: this.workDir,
       typst,
+      packageCachePath,
       config: this.config.text(),
       documents,
       files: new AssetRepository(this.session.db).list(),

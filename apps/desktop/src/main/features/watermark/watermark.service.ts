@@ -96,7 +96,8 @@ export class WatermarkService {
     if (!data) return null;
     const key = `${name}:${data.length}`;
     if (!this.thumbnails.has(key)) {
-      const png = await this.thumbnail({ typst: this.paths().typst, workDir: this.workDir, name, data, width: 200 });
+      const { typst, packageCachePath } = this.paths();
+      const png = await this.thumbnail({ typst, packageCachePath, workDir: this.workDir, name, data, width: 200 });
       this.thumbnails.set(key, png ? `data:image/png;base64,${Buffer.from(png).toString("base64")}` : null);
     }
     return { name, thumbnail: this.thumbnails.get(key) ?? null };

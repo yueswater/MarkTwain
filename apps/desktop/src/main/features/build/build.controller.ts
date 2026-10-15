@@ -3,22 +3,29 @@ import { existsSync, readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join, resolve } from "node:path";
 import { IpcChannel } from "../../../shared/enums/ipc-channel.enum";
-import { PREVIEW_SCHEME, TEMPLATE_DIR_ENV, TYPST_PATH_ENV } from "../../config/app.config";
+import { PREVIEW_SCHEME, TEMPLATE_DIR_ENV, TYPST_PACKAGES_ENV, TYPST_PATH_ENV } from "../../config/app.config";
 import { handle } from "../../core/ipc";
 import type { BuildPaths, BuildService } from "./build.service";
+import { resolveTypstPaths } from "./typst-paths";
 
-/** Places where typst is usually installed, a GUI app does not inherit the shell PATH. */
-function typstCandidates(): string[] {
-  if (process.platform === "darwin") return ["/opt/homebrew/bin/typst", "/usr/local/bin/typst", join(homedir(), ".cargo/bin/typst")];
-  if (process.platform === "linux") return ["/usr/bin/typst", "/usr/local/bin/typst", join(homedir(), ".cargo/bin/typst")];
-  return [];
-}
-
-/** The typst executable and template folder, overridable for tests and development. */
+/** The typst executable, its packages and the template folder, overridable for tests and development. */
 export function resolveBuildPaths(): BuildPaths {
-  const root = app.isPackaged ? process.resourcesPath : resolve(app.getAppPath(), "../..");
+  const repoRoot = resolve(app.getAppPath(), "../..");
+  const root = app.isPackaged ? process.resourcesPath : repoRoot;
+  const { typst, packageCachePath } = resolveTypstPaths({
+    envTypst: process.env[TYPST_PATH_ENV],
+    envPackages: process.env[TYPST_PACKAGES_ENV],
+    packaged: app.isPackaged,
+    resourcesPath: process.resourcesPath,
+    repoRoot,
+    platform: process.platform,
+    arch: process.arch,
+    homeDir: homedir(),
+    exists: existsSync,
+  });
   return {
-    typst: process.env[TYPST_PATH_ENV] || typstCandidates().find((path) => existsSync(path)) || "typst",
+    typst,
+    packageCachePath,
     templateDir: process.env[TEMPLATE_DIR_ENV] || join(root, "resources", "templates", "typ"),
   };
 }
