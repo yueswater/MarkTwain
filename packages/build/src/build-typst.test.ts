@@ -322,10 +322,12 @@ maybe("buildTypst with the real template", () => {
     const home = mkdtempSync(join(tmpdir(), "marktwain home "));
     try {
       const result = await buildTypst(
-        input(work, { packageCachePath, env: offlineEnv(home), documents: [{ id: "c1", kind: "chapter", text: "# 標題\n\n內容。\n" }] }),
+        input(work, { packageCachePath, env: offlineEnv(home), anchors: true, documents: [{ id: "c1", kind: "chapter", text: "# 標題\n\n內容。\n" }] }),
       );
       expect(result.diagnostics.filter((d) => d.severity === "error")).toEqual([]);
       expect(result.ok).toBe(true);
+      // The anchors come from typst query or eval, which need the packages as well.
+      if (result.ok) expect(result.anchors.length).toBeGreaterThan(0);
       // Nothing was downloaded into the cache of the user.
       expect(readdirSync(home)).toEqual([]);
     } finally {
