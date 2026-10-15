@@ -441,11 +441,9 @@
     "styles": {
       "solid": "Solid",
       "dashed": "Dashed",
-      "dotted": "Dotted",
-      "double": "Double"
+      "dotted": "Dotted"
     },
     "color": "Line color",
-    "doubleNote": "The PDF has no double line, it is drawn solid.",
     "applyPen": "Apply to the lines of the selection",
     "points": "{{value}} pt"
   }
