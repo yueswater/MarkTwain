@@ -12,6 +12,7 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { TagInput } from "@/components/ui/tag-input";
 import {
   Select,
   SelectContent,
@@ -122,12 +123,12 @@ export function ConfigForm({ onSaved, embedded = false, part = "all", afterSchoo
 
   const keywords = (field: "keywords" | "keywordsEn") => (
     <Field key={field} id={`config-${field}`} label={t(`field.${field}`)} hint={t("hint.keywords")}>
-      <Input
+      <TagInput
         id={`config-${field}`}
-        defaultValue={fields[field].join(", ")}
-        onChange={(event) =>
-          update({ [field]: event.target.value.split(/[,，、]+/).map((item) => item.trim()).filter(Boolean) })
-        }
+        value={fields[field]}
+        removeLabel={(tag) => t("keywordRemove", { tag })}
+        placeholder={t("keywordPlaceholder")}
+        onChange={(list) => update({ [field]: list })}
       />
     </Field>
   );
