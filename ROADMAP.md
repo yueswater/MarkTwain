@@ -115,7 +115,7 @@ Writing mathematics, and tables that look like the page.
 
 The toolchain travels with the app, so a build needs nothing installed on the machine, and the page can be seen and edited side by side.
 
-- Typst 0.15.1 and the two `@preview` packages that the template imports (`kouhu` and `ipsum`) ship in the installer, pinned in `typst.lock.json` and fetched with `pnpm typst:fetch`. A packaged app never uses a Typst of the system, and there is no Docker. LaTeX is decided later: the system TeX Live first, then a small downloadable distribution, and Docker only as an option
+- Typst 0.15.1 and the two `@preview` packages that the template imports (`kouhu` and `ipsum`) ship in the installer, pinned in `typst.lock.json` and fetched with `pnpm typst:fetch`. A packaged app never uses a Typst of the system, and there is no Docker. LaTeX follows in v0.7.0 the same way, see there
 - The preview shows the PDF in a PDF viewer with working links. It follows the caret and the scroll of the editor, keeps its page after a rebuild, and a click in the PDF takes the caret to that text
 - Fonts are a page of their own: add fonts from the computer or by drag and drop, see which are in use, and the build prefers the fonts of the project. The font settings are selectors, and a Latin font with Chinese glyphs no longer takes the Chinese text
 - Lists take a marker for each level, from presets or a custom combination, drawn the same in the editor and in the PDF
@@ -143,10 +143,10 @@ Local version control that does not depend on git.
 The same content, rendered as LaTeX.
 
 - LaTeX renderer (shares the IR with Typst)
-- Detection of the system TeX Live (`xelatex`, `latexmk`, `citation-style-language`)
+- Finding a TeX Live (`xelatex`, `texlua`, `latexmk`, `citation-style-language`) through an environment variable or the PATH, as Typst is found in development. The installed app will carry its own, see v0.7.0
 - Runs the template's `gen.lua` and latexmk, and parses the TeX log
 
-**Done when:** the same sample thesis builds a LaTeX PDF. Without TeX Live, LaTeX output is disabled with install instructions, and Typst is unaffected.
+**Done when:** the same sample thesis builds a LaTeX PDF with the TeX Live of the developer. Without one, LaTeX output is disabled with a message, and Typst is unaffected.
 
 ## v0.6.0 · Thesis Features
 
@@ -163,12 +163,13 @@ The parts that make it a thesis.
 An installer that works without a network.
 
 - electron-builder: macOS (arm64 and x64), Windows (x64), Linux (x64); each installer is built on its own platform's CI runner
-- Bundled `typst`, templates, `@preview` package cache, and fonts. Typst 0.15.1 and the template packages are already in the installer from v0.3.6, for macOS arm64 and x64, Windows x64 and Linux x64, with no Docker. LaTeX is decided later: the system TeX Live first, then a small downloadable distribution, and Docker only as an option
+- Bundled `typst`, templates, `@preview` package cache, and fonts. Typst 0.15.1 and the template packages are already in the installer from v0.3.6, for macOS arm64 and x64, Windows x64 and Linux x64, with no Docker
+- A curated TeX Live subset in the installer, so that LaTeX output works at once and offline like Typst. It is built from TinyTeX, a small base with `tlmgr install` of the packages that the template needs and the documents and sources removed, for each platform and with a TeX Live year that is pinned. Estimated at 100 to 150 MB more for each platform, the real size is measured in the issue. It is not downloaded at first run, there is no Docker, and Tectonic is not used because it has no `texlua`, latexmk or biber. Open: Perl for latexmk on Windows (MarkTwain may run XeLaTeX and `texlua` itself), signing and notarization of the binaries, licenses in `THIRD_PARTY.md`
 - Font license audit (commercial fonts are not bundled)
 - A `--smoke-test` mode so the packaged app can check itself, run in CI on all three platforms together with Playwright against the packaged app
 - A decision on code signing and notarization
 
-**Done when:** CI passes the smoke test and end-to-end tests on the packaged app on all three platforms, and on a clean machine with no network you can install the app, create a project, edit, build a Typst PDF, and use version control.
+**Done when:** CI passes the smoke test and end-to-end tests on the packaged app on all three platforms, and on a clean machine with no network you can install the app, create a project, edit, build a Typst PDF and a LaTeX PDF, and use version control.
 
 ## v0.8.0 · Polish
 
