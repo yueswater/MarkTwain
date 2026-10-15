@@ -1,4 +1,4 @@
-import { applyProfile, isEmptyProfile, profileFromFields } from "../../../../shared/profile";
+import { applyProfile, isEmptyProfile, profileFromFields } from "../../../../../shared/profile";
 import type { ConfigFields, ConfigIssue } from "@marktwain/schema";
 import { ChevronDownIcon } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -7,12 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { IpcChannel } from "../../../../shared/enums/ipc-channel.enum";
-import type { AuthorProfile } from "../../../../shared/ipc";
-import { api } from "../../shared/api";
-import { errorMessage } from "../../shared/error-message";
-import { AuthorFields } from "./AuthorFields";
-import { Field } from "./ConfigForm";
+import { IpcChannel } from "../../../../../shared/enums/ipc-channel.enum";
+import type { AuthorProfile } from "../../../../../shared/ipc/index";
+import { api } from "../../../shared/api";
+import { errorMessage } from "../../../shared/error-message";
+import { AuthorFields } from "../config/AuthorFields";
+import { Field } from "../config/ConfigForm";
 
 type Props = {
   /** Called when the dialog is done, whether the author filled it in or skipped it */

@@ -11,7 +11,7 @@ import {
   sampleNumbers,
   spreadTitle,
   type Margins,
-} from "./settings-previews";
+} from "../settings-previews";
 
 type Side = keyof Margins;
 

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
-import { nearestLevel, nearestStep, onStep, secondsText, type Level } from "./settings-steps";
+import { nearestLevel, nearestStep, onStep, secondsText, type Level } from "../settings-steps";
 
 type StepSliderProps = {
   label: string;

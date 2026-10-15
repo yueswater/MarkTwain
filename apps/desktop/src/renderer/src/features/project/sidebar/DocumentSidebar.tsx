@@ -31,8 +31,8 @@ import {
   DOCUMENT_KIND_ORDER,
   SINGLETON_KINDS,
   type DocumentKind,
-} from "../../../../shared/enums/document-kind.enum";
-import type { DocumentSummary } from "../../../../shared/ipc";
+} from "../../../../../shared/enums/document-kind.enum";
+import type { DocumentSummary } from "../../../../../shared/ipc/index";
 import { DeleteDialog } from "./DeleteDialog";
 import { documentTitle } from "./document-title";
 import { RenameDialog } from "./RenameDialog";

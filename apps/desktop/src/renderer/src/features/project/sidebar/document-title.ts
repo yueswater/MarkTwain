@@ -1,5 +1,5 @@
 import type { TFunction } from "i18next";
-import type { DocumentSummary } from "../../../../shared/ipc";
+import type { DocumentSummary } from "../../../../../shared/ipc/index";
 
 /** Title for display, a custom one wins, otherwise it comes from kind and position such as Chapter 2. */
 export function documentTitle(t: TFunction, doc: Pick<DocumentSummary, "kind" | "position" | "title">): string {

@@ -12,15 +12,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { IpcChannel } from "../../../../shared/enums/ipc-channel.enum";
-import type { AdvancedState } from "../../../../shared/ipc";
-import { LABELS_CHANGED } from "../editor/references/use-label-index";
-import { api } from "../../shared/api";
-import { errorMessage } from "../../shared/error-message";
-import { FontSelect } from "./FontSelect";
-import { NumberField, SettingsHeading, SettingsRow } from "./fields";
-import { CaptionPicker, HeadingsPreview, OutlinePreview, PageDiagram, PatternInput, TitlePreview, UncitedPreview, WithExample } from "./SettingsIllustrations";
-import { perChapterExample, type Margins } from "./settings-previews";
+import { IpcChannel } from "../../../../../shared/enums/ipc-channel.enum";
+import type { AdvancedState } from "../../../../../shared/ipc/index";
+import { LABELS_CHANGED } from "../../editor/references/use-label-index";
+import { api } from "../../../shared/api";
+import { errorMessage } from "../../../shared/error-message";
+import { FontSelect } from "../controls/FontSelect";
+import { NumberField, SettingsHeading, SettingsRow } from "../controls/fields";
+import { CaptionPicker, HeadingsPreview, OutlinePreview, PageDiagram, PatternInput, TitlePreview, UncitedPreview, WithExample } from "../controls/SettingsIllustrations";
+import { perChapterExample, type Margins } from "../settings-previews";
 
 const FOLLOW = "__follow__";
 

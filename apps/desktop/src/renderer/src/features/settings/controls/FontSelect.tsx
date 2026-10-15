@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue } from "@/components/ui/select";
-import type { FontSource } from "../../../../shared/ipc";
-import { useFonts } from "../fonts/use-fonts";
+import type { FontSource } from "../../../../../shared/ipc/index";
+import { useFonts } from "../../fonts/use-fonts";
 
 const ORDER: FontSource[] = ["project", "template", "system"];
 const FOLLOW = "__follow__";

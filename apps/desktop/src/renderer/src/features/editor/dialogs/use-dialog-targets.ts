@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { MathTarget } from "../math/MathDialog";
-import type { AtomTarget } from "../references/AtomDialogs";
+import type { AtomTarget } from "../references/atom-target";
 import type { CaptionTarget } from "../figures/CaptionDialog";
 import type { FigureTarget } from "../figures/FigureDialog";
 import type { StatementTarget } from "../blocks/StatementDialog";

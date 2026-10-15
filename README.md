@@ -74,6 +74,7 @@ pnpm e2e:headed       # the same, with the windows of the app shown
 - `resources/*`: the table templates, and the Typst, packages and templates that `pnpm typst:fetch` and `pnpm templates:fetch` put in place.
 - `tools/*`: development-only tools (fetching the templates and Typst, benchmarks). They are not shipped.
 
+How the parts are divided, and the rules that keep them apart, are in [ARCHITECTURE.md](ARCHITECTURE.md).
 ## Continuous integration
 
 Every push and pull request runs lint, type checks and unit tests on Ubuntu and Windows. CI then builds the real app, with the Typst it bundles, and runs the end-to-end tests against it. Screenshots in both languages and at 100% and 150% scale are uploaded as artifacts, and so is the unpacked Windows app, so the Windows UI can be checked from a Mac:

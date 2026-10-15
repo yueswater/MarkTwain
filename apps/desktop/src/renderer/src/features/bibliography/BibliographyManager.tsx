@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import type { BibEntryInput, BibItem, DocumentSummary } from "../../../../shared/ipc";
-import { documentTitle } from "../project/document-title";
+import { documentTitle } from "../project/sidebar/document-title";
 import { fieldsFor, requiredNames } from "./bib-fields";
 import { useBibliography } from "./bibliography-context";
 

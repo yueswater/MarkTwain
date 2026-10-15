@@ -10,13 +10,13 @@ import {
 } from "@/components/ui/select";
 import { usePrefs } from "@/lib/prefs";
 import { Button } from "@/components/ui/button";
-import { NAMED_LEVELS } from "../../shared/heading-names";
+import { NAMED_LEVELS } from "../../../shared/heading-names";
 import { Input } from "@/components/ui/input";
 import { isHexColor, STATEMENT_KINDS } from "@marktwain/schema";
-import { PREF_LIMITS } from "../../../../shared/prefs";
-import { NumberField, SettingsRow } from "./fields";
-import { LevelPicker, StepSlider } from "./SettingsControls";
-import { AUTOSAVE_STEPS, CODE_SIZE_LEVELS, PREVIEW_STEPS } from "./settings-steps";
+import { PREF_LIMITS } from "../../../../../shared/prefs";
+import { NumberField, SettingsRow } from "../controls/fields";
+import { LevelPicker, StepSlider } from "../controls/SettingsControls";
+import { AUTOSAVE_STEPS, CODE_SIZE_LEVELS, PREVIEW_STEPS } from "../settings-steps";
 
 function Choice<T extends string>({ value, options, label, onChange }: { value: T; options: { value: T; label: string }[]; label: string; onChange: (value: T) => void }) {
   return (

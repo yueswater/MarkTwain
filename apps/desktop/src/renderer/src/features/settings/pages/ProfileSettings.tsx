@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Switch } from "@/components/ui/switch";
-import { IpcChannel } from "../../../../shared/enums/ipc-channel.enum";
-import { PROFILE_TEXT_FIELDS, type AuthorProfile } from "../../../../shared/profile";
-import { api } from "../../shared/api";
-import { AuthorFields, type AuthorValues } from "../project/AuthorFields";
-import { SettingsRow } from "./fields";
+import { IpcChannel } from "../../../../../shared/enums/ipc-channel.enum";
+import { PROFILE_TEXT_FIELDS, type AuthorProfile } from "../../../../../shared/profile";
+import { api } from "../../../shared/api";
+import { AuthorFields, type AuthorValues } from "../../project/config/AuthorFields";
+import { SettingsRow } from "../controls/fields";
 
 /** The facts of the author that every new project starts with, and whether a new project asks for them. */
 export function ProfileSettings() {

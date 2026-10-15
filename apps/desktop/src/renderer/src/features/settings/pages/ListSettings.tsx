@@ -12,8 +12,8 @@ import {
 } from "@marktwain/schema";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import type { AdvancedState } from "../../../../shared/ipc";
-import { SettingsHeading, SettingsRow } from "./fields";
+import type { AdvancedState } from "../../../../../shared/ipc/index";
+import { SettingsHeading, SettingsRow } from "../controls/fields";
 
 type Props = {
   state: AdvancedState | null;

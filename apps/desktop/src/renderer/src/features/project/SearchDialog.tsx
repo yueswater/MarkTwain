@@ -9,7 +9,7 @@ import { IpcChannel } from "../../../../shared/enums/ipc-channel.enum";
 import type { DocumentSummary, SearchHit } from "../../../../shared/ipc";
 import { api } from "../../shared/api";
 import { errorMessage } from "../../shared/error-message";
-import { documentTitle } from "./document-title";
+import { documentTitle } from "./sidebar/document-title";
 
 type Props = {
   open: boolean;

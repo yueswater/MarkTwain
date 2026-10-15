@@ -5,13 +5,13 @@ import { ADVANCED_FIELDS } from "@marktwain/schema";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { ConfigForm } from "../project/ConfigForm";
-import { WatermarkSettings } from "./WatermarkSettings";
-import { ProfileSettings } from "./ProfileSettings";
-import { AdvancedForm, useAdvancedState } from "./AdvancedForm";
-import { ListSettings } from "./ListSettings";
+import { ConfigForm } from "../project/config/ConfigForm";
+import { WatermarkSettings } from "./pages/WatermarkSettings";
+import { ProfileSettings } from "./pages/ProfileSettings";
+import { AdvancedForm, useAdvancedState } from "./pages/AdvancedForm";
+import { ListSettings } from "./pages/ListSettings";
 import { ShortcutsView } from "../shortcuts/ShortcutsView";
-import { EditorAppearanceSettings, EditorPreviewSettings, EditorStatementSettings, EditorWritingSettings } from "./EditorSettings";
+import { EditorAppearanceSettings, EditorPreviewSettings, EditorStatementSettings, EditorWritingSettings } from "./pages/EditorSettings";
 import {
   SETTINGS_PAGES,
   SETTINGS_SECTIONS,

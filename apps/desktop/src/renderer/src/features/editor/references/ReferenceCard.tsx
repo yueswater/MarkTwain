@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { IpcChannel } from "../../../../../shared/enums/ipc-channel.enum";
 import type { LabelIndex, LabelPreview } from "../../../../../shared/ipc/index";
 import { api } from "../../../shared/api";
-import { documentTitle } from "../../project/document-title";
+import { documentTitle } from "../../project/sidebar/document-title";
 import { renderLatex, placeBox } from "../math/MathDialog";
 import { entryCard, footnoteExcerpt } from "./reference-card";
 import { useBibliography } from "../../bibliography/bibliography-context";

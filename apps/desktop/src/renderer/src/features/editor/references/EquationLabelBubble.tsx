@@ -8,7 +8,7 @@ import { checkName, isLabelUsed, labelOfName, nameOfLabel } from "./equation-nam
 import { existingLabels } from "./unlabeled-targets";
 import { IpcChannel } from "../../../../../shared/enums/ipc-channel.enum";
 import { api } from "../../../shared/api";
-import { documentTitle } from "../../project/document-title";
+import { documentTitle } from "../../project/sidebar/document-title";
 
 /** Event sent by the shortcut so the box opens for the selected formula. */
 export const OPEN_EQUATION_LABEL_EVENT = "marktwain:equation-label";

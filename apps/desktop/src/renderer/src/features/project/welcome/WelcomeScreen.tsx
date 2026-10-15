@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import logo from "@/assets/logo.png";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import type { RecentProject } from "../../../../shared/ipc";
+import type { RecentProject } from "../../../../../shared/ipc/index";
 import { relativeTime } from "./relative-time";
 
 type Props = {

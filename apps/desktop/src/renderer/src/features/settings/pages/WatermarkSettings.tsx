@@ -3,11 +3,11 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { AdvancedValue } from "@marktwain/schema";
-import { IpcChannel } from "../../../../shared/enums/ipc-channel.enum";
-import type { AdvancedState, WatermarkInfo, WatermarkMode } from "../../../../shared/ipc";
-import { api } from "../../shared/api";
-import { errorMessage } from "../../shared/error-message";
-import { NumberField, SettingsHeading, SettingsRow } from "./fields";
+import { IpcChannel } from "../../../../../shared/enums/ipc-channel.enum";
+import type { AdvancedState, WatermarkInfo, WatermarkMode } from "../../../../../shared/ipc/index";
+import { api } from "../../../shared/api";
+import { errorMessage } from "../../../shared/error-message";
+import { NumberField, SettingsHeading, SettingsRow } from "../controls/fields";
 
 type Props = {
   state: AdvancedState | null;

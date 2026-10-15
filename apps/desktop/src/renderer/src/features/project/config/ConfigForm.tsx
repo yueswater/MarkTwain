@@ -20,11 +20,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { IpcChannel } from "../../../../shared/enums/ipc-channel.enum";
-import type { ConfigState } from "../../../../shared/ipc";
-import { api } from "../../shared/api";
-import { errorMessage } from "../../shared/error-message";
-import { Autosaver, type SaveStatus } from "../../shared/autosaver";
+import { IpcChannel } from "../../../../../shared/enums/ipc-channel.enum";
+import type { ConfigState } from "../../../../../shared/ipc/index";
+import { api } from "../../../shared/api";
+import { errorMessage } from "../../../shared/error-message";
+import { Autosaver, type SaveStatus } from "../../../shared/autosaver";
 import { OptionPicker } from "./OptionPicker";
 
 const NO_SCHOOL = "none";

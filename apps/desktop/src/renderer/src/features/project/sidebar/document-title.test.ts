@@ -1,7 +1,7 @@
 import { describe, expect, it } from "@jest/globals";
 import type { TFunction } from "i18next";
-import { Locale } from "../../../../shared/enums/locale.enum";
-import { translatorFor } from "../../../../main/core/translator";
+import { Locale } from "../../../../../shared/enums/locale.enum";
+import { translatorFor } from "../../../../../main/core/translator";
 import { documentTitle, projectNameFromPath } from "./document-title";
 
 describe("documentTitle", () => {
