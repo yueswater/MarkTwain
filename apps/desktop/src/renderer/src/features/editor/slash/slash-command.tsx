@@ -16,7 +16,7 @@ export const SlashCommand = Extension.create<Options>({
 
   addOptions() {
     return {
-      handlers: () => ({ insertMath: () => undefined, insertAtom: () => undefined, insertImage: () => undefined, insertTable: () => undefined }),
+      handlers: () => ({ insertMath: () => undefined, insertAtom: () => undefined, insertImage: () => undefined, insertTable: () => undefined, insertLandscape: () => undefined }),
       nameOf: (item) => item.id,
     };
   },

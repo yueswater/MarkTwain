@@ -294,6 +294,14 @@ describe("table borders", () => {
   });
 });
 
+describe("landscape pages", () => {
+  it("a div with the landscape class becomes a turned page around its blocks", () => {
+    const out = render("::: landscape\n| a |\n|---|\n| 1 |\n\n: 表 {#tbl:w}\n:::\n").body;
+    expect(out.startsWith("#mt-landscape[\n  #tlt(")).toBe(true);
+    expect(out.trimEnd().endsWith("]")).toBe(true);
+  });
+});
+
 describe("statements", () => {
   it("writes a block of a mathematical thesis with its kind, label and title", () => {
     const out = render('::: {.lemma #lem:ss title="Sum"}\n內容\n:::\n').body;

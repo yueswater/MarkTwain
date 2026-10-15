@@ -36,7 +36,8 @@
     "image": "插入圖片",
     "codeLanguage": "程式語言",
     "plainText": "純文字",
-    "statement": "定理區塊"
+    "statement": "定理區塊",
+    "landscape": "橫向頁面"
   },
   "math": {
     "insertTitle": "插入公式",
@@ -338,6 +339,10 @@
       "statement_proof": {
         "name": "證明",
         "description": "不編號，結尾加方框。"
+      },
+      "landscape": {
+        "name": "橫向頁面",
+        "description": "給寬的表格，內容單獨印在一頁轉向的頁面。"
       }
     },
     "sample": {
@@ -460,5 +465,9 @@
     "none": "沒有符合的範本。",
     "choose": "選一個範本，會看到它的樣子。",
     "needs": "這個範本需要：{{what}}。"
+  },
+  "landscape": {
+    "head": "橫向頁面，這裡的內容會印在轉向的頁面上",
+    "remove": "取消橫向頁面，內容保留"
   }
 }

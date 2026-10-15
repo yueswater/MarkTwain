@@ -27,6 +27,7 @@ export const SHORTCUTS: readonly ShortcutCommand[] = [
   { id: "blockquote", group: "blocks", chord: "Mod+Shift+B", scope: "editor" },
   { id: "codeBlock", group: "blocks", chord: "Mod+Alt+C", scope: "editor" },
   { id: "table", group: "blocks", chord: "Mod+Alt+T", scope: "editor" },
+  { id: "landscape", group: "blocks", chord: "Mod+Alt+L", scope: "editor" },
   { id: "displayMath", group: "blocks", chord: "Mod+Alt+E", scope: "editor" },
   { id: "image", group: "blocks", chord: "Mod+Shift+G", scope: "editor" },
 

@@ -18,7 +18,7 @@ export type TypstOptions = BlockContext & {
   anchors?: boolean;
 };
 
-const IMPORTS = ['#import "/helper/mod.typ": *', '#import "/marktwain.typ": statement, statement-ref, mtpos'];
+const IMPORTS = ['#import "/helper/mod.typ": *', '#import "/marktwain.typ": statement, statement-ref, mtpos, mt-landscape'];
 
 function abstractFunction(classes: string[]): "abstract-zh" | "abstract-en" | null {
   if (classes.includes("abstract-zh")) return "abstract-zh";

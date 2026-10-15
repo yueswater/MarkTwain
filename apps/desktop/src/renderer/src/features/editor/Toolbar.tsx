@@ -24,13 +24,14 @@ import {
   Undo2Icon,
   type LucideIcon,
   SquareSigmaIcon,
+  RectangleHorizontalIcon,
 } from "lucide-react";
 import { STATEMENT_KINDS } from "@marktwain/schema";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { usePrefs } from "@/lib/prefs";
 import { withShortcut } from "@/lib/shortcut-label";
 import { headingName } from "./heading-names";
-import { insertStatement } from "./statement-commands";
+import { insertLandscape, insertStatement } from "./statement-commands";
 import { statementIcon } from "./statement-icons";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
@@ -73,6 +74,7 @@ const TOOLBAR_COMMAND: Record<string, string> = {
   crossRef: "crossRef",
   image: "image",
   table: "table",
+  landscape: "landscape",
 };
 
 const BLOCKS = ["paragraph", "heading2", "heading3", "heading4"] as const;
@@ -261,6 +263,7 @@ export function Toolbar({ editor, onInsertMath, onInsertAtom, onEditCaption, onI
       {button(t("toolbar.rule"), MinusIcon, () => editor.chain().focus().setHorizontalRule().run())}
       {button(t("toolbar.image"), ImageIcon, onInsertImage)}
       {button(t("toolbar.table"), TableIcon, onInsertTable)}
+      {button(t("toolbar.landscape"), RectangleHorizontalIcon, () => insertLandscape(editor))}
       {button(t("toolbar.definitionList"), BookAIcon, () => insertDefinition(editor, state.inDefinitionList))}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>

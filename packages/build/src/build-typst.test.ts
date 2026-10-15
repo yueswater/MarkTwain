@@ -370,6 +370,34 @@ maybe("buildTypst with the real template", () => {
     }
   }, 240_000);
 
+  it("turns the pages of a landscape block sideways and leaves the others upright", async () => {
+    const work = mkdtempSync(join(tmpdir(), "marktwain 橫向 "));
+    try {
+      const result = await buildTypst({
+        ...input(work, {
+          documents: [
+            {
+              id: "c1",
+              kind: "chapter",
+              text: ["# 緒論", "", "直向的內文。", "", "::: landscape", "| 甲 | 乙 | 丙 |", "|---|---|---|", "| 1 | 2 | 3 |", "", ": 寬表 {#tbl:wide}", ":::", "", "又回到直向。"].join("\n"),
+            },
+          ],
+        }),
+        format: "png",
+        ppi: 20,
+      });
+      expect(result.diagnostics.filter((d) => d.severity === "error")).toEqual([]);
+      expect(result.ok).toBe(true);
+      if (!result.ok) return;
+      // The pages come as pictures, so the turned ones are the ones that are wider than tall
+      const shapes = result.pages.map((page) => decodeGray(page)).map((image) => image.width > image.height);
+      expect(shapes.some((landscape) => landscape)).toBe(true);
+      expect(shapes.some((landscape) => !landscape)).toBe(true);
+    } finally {
+      rmSync(work, { recursive: true, force: true });
+    }
+  }, 120_000);
+
   it("reports a typst error against the source block", async () => {
     const work = mkdtempSync(join(tmpdir(), "marktwain 錯誤 "));
     try {

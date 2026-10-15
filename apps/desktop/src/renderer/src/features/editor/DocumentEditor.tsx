@@ -50,11 +50,12 @@ import { useTableLayout } from "./use-table-layout";
 import { ListMarkers } from "./extensions/list-markers";
 import { useListLevels } from "./use-list-levels";
 import { PlacementMarks } from "./extensions/placement-marks";
+import { LandscapeMarks } from "./extensions/landscape-marks";
 import { StatementDecorations, STATEMENTS_CHANGED } from "./extensions/statement-decorations";
 import { StatementDialog, type StatementTarget } from "./StatementDialog";
 import { statementOf } from "./statement-heads";
 import { headingName } from "./heading-names";
-import { unwrapStatement, updateStatement } from "./statement-commands";
+import { insertLandscape, unwrapStatement, updateStatement } from "./statement-commands";
 
 type Props = {
   documentId: string;
@@ -196,7 +197,7 @@ function EditorSurface({
   /** When a person last used the wheel, a key or the pointer in the editor, a scroll without one is the page settling and not a reader */
   const lastInput = useRef(0);
   // What the slash menu asks the view to do, the same functions the toolbar uses
-  const slashRef = useRef<SlashHandlers>({ insertMath: () => undefined, insertAtom: () => undefined, insertImage: () => undefined, insertTable: () => undefined });
+  const slashRef = useRef<SlashHandlers>({ insertMath: () => undefined, insertAtom: () => undefined, insertImage: () => undefined, insertTable: () => undefined, insertLandscape: () => undefined });
   const flushRef = useRef(autosaver);
   flushRef.current = autosaver;
   useEffect(() => autosaver.setDelay(prefs.autosaveDelayMs), [autosaver, prefs.autosaveDelayMs]);
@@ -231,6 +232,11 @@ function EditorSurface({
         MarkdownPaste.configure({ enabled: () => prefsRef.current.pasteMarkdown }),
         Placeholder.configure({ placeholder: t("placeholder") }),
         PlacementMarks,
+        LandscapeMarks.configure({
+          label: () => tRef.current("landscape.head"),
+          removeLabel: () => tRef.current("landscape.remove"),
+          onRemove: (pos) => editorRef.current && unwrapStatement(editorRef.current, pos),
+        }),
         TableBorders,
         ListMarkers.configure({ getLevels: () => listLevelsRef.current }),
         TableLayout,
@@ -473,6 +479,7 @@ function EditorSurface({
     insertAtom: openAtom,
     insertImage,
     insertTable: () => setTableDialog(true),
+    insertLandscape: () => insertLandscape(editor),
   };
 
   return (

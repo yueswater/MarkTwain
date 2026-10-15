@@ -294,6 +294,8 @@ export function renderBlock(block: Block, ctx: BlockContext): string[] {
 
     case "div": {
       const statement = statementOfClasses(block.classes);
+      // The pages of a thesis that are turned sideways, for wide tables
+      if (block.classes.includes("landscape")) return ["#mt-landscape[", ...indent(renderBlocks(block.children, ctx), "  "), "]"];
       if (!statement) return renderBlocks(block.children, ctx);
       const args = [`"${statement.id}"`];
       if (block.id && statement.numbered) args.push(`id: "${escapeString(block.id)}"`);

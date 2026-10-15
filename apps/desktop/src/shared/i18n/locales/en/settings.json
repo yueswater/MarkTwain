@@ -419,7 +419,8 @@
       "settings": "Settings",
       "toggleSidebar": "Fold or open the sidebar",
       "togglePreview": "Show or hide the preview",
-      "shortcuts": "Keyboard shortcuts"
+      "shortcuts": "Keyboard shortcuts",
+      "landscape": "Landscape page"
     }
   },
   "fonts": {

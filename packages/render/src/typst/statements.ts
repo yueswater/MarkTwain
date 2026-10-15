@@ -24,6 +24,20 @@ ${patterns.length > 0 ? `#let mt-enum-styles = (${patterns.map((p) => `"${escape
 }
 ` : ""}${symbols.length > 0 ? `#let mt-list-markers = (${symbols.map((s) => `[${escapeString(s)}]`).join(", ")},)
 ` : ""}
+// A landscape page for wide tables, the page number stays at the foot of the turned page and a table that is too long goes on to the next one.
+// A heading of level 1 inside would start a new chapter page and leave an empty one before it, so it is drawn without that.
+#let mt-landscape(body) = page(flipped: true, margin: (x: 1.5cm, y: 1.2cm))[
+  #show figure: set block(breakable: true)
+  #show heading.where(level: 1): it => {
+    set align(center)
+    set text(size: 18pt, weight: "regular")
+    v(0.5em)
+    it.body
+    v(1em)
+  }
+  #body
+]
+
 // Where a block of the editor landed on the page, read back with typst query for the preview that follows the editor
 #let mtpos(id) = context [#metadata((id: id, page: here().page(), y: here().position().y.pt())) <mtpos>]
 

@@ -36,7 +36,8 @@
     "image": "Insert image",
     "codeLanguage": "Code language",
     "plainText": "Plain text",
-    "statement": "Theorem blocks"
+    "statement": "Theorem blocks",
+    "landscape": "Landscape page"
   },
   "math": {
     "insertTitle": "Insert math",
@@ -338,6 +339,10 @@
       "statement_proof": {
         "name": "Proof",
         "description": "Not numbered, ends with a box."
+      },
+      "landscape": {
+        "name": "Landscape page",
+        "description": "For a wide table, its content is printed on a page turned sideways."
       }
     },
     "sample": {
@@ -460,5 +465,9 @@
     "none": "No template matches.",
     "choose": "Choose a template to see what it looks like.",
     "needs": "This template needs: {{what}}."
+  },
+  "landscape": {
+    "head": "Landscape page, what is here is printed on a page turned sideways",
+    "remove": "Remove the landscape page and keep its content"
   }
 }

@@ -6,6 +6,7 @@ type Action = (handlers: SlashHandlers) => void;
 
 /** The commands of a thesis that open a dialog, bound to the chords of the shortcut list. The rest are the keys that TipTap gives. */
 const ACTIONS: Record<string, Action> = {
+  landscape: (h) => h.insertLandscape(),
   table: (h) => h.insertTable(),
   displayMath: (h) => h.insertMath("block"),
   inlineMath: (h) => h.insertMath("inline"),
@@ -20,7 +21,7 @@ export const ThesisShortcuts = Extension.create<{ handlers: () => SlashHandlers 
   name: "thesisShortcuts",
 
   addOptions() {
-    return { handlers: () => ({ insertMath: () => undefined, insertAtom: () => undefined, insertImage: () => undefined, insertTable: () => undefined }) };
+    return { handlers: () => ({ insertMath: () => undefined, insertAtom: () => undefined, insertImage: () => undefined, insertTable: () => undefined, insertLandscape: () => undefined }) };
   },
 
   addKeyboardShortcuts() {

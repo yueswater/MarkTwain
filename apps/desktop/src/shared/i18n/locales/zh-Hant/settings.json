@@ -419,7 +419,8 @@
       "settings": "設定",
       "toggleSidebar": "收合或展開側邊欄",
       "togglePreview": "顯示或隱藏預覽",
-      "shortcuts": "快捷鍵一覽"
+      "shortcuts": "快捷鍵一覽",
+      "landscape": "橫向頁面"
     }
   },
   "fonts": {
