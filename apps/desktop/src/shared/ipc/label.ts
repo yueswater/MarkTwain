@@ -52,7 +52,23 @@ export type LabelReference = {
   excerpt: string;
 };
 
+/** A block of another document that can be referenced but has no label yet, one is added when it is chosen. */
+export type UnlabeledRemote = {
+  documentId: string;
+  /** Index of the top level block */
+  block: number;
+  /** Prefix of the label it would take */
+  kind: string;
+  /** Short description, such as the heading text or the caption */
+  text: string;
+  document: { kind: string; position: number; title: string };
+};
+
 export type LabelContract = {
+  /** The blocks of the other documents that have no label, in the order of the documents */
+  [IpcChannel.LabelUnlabeled]: { req: { exceptDocumentId: string | null }; res: UnlabeledRemote[] };
+  /** Gives a block of a saved document a label, or returns the one it has, null when the block is gone or cannot be referenced */
+  [IpcChannel.LabelEnsure]: { req: { documentId: string; block: number; kind: string }; res: { label: string } | null };
   /** The content that a label points to, null when no document has it */
   [IpcChannel.LabelPreview]: { req: { label: string }; res: LabelPreview | null };
   /** Scans all saved documents of the project and returns labels, numbers and errors */

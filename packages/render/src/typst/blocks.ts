@@ -56,7 +56,16 @@ function isPlain(table: TableBlock): boolean {
   );
 }
 
+/** The table with the width and the text size that it asks for. A table of its own width sits in a block, and a float cannot sit in one, so it stays in the text. */
 function renderTable(block: TableBlock, ctx: BlockContext): string[] {
+  const lines = renderTableBody(block, ctx);
+  if (block.width === null && block.size === null) return lines;
+  const em = block.size ? `${Number.parseInt(block.size, 10) / 100}em` : null;
+  const framed = block.width ? [`#block(width: ${block.width})[`, ...indent(lines, "  "), "]"] : lines;
+  return ["#[", ...(em ? [`#set text(size: ${em})`] : []), ...framed, "]"];
+}
+
+function renderTableBody(block: TableBlock, ctx: BlockContext): string[] {
   const columns = block.columns;
   const first: Cell[] = block.header ?? block.rows[0] ?? [];
   const columnAlign = Array.from({ length: columns }, (_, i) => first[i]?.align ?? "center");
@@ -64,7 +73,7 @@ function renderTable(block: TableBlock, ctx: BlockContext): string[] {
   const caption = `caption: ${content(block.caption, ctx)}`;
   const notes = block.notes.length > 0 ? content(block.notes, ctx) : null;
 
-  const placement = typstPlacement(effectivePlacement(block.placement, (ctx.defaultPlacement ?? HERE).table));
+  const placement = block.width ? null : typstPlacement(effectivePlacement(block.placement, (ctx.defaultPlacement ?? HERE).table));
 
   if (isPlain(block) && captioned) {
     const row = (cells: Cell[]) =>
@@ -133,6 +142,11 @@ function renderTable(block: TableBlock, ctx: BlockContext): string[] {
   const rowCount = (block.header ? 1 : 0) + block.rows.length;
   const heights = block.heights.some((h) => h !== null) ? Array.from({ length: rowCount }, (_, i) => block.heights[i] ?? "auto") : null;
 
+  // A cell of the header that spans rows pulls those rows into the header, since a header cannot be cut through a merged cell
+  const reach = block.header ? Math.max(1, ...block.header.map((cell) => cell.rowspan)) : 0;
+  const headRows = block.header ? [block.header, ...block.rows.slice(0, reach - 1)] : [];
+  const bodyRows = block.rows.slice(Math.max(reach - 1, 0));
+
   const inner = [
     "    table(",
     `      columns: (${(widths ?? Array.from({ length: columns }, () => "1fr")).join(", ")},),`,
@@ -143,13 +157,13 @@ function renderTable(block: TableBlock, ctx: BlockContext): string[] {
     ...(block.header
       ? [
           grid || custom ? "      table.header(repeat: true," : "      table.header(repeat: true, toprule,",
-          ...cellsOf(block.header, 0),
+          ...headRows.flatMap((r, i) => cellsOf(r, i)),
           grid || custom ? "      )," : "      midrule),",
         ]
       : grid || custom
         ? []
         : ["      toprule,"]),
-    ...block.rows.flatMap((r, i) => cellsOf(r, i + (block.header ? 1 : 0))),
+    ...bodyRows.flatMap((r, i) => cellsOf(r, i + headRows.length)),
     ...(grid || custom ? [] : ["      bottomrule,"]),
     ...(lines ? lineEntries(lines).map((entry) => `      ${entry},`) : []),
     "    )",
@@ -285,6 +299,8 @@ export function renderBlock(block: Block, ctx: BlockContext): string[] {
 
     case "div": {
       const statement = statementOfClasses(block.classes);
+      // The pages of a thesis that are turned sideways, for wide tables
+      if (block.classes.includes("landscape")) return ["#mt-landscape[", ...indent(renderBlocks(block.children, ctx), "  "), "]"];
       if (!statement) return renderBlocks(block.children, ctx);
       const args = [`"${statement.id}"`];
       if (block.id && statement.numbered) args.push(`id: "${escapeString(block.id)}"`);

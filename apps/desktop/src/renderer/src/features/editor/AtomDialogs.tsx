@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,7 +19,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import type { LabelTarget } from "../../../../shared/ipc";
+import { IpcChannel } from "../../../../shared/enums/ipc-channel.enum";
+import type { LabelTarget, UnlabeledRemote } from "../../../../shared/ipc";
+import { api } from "../../shared/api";
 import { useBibliography } from "../bibliography/bibliography-context";
 import type { UnlabeledTarget } from "./unlabeled-targets";
 import { REF_KINDS, buildRefOptions, kindsWithTargets, readLastKind, refKindOfLabel, rememberKind, type RefKind } from "./crossref-options";
@@ -32,7 +34,9 @@ export type AtomTarget =
 
 export type CrossRefChoice =
   | { kind: "existing"; label: string }
-  | { kind: "new"; pos: number; labelKind: UnlabeledTarget["kind"] };
+  | { kind: "new"; pos: number; labelKind: UnlabeledTarget["kind"] }
+  /** A block of another document, which gets its label when the choice is made */
+  | { kind: "remote"; documentId: string; block: number; labelKind: UnlabeledTarget["kind"] };
 
 type FrameProps = {
   title: string;
@@ -250,12 +254,15 @@ export function CitationDialog({
 
 export function CrossRefDialog({
   target,
+  documentId,
   labeled,
   unlabeled,
   onSubmit,
   ...common
 }: Common & {
   target: Extract<AtomTarget, { type: "crossRef" }>;
+  /** The document that is open, its own blocks come from the editor */
+  documentId: string;
   labeled: LabelTarget[];
   unlabeled: UnlabeledTarget[];
   onSubmit: (choice: CrossRefChoice) => void;
@@ -264,9 +271,22 @@ export function CrossRefDialog({
   const editing = target.pos !== null;
   const [value, setValue] = useState(target.label ? `l:${target.label}` : "");
 
+  // The blocks of the other documents that have no label, which the index does not list
+  const [remote, setRemote] = useState<UnlabeledRemote[]>([]);
+  useEffect(() => {
+    let cancelled = false;
+    api
+      .invoke(IpcChannel.LabelUnlabeled, { exceptDocumentId: documentId })
+      .then((list) => !cancelled && setRemote(list))
+      .catch(() => undefined); // The list is a help, the labeled targets still work
+    return () => {
+      cancelled = true;
+    };
+  }, [documentId]);
+
   const options = useMemo(
-    () => buildRefOptions(labeled, unlabeled, (kind) => t(`crossRef.kind.${kind}`)),
-    [labeled, unlabeled, t],
+    () => buildRefOptions(labeled, unlabeled, (kind) => t(`crossRef.kind.${kind}`), remote),
+    [labeled, unlabeled, remote, t],
   );
   const available = kindsWithTargets(options);
   // The kind comes from the label when editing, otherwise from the last choice if it still has targets
@@ -288,7 +308,10 @@ export function CrossRefDialog({
 
   function submit(): void {
     if (value.startsWith("l:")) onSubmit({ kind: "existing", label: value.slice(2) });
-    else {
+    else if (value.startsWith("r:")) {
+      const [, id, block, labelKind] = value.split(":");
+      onSubmit({ kind: "remote", documentId: id as string, block: Number(block), labelKind: labelKind as UnlabeledTarget["kind"] });
+    } else {
       const [, pos, labelKind] = value.split(":");
       onSubmit({ kind: "new", pos: Number(pos), labelKind: labelKind as UnlabeledTarget["kind"] });
     }

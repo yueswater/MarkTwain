@@ -27,8 +27,6 @@
     "autosaveDelayHint": "Slide to the right to save sooner after you stop typing.",
     "pasteMarkdown": "Paste Markdown as structure",
     "pasteMarkdownHint": "Turn pasted Markdown into headings, lists and tables.",
-    "previewPpi": "Preview sharpness",
-    "previewPpiHint": "The sharpness of the page pictures of the preview. A sharper picture takes longer to build.",
     "previewDelay": "Rebuild the preview after a save",
     "previewDelayHint": "Slide to the right to rebuild the preview sooner after a save.",
     "codeSample": "print(\"hello\")",
@@ -38,7 +36,10 @@
     "statementColored": "Colored",
     "statementColor": "Color",
     "statementColorReset": "Reset color",
-    "statementHex": "Hex code"
+    "statementHex": "Hex code",
+    "headingNames": "Names of the heading levels",
+    "headingNamesHint": "How levels 2, 3 and 4 are called in the toolbar and the slash menu. Empty keeps the default.",
+    "headingLevel": "Level {{level}}"
   },
   "group": {
     "page": "Page",
@@ -52,7 +53,8 @@
     "outline": "Table of contents",
     "watermark": "Watermark",
     "statements": "Theorem block names",
-    "placement": "Floating"
+    "placement": "Floating",
+    "lists": "Lists"
   },
   "advancedHint": "Empty fields follow the school format. Changing a value overrides it for this thesis only.",
   "noProject": "Open a project to change the format of its thesis.",
@@ -136,6 +138,10 @@
     "placement": {
       "figure": "Figure placement",
       "table": "Table placement"
+    },
+    "lists": {
+      "ordered": "Markers of numbered lists",
+      "bullet": "Markers of bullet lists"
     }
   },
   "hint": {
@@ -243,6 +249,14 @@
     "editorStatements": {
       "title": "Theorem blocks",
       "description": "How definitions, lemmas and theorems look in the editor. The PDF is not affected."
+    },
+    "thesisLists": {
+      "title": "Lists",
+      "description": "The marker of each level of a list. It changes the PDF, and the editor shows it too."
+    },
+    "editorShortcuts": {
+      "title": "Shortcuts",
+      "description": "Every shortcut by area. The tooltip of a toolbar button shows its keys too."
     }
   },
   "search": {
@@ -310,5 +324,138 @@
     "ask": "Ask when a project is created",
     "askHint": "Turn it off and a new project starts with this, without a question.",
     "local": "This stays on this computer, in the settings of the app."
+  },
+  "lists": {
+    "preset": "Combination",
+    "presetHint": "Pick one first, then adjust level by level.",
+    "presets": {
+      "default": "Template default",
+      "western": "Western",
+      "chinese": "Chinese thesis",
+      "levels": "Different at each level",
+      "custom": "Custom"
+    },
+    "ordered": "Numbered lists",
+    "bullet": "Bullet lists",
+    "level": "Level {{n}}",
+    "addLevel": "Add a level",
+    "removeLevel": "Remove level {{n}}",
+    "reset": "Back to the template default",
+    "usesTemplate": "Uses the style of the template.",
+    "preview": "Preview",
+    "sample": "Item at level {{n}}",
+    "styles": {
+      "decimal": "Numbers",
+      "decimal-paren": "Numbers in brackets",
+      "decimal-bracket": "Numbers with a bracket",
+      "circled": "Circled numbers",
+      "lower-alpha": "Lowercase letters",
+      "upper-alpha": "Uppercase letters",
+      "lower-roman": "Lowercase Roman",
+      "upper-roman": "Uppercase Roman",
+      "cjk": "Chinese numerals",
+      "cjk-paren": "Chinese numerals in brackets"
+    },
+    "symbols": {
+      "bullet": "Disc",
+      "circle": "Circle",
+      "small-square": "Small square",
+      "dash": "Dash",
+      "square": "Square",
+      "triangle": "Triangle",
+      "diamond": "Diamond",
+      "arrow": "Arrow"
+    }
+  },
+  "shortcuts": {
+    "title": "Keyboard shortcuts",
+    "description": "On macOS the main key is ⌘, on Windows and Linux it is Ctrl.",
+    "search": "Search a name or keys",
+    "platform": "Platform",
+    "platforms": {
+      "mac": "macOS",
+      "win": "Windows",
+      "linux": "Linux"
+    },
+    "none": "No shortcut matches.",
+    "noKey": "No shortcut",
+    "groups": {
+      "text": "Text",
+      "blocks": "Blocks",
+      "insert": "Insert",
+      "edit": "Edit and search",
+      "app": "App"
+    },
+    "commands": {
+      "paragraph": "Paragraph",
+      "heading2": "Section heading",
+      "heading3": "Subsection heading",
+      "heading4": "Sub-subsection heading",
+      "bold": "Bold",
+      "italic": "Italic",
+      "strike": "Strikethrough",
+      "code": "Inline code",
+      "bulletList": "Bullet list",
+      "orderedList": "Numbered list",
+      "blockquote": "Quote",
+      "codeBlock": "Code block",
+      "table": "Insert a table",
+      "displayMath": "Display formula",
+      "image": "Insert an image",
+      "inlineMath": "Inline formula",
+      "footnote": "Footnote",
+      "citation": "Citation",
+      "crossRef": "Cross-reference",
+      "equationName": "Name of the formula",
+      "peekReference": "Peek at what a reference points to",
+      "undo": "Undo",
+      "redo": "Redo",
+      "find": "Find in the document",
+      "searchProject": "Search the project",
+      "save": "Save now",
+      "newProject": "New project",
+      "openProject": "Open project",
+      "closeProject": "Close project",
+      "settings": "Settings",
+      "toggleSidebar": "Fold or open the sidebar",
+      "togglePreview": "Show or hide the preview",
+      "shortcuts": "Keyboard shortcuts",
+      "landscape": "Landscape page"
+    }
+  },
+  "fonts": {
+    "open": "Fonts",
+    "title": "Fonts",
+    "description": "The fonts that the thesis can use: those of the template, those that this project brings, and those installed on this computer.",
+    "add": "Add fonts",
+    "addFile": "Add a font file",
+    "license": "A font that you add is stored in the project file, and goes along when the project is shared or a Typst project is exported. Make sure its license allows that.",
+    "added": "Added: {{names}}",
+    "skipped": {
+      "notFont": "{{name}} is not a font file and was not added.",
+      "notEmbeddable": "The license data of {{name}} forbids embedding it in a document, so it was not added.",
+      "duplicate": "{{name}} is there already and was not added.",
+      "tooLarge": "{{name}} is too large and was not added."
+    },
+    "missing": "Fonts that are missing",
+    "missingHint": "The settings use these names but no font has them, so the build uses another font. Add a font file, or choose another font in the settings.",
+    "search": "Search a font name",
+    "filter": "Source",
+    "sources": {
+      "all": "All",
+      "project": "Project",
+      "template": "Template",
+      "system": "This computer"
+    },
+    "used": "In use",
+    "size": "The fonts of the project take {{size}} MB.",
+    "sizeWarning": "That is a lot and slows the project down.",
+    "none": "No font matches.",
+    "remove": "Remove the font {{name}}",
+    "inUse": "{{name}} is used by {{where}}.",
+    "removeAnyway": "Remove anyway",
+    "keep": "Keep it",
+    "sampleCjk": "論文的字體 永字八法 0123456789",
+    "sampleLatin": "The quick brown fox jumps over the lazy dog"
   }
 }

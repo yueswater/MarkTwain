@@ -19,9 +19,18 @@ type CaptionMeta = {
   widths: string;
   placement: string | null;
   borders: string;
+  width: string | null;
+  size: string | null;
   heights: Map<number, string>;
   cells: Map<string, CellExtra>;
 };
+
+/** A share such as 80% inside the limits, null for anything else and for 100%, which is what a table without it has. */
+function shareOf(value: string | undefined, min: number, max: number): string | null {
+  const match = /^(\d{1,3})%$/.exec(value ?? "");
+  const n = match ? Number(match[1]) : NaN;
+  return n >= min && n < max ? `${n}%` : null;
+}
 
 function parseCaption(content: string): CaptionMeta {
   let caption = content.replace(CAPTION, "").trim();
@@ -31,6 +40,8 @@ function parseCaption(content: string): CaptionMeta {
   let widths = "";
   let placement: string | null = null;
   let borders = "";
+  let width: string | null = null;
+  let size: string | null = null;
   let heights = new Map<number, string>();
   let cells = new Map<string, CellExtra>();
 
@@ -43,11 +54,13 @@ function parseCaption(content: string): CaptionMeta {
     widths = normalizeWidths(attributes.props.widths ?? "");
     placement = isPlacement(attributes.props.placement) ? attributes.props.placement : null;
     borders = formatBorders(parseBorders(attributes.props.borders ?? ""));
+    width = shareOf(attributes.props.width, 20, 100);
+    size = shareOf(attributes.props.size, 50, 100);
     heights = parseHeights(attributes.props.heights ?? "");
     cells = parseCells(attributes.props.cells ?? "");
     caption = caption.slice(0, match.index).trim();
   }
-  return { caption, label, notes, style, widths, placement, borders, heights, cells };
+  return { caption, label, notes, style, widths, placement, borders, width, size, heights, cells };
 }
 
 /**
@@ -90,7 +103,7 @@ function promoteTables(state: CoreState): void {
         const meta = parseCaption(inline.content);
         const tableOpen = findOpen(result);
         if (tableOpen) {
-          tableOpen.meta = { caption: meta.caption, label: meta.label, notes: meta.notes, style: meta.style, widths: meta.widths, placement: meta.placement, borders: meta.borders };
+          tableOpen.meta = { caption: meta.caption, label: meta.label, notes: meta.notes, style: meta.style, widths: meta.widths, placement: meta.placement, borders: meta.borders, width: meta.width, size: meta.size };
           result.splice(0, result.length, ...applyExtras(result, result.indexOf(tableOpen), meta));
         }
         i += 3;

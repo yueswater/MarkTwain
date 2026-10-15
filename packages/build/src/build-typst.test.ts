@@ -1,6 +1,6 @@
 import { describe, expect, it } from "@jest/globals";
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { buildTypst } from "./build-typst";
@@ -19,6 +19,30 @@ function findTypst(): string | null {
   } catch {
     return null;
   }
+}
+
+/** The packages the template imports, fetched by pnpm typst:fetch. */
+const packageCachePath = process.env.MARKTWAIN_TYPST_PACKAGES || resolve(__dirname, "../../../resources/typst-packages");
+const hasPackages = ["kouhu/0.2.0", "ipsum/0.1.0"].every((name) => existsSync(join(packageCachePath, "preview", name)));
+
+/**
+ * Environment that hides every cache of the user and cuts the network.
+ * Where typst keeps downloaded packages differs by system, so all of them point to the empty folder.
+ * The dead proxy makes a download fail at once instead of quietly succeeding.
+ */
+function offlineEnv(home: string): Record<string, string> {
+  const dead = "http://127.0.0.1:9";
+  return {
+    HOME: home,
+    USERPROFILE: home,
+    XDG_CACHE_HOME: join(home, "cache"),
+    XDG_DATA_HOME: join(home, "data"),
+    LOCALAPPDATA: join(home, "local"),
+    APPDATA: join(home, "roaming"),
+    HTTP_PROXY: dead,
+    HTTPS_PROXY: dead,
+    ALL_PROXY: dead,
+  };
 }
 
 const typst = findTypst();
@@ -244,6 +268,157 @@ maybe("buildTypst with the real template", () => {
     }
   }, 120_000);
 
+  it("draws a table at the share of the text width that it asks for, with a reference that still resolves", async () => {
+    const work = mkdtempSync(join(tmpdir(), "marktwain 表寬 "));
+    try {
+      const result = await buildTypst({
+        ...input(work, {
+          documents: [
+            {
+              id: "c1",
+              kind: "chapter",
+              text: ["# 表", "", "見 @tbl:w。", "", "| 甲 | 乙 | 丙 |", "|---|---|---|", "| 1 | 2 | 3 |", "| 4 | 5 | 6 |", "| 7 | 8 | 9 |", "", ": 窄表 {#tbl:w style=grid width=60% size=80%}"].join("\n"),
+            },
+          ],
+        }),
+        format: "png",
+        ppi: 110,
+      });
+      expect(result.ok).toBe(true);
+      if (!result.ok) return;
+      const page = decodeGray(result.pages.at(-1) as Uint8Array);
+      const lines = verticalLines(page, 40);
+      expect(lines).toHaveLength(4);
+      // 60% of the 15 cm text width is 9 cm of the 21 cm paper
+      expect(((lines[3] as number) - (lines[0] as number)) / page.width).toBeCloseTo((15 * 0.6) / 21, 1);
+    } finally {
+      rmSync(work, { recursive: true, force: true });
+    }
+  }, 120_000);
+
+  it("writes the numbers of every list style as the editor does, well past ten", async () => {
+    const work = mkdtempSync(join(tmpdir(), "marktwain 清單數字 "));
+    try {
+      const { ORDERED_STYLES, formatOrdered } = await import("@marktwain/schema");
+      const { run } = await import("./build-typst");
+      const { writeFileSync } = await import("node:fs");
+      const numbers = Array.from({ length: 130 }, (_, i) => i + 1);
+      for (const style of ORDERED_STYLES) {
+        writeFileSync(join(work, "n.typ"), `#metadata(range(1, 131).map(n => numbering("${style.pattern}", n))) <out>\n`);
+        const out = await new Promise<string>((resolve, reject) => {
+          void run(typst as string, ["query", "n.typ", "<out>", "--field", "value", "--one"], work, 60_000).then((r) => (r.code === 0 ? resolve(r.stdout) : reject(new Error(r.stderr))));
+        });
+        const fromTypst = JSON.parse(out) as string[];
+        // Typst writes a number it cannot express in the style as a plain number, the editor does the same
+        expect(numbers.map((n) => formatOrdered(style.id, n)).map((text, i) => [i + 1, text])).toEqual(fromTypst.map((text, i) => [i + 1, text]));
+      }
+    } finally {
+      rmSync(work, { recursive: true, force: true });
+    }
+  }, 120_000);
+
+  it("builds nested lists with the markers of each level", async () => {
+    const work = mkdtempSync(join(tmpdir(), "marktwain 清單 "));
+    try {
+      const result = await buildTypst(
+        input(work, {
+          config: `${config}lists:\n  ordered: [cjk, cjk-paren, decimal]\n  bullet: [diamond, circle, dash]\n`,
+          documents: [
+            {
+              id: "c1",
+              kind: "chapter",
+              text: ["# 緒論", "", "1. 第一點", "   1. 細項", "      - 符號", "         - 再下一層", "2. 第二點", "", "5. 從五開始", "", "- 甲", "  - 乙", "    - 丙", "      - 丁"].join("\n"),
+            },
+          ],
+        }),
+      );
+      expect(result.diagnostics.filter((d) => d.severity === "error")).toEqual([]);
+      expect(result.ok).toBe(true);
+    } finally {
+      rmSync(work, { recursive: true, force: true });
+    }
+  }, 120_000);
+
+  it("draws the payoff matrix with lines only around the payoffs, as a game theory text does", async () => {
+    const work = mkdtempSync(join(tmpdir(), "marktwain 報酬 "));
+    try {
+      const { buildTable, loadLibrary } = await import("@marktwain/table-templates");
+      const template = loadLibrary(resolve(__dirname, "../../../resources/table-templates")).fields.flatMap((field) => field.templates).find((t) => t.id === "payoff-matrix")!;
+      const result = await buildTypst({
+        ...input(work, { documents: [{ id: "c1", kind: "chapter", text: `# 表\n\n${buildTable(template, "en", { rows: 2, columns: 2 })}` }] }),
+        format: "png",
+        ppi: 110,
+      });
+      expect(result.ok).toBe(true);
+      if (!result.ok) return;
+      const page = decodeGray(result.pages.at(-1) as Uint8Array);
+      // Two columns of payoffs have three vertical lines, and nothing is drawn at the left of the names
+      expect(verticalLines(page, 20)).toHaveLength(3);
+      if (process.env.MARKTWAIN_DUMP_PAYOFF) writeFileSync(process.env.MARKTWAIN_DUMP_PAYOFF, result.pages.at(-1) as Uint8Array);
+    } finally {
+      rmSync(work, { recursive: true, force: true });
+    }
+  }, 120_000);
+
+  it("builds every table template, at its defaults and at the limits of its parameters, in both languages", async () => {
+    const work = mkdtempSync(join(tmpdir(), "marktwain 範本 "));
+    try {
+      const { buildTable, loadLibrary } = await import("@marktwain/table-templates");
+      const library = loadLibrary(resolve(__dirname, "../../../resources/table-templates"));
+      const templates = library.fields.flatMap((field) => field.templates);
+      const tables: string[] = [];
+      let n = 0;
+      for (const language of ["zh-Hant", "en"] as const) {
+        for (const template of templates) {
+          const max = Object.fromEntries(Object.entries(template.params).map(([name, p]) => [name, p.type === "int" ? p.max : true]));
+          const min = Object.fromEntries(Object.entries(template.params).map(([name, p]) => [name, p.type === "int" ? p.min : false]));
+          for (const given of [{}, max, min]) {
+            n += 1;
+            // Every table gets a label of its own so that no two are the same
+            const lines = buildTable(template, language, given).trimEnd().split("\n");
+            const caption = lines.pop() as string;
+            tables.push([...lines, caption.endsWith("}") ? caption.replace(" {", ` {#tbl:t${n} `) : `${caption} {#tbl:t${n}}`].join("\n"));
+          }
+        }
+      }
+      const result = await buildTypst(
+        input(work, { documents: [{ id: "c1", kind: "chapter", text: ["# 範本", "", ...tables.flatMap((table) => [table, ""])].join("\n") }] }),
+      );
+      expect(result.diagnostics.filter((d) => d.severity === "error")).toEqual([]);
+      expect(result.ok).toBe(true);
+    } finally {
+      rmSync(work, { recursive: true, force: true });
+    }
+  }, 240_000);
+
+  it("turns the pages of a landscape block sideways and leaves the others upright", async () => {
+    const work = mkdtempSync(join(tmpdir(), "marktwain 橫向 "));
+    try {
+      const result = await buildTypst({
+        ...input(work, {
+          documents: [
+            {
+              id: "c1",
+              kind: "chapter",
+              text: ["# 緒論", "", "直向的內文。", "", "::: landscape", "| 甲 | 乙 | 丙 |", "|---|---|---|", "| 1 | 2 | 3 |", "", ": 寬表 {#tbl:wide}", ":::", "", "又回到直向。"].join("\n"),
+            },
+          ],
+        }),
+        format: "png",
+        ppi: 20,
+      });
+      expect(result.diagnostics.filter((d) => d.severity === "error")).toEqual([]);
+      expect(result.ok).toBe(true);
+      if (!result.ok) return;
+      // The pages come as pictures, so the turned ones are the ones that are wider than tall
+      const shapes = result.pages.map((page) => decodeGray(page)).map((image) => image.width > image.height);
+      expect(shapes.some((landscape) => landscape)).toBe(true);
+      expect(shapes.some((landscape) => !landscape)).toBe(true);
+    } finally {
+      rmSync(work, { recursive: true, force: true });
+    }
+  }, 120_000);
+
   it("reports a typst error against the source block", async () => {
     const work = mkdtempSync(join(tmpdir(), "marktwain 錯誤 "));
     try {
@@ -290,6 +465,42 @@ maybe("buildTypst with the real template", () => {
       }
     } finally {
       rmSync(work, { recursive: true, force: true });
+    }
+  }, 120_000);
+
+  (hasPackages ? it : it.skip)("builds offline with the bundled packages and an empty cache of the user", async () => {
+    const work = mkdtempSync(join(tmpdir(), "marktwain 離線 "));
+    const home = mkdtempSync(join(tmpdir(), "marktwain home "));
+    try {
+      const result = await buildTypst(
+        input(work, { packageCachePath, env: offlineEnv(home), anchors: true, documents: [{ id: "c1", kind: "chapter", text: "# 標題\n\n內容。\n" }] }),
+      );
+      expect(result.diagnostics.filter((d) => d.severity === "error")).toEqual([]);
+      expect(result.ok).toBe(true);
+      // The anchors come from typst query or eval, which need the packages as well.
+      if (result.ok) expect(result.anchors.length).toBeGreaterThan(0);
+      // Nothing was downloaded into the cache of the user.
+      expect(readdirSync(home)).toEqual([]);
+    } finally {
+      rmSync(work, { recursive: true, force: true });
+      rmSync(home, { recursive: true, force: true });
+    }
+  }, 120_000);
+
+  it("fails without the packages when the cache of the user is empty and there is no network", async () => {
+    const work = mkdtempSync(join(tmpdir(), "marktwain 缺套件 "));
+    const home = mkdtempSync(join(tmpdir(), "marktwain home "));
+    const empty = mkdtempSync(join(tmpdir(), "marktwain packages "));
+    try {
+      const result = await buildTypst(
+        input(work, { packageCachePath: empty, env: offlineEnv(home), documents: [{ id: "c1", kind: "chapter", text: "# 標題\n\n內容。\n" }] }),
+      );
+      expect(result.ok).toBe(false);
+      expect(result.diagnostics.some((d) => /failed to download package/.test(d.message))).toBe(true);
+    } finally {
+      rmSync(work, { recursive: true, force: true });
+      rmSync(home, { recursive: true, force: true });
+      rmSync(empty, { recursive: true, force: true });
     }
   }, 120_000);
 

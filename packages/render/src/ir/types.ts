@@ -70,6 +70,10 @@ export type Block =
       placement: Placement | null;
       /** Lines that differ from the preset, see table-borders of the schema, empty means the preset */
       borders: string;
+      /** The width of the whole table as a share of the text width, null for the full width */
+      width: string | null;
+      /** The size of the text of the table as a share of the text of the page, null for the same size */
+      size: string | null;
       label: string | null;
       caption: Inline[];
       notes: Inline[];

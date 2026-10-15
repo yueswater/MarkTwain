@@ -1,4 +1,5 @@
 import { Document, parseDocument } from "yaml";
+import { BULLET_SYMBOLS, ORDERED_STYLES } from "../lists/styles";
 import { DEFAULT_PLACEMENT, PLACEMENTS } from "../placement";
 import { STATEMENT_KINDS } from "../statements/kinds";
 
@@ -19,7 +20,7 @@ export type AdvancedKind =
   /** Four choices, one for each heading level */
   | "select4";
 
-export type AdvancedGroup = "page" | "text" | "numbering" | "captions" | "headings" | "pageNumber" | "crossRef" | "bibliography" | "outline" | "watermark" | "statements" | "placement";
+export type AdvancedGroup = "page" | "text" | "numbering" | "captions" | "headings" | "pageNumber" | "crossRef" | "bibliography" | "outline" | "watermark" | "statements" | "placement" | "lists";
 
 export type AdvancedField = {
   path: string;
@@ -84,6 +85,10 @@ export const ADVANCED_FIELDS: readonly AdvancedField[] = [
   { path: "placement.figure", group: "placement", kind: "select", options: PLACEMENTS },
   { path: "placement.table", group: "placement", kind: "select", options: PLACEMENTS },
 
+  // The marker of each level of a list, the template does not know them and they are taken out of the config before a build
+  { path: "lists.ordered", group: "lists", kind: "list", options: ORDERED_STYLES.map((style) => style.id) },
+  { path: "lists.bullet", group: "lists", kind: "list", options: BULLET_SYMBOLS.map((symbol) => symbol.id) },
+
   // Theorem like blocks, the name of each kind, a kind that is not set keeps the default of the language
   ...STATEMENT_KINDS.map<AdvancedField>((kind) => ({ path: `statements.name.${kind.id}`, group: "statements", kind: "text" })),
 
@@ -116,7 +121,11 @@ export function isValidAdvanced(field: AdvancedField, value: unknown): boolean {
     case "select":
       return typeof value === "string" && (field.options ?? []).includes(value);
     case "list":
-      return Array.isArray(value) && value.length > 0 && value.every((item) => typeof item === "string" && item.trim() !== "");
+      return (
+        Array.isArray(value) &&
+        value.length > 0 &&
+        value.every((item) => typeof item === "string" && item.trim() !== "" && (field.options === undefined || field.options.includes(item)))
+      );
     case "numbers4":
       return Array.isArray(value) && value.length === 4 && value.every(inRange);
     case "select4":

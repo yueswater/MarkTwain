@@ -71,6 +71,16 @@ export function SlashPreview({ item, level }: { item: SlashItem; level?: number 
           {t("slash.sample.inlineBefore")} <span dangerouslySetInnerHTML={{ __html: SAMPLE_INLINE }} /> {t("slash.sample.inlineAfter")}
         </p>
       );
+    case "landscape":
+      return (
+        <div className="grid place-items-center">
+          <div className="flex aspect-[1.41] w-4/5 flex-col justify-center gap-1.5 rounded border-2 border-dashed border-foreground/50 p-3">
+            <div className={line} />
+            <div className={`${line} w-4/5`} />
+            <div className={`${line} w-3/5`} />
+          </div>
+        </div>
+      );
     case "figure":
       return (
         <figure className="space-y-1.5">

@@ -12,10 +12,10 @@
     "redo": "Redo",
     "block": "Text style",
     "paragraph": "Paragraph",
-    "heading1": "Heading 1",
-    "heading2": "Heading 2",
-    "heading3": "Heading 3",
-    "heading4": "Heading 4",
+    "heading1": "Chapter title",
+    "heading2": "Section",
+    "heading3": "Subsection",
+    "heading4": "Sub-subsection",
     "bold": "Bold",
     "italic": "Italic",
     "strike": "Strikethrough",
@@ -36,7 +36,8 @@
     "image": "Insert image",
     "codeLanguage": "Code language",
     "plainText": "Plain text",
-    "statement": "Theorem blocks"
+    "statement": "Theorem blocks",
+    "landscape": "Landscape page"
   },
   "math": {
     "insertTitle": "Insert math",
@@ -129,6 +130,11 @@
     "deleteRow": "Delete row",
     "deleteColumn": "Delete column",
     "toggleHeader": "Toggle header row",
+    "replaceTitle": "Change the table template",
+    "replaceHint": "The cells are replaced by the template. The label, caption, notes, place and size stay. Undo brings the old table back.",
+    "replace": "Apply",
+    "changeTemplate": "Change template",
+    "handle": "Select the table, drag to move it",
     "deleteTable": "Delete table",
     "alignLeft": "Align left",
     "alignCenter": "Align center",
@@ -157,6 +163,8 @@
     "insert": "Insert",
     "position": "Row {{row}} of {{rows}}, column {{column}} of {{columns}}",
     "columnWidth": "Column width",
+    "tableWidth": "Table width",
+    "tableSize": "Text size",
     "rowHeightShort": "Row height",
     "auto": "auto",
     "percent": "%",
@@ -241,20 +249,16 @@
         "name": "Text",
         "description": "Plain text, the default block of the body."
       },
-      "heading1": {
-        "name": "Heading 1",
-        "description": "The title of a chapter."
-      },
       "heading2": {
-        "name": "Heading 2",
+        "name": "Section",
         "description": "The title of a section in a chapter."
       },
       "heading3": {
-        "name": "Heading 3",
+        "name": "Subsection",
         "description": "The title of a subsection."
       },
       "heading4": {
-        "name": "Heading 4",
+        "name": "Sub-subsection",
         "description": "A small heading below a subsection."
       },
       "bulletList": {
@@ -340,6 +344,10 @@
       "statement_proof": {
         "name": "Proof",
         "description": "Not numbered, ends with a box."
+      },
+      "landscape": {
+        "name": "Landscape page",
+        "description": "For a wide table, its content is printed on a page turned sideways."
       }
     },
     "sample": {
@@ -371,7 +379,8 @@
     "footnote": "Footnote",
     "broken": "This reference points to nothing.",
     "goTo": "Go to",
-    "moreRows": "…more rows"
+    "moreRows": "…more rows",
+    "citationMissing": "This entry is not in the bibliography."
   },
   "statement": {
     "editTitle": "Edit block",
@@ -444,12 +453,31 @@
     "styles": {
       "solid": "Solid",
       "dashed": "Dashed",
-      "dotted": "Dotted",
-      "double": "Double"
+      "dotted": "Dotted"
     },
     "color": "Line color",
-    "doubleNote": "The PDF has no double line, it is drawn solid.",
     "applyPen": "Apply to the lines of the selection",
     "points": "{{value}} pt"
+  },
+  "tableTemplates": {
+    "mode": "How to insert",
+    "mode_grid": "By size",
+    "mode_template": "Templates",
+    "search": "Search the templates",
+    "fields": "Fields",
+    "all": "All",
+    "list": "Templates",
+    "none": "No template matches.",
+    "choose": "Choose a template to see what it looks like.",
+    "needs": "This template needs: {{what}}."
+  },
+  "blockHandle": "Drag to move this block",
+  "flip": {
+    "next": "Keep scrolling down to open “{{title}}”",
+    "previous": "Keep scrolling up to go back to “{{title}}”"
+  },
+  "landscape": {
+    "head": "Landscape page, what is here is printed on a page turned sideways",
+    "remove": "Remove the landscape page and keep its content"
   }
 }

@@ -58,7 +58,10 @@ export function buildAppMenu(t: TFunction, actions: MenuActions): Menu {
 
   const help: MenuItemConstructorOptions = {
     label: t("help.label"),
-    submenu: [{ label: t("help.website"), click: () => void shell.openExternal(actions.websiteUrl) }],
+    submenu: [
+      { label: t("help.shortcuts"), accelerator: "CmdOrCtrl+/", click: () => actions.send(MenuCommand.Shortcuts) },
+      { label: t("help.website"), click: () => void shell.openExternal(actions.websiteUrl) },
+    ],
   };
 
   const template: MenuItemConstructorOptions[] = [

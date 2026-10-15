@@ -111,6 +111,8 @@ const markdownParser = new MarkdownParser(schema, createMarkdownIt() as unknown 
       style: token.meta?.style === "grid" ? "grid" : "three-line",
       widths: String(token.meta?.widths ?? ""),
       borders: String(token.meta?.borders ?? ""),
+      width: token.meta?.width ?? null,
+      size: token.meta?.size ?? null,
       placement: placementOf(token.meta?.placement),
     }),
   },

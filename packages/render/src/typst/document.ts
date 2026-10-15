@@ -14,9 +14,11 @@ export type TypstOptions = BlockContext & {
   kind: TypstKind;
   /** Appendix, the first one resets the heading counter */
   firstAppendix?: boolean;
+  /** Puts a marker before every top level block that tells where it landed on the page, so the preview can follow the editor */
+  anchors?: boolean;
 };
 
-const IMPORTS = ['#import "/helper/mod.typ": *', '#import "/statements.typ": statement, statement-ref'];
+const IMPORTS = ['#import "/helper/mod.typ": *', '#import "/marktwain.typ": statement, statement-ref, mtpos, mt-landscape'];
 
 function abstractFunction(classes: string[]): "abstract-zh" | "abstract-en" | null {
   if (classes.includes("abstract-zh")) return "abstract-zh";
@@ -39,12 +41,15 @@ export function renderTypstFile(doc: IrDocument, options: TypstOptions): TypstFi
   }
 
   const blockLines: (number | null)[] = [];
+  /** The marker of the next block, a line of its own before it */
+  const anchor = () => (options.anchors ? [`#mtpos("${doc.documentId.replace(/[^\w-]/g, "_")}:${blockLines.length}")`] : []);
   const emit = (block: Block, wrapIn?: string): void => {
     const body = renderBlock(block, options);
     if (body.length === 0) {
       blockLines.push(null);
       return;
     }
+    push(...anchor());
     blockLines.push(lines.length + 1 + (wrapIn ? 1 : 0));
     if (wrapIn) push(`#${wrapIn}(keywords: ${wrapIn === "abstract-zh" ? "cfg.keywords" : "cfg.keywords-en"})[`);
     push(...body);

@@ -1,6 +1,6 @@
 import { allKeys, effectiveEdges, parseBorders, type Edge, type Edges, type Grid } from "@marktwain/schema";
 
-/** The stroke of Typst for a line, Typst has no double line so that one is drawn solid. */
+/** The stroke of Typst for a line. */
 export function strokeOf(edge: NonNullable<Edge>): string {
   const dash = edge.style === "dashed" ? `, dash: "dashed"` : edge.style === "dotted" ? `, dash: "dotted"` : "";
   const paint = edge.color ? `paint: rgb("${edge.color}"), ` : "";

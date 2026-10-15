@@ -3,14 +3,15 @@ import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import { findPackagedExecutable } from "./find-app";
+import { findBundledTypst, findPackagedExecutable } from "./find-app";
+import { viewerState } from "./preview-viewer";
 
 const dist = resolve(__dirname, "../dist");
 const templateDir = resolve(__dirname, "../../../resources/templates/typ");
 
 function hasTypst(): boolean {
   try {
-    execFileSync(process.env.MARKTWAIN_TYPST || "typst", ["--version"], { stdio: "ignore" });
+    execFileSync(process.env.MARKTWAIN_TYPST || findBundledTypst(dist), ["--version"], { stdio: "ignore" });
     return true;
   } catch {
     return false;
@@ -36,7 +37,7 @@ const saveChapter = async (text: string) => {
   await window.marktwain.invoke("document:save", { id: chapter.id, text });
 };
 
-test("opening the preview builds and shows page images, and the watch switch decides when it rebuilds", async () => {
+test("opening the preview builds and shows the PDF, and the watch switch decides when it rebuilds", async () => {
   const dir = mkdtempSync(join(tmpdir(), "marktwain 建置 "));
   const app = await launch(dir, join(dir, "論文.marktwain"));
   try {
@@ -48,17 +49,18 @@ test("opening the preview builds and shows page images, and the watch switch dec
 
     // Opening the preview starts watching and builds at once
     await page.getByRole("button", { name: "Preview" }).click();
-    const pages = page.getByTestId("preview-pages").locator("img");
-    await expect(pages.first()).toBeVisible({ timeout: 90_000 });
-    await expect.poll(() => pages.first().evaluate((el: HTMLImageElement) => el.naturalWidth), { timeout: 30_000 }).toBeGreaterThan(100);
-    const count = await pages.count();
-    expect(count).toBeGreaterThan(1);
-    // The page images come from the custom protocol
+    // The PDF is shown by a viewer with links, search and zoom, its engine and the PDF come from the custom protocol
+    await expect.poll(async () => (await viewerState(page))?.total ?? 0, { timeout: 90_000 }).toBeGreaterThan(1);
     const head = await app.evaluate(async ({ net }) => {
-      const response = await net.fetch("marktwain-preview://page/1/0.png");
-      return [...new Uint8Array((await response.arrayBuffer()).slice(1, 4))].map((n) => String.fromCharCode(n)).join("");
+      const response = await net.fetch("marktwain-preview://pdf/1.pdf");
+      return [...new Uint8Array((await response.arrayBuffer()).slice(0, 4))].map((n) => String.fromCharCode(n)).join("");
     });
-    expect(head).toBe("PNG");
+    expect(head).toBe("%PDF");
+    const engine = await app.evaluate(async ({ net }) => {
+      const response = await net.fetch("marktwain-preview://wasm/pdfium.wasm");
+      return [response.status, response.headers.get("content-type")];
+    });
+    expect(engine).toEqual([200, "application/wasm"]);
     // The default project has no author yet, so the settings warning is listed
     await expect(page.getByRole("log")).toContainText("Not filled in the project settings");
 
@@ -66,14 +68,14 @@ test("opening the preview builds and shows page images, and the watch switch dec
     await expect(page.getByRole("button", { name: "Build PDF" })).toHaveCount(0);
     await page.getByRole("button", { name: "Auto update" }).click();
     await expect(page.getByRole("button", { name: "Build PDF" })).toBeVisible();
-    const before = await pages.first().getAttribute("src");
+    const before = (await viewerState(page))?.id;
     await page.locator(".ProseMirror").click();
     await page.keyboard.type(" more text");
     await expect(page.getByRole("status")).toHaveText("Saved");
     await page.waitForTimeout(1500);
-    expect(await pages.first().getAttribute("src")).toBe(before);
+    expect((await viewerState(page))?.id).toBe(before);
     await page.getByRole("button", { name: "Build PDF" }).click();
-    await expect.poll(() => pages.first().getAttribute("src")).not.toBe(before);
+    await expect.poll(async () => (await viewerState(page))?.id).not.toBe(before);
   } finally {
     await app.close();
     rmSync(dir, { recursive: true, force: true });

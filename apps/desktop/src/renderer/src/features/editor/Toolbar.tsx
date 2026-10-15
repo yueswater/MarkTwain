@@ -24,10 +24,14 @@ import {
   Undo2Icon,
   type LucideIcon,
   SquareSigmaIcon,
+  RectangleHorizontalIcon,
 } from "lucide-react";
 import { STATEMENT_KINDS } from "@marktwain/schema";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { insertStatement } from "./statement-commands";
+import { usePrefs } from "@/lib/prefs";
+import { withShortcut } from "@/lib/shortcut-label";
+import { headingName } from "./heading-names";
+import { insertLandscape, insertStatement } from "./statement-commands";
 import { statementIcon } from "./statement-icons";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
@@ -47,12 +51,35 @@ type Props = {
   onInsertMath: (kind: "inline" | "block") => void;
   onInsertAtom: (type: "footnote" | "citation" | "crossRef") => void;
   onEditCaption: () => void;
+  onChangeTemplate: () => void;
   onInsertImage: () => void;
   onInsertTable: () => void;
 };
 
-const BLOCKS = ["paragraph", "heading1", "heading2", "heading3", "heading4"] as const;
-type Block = (typeof BLOCKS)[number];
+/** The shortcut command of each toolbar button, by the key of its name, so that the tooltip can show the keys. */
+const TOOLBAR_COMMAND: Record<string, string> = {
+  undo: "undo",
+  redo: "redo",
+  bold: "bold",
+  italic: "italic",
+  strike: "strike",
+  code: "code",
+  bulletList: "bulletList",
+  orderedList: "orderedList",
+  blockquote: "blockquote",
+  codeBlock: "codeBlock",
+  inlineMath: "inlineMath",
+  blockMath: "displayMath",
+  footnote: "footnote",
+  citation: "citation",
+  crossRef: "crossRef",
+  image: "image",
+  table: "table",
+  landscape: "landscape",
+};
+
+const BLOCKS = ["paragraph", "heading2", "heading3", "heading4"] as const;
+type Block = (typeof BLOCKS)[number] | "heading1";
 
 function currentBlock(editor: Editor): Block {
   for (let level = 1; level <= 4; level++) {
@@ -104,8 +131,10 @@ function insertDefinition(editor: Editor, inList: boolean): void {
     .run();
 }
 
-export function Toolbar({ editor, onInsertMath, onInsertAtom, onEditCaption, onInsertImage, onInsertTable }: Props) {
+export function Toolbar({ editor, onInsertMath, onInsertAtom, onEditCaption, onChangeTemplate, onInsertImage, onInsertTable }: Props) {
   const { t } = useTranslation("editor");
+  const { prefs } = usePrefs();
+  const blockName = (block: string) => (block.startsWith("heading") && block !== "heading1" ? headingName(Number(block.slice(-1)) as 2 | 3 | 4, prefs.headingNames, t(`toolbar.${block}`)) : t(`toolbar.${block}`));
 
   // Recompute button state when the selection or content changes
   const state = useEditorState({
@@ -127,6 +156,7 @@ export function Toolbar({ editor, onInsertMath, onInsertAtom, onEditCaption, onI
     }),
   });
 
+  const commandOfLabel = new Map(Object.entries(TOOLBAR_COMMAND).map(([key, id]) => [t(`toolbar.${key}`), id]));
   const button = (
     label: string,
     Icon: LucideIcon,
@@ -138,7 +168,7 @@ export function Toolbar({ editor, onInsertMath, onInsertAtom, onEditCaption, onI
       variant="ghost"
       size="icon-sm"
       aria-label={label}
-      title={label}
+      title={withShortcut(label, commandOfLabel.get(label))}
       aria-pressed={options.active}
       disabled={options.disabled}
       className={cn(options.active && "bg-muted")}
@@ -169,9 +199,11 @@ export function Toolbar({ editor, onInsertMath, onInsertAtom, onEditCaption, onI
           <SelectValue />
         </SelectTrigger>
         <SelectContent onCloseAutoFocus={(event) => { event.preventDefault(); editor.commands.focus(); }}>
+          {/* The chapter title is not chosen here, it is listed only while the cursor is in one */}
+          {state.block === "heading1" && <SelectItem value="heading1">{t("toolbar.heading1")}</SelectItem>}
           {BLOCKS.map((block) => (
             <SelectItem key={block} value={block}>
-              {t(`toolbar.${block}`)}
+              {blockName(block)}
             </SelectItem>
           ))}
         </SelectContent>
@@ -232,6 +264,7 @@ export function Toolbar({ editor, onInsertMath, onInsertAtom, onEditCaption, onI
       {button(t("toolbar.rule"), MinusIcon, () => editor.chain().focus().setHorizontalRule().run())}
       {button(t("toolbar.image"), ImageIcon, onInsertImage)}
       {button(t("toolbar.table"), TableIcon, onInsertTable)}
+      {button(t("toolbar.landscape"), RectangleHorizontalIcon, () => insertLandscape(editor))}
       {button(t("toolbar.definitionList"), BookAIcon, () => insertDefinition(editor, state.inDefinitionList))}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -252,7 +285,7 @@ export function Toolbar({ editor, onInsertMath, onInsertAtom, onEditCaption, onI
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
-    {state.inTable && <TableTools editor={editor} onEditCaption={onEditCaption} />}
+    {state.inTable && <TableTools editor={editor} onEditCaption={onEditCaption} onChangeTemplate={onChangeTemplate} />}
     </>
   );
 }

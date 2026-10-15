@@ -13,7 +13,7 @@ describe("matchSlash", () => {
   it("finds by name, by alias in both languages and ignores case and spaces", () => {
     expect(matchSlash("tab", SLASH_ITEMS, nameOf).map((i) => i.id)).toContain("table");
     expect(matchSlash("公式", SLASH_ITEMS, nameOf).map((i) => i.id)).toEqual(expect.arrayContaining(["displayMath", "inlineMath"]));
-    expect(matchSlash("HEAD ING", SLASH_ITEMS, nameOf).map((i) => i.id)).toContain("heading1");
+    expect(matchSlash("HEAD ING", SLASH_ITEMS, nameOf).map((i) => i.id)).toContain("heading2");
     expect(matchSlash("zzzz", SLASH_ITEMS, nameOf)).toEqual([]);
   });
 

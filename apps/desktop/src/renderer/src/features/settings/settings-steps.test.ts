@@ -1,6 +1,6 @@
 import { describe, expect, it } from "@jest/globals";
 import { PREF_LIMITS } from "../../../../shared/prefs";
-import { AUTOSAVE_STEPS, CODE_SIZE_LEVELS, PPI_LEVELS, PREVIEW_STEPS, nearestLevel, nearestStep, onStep, secondsText } from "./settings-steps";
+import { AUTOSAVE_STEPS, CODE_SIZE_LEVELS, PREVIEW_STEPS, nearestLevel, nearestStep, onStep, secondsText } from "./settings-steps";
 
 describe("steps", () => {
   it("has ten steps from the slowest to the fastest, inside the limits", () => {
@@ -34,9 +34,6 @@ describe("steps", () => {
   });
 
   it("maps a value to the nearest level", () => {
-    expect(nearestLevel(PPI_LEVELS, 110).id).toBe("normal");
-    expect(nearestLevel(PPI_LEVELS, 130).id).toBe("normal");
-    expect(nearestLevel(PPI_LEVELS, 140).id).toBe("sharp");
     expect(nearestLevel(CODE_SIZE_LEVELS, 14).id).toBe("normal");
     expect(nearestLevel(CODE_SIZE_LEVELS, 24).id).toBe("larger");
   });

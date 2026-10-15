@@ -926,12 +926,14 @@ test("a slash opens a list of blocks with a description or a drawing of the chos
     // The list opens at a slash, with groups, shortcuts and a panel for the chosen block
     await page.keyboard.type("/");
     await expect(menu).toBeVisible();
-    await expect(menu.getByRole("option", { name: /Heading 1/ })).toContainText("#");
+    // The title of a chapter is not in the list, the levels below it are named section and subsection
+    await expect(menu.getByRole("option", { name: /Heading 1/ })).toHaveCount(0);
+    await expect(menu.getByRole("option", { name: /^Section/ })).toContainText("##");
     await expect(preview).toContainText("Text");
     // The arrows move the choice and the panel follows
     await page.keyboard.press("ArrowDown");
-    await expect(preview).toContainText("Heading 1");
-    await expect(preview).toContainText("The title of a chapter");
+    await expect(preview).toContainText("Section");
+    await expect(preview).toContainText("The title of a section in a chapter");
 
     // Typing narrows the list in either language, Enter inserts the block and takes the slash away
     await page.keyboard.type("tab");
@@ -1017,6 +1019,16 @@ test("hovering a reference or a footnote opens a card with what it points to", a
     await expect(editor.locator("[data-cross-ref]")).toHaveCount(3);
 
     // A formula and a table are drawn in a card next to the reference
+    // The page settles after it opens, the numbers and the captions arrive, and a reference that moves from under the pointer closes its card
+    let seen = "";
+    await expect
+      .poll(async () => {
+        const now = JSON.stringify(await editor.locator("[data-cross-ref]").nth(0).boundingBox());
+        const same = now === seen;
+        seen = now;
+        return same;
+      }, { intervals: [300] })
+      .toBe(true);
     await editor.locator("[data-cross-ref]").nth(0).hover();
     const card = page.getByTestId("reference-card");
     await expect(card).toBeVisible();
@@ -1035,6 +1047,24 @@ test("hovering a reference or a footnote opens a card with what it points to", a
     await editor.locator("[data-cross-ref]").nth(2).hover();
     await expect(card).toContainText("points to nothing");
 
+    // A citation tells which work it points to, with its title
+    await page.evaluate(async () => {
+      await window.marktwain.invoke("bibliography:set-text", { text: "@article{smith2020,\n  title = {A {Study} of Things},\n  author = {Smith, Ann and Lee, Bo},\n  journal = {Journal of Things},\n  year = {2020}\n}\n" });
+    });
+    await page.keyboard.press("ControlOrMeta+End");
+    await page.keyboard.type(" and ");
+    await page.getByRole("button", { name: "Citation" }).click();
+    await page.getByRole("dialog").getByLabel("Other keys").fill("smith2020");
+    await page.getByRole("dialog").getByRole("button", { name: "Insert" }).click();
+    await editor.locator("span[data-citation]").first().hover();
+    const cite = page.getByTestId("citation-card");
+    await expect(cite).toBeVisible();
+    await expect(cite).toContainText("A Study of Things");
+    await expect(cite).toContainText("Smith, Ann; Lee, Bo · 2020");
+    await expect(cite).toContainText("Journal of Things");
+    await page.mouse.move(5, 5);
+    await expect(cite).toBeHidden();
+
     // A footnote has a tooltip of a fixed size with the start of its text, cut with three dots
     await page.mouse.move(5, 5);
     await expect(card).toBeHidden();
@@ -1050,6 +1080,61 @@ test("hovering a reference or a footnote opens a card with what it points to", a
     await editor.locator("[data-cross-ref]").nth(0).hover();
     await card.getByRole("button", { name: "Go to" }).click();
     await expect(card).toBeHidden();
+  } finally {
+    await app.close();
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("a heading of another document that has no label can be referenced, and gets its label there", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "marktwain xref "));
+  const args = [`--user-data-dir=${join(dir, "userData")}`, "--lang=en-US"];
+  if (process.platform === "linux") args.push("--no-sandbox");
+  const app = await electron.launch({
+    executablePath: findPackagedExecutable(dist),
+    args,
+    env: { ...process.env, MARKTWAIN_TEST_DIALOG_PATH: join(dir, "p.marktwain"), MARKTWAIN_TEST_NO_PROFILE_DIALOG: "1" },
+  });
+  try {
+    const page = await app.firstWindow();
+    await page.getByRole("button", { name: "New project" }).click();
+    const ids = await page.evaluate(async () => {
+      const created = await window.marktwain.invoke("document:create", { kind: "chapter" });
+      const list = await window.marktwain.invoke("document:list");
+      if (!list.ok || !created.ok) return null;
+      const chapters = list.data.filter((d) => d.kind === "chapter");
+      await window.marktwain.invoke("document:save", { id: chapters[0]!.id, text: "# Introduction\n\nSee " });
+      await window.marktwain.invoke("document:save", { id: chapters[1]!.id, text: "# Method\n\n## Sampling\n" });
+      return chapters.map((d) => d.id);
+    });
+    expect(ids).toHaveLength(2);
+    await page.getByRole("button", { name: "Close project" }).click();
+    await page.getByRole("region", { name: "Recent projects" }).getByRole("button").first().click();
+
+    const editor = page.locator(".ProseMirror");
+    await editor.click();
+    await page.keyboard.press("ControlOrMeta+End");
+    await page.getByRole("button", { name: "Cross-reference" }).click();
+    const dialog = page.getByRole("dialog");
+    await dialog.getByRole("combobox", { name: "Type" }).click();
+    await page.getByRole("option", { name: "Heading" }).click();
+    await dialog.getByRole("combobox", { name: "Target" }).click();
+    await page.getByRole("option", { name: /Section · Sampling/ }).click();
+    await dialog.getByRole("button", { name: "Insert" }).click();
+    await expect(dialog).toBeHidden();
+    await expect(editor.locator("[data-cross-ref]")).toHaveAttribute("data-display", "Sampling");
+
+    // The other document was saved with the label, and it is a target of the index now
+    const saved = await page.evaluate(async (id) => {
+      const doc = await window.marktwain.invoke("document:get", { id });
+      return doc.ok ? doc.data.text : "";
+    }, ids![1]!);
+    expect(saved).toMatch(/## Sampling \{#sec:[0-9a-f]{4}\}/);
+    const index = await page.evaluate(async () => {
+      const result = await window.marktwain.invoke("label:resolve");
+      return result.ok ? result.data.targets.map((t) => t.kind) : [];
+    });
+    expect(index).toContain("sec");
   } finally {
     await app.close();
     rmSync(dir, { recursive: true, force: true });

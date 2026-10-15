@@ -35,7 +35,14 @@ test("project settings are filled in, validated, saved and restored", async () =
 
     await page.getByLabel("作者（中文）").fill("王小明");
     await page.getByLabel("學號").fill("112345678");
-    await page.getByLabel("關鍵字（中文）").fill("機器學習，自然語言處理, 論文");
+    // Keywords are tags, a comma closes a word and Enter closes the last one
+    const keywords = page.getByLabel("關鍵字（中文）");
+    await keywords.fill("機器學習，自然語言處理, 論文");
+    await keywords.press("Enter");
+    await expect(page.locator("[data-tag]")).toHaveText(["#機器學習", "#自然語言處理", "#論文"]);
+    await page.getByRole("button", { name: "移除 #自然語言處理" }).click();
+    await keywords.fill("自然語言處理");
+    await keywords.press("Enter");
     // The school, department and language are on the other page
     await openThesisSettings(page, "學校與格式");
     await page.getByRole("combobox", { name: "學校格式" }).click();
@@ -67,7 +74,7 @@ test("project settings are filled in, validated, saved and restored", async () =
     await expect(page.getByLabel("作者（中文）")).toHaveValue("王小明");
     await expect(page.getByLabel("學號")).toHaveValue("112345678");
     await expect(page.getByLabel("口試日期")).toHaveValue("2026-06-15");
-    await expect(page.getByLabel("關鍵字（中文）")).toHaveValue("機器學習, 自然語言處理, 論文");
+    await expect(page.locator("[data-tag]")).toHaveText(["#機器學習", "#論文", "#自然語言處理"]);
     await openThesisSettings(page, "學校與格式");
     await expect(page.getByRole("combobox", { name: "學校格式" })).toContainText("國立臺灣大學");
 
@@ -80,7 +87,7 @@ test("project settings are filled in, validated, saved and restored", async () =
     expect({ c: state?.fields.college, e: state?.fields.collegeEn }).toEqual({ c: expect.any(String), e: expect.stringMatching(/./) });
     expect(state?.fields.institute).not.toBe("");
     expect(state?.fields).toMatchObject({ degree: "博士", degreeEn: "Doctor", language: "english" });
-    expect(state?.fields.keywords).toEqual(["機器學習", "自然語言處理", "論文"]);
+    expect(state?.fields.keywords).toEqual(["機器學習", "論文", "自然語言處理"]);
   } finally {
     await app.close();
     rmSync(dir, { recursive: true, force: true });
@@ -102,7 +109,7 @@ test("editing the last field of the settings never scrolls the whole window", as
     await page.getByRole("button", { name: "新增專案" }).click();
     await openThesisSettings(page);
     await page.getByLabel("關鍵字（英文）").fill("one, two");
-    await page.getByLabel("關鍵字（英文）").press("End");
+    await page.getByLabel("關鍵字（英文）").press("Enter");
     const state = await page.evaluate(() => ({
       pageScroll: document.scrollingElement?.scrollTop ?? 0,
       bodyScroll: document.body.scrollTop,

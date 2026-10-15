@@ -248,6 +248,39 @@ describe("placement", () => {
   });
 });
 
+describe("width and size of a table", () => {
+  const table = (props: string) => `| a | b |\n|---|---|\n| 1 | 2 |\n\n: 表 {#tbl:t ${props}}\n`;
+
+  it("a table of its own width sits in a block of that width, with its label inside so that it can be referred to", () => {
+    const out = render(table("width=80%")).body;
+    expect(out).toContain("#block(width: 80%)[");
+    expect(out).toContain(") <tbl:t>");
+    expect(out.trimEnd().endsWith("]\n]") || out.trimEnd().endsWith("]")).toBe(true);
+  });
+
+  it("the text size is a set rule around the table", () => {
+    const out = render(table("size=90%")).body;
+    expect(out).toContain("#set text(size: 0.9em)");
+    expect(out).not.toContain("#block(width");
+  });
+
+  it("a table of its own width does not float, and one of full width keeps what it had", () => {
+    expect(render(table("width=70% placement=top")).body).not.toContain("placement");
+    expect(render(table("placement=top")).body).toContain("#set figure(placement: top)");
+  });
+});
+
+describe("a header with a merged cell", () => {
+  it("takes the rows that the cell spans into the header, as typst needs", () => {
+    const md = ["| | | P2 | |", "|:-:|:-:|:-:|:-:|", "| | | S1 | S2 |", "| P1 | R1 | a | b |", "", ': cap {style=grid cells="1.1:colspan=2,rowspan=2;1.3:colspan=2"}'].join("\n");
+    const out = render(md).body;
+    const header = out.slice(out.indexOf("table.header"), out.indexOf("      ),", out.indexOf("table.header")));
+    expect(header).toContain("[S1]");
+    expect(header).toContain("[S2]");
+    expect(header).not.toContain("[R1]");
+  });
+});
+
 describe("table borders", () => {
   const table = (borders: string) => `| a | b |\n|---|---|\n| 1 | 2 |\n| 3 | 4 |\n\n: 表 {#tbl:t ${borders}}\n`;
 
@@ -269,6 +302,14 @@ describe("table borders", () => {
     const out = render(table('borders="h-1.*=none;h0.0=2.25/dotted/#ff0000"')).body;
     expect(out).not.toContain("table.hline(y: 3");
     expect(out).toContain('table.hline(y: 0, start: 0, end: 1, stroke: (paint: rgb("#FF0000"), thickness: 2.25pt, dash: "dotted"))');
+  });
+});
+
+describe("landscape pages", () => {
+  it("a div with the landscape class becomes a turned page around its blocks", () => {
+    const out = render("::: landscape\n| a |\n|---|\n| 1 |\n\n: 表 {#tbl:w}\n:::\n").body;
+    expect(out.startsWith("#mt-landscape[\n  #tlt(")).toBe(true);
+    expect(out.trimEnd().endsWith("]")).toBe(true);
   });
 });
 

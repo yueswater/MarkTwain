@@ -13,6 +13,10 @@ export type BuildInput = {
   workDir: string;
   /** Path of the typst executable */
   typst: string;
+  /** Folder with the Typst packages the template imports, laid out as preview/<name>/<version>, typst downloads them when omitted */
+  packageCachePath?: string;
+  /** Environment variables added for the typst process, the tests use it to hide the cache of the user */
+  env?: Record<string, string>;
   /** Content of config.yml */
   config: string;
   /** Documents in output order */
@@ -31,6 +35,10 @@ export type BuildInput = {
   watermark?: boolean;
   /** Images of the project that config.yml can name as the watermark, written to assets/watermarks */
   watermarkFiles?: BuildFile[];
+  /** Font files that the project brings, they are found before the fonts of the template, so a font of the project wins for the same name */
+  projectFonts?: BuildFile[];
+  /** Also find where every top level block landed on the pages, for a preview that follows the editor, the exported files have no markers */
+  anchors?: boolean;
   /** Keep the build directory, useful for debugging */
   keep?: boolean;
 };
@@ -50,6 +58,9 @@ export type Diagnostic = {
   source: SourceRef | null;
 };
 
+/** Where a top level block landed, the page counted from 1 and the distance from the top of the page in points. */
+export type Anchor = { id: string; page: number; y: number };
+
 export type BuildResult =
-  | { ok: true; pdf: Uint8Array; pages: Uint8Array[]; diagnostics: Diagnostic[]; mathFailures: string[] }
+  | { ok: true; pdf: Uint8Array; pages: Uint8Array[]; diagnostics: Diagnostic[]; mathFailures: string[]; anchors: Anchor[] }
   | { ok: false; diagnostics: Diagnostic[]; mathFailures: string[] };

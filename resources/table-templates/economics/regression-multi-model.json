@@ -1,0 +1,66 @@
+{
+  "id": "regression-multi-model",
+  "field": "economics",
+  "shape": "regression",
+  "title": {
+    "zh-Hant": "多模型迴歸結果",
+    "en": "Regression results, several models"
+  },
+  "description": {
+    "zh-Hant": "每個變數一列係數與星號，下一列是括號內的標準誤，底部有樣本數與 R²。",
+    "en": "Each variable has a row of coefficient and stars and a row of the standard error in brackets below it, and the sample size and R² at the bottom."
+  },
+  "tags": [
+    "regression",
+    "迴歸",
+    "standard error",
+    "stars"
+  ],
+  "params": {
+    "models": {
+      "type": "int",
+      "default": 3,
+      "min": 1,
+      "max": 6,
+      "label": {
+        "zh-Hant": "模型數",
+        "en": "Models"
+      }
+    },
+    "variables": {
+      "type": "int",
+      "default": 3,
+      "min": 1,
+      "max": 8,
+      "label": {
+        "zh-Hant": "解釋變數數",
+        "en": "Variables"
+      }
+    }
+  },
+  "labels": {
+    "zh-Hant": {
+      "dependent": "應變數",
+      "dependentName": "Y",
+      "variable": "變數 {n}",
+      "coefficient": "0.000***",
+      "standardError": "(0.000)",
+      "observations": "樣本數",
+      "rSquared": "R²",
+      "note": "括號內為標準誤。*** p<0.01，** p<0.05，* p<0.1。",
+      "caption": "迴歸分析結果"
+    },
+    "en": {
+      "dependent": "Dependent variable",
+      "dependentName": "Y",
+      "variable": "Variable {n}",
+      "coefficient": "0.000***",
+      "standardError": "(0.000)",
+      "observations": "Observations",
+      "rSquared": "R²",
+      "note": "Standard errors in brackets. *** p<0.01, ** p<0.05, * p<0.1.",
+      "caption": "Regression results"
+    }
+  },
+  "needs": []
+}

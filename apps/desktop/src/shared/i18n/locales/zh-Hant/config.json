@@ -1,4 +1,6 @@
 {
+  "keywordRemove": "移除 #{{tag}}",
+  "keywordPlaceholder": "輸入關鍵字，按 Enter 加入",
   "title": "專案設定",
   "description": "這些資料會用在封面與題名頁。變更會自動儲存。",
   "save": {
@@ -45,7 +47,7 @@
     "institutePick": "系所"
   },
   "hint": {
-    "keywords": "以逗號分隔。",
+    "keywords": "按 Enter 或逗號加入，每個關鍵字會變成一個 # 標籤。",
     "school": "套用所選學校的論文格式規定。留空則使用預設格式。"
   },
   "noSchool": "不套用學校格式（預設格式）",

@@ -1,0 +1,60 @@
+{
+  "id": "payoff-matrix",
+  "field": "economics",
+  "shape": "payoff",
+  "title": {
+    "zh-Hant": "報酬矩陣",
+    "en": "Payoff matrix"
+  },
+  "description": {
+    "zh-Hant": "兩位參賽者的報酬矩陣，角落格與參賽者名稱都已合併，可選策略數。",
+    "en": "A payoff matrix of two players, with the corner cell and the names of the players merged, and a number of strategies you choose."
+  },
+  "tags": [
+    "game theory",
+    "博弈",
+    "payoff",
+    "nash"
+  ],
+  "params": {
+    "rows": {
+      "type": "int",
+      "default": 2,
+      "min": 2,
+      "max": 6,
+      "label": {
+        "zh-Hant": "列玩家的策略數",
+        "en": "Strategies of the row player"
+      }
+    },
+    "columns": {
+      "type": "int",
+      "default": 2,
+      "min": 2,
+      "max": 6,
+      "label": {
+        "zh-Hant": "欄玩家的策略數",
+        "en": "Strategies of the column player"
+      }
+    }
+  },
+  "labels": {
+    "zh-Hant": {
+      "rowPlayer": "玩家 1",
+      "columnPlayer": "玩家 2",
+      "row": "策略 {n}",
+      "column": "策略 {n}",
+      "payoff": "$(x, y)$",
+      "caption": "報酬矩陣"
+    },
+    "en": {
+      "rowPlayer": "Player 1",
+      "columnPlayer": "Player 2",
+      "row": "Strategy {n}",
+      "column": "Strategy {n}",
+      "payoff": "$(x, y)$",
+      "caption": "Payoff matrix"
+    }
+  },
+  "needs": []
+}

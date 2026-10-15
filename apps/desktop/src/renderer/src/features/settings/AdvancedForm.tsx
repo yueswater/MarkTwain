@@ -17,6 +17,7 @@ import type { AdvancedState } from "../../../../shared/ipc";
 import { LABELS_CHANGED } from "../editor/use-label-index";
 import { api } from "../../shared/api";
 import { errorMessage } from "../../shared/error-message";
+import { FontSelect } from "./FontSelect";
 import { NumberField, SettingsHeading, SettingsRow } from "./fields";
 import { CaptionPicker, HeadingsPreview, OutlinePreview, PageDiagram, PatternInput, TitlePreview, UncitedPreview, WithExample } from "./SettingsIllustrations";
 import { perChapterExample, type Margins } from "./settings-previews";
@@ -127,7 +128,12 @@ export function AdvancedForm({ groups, state, error, onSave }: Props) {
         );
       case "text":
         return <TextControl label={label} value={typeof current === "string" ? current : ""} placeholder={display(fallback)} onCommit={(v) => set(v === "" ? null : v)} />;
-      case "list":
+      case "list": {
+        // The font names are chosen from the fonts that exist, other lists are written as text
+        if (field.path === "layout.font-latin" || field.path === "layout.font-cjk") {
+          const effective = (Array.isArray(current) ? current : Array.isArray(fallback) ? fallback : []) as string[];
+          return <FontSelect label={label} effective={effective} written={Array.isArray(current)} onChange={set} />;
+        }
         return (
           <TextControl
             label={label}
@@ -140,6 +146,7 @@ export function AdvancedForm({ groups, state, error, onSave }: Props) {
             }}
           />
         );
+      }
       case "bool":
         return <Switch aria-label={label} checked={typeof current === "boolean" ? current : fallback === true} onCheckedChange={(checked) => set(checked)} />;
       case "select":

@@ -16,6 +16,7 @@ import { MathInputRules } from "./math-input";
 import { Find } from "./find";
 import { TypingState } from "./typing-state";
 import { TableExtras } from "./table-extras";
+import { BlockDrop } from "./block-drop";
 import { TableResize, type ResizeLabels } from "./table-resize";
 import { Footnote } from "./nodes/footnote";
 import { CjkBold, CjkItalic, CjkStrike } from "./marks";
@@ -58,6 +59,8 @@ export function createSchemaExtensions(options: SchemaExtensionOptions = {}): Ex
       // Our schema has no underline, links are not detected automatically and do not open on click, since the editor is offline
       underline: false,
       link: { openOnClick: false, autolink: false, linkOnPaste: false },
+      // The line that shows where a dragged block will land
+      dropcursor: { color: "var(--primary)", width: 3 },
     }),
     CjkBold,
     CjkItalic,
@@ -74,6 +77,7 @@ export function createSchemaExtensions(options: SchemaExtensionOptions = {}): Ex
     // Columns can be dragged, TableExtras copies the widths into the document
     Table.configure({ resizable: true, allowTableNodeSelection: true }),
     TableExtras,
+    BlockDrop,
     ...(resizeLabels ? [TableResize.configure({ labels: resizeLabels })] : []),
     TableRow,
     // A cell holds a single paragraph, pipe tables have no multi paragraph cells

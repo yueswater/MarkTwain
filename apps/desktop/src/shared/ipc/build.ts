@@ -16,11 +16,16 @@ export type BuildOutcome = {
   diagnostics: BuildDiagnostic[];
   /** LaTeX formulas that could not be converted and are shown as source text */
   mathFailures: string[];
-  /** Number of page images of the preview, 0 when the build failed */
+  /** Number of pages of the preview, 0 when the build failed */
   pageCount: number;
-  /** Grows with every successful build, part of the page image URLs so they are never cached */
+  /** Grows with every successful build, part of the URL of the PDF so it is never cached */
   revision: number;
+  /** Where every top level block landed, the id is the document and the index of the block, so the preview can follow the editor and the other way round */
+  anchors: BuildAnchor[];
 };
+
+/** The page counted from 1 and the distance from the top of the page in points. */
+export type BuildAnchor = { id: string; page: number; y: number };
 
 export type BuildContract = {
   /** Turns the watermark of the thesis on or off for the builds of the preview, off by default */

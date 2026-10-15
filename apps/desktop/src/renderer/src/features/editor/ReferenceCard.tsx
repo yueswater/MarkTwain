@@ -2,12 +2,14 @@ import type { Editor } from "@tiptap/core";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { IpcChannel } from "../../../../shared/enums/ipc-channel.enum";
 import type { LabelIndex, LabelPreview } from "../../../../shared/ipc";
 import { api } from "../../shared/api";
 import { documentTitle } from "../project/document-title";
 import { renderLatex, placeBox } from "./MathDialog";
-import { footnoteExcerpt } from "./reference-card";
+import { entryCard, footnoteExcerpt } from "./reference-card";
+import { useBibliography } from "../bibliography/bibliography-context";
 import { describeRef } from "./ref-display";
 import { assetUrl } from "./extensions/nodes/figure";
 
@@ -19,6 +21,7 @@ const CLOSE_DELAY_MS = 220;
 
 type Target =
   | { kind: "ref"; label: string; anchor: Anchor }
+  | { kind: "citation"; keys: string[]; anchor: Anchor }
   | { kind: "footnote"; text: string; anchor: Anchor };
 type Anchor = { top: number; bottom: number; left: number; right: number };
 
@@ -55,11 +58,12 @@ export function ReferenceCard({ editor, labels, onOpenTarget }: Props) {
     const dom = editor.view.dom;
     const read = (element: Element): Target | null => {
       if (element.matches("[data-cross-ref]")) return { kind: "ref", label: element.getAttribute("data-label") ?? "", anchor: anchorOf(element) };
+      if (element.matches("span[data-citation]")) return { kind: "citation", keys: (element.getAttribute("data-keys") ?? "").split(",").filter(Boolean), anchor: anchorOf(element) };
       if (element.matches("sup[data-footnote]")) return { kind: "footnote", text: element.getAttribute("data-text") ?? "", anchor: anchorOf(element) };
       return null;
     };
     const over = (event: MouseEvent) => {
-      const element = (event.target as HTMLElement).closest("[data-cross-ref], sup[data-footnote]");
+      const element = (event.target as HTMLElement).closest("[data-cross-ref], span[data-citation], sup[data-footnote]");
       if (!element) return;
       cancelClose();
       const next = read(element);
@@ -69,7 +73,7 @@ export function ReferenceCard({ editor, labels, onOpenTarget }: Props) {
       openTimer.current = setTimeout(() => setTarget(next), OPEN_DELAY_MS);
     };
     const out = (event: MouseEvent) => {
-      if ((event.target as HTMLElement).closest("[data-cross-ref], sup[data-footnote]")) scheduleClose();
+      if ((event.target as HTMLElement).closest("[data-cross-ref], span[data-citation], sup[data-footnote]")) scheduleClose();
     };
     const fromShortcut = (event: Event) => {
       const pos = (event as CustomEvent<{ pos: number }>).detail.pos;
@@ -101,6 +105,13 @@ export function ReferenceCard({ editor, labels, onOpenTarget }: Props) {
   }, [editor, cancelClose, scheduleClose]);
 
   if (!target) return null;
+  if (target.kind === "citation") {
+    return (
+      <Card anchor={target.anchor} width={340} testId="citation-card" onEnter={cancelClose} onLeave={scheduleClose}>
+        <CitationBody keys={target.keys} />
+      </Card>
+    );
+  }
   return target.kind === "footnote" ? (
     <Card anchor={target.anchor} width={280} fixedHeight={104} testId="footnote-card" onEnter={cancelClose} onLeave={scheduleClose}>
       <FootnoteBody text={target.text} />
@@ -200,6 +211,35 @@ function Rich({ text }: { text: string }) {
         return <span key={index}>{part}</span>;
       })}
     </>
+  );
+}
+
+/** The works that a citation points to, each with its title so that a reader can tell which work it is. */
+function CitationBody({ keys }: { keys: string[] }) {
+  const { t } = useTranslation("editor");
+  const { view } = useBibliography();
+  return (
+    <ul className="grid gap-2.5">
+      {keys.map((key) => {
+        const entry = view.items.find((item) => item.key === key);
+        if (!entry) {
+          return (
+            <li key={key}>
+              <p className="font-medium text-destructive">{t("card.citationMissing")}</p>
+              <p className="break-all font-mono text-xs text-muted-foreground">{key}</p>
+            </li>
+          );
+        }
+        const card = entryCard(entry);
+        return (
+          <li key={key} className="grid gap-0.5">
+            <p className={cn("leading-snug", card.untitled ? "font-mono text-xs text-muted-foreground" : "font-semibold")}>{card.title}</p>
+            {card.byline && <p className="text-xs text-muted-foreground">{card.byline}</p>}
+            {card.source && <p className="text-xs italic text-muted-foreground">{card.source}</p>}
+          </li>
+        );
+      })}
+    </ul>
   );
 }
 

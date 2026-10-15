@@ -1,0 +1,66 @@
+{
+  "id": "baseline-characteristics",
+  "field": "medicine",
+  "shape": "baseline",
+  "title": {
+    "zh-Hant": "兩組的基本特徵",
+    "en": "Baseline characteristics of two groups"
+  },
+  "description": {
+    "zh-Hant": "分成幾個區段的特徵表，每段有跨欄的標題列，欄位是兩組與 p 值。",
+    "en": "Characteristics in sections, each with a heading row that spans the table, and columns for the two groups and the p value."
+  },
+  "tags": [
+    "baseline",
+    "table 1",
+    "基本資料",
+    "特徵"
+  ],
+  "params": {
+    "sections": {
+      "type": "int",
+      "default": 2,
+      "min": 1,
+      "max": 4,
+      "label": {
+        "zh-Hant": "區段數",
+        "en": "Sections"
+      }
+    },
+    "items": {
+      "type": "int",
+      "default": 3,
+      "min": 1,
+      "max": 6,
+      "label": {
+        "zh-Hant": "每段的項目數",
+        "en": "Items in each section"
+      }
+    }
+  },
+  "labels": {
+    "zh-Hant": {
+      "characteristic": "特徵",
+      "groupA": "A 組 (n = 0)",
+      "groupB": "B 組 (n = 0)",
+      "pValue": "p 值",
+      "section": "區段 {n}",
+      "item": "項目 {n}",
+      "count": "0 (0.0%)",
+      "note": "類別變數為人數 (%)。",
+      "caption": "兩組的基本特徵"
+    },
+    "en": {
+      "characteristic": "Characteristic",
+      "groupA": "Group A (n = 0)",
+      "groupB": "Group B (n = 0)",
+      "pValue": "p value",
+      "section": "Section {n}",
+      "item": "Item {n}",
+      "count": "0 (0.0%)",
+      "note": "Categorical variables are n (%).",
+      "caption": "Baseline characteristics of the two groups"
+    }
+  },
+  "needs": []
+}

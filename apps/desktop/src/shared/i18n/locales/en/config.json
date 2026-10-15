@@ -1,4 +1,6 @@
 {
+  "keywordRemove": "Remove #{{tag}}",
+  "keywordPlaceholder": "Type a keyword, press Enter to add",
   "title": "Project settings",
   "description": "These details appear on the cover and title pages. Changes are saved automatically.",
   "save": {
@@ -45,7 +47,7 @@
     "institutePick": "Department"
   },
   "hint": {
-    "keywords": "Separate with commas.",
+    "keywords": "Press Enter or a comma to add; each keyword becomes a # tag.",
     "school": "Formatting rules of the chosen university. Leave empty to use the default format."
   },
   "noSchool": "No school preset (default format)",

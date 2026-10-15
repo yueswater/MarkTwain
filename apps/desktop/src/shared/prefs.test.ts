@@ -9,13 +9,20 @@ describe("sanitizePrefs", () => {
   });
 
   it("keeps good values and clamps numbers into their range", () => {
-    const prefs = sanitizePrefs({ fontSize: 18.4, lineHeight: 9, codeFontSize: 2, previewPpi: 150, lineNumbers: true, contentWidth: "wide", fontFamily: "serif" });
-    expect(prefs).toMatchObject({ fontSize: 18, lineHeight: 2.4, codeFontSize: 10, previewPpi: 150, lineNumbers: true, contentWidth: "wide", fontFamily: "serif" });
+    const prefs = sanitizePrefs({ fontSize: 18.4, lineHeight: 9, codeFontSize: 2, lineNumbers: true, contentWidth: "wide", fontFamily: "serif" });
+    expect(prefs).toMatchObject({ fontSize: 18, lineHeight: 2.4, codeFontSize: 10, lineNumbers: true, contentWidth: "wide", fontFamily: "serif" });
   });
 
   it("applies a patch on top of the current values", () => {
     const current = sanitizePrefs({ fontSize: 20, lineNumbers: true });
     expect(sanitizePrefs({ spellcheck: true }, current)).toMatchObject({ fontSize: 20, lineNumbers: true, spellcheck: true });
+  });
+});
+
+describe("heading names", () => {
+  it("keeps three short names and empties what is not a name", () => {
+    expect(sanitizePrefs({ headingNames: [" 節 ", "x".repeat(40), 5] }).headingNames).toEqual(["節", "x".repeat(16), ""]);
+    expect(sanitizePrefs({ headingNames: "節" }).headingNames).toEqual(["", "", ""]);
   });
 });
 

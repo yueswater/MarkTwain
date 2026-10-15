@@ -1,6 +1,6 @@
 {
   "name": "marktwain",
-  "version": "0.3.5",
+  "version": "0.3.6",
   "private": true,
   "packageManager": "pnpm@12.6.0",
   "description": "離線桌面論文編輯器：TipTap Markdown，輸出 Typst 與 LaTeX，內建本機版本控制",
@@ -11,6 +11,7 @@
     "typecheck": "pnpm -r typecheck",
     "lint": "eslint .",
     "templates:fetch": "pnpm --filter @marktwain/fetch-templates start",
+    "typst:fetch": "pnpm --filter @marktwain/fetch-typst start",
     "build:unpacked": "pnpm --filter @marktwain/desktop build:unpacked",
     "e2e": "pnpm --filter @marktwain/desktop e2e"
   },

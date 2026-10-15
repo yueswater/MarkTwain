@@ -6,6 +6,11 @@ export function insertStatement(editor: Editor, kind: string): void {
   editor.chain().focus().wrapIn("div", { id: null, classes: [kind], props: {} }).run();
 }
 
+/** Wraps the selected blocks in a block that is printed on a page turned sideways, for wide tables. */
+export function insertLandscape(editor: Editor): void {
+  editor.chain().focus().wrapIn("div", { id: null, classes: ["landscape"], props: {} }).run();
+}
+
 /** Changes the kind and the title of the block at pos, its label and other attributes stay. */
 export function updateStatement(editor: Editor, pos: number, change: { kind: string; title: string }): void {
   const node = editor.state.doc.nodeAt(pos);

@@ -209,6 +209,8 @@ export function toIr(doc: DocJson, options: IrOptions): IrResult {
           type: "table",
           placement: placementOrNull(attrs.placement),
           borders: str(attrs.borders),
+          width: strOrNull(attrs.width),
+          size: strOrNull(attrs.size),
           label: strOrNull(attrs.label),
           caption: inlineSource(attrs.caption),
           notes: inlineSource(attrs.notes),

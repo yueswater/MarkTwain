@@ -1,5 +1,8 @@
 import {
   collectTargets,
+  createLabel,
+  serializeMarkdown,
+  type LabelKind,
   labelKind,
   parseMarkdown,
   resolveNumbers,
@@ -8,9 +11,10 @@ import {
   type Target,
 } from "@marktwain/schema";
 import { DocumentKind } from "../../../shared/enums/document-kind.enum";
-import type { LabelIndex, LabelPreview, LabelReference, LabelTarget } from "../../../shared/ipc";
+import type { LabelIndex, LabelPreview, LabelReference, LabelTarget, UnlabeledRemote } from "../../../shared/ipc";
 import { DEFAULT_NUMBERING } from "../../config/numbering.config";
 import { findPreview, findReferences } from "./label-preview";
+import { findUnlabeledBlocks, kindAt, labelAt, labelsIn, withLabel } from "./label-unlabeled";
 import type { DocumentService } from "../document/document.service";
 
 /** Kinds that run through the whole thesis, equations restart in a chapter when the setting says so and are left out */
@@ -48,6 +52,40 @@ export class LabelService {
       }
     }
     return out;
+  }
+
+  /** The blocks of the other documents that can be referenced and have no label, saved text only. */
+  unlabeled(exceptDocumentId: string | null): UnlabeledRemote[] {
+    const out: UnlabeledRemote[] = [];
+    for (const summary of this.documents.list()) {
+      if (summary.id === exceptDocumentId) continue;
+      const doc = this.documents.get(summary.id);
+      const blocks = (parseMarkdown(doc.text).content ?? []) as Parameters<typeof findUnlabeledBlocks>[0];
+      for (const item of findUnlabeledBlocks(blocks)) {
+        out.push({ documentId: doc.id, block: item.block, kind: item.kind, text: item.text, document: { kind: doc.kind, position: doc.position, title: doc.title } });
+      }
+    }
+    return out;
+  }
+
+  /** Writes a new label into a block of a saved document and saves it, a block that has one keeps it. */
+  ensure(documentId: string, block: number, kind: string): { label: string } | null {
+    const doc = this.documents.get(documentId);
+    const blocks = (parseMarkdown(doc.text).content ?? []) as Parameters<typeof findUnlabeledBlocks>[0];
+    const current = kindAt(blocks, block);
+    // The document may have changed since the list was made, so the block has to be the same kind
+    if (current === null || current !== kind) return null;
+    const existing = labelAt(blocks, block);
+    if (existing !== "") return { label: existing };
+    const taken = new Set<string>();
+    for (const summary of this.documents.list()) {
+      const text = summary.id === documentId ? doc.text : this.documents.get(summary.id).text;
+      for (const label of labelsIn((parseMarkdown(text).content ?? []) as Parameters<typeof labelsIn>[0])) taken.add(label);
+    }
+    const label = createLabel(current as LabelKind, taken);
+    const next = withLabel(blocks, block, label);
+    this.documents.save(documentId, serializeMarkdown({ type: "doc", content: next } as Parameters<typeof serializeMarkdown>[0]));
+    return { label };
   }
 
   resolve(): LabelIndex {

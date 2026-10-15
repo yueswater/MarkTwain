@@ -1,9 +1,11 @@
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { run } from "./build-typst";
+import { packageArgs, run } from "./build-typst";
 
 export type ThumbnailInput = {
   typst: string;
+  /** Folder with bundled Typst packages */
+  packageCachePath?: string;
   /** Directory under which a temporary directory is made */
   workDir: string;
   /** Name of the file with its extension, which tells typst how to read it */
@@ -25,7 +27,7 @@ export async function renderThumbnail(input: ThumbnailInput): Promise<Uint8Array
       join(root, "t.typ"),
       `#set page(width: ${input.width ?? 200}pt, height: auto, margin: 0pt)\n#image("${input.name}", width: 100%)\n`,
     );
-    const { code } = await run(input.typst, ["compile", "t.typ", "out.png", "--format", "png", "--ppi", "96"], root, 20_000);
+    const { code } = await run(input.typst, ["compile", "t.typ", "out.png", "--format", "png", "--ppi", "96", ...packageArgs(input.packageCachePath)], root, 20_000);
     return code === 0 ? readFileSync(join(root, "out.png")) : null;
   } catch {
     return null;

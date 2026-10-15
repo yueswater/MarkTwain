@@ -104,6 +104,21 @@ export {
   type LineStyle,
   type Rule,
 } from "./markdown/table-borders";
+export {
+  BULLET_SYMBOLS,
+  LIST_PRESETS,
+  ORDERED_STYLES,
+  bulletSymbol,
+  formatOrdered,
+  isBulletSymbol,
+  isOrderedStyle,
+  levelAt,
+  resolveListLevels,
+  type BulletSymbol,
+  type ListLevels,
+  type ListPreset,
+  type OrderedStyle,
+} from "./lists/styles";
 export { DEFAULT_PLACEMENT, PLACEMENTS, effectivePlacement, isPlacement, resolvePlacementDefaults, typstPlacement, type Placement } from "./placement";
 export {
   STATEMENT_KINDS,
@@ -116,3 +131,4 @@ export {
   type StatementKind,
   type StatementStyle,
 } from "./statements/kinds";
+export { FontFormatError, readFonts, type FontFace } from "./fonts/sfnt";

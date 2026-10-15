@@ -1,5 +1,5 @@
 import { STATEMENT_PREFIXES } from "@marktwain/schema";
-import type { LabelTarget } from "../../../../shared/ipc";
+import type { LabelTarget, UnlabeledRemote } from "../../../../shared/ipc";
 import { shortenMath, shortenText } from "@/lib/shorten";
 import type { UnlabeledTarget } from "./unlabeled-targets";
 
@@ -41,6 +41,7 @@ export function buildRefOptions(
   labeled: readonly LabelTarget[],
   unlabeled: readonly UnlabeledTarget[],
   kindName: (labelKind: string) => string,
+  remote: readonly UnlabeledRemote[] = [],
 ): RefOption[] {
   const out: RefOption[] = [];
   for (const item of labeled) {
@@ -59,6 +60,20 @@ export function buildRefOptions(
       kind,
       text: `${kindName(item.kind)} · ${short}`,
       full: `${kindName(item.kind)} · ${body}`,
+      labeled: false,
+    });
+  }
+  // The blocks of the other documents that have no label, the document is named so that two of the same text can be told apart
+  for (const item of remote) {
+    const kind = refKindOf(item.kind);
+    if (!kind) continue;
+    const body = item.text || "…";
+    const short = kind === "formula" ? shortenMath(body) : shortenText(body);
+    out.push({
+      value: `r:${item.documentId}:${item.block}:${item.kind}`,
+      kind,
+      text: `${kindName(item.kind)} · ${short} (${item.document.title})`,
+      full: `${kindName(item.kind)} · ${body} (${item.document.title})`,
       labeled: false,
     });
   }

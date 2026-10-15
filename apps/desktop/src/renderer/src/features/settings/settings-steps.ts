@@ -23,14 +23,6 @@ export function secondsText(ms: number): string {
 
 export type Level = { id: string; value: number };
 
-/** Resolution levels of the preview in pixels per inch. */
-export const PPI_LEVELS: readonly Level[] = [
-  { id: "draft", value: 72 },
-  { id: "normal", value: 110 },
-  { id: "sharp", value: 150 },
-  { id: "verySharp", value: 200 },
-];
-
 /** Sizes of code in the editor in pixels. */
 export const CODE_SIZE_LEVELS: readonly Level[] = [
   { id: "small", value: 12 },

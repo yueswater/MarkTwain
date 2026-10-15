@@ -267,6 +267,8 @@ const serializer = new MarkdownSerializer(
       if (widths) props.widths = widths;
       const borders = formatBorders(parseBorders(String(node.attrs.borders ?? "")));
       if (borders) props.borders = borders;
+      if (typeof node.attrs.width === "string" && /^\d{2,3}%$/.test(node.attrs.width)) props.width = node.attrs.width;
+      if (typeof node.attrs.size === "string" && /^\d{2,3}%$/.test(node.attrs.size)) props.size = node.attrs.size;
       if (isPlacement(node.attrs.placement)) props.placement = node.attrs.placement;
       if (heights.size > 0) props.heights = formatHeights(heights);
       if (extras.size > 0) props.cells = formatCells(extras);

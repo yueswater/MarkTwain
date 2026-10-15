@@ -6,14 +6,12 @@ import { edgesOf } from "../table-border-commands";
 
 const PX_PER_PT = 4 / 3;
 
-/** One side of a cell as CSS, a double line needs room for both strokes. */
+/** One side of a cell as CSS. */
 export function sideCss(side: "top" | "right" | "bottom" | "left", edge: Edge): string {
   if (!edge) return `border-${side}: none;`;
   // A line thinner than a pixel is still drawn, the screen decides how thin it can be
   const width = Math.max(0.5, Math.round(edge.width * PX_PER_PT * 10) / 10);
-  const style = edge.style === "double" ? "double" : edge.style;
-  const px = edge.style === "double" ? Math.max(3, width) : width;
-  return `border-${side}: ${px}px ${style} ${edge.color ?? "var(--foreground)"};`;
+  return `border-${side}: ${width}px ${edge.style} ${edge.color ?? "var(--foreground)"};`;
 }
 
 /** A diagonal drawn as a gradient with a thin stripe in the middle. */

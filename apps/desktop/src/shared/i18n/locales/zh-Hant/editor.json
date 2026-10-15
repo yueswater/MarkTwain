@@ -12,10 +12,10 @@
     "redo": "重做",
     "block": "文字樣式",
     "paragraph": "內文",
-    "heading1": "標題 1",
-    "heading2": "標題 2",
-    "heading3": "標題 3",
-    "heading4": "標題 4",
+    "heading1": "章標題",
+    "heading2": "節",
+    "heading3": "小節",
+    "heading4": "小小節",
     "bold": "粗體",
     "italic": "斜體",
     "strike": "刪除線",
@@ -36,7 +36,8 @@
     "image": "插入圖片",
     "codeLanguage": "程式語言",
     "plainText": "純文字",
-    "statement": "定理區塊"
+    "statement": "定理區塊",
+    "landscape": "橫向頁面"
   },
   "math": {
     "insertTitle": "插入公式",
@@ -129,6 +130,11 @@
     "deleteRow": "刪除列",
     "deleteColumn": "刪除欄",
     "toggleHeader": "切換標題列",
+    "replaceTitle": "更換表格範本",
+    "replaceHint": "表格的內容會換成範本的樣子，表號、說明、附註、位置與大小保留。換錯了可以按復原。",
+    "replace": "套用",
+    "changeTemplate": "更換範本",
+    "handle": "選取整個表格，拖曳可移動",
     "deleteTable": "刪除表格",
     "alignLeft": "靠左",
     "alignCenter": "置中",
@@ -157,6 +163,8 @@
     "insert": "插入",
     "position": "第 {{row}} 列（共 {{rows}} 列），第 {{column}} 欄（共 {{columns}} 欄）",
     "columnWidth": "欄寬",
+    "tableWidth": "表寬",
+    "tableSize": "字級",
     "rowHeightShort": "列高",
     "auto": "自動",
     "percent": "%",
@@ -241,20 +249,16 @@
         "name": "文字",
         "description": "一般的文字，內文預設的區塊。"
       },
-      "heading1": {
-        "name": "標題 1",
-        "description": "一章的標題。"
-      },
       "heading2": {
-        "name": "標題 2",
+        "name": "節",
         "description": "章裡一節的標題。"
       },
       "heading3": {
-        "name": "標題 3",
+        "name": "小節",
         "description": "一小節的標題。"
       },
       "heading4": {
-        "name": "標題 4",
+        "name": "小小節",
         "description": "小節底下較小的標題。"
       },
       "bulletList": {
@@ -340,6 +344,10 @@
       "statement_proof": {
         "name": "證明",
         "description": "不編號，結尾加方框。"
+      },
+      "landscape": {
+        "name": "橫向頁面",
+        "description": "給寬的表格，內容單獨印在一頁轉向的頁面。"
       }
     },
     "sample": {
@@ -371,7 +379,8 @@
     "footnote": "腳註",
     "broken": "這個引用找不到目標。",
     "goTo": "前往",
-    "moreRows": "…還有更多列"
+    "moreRows": "…還有更多列",
+    "citationMissing": "找不到這筆文獻。"
   },
   "statement": {
     "editTitle": "編輯區塊",
@@ -444,12 +453,31 @@
     "styles": {
       "solid": "實線",
       "dashed": "虛線",
-      "dotted": "點線",
-      "double": "雙線"
+      "dotted": "點線"
     },
     "color": "線的顏色",
-    "doubleNote": "PDF 輸出沒有雙線，會畫成實線。",
     "applyPen": "套用到選取範圍內的線",
     "points": "{{value}} pt"
+  },
+  "tableTemplates": {
+    "mode": "插入方式",
+    "mode_grid": "指定大小",
+    "mode_template": "範本",
+    "search": "搜尋範本",
+    "fields": "領域",
+    "all": "全部",
+    "list": "範本",
+    "none": "沒有符合的範本。",
+    "choose": "選一個範本，會看到它的樣子。",
+    "needs": "這個範本需要：{{what}}。"
+  },
+  "blockHandle": "拖曳移動這個區塊",
+  "flip": {
+    "next": "繼續往下滾動，前往「{{title}}」",
+    "previous": "繼續往上滾動，回到「{{title}}」"
+  },
+  "landscape": {
+    "head": "橫向頁面，這裡的內容會印在轉向的頁面上",
+    "remove": "取消橫向頁面，內容保留"
   }
 }

@@ -15,7 +15,7 @@ import { IpcChannel } from "../../../../shared/enums/ipc-channel.enum";
 import { api } from "../../shared/api";
 import { errorMessage } from "../../shared/error-message";
 import { showNotes, warningItems } from "./build-notes";
-import { placeAt, readPlace, scrollFor, writePlace, type Place } from "./preview-place";
+import { PdfPreview } from "./PdfPreview";
 import type { BuildState } from "./use-build";
 
 type Props = {
@@ -26,6 +26,10 @@ type Props = {
   placeKey: string;
   onClose: () => void;
   onJump: (documentId: string, block: number) => void;
+  /** The block that the editor is at, the preview follows it */
+  follow: { documentId: string; block: number; nonce: number; mode: "caret" | "scroll"; fraction: number } | null;
+  /** The reader clicked the text of the PDF, the editor goes to its block */
+  onPick: (documentId: string, block: number) => void;
 };
 
 const WATCH_KEY = "marktwain.preview.watch";
@@ -47,19 +51,13 @@ function readWatch(): boolean {
   }
 }
 
-export function PreviewPanel({ build, saveTick, placeKey, onClose, onJump }: Props) {
+export function PreviewPanel({ build, saveTick, placeKey, onClose, onJump, follow, onPick }: Props) {
   const { t } = useTranslation("build");
   const { t: tRoot } = useTranslation();
   const [exportNote, setExportNote] = useState<{ ok: boolean; text: string } | null>(null);
   const [watch, setWatch] = useState(readWatch);
   const [watermark, setWatermark] = useState(readWatermark);
   const started = useRef(false);
-  const scroller = useRef<HTMLDivElement>(null);
-  const place = useRef<Place | null>(readPlace(placeKey));
-  /** Pages whose picture has loaded, the place is restored once the pages above it have their height */
-  const loaded = useRef(new Set<number>());
-  const heights = useRef<number[]>([]);
-  const restoring = useRef(true);
   const { outcome, building, error, run } = build;
   const { prefs } = usePrefs();
   const { width, separator } = useResizableWidth("marktwain.preview.width", 520, 320, 0.7);
@@ -88,42 +86,6 @@ export function PreviewPanel({ build, saveTick, placeKey, onClose, onJump }: Pro
     }
     // Only the switch matters, run is stable
   }, [watermark]);
-
-  const pageBoxes = () =>
-    Array.from(scroller.current?.querySelectorAll<HTMLElement>("li[data-page]") ?? []).map((li) => ({ top: li.offsetTop, height: li.offsetHeight }));
-
-  /** Scrolls back to the remembered place when the pages above it are drawn. */
-  function restore(): void {
-    const target = place.current;
-    const view = scroller.current;
-    if (!restoring.current) return;
-    // With no place to return to the reader is free to scroll at once
-    if (!target || !view) {
-      restoring.current = false;
-      return;
-    }
-    const boxes = pageBoxes();
-    const last = Math.min(target.page, boxes.length - 1);
-    for (let index = 0; index <= last; index += 1) if (!loaded.current.has(index)) return;
-    view.scrollTop = scrollFor(boxes, target);
-    // The scroll that this causes is not a move of the reader
-    requestAnimationFrame(() => {
-      restoring.current = false;
-    });
-  }
-
-  // A new build draws new pictures, the place is found again once they are in
-  useEffect(() => {
-    loaded.current = new Set();
-    restoring.current = true;
-    requestAnimationFrame(restore);
-  }, [outcome?.revision]);
-
-  function onScroll(): void {
-    if (restoring.current || !scroller.current) return;
-    place.current = placeAt(pageBoxes(), scroller.current.scrollTop);
-    writePlace(placeKey, place.current);
-  }
 
   function toggleWatch(): void {
     setWatch((value) => {
@@ -217,33 +179,9 @@ export function PreviewPanel({ build, saveTick, placeKey, onClose, onJump }: Pro
         </p>
       )}
 
-      <div ref={scroller} onScroll={onScroll} className="min-h-0 flex-1 overflow-y-auto bg-muted/40" data-testid="preview-pages">
+      <div className="min-h-0 flex-1 bg-muted/40" data-testid="preview-pages">
         {outcome && outcome.pageCount > 0 ? (
-          <ol className="flex flex-col items-center gap-4 p-4">
-            {Array.from({ length: outcome.pageCount }, (_, index) => (
-              <li
-                key={index}
-                data-page={index}
-                className="w-full max-w-[760px]"
-                // While a new picture loads the page keeps the height it had, so the scroll position does not jump
-                style={{ minHeight: heights.current[index] }}
-              >
-                <img
-                  src={`marktwain-preview://page/${outcome.revision}/${index}.png`}
-                  alt={t("page", { n: index + 1 })}
-                  decoding="async"
-                  onLoad={(event) => {
-                    loaded.current.add(index);
-                    const li = event.currentTarget.closest("li");
-                    if (li) heights.current[index] = li.offsetHeight;
-                    restore();
-                  }}
-                  className="block w-full rounded-sm border bg-white shadow-sm"
-                />
-                <p className="mt-1 text-center text-[11px] text-muted-foreground">{t("page", { n: index + 1 })}</p>
-              </li>
-            ))}
-          </ol>
+          <PdfPreview revision={outcome.revision} placeKey={placeKey} anchors={outcome.anchors} follow={follow} onPick={(target) => onPick(target.documentId, target.block)} />
         ) : (
           <p className="p-6 text-sm text-muted-foreground">{building ? t("building") : outcome ? t("failed") : t("empty")}</p>
         )}

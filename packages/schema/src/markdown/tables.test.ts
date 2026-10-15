@@ -19,7 +19,7 @@ const table = (
   attrs: Partial<{ label: string | null; caption: string; notes: string; style: string; widths: string }> = {},
 ) => ({
   type: "table",
-  attrs: { label: null, caption: "", notes: "", style: "three-line", widths: "", borders: "", placement: null, ...attrs },
+  attrs: { label: null, caption: "", notes: "", style: "three-line", widths: "", borders: "", width: null, size: null, placement: null, ...attrs },
   content: rows,
 });
 
@@ -251,5 +251,20 @@ describe("borders", () => {
     expect(out).toContain("borders=h-1.*=2.25;v1.0=0.5/dashed");
     expect(serializeMarkdown(parseMarkdown(out))).toBe(out);
     expect(serializeMarkdown(parseMarkdown("| a |\n|---|\n| 1 |\n\n: 表\n"))).not.toContain("borders");
+  });
+});
+
+describe("width and size of a whole table", () => {
+  it("are kept as shares and written back, 100% and nonsense are left out", () => {
+    const md = (props: string) => `| a |\n|---|\n| 1 |\n\n: 表 {#tbl:t ${props}}\n`;
+    const read = (props: string) => (parseMarkdown(md(props)).content?.[0] as { attrs: { width: string | null; size: string | null } }).attrs;
+    expect(read("width=80% size=90%")).toEqual(expect.objectContaining({ width: "80%", size: "90%" }));
+    expect(read("width=100% size=30%")).toEqual(expect.objectContaining({ width: null, size: null }));
+    expect(read("width=wide")).toEqual(expect.objectContaining({ width: null }));
+    const out = serializeMarkdown(parseMarkdown(md("width=60% size=80%")));
+    expect(out).toContain("width=60%");
+    expect(out).toContain("size=80%");
+    expect(serializeMarkdown(parseMarkdown(out))).toBe(out);
+    expect(serializeMarkdown(parseMarkdown("| a |\n|---|\n| 1 |\n\n: 表\n"))).not.toContain("width");
   });
 });

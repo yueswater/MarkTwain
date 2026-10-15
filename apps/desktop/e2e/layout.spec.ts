@@ -3,6 +3,7 @@ import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { findPackagedExecutable } from "./find-app";
+import { showViewerPage, viewerState } from "./preview-viewer";
 
 const dist = resolve(__dirname, "../dist");
 
@@ -139,26 +140,22 @@ test("the preview returns to its place after a rebuild and after being closed, a
     await page.getByRole("region", { name: "Recent projects" }).getByRole("button").first().click();
     await page.getByRole("button", { name: "Preview", exact: true }).click();
     const pages = page.getByTestId("preview-pages");
-    await expect(pages.locator("img").first()).toBeVisible();
-    await expect.poll(() => pages.locator("li").count()).toBeGreaterThan(3);
-    await expect.poll(async () => (await pages.locator("img").evaluateAll((all) => all.every((img) => (img as HTMLImageElement).complete)))).toBe(true);
+    await expect.poll(async () => (await viewerState(page))?.total ?? 0, { timeout: 90_000 }).toBeGreaterThan(3);
 
-    // Scroll to the fourth page
-    await pages.evaluate((el) => {
-      const li = el.querySelectorAll("li")[3] as HTMLElement;
-      el.scrollTop = li.offsetTop + 40;
-    });
-    await expect.poll(() => pages.evaluate((el) => el.scrollTop)).toBeGreaterThan(500);
-    const before = await pages.evaluate((el) => el.scrollTop);
+    // Scroll to the fourth page, once the build has found its place, a scroll before that is the viewer settling
+    await page.waitForTimeout(1500);
+    await showViewerPage(page, 4);
+    await expect.poll(async () => (await viewerState(page))?.page).toBe(4);
 
     // Closing and opening the preview returns to the same place
     await page.getByRole("button", { name: "Preview", exact: true }).click();
     await expect(pages).toBeHidden();
     await page.getByRole("button", { name: "Preview", exact: true }).click();
-    await expect(pages.locator("img").first()).toBeVisible();
-    await expect.poll(async () => Math.abs((await pages.evaluate((el) => el.scrollTop)) - before)).toBeLessThan(40);
+    await expect.poll(async () => (await viewerState(page))?.total ?? 0, { timeout: 90_000 }).toBeGreaterThan(3);
+    await expect.poll(async () => (await viewerState(page))?.page, { timeout: 15_000 }).toBe(4);
 
-    // A rebuild after a save keeps the place too
+    // A rebuild after a save keeps the place too, and shows the new build
+    const built = (await viewerState(page))?.id;
     await page.evaluate(async () => {
       const list = await window.marktwain.invoke("document:list");
       if (!list.ok) return;
@@ -167,8 +164,8 @@ test("the preview returns to its place after a rebuild and after being closed, a
       if (doc.ok) await window.marktwain.invoke("document:save", { id: chapter.id, text: `${doc.data.text}\nOne more paragraph.\n` });
     });
     await page.getByRole("button", { name: "Build", exact: true }).click().catch(() => undefined);
-    await page.waitForTimeout(2500);
-    await expect.poll(async () => Math.abs((await pages.evaluate((el) => el.scrollTop)) - before)).toBeLessThan(80);
+    await expect.poll(async () => (await viewerState(page))?.id, { timeout: 60_000 }).not.toBe(built);
+    await expect.poll(async () => (await viewerState(page))?.page, { timeout: 15_000 }).toBe(4);
 
     // The edge between the editor and the preview thickens under the pointer
     const handle = page.getByRole("separator", { name: "Resize the preview" });
