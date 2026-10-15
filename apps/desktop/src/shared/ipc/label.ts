@@ -43,9 +43,20 @@ export type LabelPreview = {
   content: LabelPreviewContent;
 };
 
+/** A place that refers to a label, the block that holds the reference and the start of its text. */
+export type LabelReference = {
+  documentId: string;
+  /** Index of the top level block that holds the reference, to scroll to it */
+  block: number;
+  document: { kind: string; position: number; title: string };
+  excerpt: string;
+};
+
 export type LabelContract = {
   /** The content that a label points to, null when no document has it */
   [IpcChannel.LabelPreview]: { req: { label: string }; res: LabelPreview | null };
   /** Scans all saved documents of the project and returns labels, numbers and errors */
+  /** The places that refer to a label, in the order of the documents */
+  [IpcChannel.LabelReferences]: { req: { label: string }; res: LabelReference[] };
   [IpcChannel.LabelResolve]: { req: void; res: LabelIndex };
 };

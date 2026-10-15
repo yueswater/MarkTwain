@@ -188,6 +188,21 @@ function ReferenceBody({ label, labels, onOpenTarget }: { label: string; labels:
   );
 }
 
+/** Text with formulas between dollar signs, the formulas are drawn and the rest stays text. */
+function Rich({ text }: { text: string }) {
+  return (
+    <>
+      {text.split(/(\$[^$]+\$)/).map((part, index) => {
+        if (part.length > 2 && part.startsWith("$") && part.endsWith("$")) {
+          const html = renderLatex(part.slice(1, -1), false);
+          if (html) return <span key={index} dangerouslySetInnerHTML={{ __html: html }} />;
+        }
+        return <span key={index}>{part}</span>;
+      })}
+    </>
+  );
+}
+
 function Content({ content }: { content: LabelPreview["content"] }) {
   const { t } = useTranslation("editor");
   switch (content.type) {
@@ -195,7 +210,7 @@ function Content({ content }: { content: LabelPreview["content"] }) {
       return (
         <figure className="grid gap-1">
           {content.src && <img src={assetUrl(content.src)} alt="" className="max-h-40 w-full rounded border bg-white object-contain" />}
-          <figcaption className="text-xs text-muted-foreground">{content.caption}</figcaption>
+          <figcaption className="text-xs text-muted-foreground"><Rich text={content.caption} /></figcaption>
         </figure>
       );
     case "table":
@@ -207,7 +222,7 @@ function Content({ content }: { content: LabelPreview["content"] }) {
                 <tr key={rowIndex} className={rowIndex === 0 ? "border-y-2 border-foreground/60 font-medium" : rowIndex === content.rows.length - 1 && !content.more ? "border-b-2 border-foreground/60" : ""}>
                   {row.map((cell, cellIndex) => (
                     <td key={cellIndex} className="max-w-28 truncate px-1 py-0.5">
-                      {cell}
+                      <Rich text={cell} />
                     </td>
                   ))}
                 </tr>
@@ -215,7 +230,7 @@ function Content({ content }: { content: LabelPreview["content"] }) {
             </tbody>
           </table>
           {content.more && <p className="text-xs text-muted-foreground">{t("card.moreRows")}</p>}
-          <p className="text-xs text-muted-foreground">{content.caption}</p>
+          <p className="text-xs text-muted-foreground"><Rich text={content.caption} /></p>
         </div>
       );
     case "formula": {
@@ -227,16 +242,16 @@ function Content({ content }: { content: LabelPreview["content"] }) {
         <div className="grid gap-1">
           <p className="font-semibold leading-snug">
             {t(`statement.kinds.${content.kind}`)}
-            {content.title ? `（${content.title}）` : ""}
+            {content.title ? <Rich text={`（${content.title}）`} /> : null}
           </p>
-          {content.excerpt && <p className="text-xs leading-snug text-muted-foreground">{content.excerpt}</p>}
+          {content.excerpt && <p className="text-xs leading-snug text-muted-foreground"><Rich text={content.excerpt} /></p>}
         </div>
       );
     case "heading":
       return (
         <div className="grid gap-1">
-          <p className="font-semibold leading-snug">{content.title}</p>
-          {content.excerpt && <p className="text-xs leading-snug text-muted-foreground">{content.excerpt}</p>}
+          <p className="font-semibold leading-snug"><Rich text={content.title} /></p>
+          {content.excerpt && <p className="text-xs leading-snug text-muted-foreground"><Rich text={content.excerpt} /></p>}
         </div>
       );
     case "code":
@@ -246,7 +261,7 @@ function Content({ content }: { content: LabelPreview["content"] }) {
             {content.text}
             {content.more ? "\n..." : ""}
           </pre>
-          {content.caption && <p className="text-xs text-muted-foreground">{content.caption}</p>}
+          {content.caption && <p className="text-xs text-muted-foreground"><Rich text={content.caption} /></p>}
         </div>
       );
   }

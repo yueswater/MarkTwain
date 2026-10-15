@@ -28,6 +28,7 @@ import {
 import { STATEMENT_KINDS } from "@marktwain/schema";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { insertStatement } from "./statement-commands";
+import { statementIcon } from "./statement-icons";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { TableTools } from "./TableTools";
@@ -241,6 +242,10 @@ export function Toolbar({ editor, onInsertMath, onInsertAtom, onEditCaption, onI
         <DropdownMenuContent align="end" onCloseAutoFocus={(event) => { event.preventDefault(); editor.commands.focus(); }}>
           {STATEMENT_KINDS.map((kind) => (
             <DropdownMenuItem key={kind.id} onSelect={() => insertStatement(editor, kind.id)}>
+              {(() => {
+                const Icon = statementIcon(kind.id);
+                return <Icon aria-hidden="true" />;
+              })()}
               {t(`statement.kinds.${kind.id}`)}
             </DropdownMenuItem>
           ))}

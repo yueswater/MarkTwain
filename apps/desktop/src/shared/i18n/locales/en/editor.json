@@ -94,7 +94,6 @@
       "lst": "Listing",
       "def": "Definition",
       "lem": "Lemma",
-      "alm": "Auxiliary lemma",
       "thm": "Theorem",
       "prp": "Proposition",
       "cor": "Corollary",
@@ -224,7 +223,8 @@
     "locked": "This formula is referred to, so its name cannot be changed or removed.",
     "hint": "A formula with a name is numbered and can be referred to.",
     "numbered": "Numbered {{number}}",
-    "perChapter": "Number by chapter, (3.1) instead of (1)"
+    "references_one": "Referenced in 1 place",
+    "references_other": "Referenced in {{count}} places"
   },
   "slash": {
     "title": "Insert a block",
@@ -313,10 +313,6 @@
         "name": "Lemma",
         "description": "A small result that helps prove a theorem."
       },
-      "statement_auxlemma": {
-        "name": "Auxiliary lemma",
-        "description": "A lemma made for one proof."
-      },
       "statement_theorem": {
         "name": "Theorem",
         "description": "A main result that is proved."
@@ -347,27 +343,27 @@
       }
     },
     "sample": {
-      "heading": "Research design",
+      "heading": "Section title",
       "list": {
-        "0": "Collect the data",
-        "1": "Fit the model",
-        "2": "Report the results"
+        "0": "First item",
+        "1": "Second item",
+        "2": "Third item"
       },
-      "quote": "A contest is won by the player who moves with the most information.",
-      "inlineBefore": "The correlation",
-      "inlineAfter": "measures how alike the valuations are.",
-      "figure": "Figure 1  Equilibrium regions",
+      "quote": "This is a quoted passage.",
+      "inlineBefore": "The variable",
+      "inlineAfter": "stands for a number.",
+      "figure": "Figure 1  A sample caption",
       "tableHead": {
-        "0": "Setting",
-        "1": "Share"
+        "0": "Item",
+        "1": "Value"
       },
       "tableRow": {
-        "0": "Independent",
-        "1": "Correlated"
+        "0": "A",
+        "1": "B"
       },
-      "footnote": "The result holds for any positive cost",
-      "citationBefore": "This follows the earlier model",
-      "crossRefBefore": "The regions are drawn in",
+      "footnote": "This is the text of a footnote",
+      "citationBefore": "This cites one reference",
+      "crossRefBefore": "See",
       "crossRefTarget": "Figure 1"
     }
   },
@@ -387,7 +383,6 @@
     "kinds": {
       "definition": "Definition",
       "lemma": "Lemma",
-      "auxlemma": "Auxiliary lemma",
       "theorem": "Theorem",
       "proposition": "Proposition",
       "corollary": "Corollary",

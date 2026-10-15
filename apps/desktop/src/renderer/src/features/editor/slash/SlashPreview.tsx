@@ -7,12 +7,12 @@ const SAMPLE_CODE: { text: string; color?: string }[][] = [
   [{ text: "def", color: "#d73a49" }, { text: " " }, { text: "mean", color: "#4b69c6" }, { text: "(x):" }],
   [{ text: "    " }, { text: "return", color: "#d73a49" }, { text: " " }, { text: "sum", color: "#b60157" }, { text: "(x) / " }, { text: "len", color: "#b60157" }, { text: "(x)" }],
 ];
-const SAMPLE_CITATION = "(Fu, 2006)";
+const SAMPLE_CITATION = "(Smith, 2020)";
 
 const SAMPLE_EQUATION = katex.renderToString("E_{\\mathrm{total}} = \\sum_{i=1}^{n} x_i", { displayMode: true, throwOnError: false });
-const SAMPLE_INLINE = katex.renderToString("\\rho \\in [0, 1]", { throwOnError: false });
+const SAMPLE_INLINE = katex.renderToString("x \\in [0, 1]", { throwOnError: false });
 
-/** A small drawing of what a block looks like, with sample text taken from a thesis. */
+/** A small drawing of what a block looks like, with sample text that belongs to no thesis. */
 export function SlashPreview({ item, level }: { item: SlashItem; level?: number }) {
   const { t } = useTranslation("editor");
   const line = "h-1.5 rounded bg-foreground/15";

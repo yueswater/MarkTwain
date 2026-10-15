@@ -94,7 +94,6 @@
       "lst": "程式",
       "def": "定義",
       "lem": "引理",
-      "alm": "輔助引理",
       "thm": "定理",
       "prp": "命題",
       "cor": "推論",
@@ -224,7 +223,8 @@
     "locked": "這條公式已被引用，無法更名或移除。",
     "hint": "有名稱的公式會編號，也能被引用。",
     "numbered": "編號 {{number}}",
-    "perChapter": "依章節編號，(3.1) 而不是 (1)"
+    "references_other": "被引用 {{count}} 處",
+    "references_one": "被引用 1 處"
   },
   "slash": {
     "title": "插入區塊",
@@ -313,10 +313,6 @@
         "name": "引理",
         "description": "用來證明定理的小結果。"
       },
-      "statement_auxlemma": {
-        "name": "輔助引理",
-        "description": "只為某個證明準備的引理。"
-      },
       "statement_theorem": {
         "name": "定理",
         "description": "論文中主要的已證明結果。"
@@ -347,27 +343,27 @@
       }
     },
     "sample": {
-      "heading": "研究設計",
+      "heading": "章節標題",
       "list": {
-        "0": "蒐集資料",
-        "1": "估計模型",
-        "2": "報告結果"
+        "0": "第一項",
+        "1": "第二項",
+        "2": "第三項"
       },
-      "quote": "掌握最多資訊的一方，才能在競賽中先行一步。",
-      "inlineBefore": "相關係數",
-      "inlineAfter": "衡量雙方評價的相似程度。",
-      "figure": "圖 1  均衡區域",
+      "quote": "這是一段引用的文字。",
+      "inlineBefore": "變數",
+      "inlineAfter": "代表一個數值。",
+      "figure": "圖 1  圖說範例",
       "tableHead": {
-        "0": "設定",
-        "1": "比例"
+        "0": "項目",
+        "1": "數值"
       },
       "tableRow": {
-        "0": "獨立",
-        "1": "相關"
+        "0": "甲",
+        "1": "乙"
       },
-      "footnote": "此結果在任何正的成本下成立",
-      "citationBefore": "此處沿用先前的模型",
-      "crossRefBefore": "各區域畫在",
+      "footnote": "這是一則腳註的內容",
+      "citationBefore": "此處引用一筆文獻",
+      "crossRefBefore": "請見",
       "crossRefTarget": "圖 1"
     }
   },
@@ -387,7 +383,6 @@
     "kinds": {
       "definition": "定義",
       "lemma": "引理",
-      "auxlemma": "輔助引理",
       "theorem": "定理",
       "proposition": "命題",
       "corollary": "推論",

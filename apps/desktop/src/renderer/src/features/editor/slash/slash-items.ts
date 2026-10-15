@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { STATEMENT_KINDS } from "@marktwain/schema";
 import { insertStatement } from "../statement-commands";
+import { statementIcon } from "../statement-icons";
 
 /** What the menu asks the editor view to do, the same functions the toolbar uses. */
 export type SlashHandlers = {
@@ -72,7 +73,7 @@ const BASE_ITEMS: readonly SlashItem[] = [
 const STATEMENT_ITEMS: readonly SlashItem[] = STATEMENT_KINDS.map((kind) => ({
   id: `statement_${kind.id}`,
   group: "statement" as const,
-  icon: kind.id === "proof" ? MinusIcon : SigmaIcon,
+  icon: statementIcon(kind.id),
   aliases: [kind.id, kind.name.zh, kind.name.en.toLowerCase(), "theorem", "定理", "數學"],
   markdown: `::: ${kind.id}`,
   preview: "text" as const,

@@ -573,7 +573,7 @@ function EditorSurface({
           onRestoreFocus={() => editor.commands.focus()}
         />
       )}
-      <EquationLabelBubble editor={editor} labels={labels} />
+      <EquationLabelBubble editor={editor} labels={labels} onOpenTarget={(documentId, block) => onOpenTarget?.(documentId, block)} />
       <ReferenceCard editor={editor} labels={labels} onOpenTarget={(documentId, block) => onOpenTarget?.(documentId, block)} />
       {atom?.type === "footnote" && (
         <FootnoteDialog

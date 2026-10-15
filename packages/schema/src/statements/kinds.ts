@@ -14,7 +14,6 @@ export type StatementKind = {
 export const STATEMENT_KINDS: readonly StatementKind[] = [
   { id: "definition", prefix: "def", numbered: true, name: { zh: "定義", en: "Definition" }, accent: "#448AFF" },
   { id: "lemma", prefix: "lem", numbered: true, name: { zh: "引理", en: "Lemma" }, accent: "#00B8D4" },
-  { id: "auxlemma", prefix: "alm", numbered: true, name: { zh: "輔助引理", en: "Auxiliary lemma" }, accent: "#00BFA5" },
   { id: "theorem", prefix: "thm", numbered: true, name: { zh: "定理", en: "Theorem" }, accent: "#7C4DFF" },
   { id: "proposition", prefix: "prp", numbered: true, name: { zh: "命題", en: "Proposition" }, accent: "#01C853" },
   { id: "corollary", prefix: "cor", numbered: true, name: { zh: "推論", en: "Corollary" }, accent: "#FF9100" },

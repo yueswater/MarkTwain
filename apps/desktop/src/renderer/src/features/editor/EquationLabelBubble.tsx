@@ -3,13 +3,12 @@ import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } fro
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import type { LabelIndex } from "../../../../shared/ipc";
+import type { LabelIndex, LabelReference } from "../../../../shared/ipc";
 import { checkName, isLabelUsed, labelOfName, nameOfLabel } from "./equation-name";
 import { existingLabels } from "./unlabeled-targets";
 import { IpcChannel } from "../../../../shared/enums/ipc-channel.enum";
-import { Switch } from "@/components/ui/switch";
 import { api } from "../../shared/api";
-import { LABELS_CHANGED } from "./use-label-index";
+import { documentTitle } from "../project/document-title";
 
 /** Event sent by the shortcut so the box opens for the selected formula. */
 export const OPEN_EQUATION_LABEL_EVENT = "marktwain:equation-label";
@@ -37,10 +36,10 @@ function rectOf(element: HTMLElement): Open["rect"] {
   return { top: box.top, bottom: box.bottom, right: box.right };
 }
 
-type Props = { editor: Editor | null; labels: LabelIndex };
+type Props = { editor: Editor | null; labels: LabelIndex; onOpenTarget: (documentId: string, block: number) => void };
 
 /** A small box next to a display formula, where its name is typed. A formula with a name is numbered and can be referred to. */
-export function EquationLabelBubble({ editor, labels }: Props) {
+export function EquationLabelBubble({ editor, labels, onOpenTarget }: Props) {
   const { t } = useTranslation("editor");
   const [open, setOpen] = useState<Open | null>(null);
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -112,6 +111,7 @@ export function EquationLabelBubble({ editor, labels }: Props) {
       label={(node.attrs.label as string | null) ?? null}
       rect={open.rect}
       labels={labels}
+      onOpenTarget={onOpenTarget}
       onEnter={cancelHide}
       onLeave={scheduleHide}
       onClose={() => setOpen(null)}
@@ -126,6 +126,7 @@ type BoxProps = {
   label: string | null;
   rect: Open["rect"];
   labels: LabelIndex;
+  onOpenTarget: (documentId: string, block: number) => void;
   onEnter: () => void;
   onLeave: () => void;
   onClose: () => void;
@@ -133,7 +134,8 @@ type BoxProps = {
   ref: React.Ref<HTMLDivElement>;
 };
 
-function Box({ editor, pos, label, rect, labels, onEnter, onLeave, onClose, t, ref }: BoxProps) {
+function Box({ editor, pos, label, rect, labels, onOpenTarget, onEnter, onLeave, onClose, t, ref }: BoxProps) {
+  const { t: tProject } = useTranslation("project");
   const [name, setName] = useState(nameOfLabel(label));
   const taken = useMemo(() => existingLabels(editor.state.doc, labels.targets.map((target) => target.label)), [editor, labels]);
   const inDocument = useMemo(() => {
@@ -144,24 +146,19 @@ function Box({ editor, pos, label, rect, labels, onEnter, onLeave, onClose, t, r
     return found;
   }, [editor]);
 
-  // Whether equation numbers restart in each chapter is a setting of the thesis, it is shown here where the numbers are
-  const [perChapter, setPerChapter] = useState<boolean | null>(null);
+  // Where the formula is referred to, listed so that each place can be visited
+  const [references, setReferences] = useState<LabelReference[]>([]);
   useEffect(() => {
+    if (label === null) return;
     let cancelled = false;
     api
-      .invoke(IpcChannel.ConfigGetAdvanced)
-      .then((state) => !cancelled && setPerChapter((state.values["layout.equation-per-chapter"] ?? state.inherited["layout.equation-per-chapter"]) === true))
+      .invoke(IpcChannel.LabelReferences, { label })
+      .then((found) => !cancelled && setReferences(found))
       .catch(() => undefined);
     return () => {
       cancelled = true;
     };
-  }, []);
-
-  async function changePerChapter(checked: boolean): Promise<void> {
-    setPerChapter(checked);
-    await api.invoke(IpcChannel.ConfigSetAdvanced, { values: { "layout.equation-per-chapter": checked } });
-    window.dispatchEvent(new Event(LABELS_CHANGED));
-  }
+  }, [label, labels.used]);
 
   const locked = label !== null && isLabelUsed(label, labels.used, inDocument);
   const problem = name === "" ? null : checkName(name, taken, label);
@@ -231,11 +228,27 @@ function Box({ editor, pos, label, rect, labels, onEnter, onLeave, onClose, t, r
       )}
       {locked && <p className="text-xs text-muted-foreground">{t("equation.locked")}</p>}
       {label === null && !problem && <p className="text-xs text-muted-foreground">{t("equation.hint")}</p>}
-      {perChapter !== null && (
-        <label className="flex items-center justify-between gap-2 border-t pt-1.5 text-xs text-muted-foreground">
-          {t("equation.perChapter")}
-          <Switch checked={perChapter} aria-label={t("equation.perChapter")} onCheckedChange={(checked) => void changePerChapter(checked)} />
-        </label>
+      {references.length > 0 && (
+        <div className="grid gap-1 border-t pt-1.5" data-testid="equation-references">
+          <p className="text-xs text-muted-foreground">{t("equation.references", { count: references.length })}</p>
+          <ul className="grid max-h-40 gap-0.5 overflow-y-auto">
+            {references.map((reference, index) => (
+              <li key={`${reference.documentId}:${reference.block}:${index}`}>
+                <button
+                  type="button"
+                  className="grid w-full gap-0.5 rounded px-1.5 py-1 text-left text-xs hover:bg-accent"
+                  onClick={() => {
+                    onClose();
+                    onOpenTarget(reference.documentId, reference.block);
+                  }}
+                >
+                  <span className="font-medium">{documentTitle(tProject, { kind: reference.document.kind as never, position: reference.document.position, title: reference.document.title })}</span>
+                  <span className="truncate text-muted-foreground">{reference.excerpt}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
       {label !== null && number !== undefined && (
         <p className="text-xs text-muted-foreground" data-testid="equation-number">

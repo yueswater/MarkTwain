@@ -8,9 +8,9 @@ import {
   type Target,
 } from "@marktwain/schema";
 import { DocumentKind } from "../../../shared/enums/document-kind.enum";
-import type { LabelIndex, LabelPreview, LabelTarget } from "../../../shared/ipc";
+import type { LabelIndex, LabelPreview, LabelReference, LabelTarget } from "../../../shared/ipc";
 import { DEFAULT_NUMBERING } from "../../config/numbering.config";
-import { findPreview } from "./label-preview";
+import { findPreview, findReferences } from "./label-preview";
 import type { DocumentService } from "../document/document.service";
 
 /** Kinds that run through the whole thesis, equations restart in a chapter when the setting says so and are left out */
@@ -35,6 +35,19 @@ export class LabelService {
       if (found) return { label, documentId: doc.id, block: found.block, document: { kind: doc.kind, position: doc.position, title: doc.title }, content: found.content };
     }
     return null;
+  }
+
+  /** Where a label is referred to, so a name that is in use can show its users. */
+  references(label: string): LabelReference[] {
+    const out: LabelReference[] = [];
+    for (const summary of this.documents.list()) {
+      const doc = this.documents.get(summary.id);
+      const blocks = (parseMarkdown(doc.text).content ?? []) as Parameters<typeof findReferences>[0];
+      for (const hit of findReferences(blocks, label)) {
+        out.push({ documentId: doc.id, block: hit.block, document: { kind: doc.kind, position: doc.position, title: doc.title }, excerpt: hit.excerpt });
+      }
+    }
+    return out;
   }
 
   resolve(): LabelIndex {

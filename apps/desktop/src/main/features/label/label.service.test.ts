@@ -83,3 +83,17 @@ describe("LabelService.resolve", () => {
     expect(index.duplicates).toEqual(["fig:a"]);
   });
 });
+
+describe("LabelService.references", () => {
+  it("lists the blocks that refer to a label, document by document", () => {
+    documents.seedDefaults(); // id-2 is chapter 1
+    documents.save("id-2", "# 一\n\n$$\nx\n$$ {#eq:a}\n\n見 @eq:a 與 @eq:a。\n\n沒有引用。\n");
+    const second = documents.create("chapter");
+    documents.save(second.id, "# 二\n\n再次見 @eq:a。\n\n見 @eq:b。\n");
+
+    const found = labels.references("eq:a");
+    expect(found.map((r) => [r.documentId, r.block])).toEqual([["id-2", 2], [second.id, 1]]);
+    expect(found[0]?.excerpt).toContain("見");
+    expect(labels.references("eq:none")).toEqual([]);
+  });
+});
