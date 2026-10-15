@@ -51,6 +51,9 @@ import { ListMarkers } from "./extensions/list-markers";
 import { useListLevels } from "./use-list-levels";
 import { PlacementMarks } from "./extensions/placement-marks";
 import { LandscapeMarks } from "./extensions/landscape-marks";
+import { EdgeFlip, type Edge } from "./edge-flip";
+import { TableHandle } from "./TableHandle";
+import { BlockHandle } from "./BlockHandle";
 import { StatementDecorations, STATEMENTS_CHANGED } from "./extensions/statement-decorations";
 import { StatementDialog, type StatementTarget } from "./StatementDialog";
 import { statementOf } from "./statement-heads";
@@ -70,10 +73,18 @@ type Props = {
   onCaretBlock?: (block: number) => void;
   /** The top level block at the top of the editor while it scrolls, and how far into the block the top is, 0 to 1 */
   onTopBlock?: (block: number, fraction: number) => void;
+  /** The titles of the documents before and after this one, null when there is none, a push against an end of the page opens them */
+  neighbors?: { previous: string | null; next: string | null };
+  /** Opens the document after this one for the end, the one before for the start */
+  onFlip?: (edge: Edge) => void;
+  /** Which end of the document to show on arrival, set when it was opened by a push against the end of the other one */
+  arrive?: { edge: Edge; nonce: number } | null;
+  /** Called once the end was shown, so that opening the document again later does not repeat it */
+  onArrived?: () => void;
 };
 
 /** Loads one document. The caller remounts with key when the document changes, so each document has its own editor and undo history. */
-export function DocumentEditor({ documentId, scrollTo, onSaved, registerFlush, onOpenTarget, onCaretBlock, onTopBlock }: Props) {
+export function DocumentEditor({ documentId, scrollTo, onSaved, registerFlush, onOpenTarget, onCaretBlock, onTopBlock, neighbors, onFlip, arrive, onArrived }: Props) {
   const { t } = useTranslation();
   const [doc, setDoc] = useState<DocumentData | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -98,7 +109,7 @@ export function DocumentEditor({ documentId, scrollTo, onSaved, registerFlush, o
     );
   }
   if (!doc) return null;
-  return <EditorSurface doc={doc} scrollTo={scrollTo ?? null} onSaved={onSaved} registerFlush={registerFlush} onOpenTarget={onOpenTarget} onCaretBlock={onCaretBlock} onTopBlock={onTopBlock} />;
+  return <EditorSurface doc={doc} scrollTo={scrollTo ?? null} onSaved={onSaved} registerFlush={registerFlush} onOpenTarget={onOpenTarget} onCaretBlock={onCaretBlock} onTopBlock={onTopBlock} neighbors={neighbors} onFlip={onFlip} arrive={arrive ?? null} onArrived={onArrived} />;
 }
 
 const WIDTH = { narrow: "max-w-xl", normal: "max-w-3xl", wide: "max-w-5xl" } as const;
@@ -129,6 +140,10 @@ function EditorSurface({
   onOpenTarget,
   onCaretBlock,
   onTopBlock,
+  neighbors,
+  onFlip,
+  arrive,
+  onArrived,
 }: {
   doc: DocumentData;
   scrollTo: { block: number; nonce: number; term?: string } | null;
@@ -136,6 +151,10 @@ function EditorSurface({
   registerFlush?: (flush: (() => Promise<void>) | null) => void;
   onOpenTarget?: (documentId: string, block: number) => void;
   onCaretBlock?: (block: number) => void;
+  neighbors?: { previous: string | null; next: string | null };
+  onFlip?: (edge: Edge) => void;
+  arrive: { edge: Edge; nonce: number } | null;
+  onArrived?: () => void;
   onTopBlock?: (block: number, fraction: number) => void;
 }) {
   const { t } = useTranslation("editor");
@@ -194,6 +213,30 @@ function EditorSurface({
   const topRef = useRef(onTopBlock);
   topRef.current = onTopBlock;
   const scroller = useRef<HTMLDivElement>(null);
+  const editorFrame = useRef<HTMLDivElement>(null);
+  const edgeFlip = useRef(new EdgeFlip());
+  const arrivedRef = useRef(onArrived);
+  arrivedRef.current = onArrived;
+  const [hint, setHint] = useState<{ edge: Edge; progress: number; title: string } | null>(null);
+  const hintTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  useEffect(() => () => clearTimeout(hintTimer.current), []);
+  /** A wheel that keeps pushing against the top or the bottom of the page opens the document before or after it */
+  const pushAgainstEdge = (event: React.WheelEvent<HTMLDivElement>) => {
+    lastInput.current = Date.now();
+    const box = event.currentTarget;
+    if (event.ctrlKey || Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
+    const atStart = box.scrollTop <= 0 && neighbors?.previous != null;
+    const atEnd = box.scrollTop + box.clientHeight >= box.scrollHeight - 1 && neighbors?.next != null;
+    const push = edgeFlip.current.push(event.timeStamp, event.deltaY, atStart, atEnd);
+    clearTimeout(hintTimer.current);
+    if (push.flip) {
+      setHint(null);
+      onFlip?.(push.flip);
+    } else if (push.edge) {
+      setHint({ edge: push.edge, progress: push.progress, title: (push.edge === "end" ? neighbors?.next : neighbors?.previous) ?? "" });
+      hintTimer.current = setTimeout(() => setHint(null), 600);
+    } else setHint(null);
+  };
   /** When a person last used the wheel, a key or the pointer in the editor, a scroll without one is the page settling and not a reader */
   const lastInput = useRef(0);
   // What the slash menu asks the view to do, the same functions the toolbar uses
@@ -310,6 +353,18 @@ function EditorSurface({
   useEffect(() => {
     if (scrollTo?.term) setFind({ open: true, term: scrollTo.term });
   }, [scrollTo]);
+
+  // A document that was opened by a push against the end of the other one shows the end that touches it
+  useEffect(() => {
+    if (!editor || editor.isDestroyed || !arrive) return;
+    editor.commands.focus(arrive.edge === "end" ? "end" : "start", { scrollIntoView: false });
+    const frame = requestAnimationFrame(() => {
+      const box = scroller.current;
+      if (box) box.scrollTop = arrive.edge === "end" ? box.scrollHeight : 0;
+      arrivedRef.current?.();
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [editor, arrive]);
 
   // Move the cursor to the top level block named by a build error
   useEffect(() => {
@@ -514,13 +569,25 @@ function EditorSurface({
         }
         onCropFigure={(pos, src) => setCrop({ pos, src })}
       />
-      <div className="relative min-h-0 flex-1">
+      <div className="relative min-h-0 flex-1" ref={editorFrame}>
+      <TableHandle editor={editor} frame={editorFrame} scroller={scroller} />
+      <BlockHandle editor={editor} frame={editorFrame} inset={prefs.lineNumbers ? 30 : 0} />
+      {hint && (
+        <div className={cn("pointer-events-none absolute inset-x-0 z-10 flex justify-center px-4", hint.edge === "end" ? "bottom-4" : "top-4")} role="status" data-testid="edge-hint">
+          <div className="flex min-w-48 max-w-md flex-col gap-1.5 rounded-lg border bg-popover px-4 py-2 text-sm shadow-md">
+            <span className="truncate">{t(hint.edge === "end" ? "flip.next" : "flip.previous", { title: hint.title })}</span>
+            <span className="h-1 overflow-hidden rounded-full bg-muted">
+              <span className="block h-full bg-primary" style={{ width: `${Math.round(hint.progress * 100)}%` }} />
+            </span>
+          </div>
+        </div>
+      )}
       {find.open && <FindBar key={find.term} editor={editor} initialTerm={find.term} onClose={() => setFind((c) => ({ ...c, open: false }))} />}
       <div
         ref={scroller}
         className="h-full overflow-y-auto"
         onScroll={reportTopBlock}
-        onWheel={() => (lastInput.current = Date.now())}
+        onWheel={pushAgainstEdge}
         onKeyDown={() => (lastInput.current = Date.now())}
         onPointerDown={() => (lastInput.current = Date.now())}
       >

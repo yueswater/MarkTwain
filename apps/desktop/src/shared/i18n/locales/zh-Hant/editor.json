@@ -130,6 +130,7 @@
     "deleteRow": "刪除列",
     "deleteColumn": "刪除欄",
     "toggleHeader": "切換標題列",
+    "handle": "選取整個表格，拖曳可移動",
     "deleteTable": "刪除表格",
     "alignLeft": "靠左",
     "alignCenter": "置中",
@@ -465,6 +466,11 @@
     "none": "沒有符合的範本。",
     "choose": "選一個範本，會看到它的樣子。",
     "needs": "這個範本需要：{{what}}。"
+  },
+  "blockHandle": "拖曳移動這個區塊",
+  "flip": {
+    "next": "繼續往下滾動，前往「{{title}}」",
+    "previous": "繼續往上滾動，回到「{{title}}」"
   },
   "landscape": {
     "head": "橫向頁面，這裡的內容會印在轉向的頁面上",

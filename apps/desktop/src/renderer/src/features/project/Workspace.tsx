@@ -9,6 +9,8 @@ import { DocumentEditor } from "../editor/DocumentEditor";
 import { FontsPage } from "../fonts/FontsPage";
 import { DocumentSidebar } from "./DocumentSidebar";
 import { SearchDialog } from "./SearchDialog";
+import { documentTitle } from "./document-title";
+import type { Edge } from "../editor/edge-flip";
 
 type Props = {
   state: ProjectState;
@@ -72,6 +74,8 @@ function WorkspaceBody({ state, build, previewOpen, onClosePreview, onOpenSettin
     return () => window.removeEventListener("keydown", onKey);
   }, []);
   const [target, setTarget] = useState<{ block: number; nonce: number; term?: string } | null>(null);
+  // The document that a push against the end of the page opened shows the end that touches the other one
+  const [arrive, setArrive] = useState<{ edge: Edge; nonce: number } | null>(null);
   const [searchOpen, setSearchOpen] = useState(false);
   // The preview follows the caret of the editor, and a click in the preview takes the caret to a block. A jump from the preview must not send the preview back.
   const [follow, setFollow] = useState<{ documentId: string; block: number; nonce: number; mode: "caret" | "scroll"; fraction: number } | null>(null);
@@ -92,6 +96,18 @@ function WorkspaceBody({ state, build, previewOpen, onClosePreview, onOpenSettin
   }, [selected, documents]);
 
   if (!project) return null;
+
+  const at = selected ? documents.indexOf(selected) : -1;
+  const before = at > 0 ? documents[at - 1] : undefined;
+  const after = at >= 0 ? documents[at + 1] : undefined;
+  const flipTo = async (edge: Edge) => {
+    const next = edge === "end" ? after : before;
+    if (!next) return;
+    await flush.current?.();
+    setTarget(null);
+    setArrive({ edge: edge === "end" ? "start" : "end", nonce: Date.now() });
+    setSelectedId(next.id);
+  };
 
   return (
     <div className="flex h-full min-h-0 overflow-hidden">
@@ -140,6 +156,10 @@ function WorkspaceBody({ state, build, previewOpen, onClosePreview, onOpenSettin
             key={selected.id}
             documentId={selected.id}
             scrollTo={target}
+            arrive={arrive}
+            onArrived={() => setArrive(null)}
+            neighbors={{ previous: before ? documentTitle(t, before) : null, next: after ? documentTitle(t, after) : null }}
+            onFlip={(edge) => void flipTo(edge)}
             onSaved={onSaved}
             registerFlush={registerFlush}
             onCaretBlock={(block) => {

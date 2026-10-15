@@ -130,6 +130,7 @@
     "deleteRow": "Delete row",
     "deleteColumn": "Delete column",
     "toggleHeader": "Toggle header row",
+    "handle": "Select the table, drag to move it",
     "deleteTable": "Delete table",
     "alignLeft": "Align left",
     "alignCenter": "Align center",
@@ -465,6 +466,11 @@
     "none": "No template matches.",
     "choose": "Choose a template to see what it looks like.",
     "needs": "This template needs: {{what}}."
+  },
+  "blockHandle": "Drag to move this block",
+  "flip": {
+    "next": "Keep scrolling down to open “{{title}}”",
+    "previous": "Keep scrolling up to go back to “{{title}}”"
   },
   "landscape": {
     "head": "Landscape page, what is here is printed on a page turned sideways",
