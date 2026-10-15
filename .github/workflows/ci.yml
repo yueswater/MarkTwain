@@ -34,7 +34,16 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - uses: typst-community/setup-typst@v4
+      - name: Fetch the pinned Typst and its packages
+        run: pnpm typst:fetch
+      - name: Use the fetched Typst in the unit tests
+        shell: bash
+        run: |
+          key=$(node -e 'const os = { darwin: "mac", win32: "win", linux: "linux" }[process.platform]; console.log(`${os}-${process.arch}`)')
+          exe=typst
+          if [ "$RUNNER_OS" = "Windows" ]; then exe=typst.exe; fi
+          echo "MARKTWAIN_TYPST=$GITHUB_WORKSPACE/resources/typst/$key/$exe" >> "$GITHUB_ENV"
+          echo "MARKTWAIN_TYPST_PACKAGES=$GITHUB_WORKSPACE/resources/typst-packages" >> "$GITHUB_ENV"
       - name: Fetch the pinned templates
         run: pnpm templates:fetch typ
         env:
@@ -59,7 +68,9 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - uses: typst-community/setup-typst@v4
+      # No MARKTWAIN_TYPST here, the end-to-end tests must use the Typst inside the packaged app.
+      - name: Fetch the pinned Typst and its packages
+        run: pnpm typst:fetch
       - name: Fetch the pinned templates
         run: pnpm templates:fetch typ
         env:
