@@ -16,6 +16,8 @@ export type CompletedConfig = {
   statements: unknown;
   /** The placement section, taken out for the same reason */
   placement: unknown;
+  /** The lists section, taken out for the same reason */
+  lists: unknown;
   language: "chinese" | "english" | null;
 };
 
@@ -51,7 +53,9 @@ export function completeConfig(text: string, today: string): CompletedConfig {
   if (doc.getIn(["watermark", "image"]) === "none") doc.setIn(["watermark", "image"], null);
   const statements = doc.has("statements") ? (doc.get("statements", true) as { toJSON?: () => unknown } | null)?.toJSON?.() : undefined;
   const placement = doc.has("placement") ? (doc.get("placement", true) as { toJSON?: () => unknown } | null)?.toJSON?.() : undefined;
+  const lists = doc.has("lists") ? (doc.get("lists", true) as { toJSON?: () => unknown } | null)?.toJSON?.() : undefined;
   doc.delete("statements");
+  doc.delete("lists");
   doc.delete("placement");
   const language = doc.getIn(["layout", "language"]);
   return {
@@ -59,6 +63,7 @@ export function completeConfig(text: string, today: string): CompletedConfig {
     missing,
     statements,
     placement,
+    lists,
     language: language === "english" || language === "chinese" ? language : null,
   };
 }

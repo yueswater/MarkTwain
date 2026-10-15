@@ -244,6 +244,49 @@ maybe("buildTypst with the real template", () => {
     }
   }, 120_000);
 
+  it("writes the numbers of every list style as the editor does, well past ten", async () => {
+    const work = mkdtempSync(join(tmpdir(), "marktwain 清單數字 "));
+    try {
+      const { ORDERED_STYLES, formatOrdered } = await import("@marktwain/schema");
+      const { run } = await import("./build-typst");
+      const { writeFileSync } = await import("node:fs");
+      const numbers = Array.from({ length: 130 }, (_, i) => i + 1);
+      for (const style of ORDERED_STYLES) {
+        writeFileSync(join(work, "n.typ"), `#metadata(range(1, 131).map(n => numbering("${style.pattern}", n))) <out>\n`);
+        const out = await new Promise<string>((resolve, reject) => {
+          void run(typst as string, ["query", "n.typ", "<out>", "--field", "value", "--one"], work, 60_000).then((r) => (r.code === 0 ? resolve(r.stdout) : reject(new Error(r.stderr))));
+        });
+        const fromTypst = JSON.parse(out) as string[];
+        // Typst writes a number it cannot express in the style as a plain number, the editor does the same
+        expect(numbers.map((n) => formatOrdered(style.id, n)).map((text, i) => [i + 1, text])).toEqual(fromTypst.map((text, i) => [i + 1, text]));
+      }
+    } finally {
+      rmSync(work, { recursive: true, force: true });
+    }
+  }, 120_000);
+
+  it("builds nested lists with the markers of each level", async () => {
+    const work = mkdtempSync(join(tmpdir(), "marktwain 清單 "));
+    try {
+      const result = await buildTypst(
+        input(work, {
+          config: `${config}lists:\n  ordered: [cjk, cjk-paren, decimal]\n  bullet: [diamond, circle, dash]\n`,
+          documents: [
+            {
+              id: "c1",
+              kind: "chapter",
+              text: ["# 緒論", "", "1. 第一點", "   1. 細項", "      - 符號", "         - 再下一層", "2. 第二點", "", "5. 從五開始", "", "- 甲", "  - 乙", "    - 丙", "      - 丁"].join("\n"),
+            },
+          ],
+        }),
+      );
+      expect(result.diagnostics.filter((d) => d.severity === "error")).toEqual([]);
+      expect(result.ok).toBe(true);
+    } finally {
+      rmSync(work, { recursive: true, force: true });
+    }
+  }, 120_000);
+
   it("reports a typst error against the source block", async () => {
     const work = mkdtempSync(join(tmpdir(), "marktwain 錯誤 "));
     try {

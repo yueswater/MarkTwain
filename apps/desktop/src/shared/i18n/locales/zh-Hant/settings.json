@@ -53,7 +53,8 @@
     "outline": "目次",
     "watermark": "浮水印",
     "statements": "定理區塊名稱",
-    "placement": "浮動位置"
+    "placement": "浮動位置",
+    "lists": "清單"
   },
   "advancedHint": "留空表示跟隨學校格式。修改後只會覆蓋這份論文。",
   "noProject": "開啟專案後才能調整論文格式。",
@@ -137,6 +138,10 @@
     "placement": {
       "figure": "圖的位置",
       "table": "表的位置"
+    },
+    "lists": {
+      "ordered": "編號清單的層級樣式",
+      "bullet": "符號清單的層級樣式"
     }
   },
   "hint": {
@@ -244,6 +249,10 @@
     "editorStatements": {
       "title": "定理區塊",
       "description": "定義、引理與定理在編輯器裡的樣子，不影響輸出的 PDF。"
+    },
+    "thesisLists": {
+      "title": "清單",
+      "description": "每一層清單用什麼符號或編號。會改變 PDF，編輯器也會跟著顯示。"
     }
   },
   "search": {
@@ -311,5 +320,47 @@
     "ask": "建立專案時詢問",
     "askHint": "關閉後，新專案會直接帶入這些資料，不再詢問。",
     "local": "這些資料只存在這台電腦的 App 設定裡。"
+  },
+  "lists": {
+    "preset": "組合",
+    "presetHint": "先選一組，再逐層調整。",
+    "presets": {
+      "default": "模板預設",
+      "western": "西式",
+      "chinese": "中文論文",
+      "levels": "逐層不同",
+      "custom": "自訂"
+    },
+    "ordered": "編號清單",
+    "bullet": "符號清單",
+    "level": "第 {{n}} 層",
+    "addLevel": "新增一層",
+    "removeLevel": "移除第 {{n}} 層",
+    "reset": "還原成模板預設",
+    "usesTemplate": "沿用模板的預設樣式。",
+    "preview": "預覽",
+    "sample": "第 {{n}} 層的項目",
+    "styles": {
+      "decimal": "阿拉伯數字",
+      "decimal-paren": "括號數字",
+      "decimal-bracket": "半括號數字",
+      "circled": "圈圍數字",
+      "lower-alpha": "小寫英文",
+      "upper-alpha": "大寫英文",
+      "lower-roman": "小寫羅馬",
+      "upper-roman": "大寫羅馬",
+      "cjk": "中文數字",
+      "cjk-paren": "括號中文數字"
+    },
+    "symbols": {
+      "bullet": "實心圓點",
+      "circle": "空心圓",
+      "small-square": "小方塊",
+      "dash": "短橫線",
+      "square": "方塊",
+      "triangle": "三角形",
+      "diamond": "菱形",
+      "arrow": "箭頭"
+    }
   }
 }

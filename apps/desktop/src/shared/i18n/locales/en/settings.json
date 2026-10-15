@@ -53,7 +53,8 @@
     "outline": "Table of contents",
     "watermark": "Watermark",
     "statements": "Theorem block names",
-    "placement": "Floating"
+    "placement": "Floating",
+    "lists": "Lists"
   },
   "advancedHint": "Empty fields follow the school format. Changing a value overrides it for this thesis only.",
   "noProject": "Open a project to change the format of its thesis.",
@@ -137,6 +138,10 @@
     "placement": {
       "figure": "Figure placement",
       "table": "Table placement"
+    },
+    "lists": {
+      "ordered": "Markers of numbered lists",
+      "bullet": "Markers of bullet lists"
     }
   },
   "hint": {
@@ -244,6 +249,10 @@
     "editorStatements": {
       "title": "Theorem blocks",
       "description": "How definitions, lemmas and theorems look in the editor. The PDF is not affected."
+    },
+    "thesisLists": {
+      "title": "Lists",
+      "description": "The marker of each level of a list. It changes the PDF, and the editor shows it too."
     }
   },
   "search": {
@@ -311,5 +320,47 @@
     "ask": "Ask when a project is created",
     "askHint": "Turn it off and a new project starts with this, without a question.",
     "local": "This stays on this computer, in the settings of the app."
+  },
+  "lists": {
+    "preset": "Combination",
+    "presetHint": "Pick one first, then adjust level by level.",
+    "presets": {
+      "default": "Template default",
+      "western": "Western",
+      "chinese": "Chinese thesis",
+      "levels": "Different at each level",
+      "custom": "Custom"
+    },
+    "ordered": "Numbered lists",
+    "bullet": "Bullet lists",
+    "level": "Level {{n}}",
+    "addLevel": "Add a level",
+    "removeLevel": "Remove level {{n}}",
+    "reset": "Back to the template default",
+    "usesTemplate": "Uses the style of the template.",
+    "preview": "Preview",
+    "sample": "Item at level {{n}}",
+    "styles": {
+      "decimal": "Numbers",
+      "decimal-paren": "Numbers in brackets",
+      "decimal-bracket": "Numbers with a bracket",
+      "circled": "Circled numbers",
+      "lower-alpha": "Lowercase letters",
+      "upper-alpha": "Uppercase letters",
+      "lower-roman": "Lowercase Roman",
+      "upper-roman": "Uppercase Roman",
+      "cjk": "Chinese numerals",
+      "cjk-paren": "Chinese numerals in brackets"
+    },
+    "symbols": {
+      "bullet": "Disc",
+      "circle": "Circle",
+      "small-square": "Small square",
+      "dash": "Dash",
+      "square": "Square",
+      "triangle": "Triangle",
+      "diamond": "Diamond",
+      "arrow": "Arrow"
+    }
   }
 }

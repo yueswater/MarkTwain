@@ -46,6 +46,8 @@ import { TableBorders } from "./extensions/table-borders";
 import { TableCaptions } from "./extensions/table-captions";
 import { TableLayout } from "./extensions/table-layout";
 import { useTableLayout } from "./use-table-layout";
+import { ListMarkers } from "./extensions/list-markers";
+import { useListLevels } from "./use-list-levels";
 import { PlacementMarks } from "./extensions/placement-marks";
 import { StatementDecorations, STATEMENTS_CHANGED } from "./extensions/statement-decorations";
 import { StatementDialog, type StatementTarget } from "./StatementDialog";
@@ -154,6 +156,9 @@ function EditorSurface({
 
   const labels = useLabelIndex(status);
   const tableLayout = useTableLayout();
+  const listLevels = useListLevels();
+  const listLevelsRef = useRef(listLevels);
+  listLevelsRef.current = listLevels;
   const tableLayoutRef = useRef(tableLayout);
   tableLayoutRef.current = tableLayout;
   const { view: bibliography } = useBibliography();
@@ -225,6 +230,7 @@ function EditorSurface({
         Placeholder.configure({ placeholder: t("placeholder") }),
         PlacementMarks,
         TableBorders,
+        ListMarkers.configure({ getLevels: () => listLevelsRef.current }),
         TableLayout,
         TableCaptions.configure({
           getBase: () => labelsRef.current.bases[doc.id]?.tbl ?? 0,
@@ -329,7 +335,7 @@ function EditorSurface({
   useEffect(() => {
     if (!editor || editor.isDestroyed) return;
     editor.view.dispatch(editor.state.tr.setMeta(STATEMENTS_CHANGED, true));
-  }, [editor, labels, prefs.statementStyle, prefs.statementColors, tableLayout]);
+  }, [editor, labels, prefs.statementStyle, prefs.statementColors, tableLayout, listLevels]);
 
   // Save pending changes before switching documents, closing the project or closing the window
   useEffect(() => {

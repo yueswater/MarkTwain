@@ -4,6 +4,7 @@ import {
   IdCardIcon,
   HashIcon,
   ImageIcon,
+  ListTreeIcon,
   LayoutIcon,
   ListOrderedIcon,
   PenLineIcon,
@@ -30,6 +31,7 @@ export type SettingsPageId =
   | "thesisText"
   | "thesisHeadings"
   | "thesisCaptions"
+  | "thesisLists"
   | "thesisPageNumber"
   | "thesisBibliography";
 
@@ -57,6 +59,7 @@ export const SETTINGS_PAGES: readonly SettingsPage[] = [
   { id: "thesisText", section: "thesis", icon: TypeIcon, needsProject: true, groups: ["text"] },
   { id: "thesisHeadings", section: "thesis", icon: HashIcon, needsProject: true, groups: ["headings", "numbering"] },
   { id: "thesisCaptions", section: "thesis", icon: ImageIcon, needsProject: true, groups: ["captions", "placement", "crossRef", "statements"] },
+  { id: "thesisLists", section: "thesis", icon: ListTreeIcon, needsProject: true, groups: ["lists"] },
   { id: "thesisPageNumber", section: "thesis", icon: ListOrderedIcon, needsProject: true, groups: ["pageNumber", "outline"] },
   { id: "thesisBibliography", section: "thesis", icon: BookOpenIcon, needsProject: true, groups: ["bibliography"] },
 ];

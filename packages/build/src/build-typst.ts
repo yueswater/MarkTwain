@@ -1,7 +1,7 @@
 import { spawn } from "node:child_process";
 import { copyFileSync, existsSync, mkdirSync, statSync, mkdtempSync, readFileSync, readdirSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { basename, dirname, join } from "node:path";
-import { collectTargets, parseMarkdown, resolvePlacementDefaults, resolveStatementStyle } from "@marktwain/schema";
+import { collectTargets, parseMarkdown, resolveListLevels, resolvePlacementDefaults, resolveStatementStyle } from "@marktwain/schema";
 import { renderStatementsTypst, renderTypstFile, toIr } from "@marktwain/render";
 import { completeConfig } from "./config";
 import { parseDiagnostics, type LineMap } from "./diagnostics";
@@ -79,7 +79,8 @@ function prepare(input: BuildInput, root: string, link: boolean): Prepared {
 
   const completed = completeConfig(input.config, new Date().toISOString().slice(0, 10));
   writeText(root, "config.yml", completed.text);
-  writeText(root, "marktwain.typ", renderStatementsTypst(resolveStatementStyle(completed.statements, completed.language === "english" ? "en" : "zh")));
+  const listLevels = resolveListLevels(completed.lists);
+  writeText(root, "marktwain.typ", renderStatementsTypst(resolveStatementStyle(completed.statements, completed.language === "english" ? "en" : "zh"), listLevels));
   for (const file of input.files) {
     const target = join(root, "figures", file.path);
     mkdirSync(dirname(target), { recursive: true });
@@ -120,7 +121,7 @@ function prepare(input: BuildInput, root: string, link: boolean): Prepared {
     writeText(root, path, file.text);
     lineMap.set(path, { documentId: doc.id, blockLines: file.blockLines });
   }
-  writeText(root, "main.typ", renderMain(input.documents, paths, input.bibliography.length > 0));
+  writeText(root, "main.typ", renderMain(input.documents, paths, input.bibliography.length > 0, { ordered: listLevels.ordered !== null, bullet: listLevels.bullet !== null }));
   return { missing: completed.missing, lineMap, mathFailures, citationFallbacks };
 }
 
