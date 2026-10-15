@@ -47,6 +47,8 @@ function copyTree(source: string, destination: string): void {
 }
 
 type Prepared = {
+  /** Folder of the project fonts inside the build directory, null when the project has none */
+  projectFontsDir: string | null;
   missing: string[];
   lineMap: LineMap;
   mathFailures: string[];
@@ -64,6 +66,9 @@ function prepare(input: BuildInput, root: string, link: boolean): Prepared {
   const mathFailures: string[] = [];
   const citationFallbacks: string[] = [];
 
+  // A project font goes in a folder of its own, beside the linked template, or into the fonts folder of an exported project
+  const projectFontsDir = (input.projectFonts ?? []).length > 0 ? (link ? "project-fonts" : join("fonts", "project")) : null;
+
   if (link) {
     // Junctions need no privileges on Windows and behave as symlinks elsewhere.
     for (const name of SHARED) {
@@ -75,6 +80,12 @@ function prepare(input: BuildInput, root: string, link: boolean): Prepared {
       if (NOT_COPIED.has(name)) continue;
       copyTree(join(input.templateDir, name), join(root, name));
     }
+  }
+
+  for (const font of input.projectFonts ?? []) {
+    const target = join(root, projectFontsDir as string, font.path);
+    mkdirSync(dirname(target), { recursive: true });
+    writeFileSync(target, font.data);
   }
 
   const completed = completeConfig(input.config, new Date().toISOString().slice(0, 10));
@@ -122,7 +133,7 @@ function prepare(input: BuildInput, root: string, link: boolean): Prepared {
     lineMap.set(path, { documentId: doc.id, blockLines: file.blockLines });
   }
   writeText(root, "main.typ", renderMain(input.documents, paths, input.bibliography.length > 0, { ordered: listLevels.ordered !== null, bullet: listLevels.bullet !== null }));
-  return { missing: completed.missing, lineMap, mathFailures, citationFallbacks };
+  return { projectFontsDir, missing: completed.missing, lineMap, mathFailures, citationFallbacks };
 }
 
 function warnings(prepared: Prepared): Diagnostic[] {
@@ -139,8 +150,8 @@ function warnings(prepared: Prepared): Diagnostic[] {
 }
 
 /** Reads the markers back from the same project, a failure only means the preview cannot follow the editor. */
-async function readAnchors(input: BuildInput, root: string, fonts: string): Promise<Anchor[]> {
-  const options = ["--font-path", fonts, ...(input.watermark ? ["--input", "watermark=true"] : [])];
+async function readAnchors(input: BuildInput, root: string, fontArgs: string[]): Promise<Anchor[]> {
+  const options = [...fontArgs, ...(input.watermark ? ["--input", "watermark=true"] : [])];
   // Newer typst moved query to eval, so the old form is tried first and then the new one
   const attempts = [
     ["query", "main.typ", "<mtpos>", "--field", "value", ...options],
@@ -167,7 +178,9 @@ export async function buildTypst(input: BuildInput): Promise<BuildResult> {
     const fonts = join(input.templateDir, "fonts");
     const png = input.format === "png";
     const output = png ? "page-{0p}.png" : "out.pdf";
-    const anchorsTask = input.anchors && !png ? readAnchors(input, root, fonts) : Promise.resolve<Anchor[]>([]);
+    // The fonts of the project come first, so one that has the name of a font of the template is used instead of it
+    const fontArgs = [...(prepared.projectFontsDir ? ["--font-path", prepared.projectFontsDir] : []), "--font-path", fonts];
+    const anchorsTask = input.anchors && !png ? readAnchors(input, root, fontArgs) : Promise.resolve<Anchor[]>([]);
     const { code, stderr } = await run(
       input.typst,
       [
@@ -175,8 +188,7 @@ export async function buildTypst(input: BuildInput): Promise<BuildResult> {
         "main.typ",
         output,
         ...(png ? ["--format", "png", "--ppi", String(input.ppi ?? 110)] : []),
-        "--font-path",
-        fonts,
+        ...fontArgs,
         ...(input.watermark ? ["--input", "watermark=true"] : []),
         "--diagnostic-format",
         "human",

@@ -31,6 +31,8 @@ export type BuildInput = {
   watermark?: boolean;
   /** Images of the project that config.yml can name as the watermark, written to assets/watermarks */
   watermarkFiles?: BuildFile[];
+  /** Font files that the project brings, they are found before the fonts of the template, so a font of the project wins for the same name */
+  projectFonts?: BuildFile[];
   /** Also find where every top level block landed on the pages, for a preview that follows the editor, the exported files have no markers */
   anchors?: boolean;
   /** Keep the build directory, useful for debugging */

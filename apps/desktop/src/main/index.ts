@@ -7,6 +7,8 @@ import { bootstrap } from "./core/bootstrap";
 import { DatabaseSession } from "./core/database-session";
 import { registerWatermarkController } from "./features/watermark/watermark.controller";
 import { WatermarkService } from "./features/watermark/watermark.service";
+import { FontService } from "./features/font/font.service";
+import { registerFontController } from "./features/font/font.controller";
 import { registerBibliographyController } from "./features/bibliography/bibliography.controller";
 import { BibliographyService } from "./features/bibliography/bibliography.service";
 import { registerAssetController } from "./features/asset/asset.controller";
@@ -64,7 +66,8 @@ const recent = new RecentService(settingsRepository);
 const prefs = new PrefsService(settingsRepository);
 const profile = new ProfileService(settingsRepository);
 const watermarks = new WatermarkService(session, config, resolveBuildPaths);
-const build = new BuildService(session, documents, config, resolveBuildPaths, undefined, undefined, undefined, bibliography, watermarks);
+const fonts = new FontService(session, config, resolveBuildPaths);
+const build = new BuildService(session, documents, config, resolveBuildPaths, undefined, undefined, undefined, bibliography, watermarks, fonts);
 let dialogs: DialogService;
 
 // The custom protocol must be declared before app ready
@@ -88,6 +91,7 @@ bootstrap([
   () => registerSearchController(search),
   () => registerBibliographyController(bibliography),
   () => registerWatermarkController(watermarks, dialogs),
+  () => registerFontController(fonts),
   () => registerBuildController(build),
   () => registerExportController(build, dialogs),
 ]);

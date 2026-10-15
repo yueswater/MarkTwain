@@ -64,4 +64,20 @@ maybe("exportTypstProject", () => {
       rmSync(work, { recursive: true, force: true });
     }
   });
+  it("puts the fonts of the project into the fonts folder, so the exported project finds them", () => {
+    const work = mkdtempSync(join(tmpdir(), "marktwain 匯出字體 "));
+    const dest = join(work, "thesis");
+    try {
+      const font = readFileSync(join(templateDir, "fonts/english/Tinos/Tinos-Regular.ttf"));
+      exportTypstProject(
+        { templateDir, workDir: work, typst: typst as string, config: SAMPLE_CONFIG, documents: SAMPLE_DOCUMENTS, files: [{ path: "images/a.png", data: PNG }], bibliography: [], projectFonts: [{ path: "My Font.ttf", data: font }] },
+        dest,
+      );
+      expect(existsSync(join(dest, "fonts/project/My Font.ttf"))).toBe(true);
+      execFileSync(typst as string, ["compile", "main.typ", "out.pdf", "--font-path", "fonts"], { cwd: dest, stdio: "ignore" });
+      expect(existsSync(join(dest, "out.pdf"))).toBe(true);
+    } finally {
+      rmSync(work, { recursive: true, force: true });
+    }
+  });
 });

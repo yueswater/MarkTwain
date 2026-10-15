@@ -6,6 +6,7 @@ import type { ProjectState } from "./use-project";
 import { BibliographyPage } from "../bibliography/BibliographyPage";
 import { BibliographyProvider, useBibliography } from "../bibliography/bibliography-context";
 import { DocumentEditor } from "../editor/DocumentEditor";
+import { FontsPage } from "../fonts/FontsPage";
 import { DocumentSidebar } from "./DocumentSidebar";
 import { SearchDialog } from "./SearchDialog";
 
@@ -34,6 +35,7 @@ function WorkspaceBody({ state, build, previewOpen, onClosePreview, onOpenSettin
   const project = state.project;
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [showBibliography, setShowBibliography] = useState(false);
+  const [showFonts, setShowFonts] = useState(false);
   const { view: bibliography } = useBibliography();
   const [collapsed, setCollapsed] = useState(() => {
     try {
@@ -99,10 +101,19 @@ function WorkspaceBody({ state, build, previewOpen, onClosePreview, onOpenSettin
         onSelect={(id) => {
           setSelectedId(id);
           setShowBibliography(false);
+          setShowFonts(false);
+        }}
+        fontsActive={showFonts}
+        onOpenFonts={() => {
+          setShowFonts(true);
+          setShowBibliography(false);
         }}
         bibliographyActive={showBibliography}
         bibliographyCount={bibliography.items.length}
-        onOpenBibliography={() => setShowBibliography(true)}
+        onOpenBibliography={() => {
+          setShowBibliography(true);
+          setShowFonts(false);
+        }}
         onOpenSettings={onOpenSettings}
         onOpenSearch={() => setSearchOpen(true)}
         onReorder={(id, targetId, placement) => void state.reorderDocument(id, targetId, placement)}
@@ -114,7 +125,9 @@ function WorkspaceBody({ state, build, previewOpen, onClosePreview, onOpenSettin
         onDelete={(id) => void state.removeDocument(id)}
       />
       <section className="min-h-0 min-w-0 flex-1 overflow-hidden">
-        {showBibliography ? (
+        {showFonts ? (
+          <FontsPage />
+        ) : showBibliography ? (
           <BibliographyPage
             documents={documents}
             onOpenDocument={(id) => {

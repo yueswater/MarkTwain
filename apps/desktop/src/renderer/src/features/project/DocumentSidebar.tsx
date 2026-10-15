@@ -3,6 +3,7 @@ import {
   ArrowUpIcon,
   BookMarkedIcon,
   BookOpenIcon,
+  TypeIcon,
   FileTextIcon,
   GripVerticalIcon,
   MoreHorizontalIcon,
@@ -48,6 +49,8 @@ type Props = {
   onOpenSettings: () => void;
   onOpenSearch: () => void;
   /** The bibliography page is shown instead of a document */
+  fontsActive: boolean;
+  onOpenFonts: () => void;
   bibliographyActive: boolean;
   bibliographyCount: number;
   onOpenBibliography: () => void;
@@ -72,6 +75,8 @@ export function DocumentSidebar({
   onDelete,
   onOpenSettings,
   onOpenSearch,
+  fontsActive,
+  onOpenFonts,
   bibliographyActive,
   bibliographyCount,
   onOpenBibliography,
@@ -81,6 +86,7 @@ export function DocumentSidebar({
   const { t } = useTranslation("project");
   const { t: tConfig } = useTranslation("config");
   const { t: tBib } = useTranslation("bibliography");
+  const { t: tFonts } = useTranslation("settings", { keyPrefix: "fonts" });
   const [pending, setPending] = useState<Pending | null>(null);
   const [dragId, setDragId] = useState<string | null>(null);
   const [drop, setDrop] = useState<Drop | null>(null);
@@ -193,7 +199,7 @@ export function DocumentSidebar({
 
   const row = (doc: DocumentSummary, compact: boolean) => {
     const title = documentTitle(t, doc);
-    const current = doc.id === selectedId && !bibliographyActive;
+    const current = doc.id === selectedId && !bibliographyActive && !fontsActive;
     const indicator = drop?.targetId === doc.id ? drop.placement : null;
     return (
       <li
@@ -340,6 +346,21 @@ export function DocumentSidebar({
       {collapsed && <div className="flex-1" />}
 
       <div className="grid gap-1 border-t p-2">
+        <button
+          type="button"
+          aria-current={fontsActive ? "true" : undefined}
+          aria-label={collapsed ? tFonts("open") : undefined}
+          title={collapsed ? tFonts("open") : undefined}
+          onClick={onOpenFonts}
+          className={cn(
+            "flex h-8 w-full items-center gap-2 rounded-md text-left text-sm hover:bg-muted",
+            collapsed ? "justify-center" : "px-2",
+            fontsActive && "bg-muted font-medium",
+          )}
+        >
+          <TypeIcon className="size-4 text-muted-foreground" aria-hidden="true" />
+          {!collapsed && tFonts("open")}
+        </button>
         <button
           type="button"
           aria-current={bibliographyActive ? "true" : undefined}

@@ -47,6 +47,18 @@ test("the borders menu draws, removes and thickens the lines of a table, one ste
 
     // The three-line preset has a line above and below, so those items are marked and the sides are not
     let menu = await open();
+    // The menu lies over the page and is not cut off by the toolbar, the whole of it is inside the window and the point at its middle belongs to it
+    const box = (await menu.boundingBox())!;
+    const size = page.viewportSize() ?? { width: 1280, height: 720 };
+    expect(box.y).toBeGreaterThanOrEqual(0);
+    expect(box.y + box.height).toBeLessThanOrEqual(size.height + 1);
+    expect(box.x + box.width).toBeLessThanOrEqual(size.width + 1);
+    const covered = await menu.evaluate((el) => {
+      const rect = el.getBoundingClientRect();
+      const hit = document.elementFromPoint(rect.left + rect.width / 2, rect.top + 20);
+      return hit !== null && el.contains(hit);
+    });
+    expect(covered).toBe(true);
     await expect(menu.getByRole("menuitemcheckbox", { name: "Top border" })).toHaveAttribute("aria-checked", "true");
     await expect(menu.getByRole("menuitemcheckbox", { name: "Left border" })).toHaveAttribute("aria-checked", "false");
     await expect(menu.getByRole("menuitemcheckbox", { name: "Inside vertical" })).toHaveAttribute("aria-checked", "false");

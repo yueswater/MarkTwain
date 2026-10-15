@@ -162,7 +162,7 @@ export function EditorBubbleMenu({ editor, onInsertMath, onEditFigure, onCropFig
         <Item icon={AlignCenterIcon} label={t("table.alignColumnCenter")} onClick={run(() => setColumnAlign(editor, "center"))} />
         <Item icon={AlignRightIcon} label={t("table.alignColumnRight")} onClick={run(() => setColumnAlign(editor, "right"))} />
         {divider}
-        <BordersMenu editor={editor} compact />
+        <BordersMenu editor={editor} />
       </BubbleMenu>
     </>
   );

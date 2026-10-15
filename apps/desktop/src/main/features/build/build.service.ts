@@ -8,6 +8,7 @@ import type { DatabaseSession } from "../../core/database-session";
 import { AppError } from "../../core/errors";
 import { AssetRepository } from "../asset/asset.repository";
 import type { BibliographyService } from "../bibliography/bibliography.service";
+import type { FontService } from "../font/font.service";
 import type { WatermarkService } from "../watermark/watermark.service";
 import type { ConfigService } from "../config/config.service";
 import type { DocumentService } from "../document/document.service";
@@ -43,6 +44,7 @@ export class BuildService {
     private readonly exporter: Exporter = exportTypstProject,
     private readonly bibliography?: Pick<BibliographyService, "buildFiles">,
     private readonly watermarks?: Pick<WatermarkService, "files">,
+    private readonly fonts?: Pick<FontService, "files">,
   ) {}
 
   /** The PDF of the latest successful build, for the preview protocol. */
@@ -67,6 +69,7 @@ export class BuildService {
       files: new AssetRepository(this.session.db).list(),
       bibliography: this.bibliography?.buildFiles() ?? [],
       watermarkFiles: this.watermarks?.files() ?? [],
+      projectFonts: this.fonts?.files() ?? [],
     };
   }
 
