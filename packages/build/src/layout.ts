@@ -33,7 +33,13 @@ export function assignPaths(documents: BuildDocument[]): Map<string, string> {
  * Generates main.typ from the documents that exist.
  * Order follows the template: acknowledgement, abstract, notation, chapters, references, appendices.
  */
-export function renderMain(documents: BuildDocument[], paths: Map<string, string>, hasBibliography: boolean): string {
+export function renderMain(
+  documents: BuildDocument[],
+  paths: Map<string, string>,
+  hasBibliography: boolean,
+  /** Which kinds of list have markers of their own, see the lists section of the thesis settings */
+  lists: { ordered: boolean; bullet: boolean } = { ordered: false, bullet: false },
+): string {
   const include = (kind: BuildDocument["kind"]) =>
     documents.filter((d) => d.kind === kind).map((d) => `#include "${paths.get(d.id)}"`);
   const chapters = include("chapter");
@@ -43,6 +49,8 @@ export function renderMain(documents: BuildDocument[], paths: Map<string, string
     "",
     "#show: thesis",
     "#set math.equation(numbering: eq-numbering)",
+    ...(lists.ordered ? ['#import "marktwain.typ": mt-enum-numbering', "#set enum(numbering: mt-enum-numbering, full: true)"] : []),
+    ...(lists.bullet ? ['#import "marktwain.typ": mt-list-markers', "#set list(marker: mt-list-markers)"] : []),
     "",
     ...include("acknowledgement"),
     ...include("abstract"),

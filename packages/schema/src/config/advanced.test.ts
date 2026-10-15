@@ -95,8 +95,8 @@ describe("inheritedValues", () => {
     expect(values["layout.heading.size"]).toEqual([18, 16, 14, 12]);
     expect(values["page-number.position"]).toBe("bottom");
     // Every advanced field has a default in the template, a typo in a path would show up here
-    // The names of the blocks follow the language of the thesis, so they have no default either
-    const missing = ADVANCED_FIELDS.filter((f) => !(f.path in values) && !f.path.startsWith("statements.name.")).map((f) => f.path);
+    // The names of the blocks follow the language of the thesis, and the markers of lists have none, the template keeps its own unless the author chooses
+    const missing = ADVANCED_FIELDS.filter((f) => !(f.path in values) && !f.path.startsWith("statements.name.") && !f.path.startsWith("lists.")).map((f) => f.path);
     // The watermark image has no default, the template leaves it empty and a school fills it in
     expect(missing).toEqual(["layout.par-spacing", "layout.first-line-indent", "watermark.image"]);
   });
