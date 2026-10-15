@@ -1,6 +1,6 @@
 import { describe, expect, it } from "@jest/globals";
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { buildTypst } from "./build-typst";
@@ -334,6 +334,27 @@ maybe("buildTypst with the real template", () => {
       );
       expect(result.diagnostics.filter((d) => d.severity === "error")).toEqual([]);
       expect(result.ok).toBe(true);
+    } finally {
+      rmSync(work, { recursive: true, force: true });
+    }
+  }, 120_000);
+
+  it("draws the payoff matrix with lines only around the payoffs, as a game theory text does", async () => {
+    const work = mkdtempSync(join(tmpdir(), "marktwain 報酬 "));
+    try {
+      const { buildTable, loadLibrary } = await import("@marktwain/table-templates");
+      const template = loadLibrary(resolve(__dirname, "../../../resources/table-templates")).fields.flatMap((field) => field.templates).find((t) => t.id === "payoff-matrix")!;
+      const result = await buildTypst({
+        ...input(work, { documents: [{ id: "c1", kind: "chapter", text: `# 表\n\n${buildTable(template, "en", { rows: 2, columns: 2 })}` }] }),
+        format: "png",
+        ppi: 110,
+      });
+      expect(result.ok).toBe(true);
+      if (!result.ok) return;
+      const page = decodeGray(result.pages.at(-1) as Uint8Array);
+      // Two columns of payoffs have three vertical lines, and nothing is drawn at the left of the names
+      expect(verticalLines(page, 20)).toHaveLength(3);
+      if (process.env.MARKTWAIN_DUMP_PAYOFF) writeFileSync(process.env.MARKTWAIN_DUMP_PAYOFF, result.pages.at(-1) as Uint8Array);
     } finally {
       rmSync(work, { recursive: true, force: true });
     }

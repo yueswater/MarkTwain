@@ -270,6 +270,17 @@ describe("width and size of a table", () => {
   });
 });
 
+describe("a header with a merged cell", () => {
+  it("takes the rows that the cell spans into the header, as typst needs", () => {
+    const md = ["| | | P2 | |", "|:-:|:-:|:-:|:-:|", "| | | S1 | S2 |", "| P1 | R1 | a | b |", "", ': cap {style=grid cells="1.1:colspan=2,rowspan=2;1.3:colspan=2"}'].join("\n");
+    const out = render(md).body;
+    const header = out.slice(out.indexOf("table.header"), out.indexOf("      ),", out.indexOf("table.header")));
+    expect(header).toContain("[S1]");
+    expect(header).toContain("[S2]");
+    expect(header).not.toContain("[R1]");
+  });
+});
+
 describe("table borders", () => {
   const table = (borders: string) => `| a | b |\n|---|---|\n| 1 | 2 |\n| 3 | 4 |\n\n: 表 {#tbl:t ${borders}}\n`;
 

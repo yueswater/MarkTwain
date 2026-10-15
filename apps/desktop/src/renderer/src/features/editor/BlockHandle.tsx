@@ -2,7 +2,7 @@ import type { Editor } from "@tiptap/core";
 import { GripVerticalIcon } from "lucide-react";
 import { useCallback, useEffect, useRef, useState, type RefObject } from "react";
 import { useTranslation } from "react-i18next";
-import { movableAt, startNodeDrag } from "./block-drag";
+import { endNodeDrag, movableAt, startNodeDrag } from "./block-drag";
 
 type Place = { left: number; top: number };
 
@@ -18,12 +18,14 @@ export function BlockHandle({ editor, frame, inset }: { editor: Editor; frame: R
   const [place, setPlace] = useState<Place | null>(null);
   const block = useRef<number | null>(null);
   const overHandle = useRef(false);
+  // While the handle is being dragged it must stay in the document, or the browser ends the drag
+  const dragging = useRef(false);
   const hideTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const hide = useCallback(() => {
     clearTimeout(hideTimer.current);
     hideTimer.current = setTimeout(() => {
-      if (!overHandle.current) {
+      if (!overHandle.current && !dragging.current) {
         block.current = null;
         setPlace(null);
       }
@@ -102,9 +104,14 @@ export function BlockHandle({ editor, frame, inset }: { editor: Editor; frame: R
         overHandle.current = false;
         hide();
       }}
+      onDragEnd={() => {
+        dragging.current = false;
+        endNodeDrag();
+      }}
       onDragStart={(event) => {
         const pos = block.current;
         if (pos === null) return event.preventDefault();
+        dragging.current = true;
         const node = editor.view.nodeDOM(pos);
         startNodeDrag(editor, pos, node instanceof Element ? node : null, event);
       }}

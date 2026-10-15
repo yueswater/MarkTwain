@@ -51,6 +51,7 @@ type Props = {
   onInsertMath: (kind: "inline" | "block") => void;
   onInsertAtom: (type: "footnote" | "citation" | "crossRef") => void;
   onEditCaption: () => void;
+  onChangeTemplate: () => void;
   onInsertImage: () => void;
   onInsertTable: () => void;
 };
@@ -130,7 +131,7 @@ function insertDefinition(editor: Editor, inList: boolean): void {
     .run();
 }
 
-export function Toolbar({ editor, onInsertMath, onInsertAtom, onEditCaption, onInsertImage, onInsertTable }: Props) {
+export function Toolbar({ editor, onInsertMath, onInsertAtom, onEditCaption, onChangeTemplate, onInsertImage, onInsertTable }: Props) {
   const { t } = useTranslation("editor");
   const { prefs } = usePrefs();
   const blockName = (block: string) => (block.startsWith("heading") && block !== "heading1" ? headingName(Number(block.slice(-1)) as 2 | 3 | 4, prefs.headingNames, t(`toolbar.${block}`)) : t(`toolbar.${block}`));
@@ -284,7 +285,7 @@ export function Toolbar({ editor, onInsertMath, onInsertAtom, onEditCaption, onI
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
-    {state.inTable && <TableTools editor={editor} onEditCaption={onEditCaption} />}
+    {state.inTable && <TableTools editor={editor} onEditCaption={onEditCaption} onChangeTemplate={onChangeTemplate} />}
     </>
   );
 }

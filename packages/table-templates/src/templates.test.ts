@@ -89,6 +89,16 @@ describe("shapes", () => {
     expect(table.content).toHaveLength(5);
   });
 
+  it("the payoff matrix draws no line but the box around the payoffs, as a game theory text does", () => {
+    const markdown = buildTable(find("payoff-matrix"), "en", { rows: 2, columns: 2 });
+    const borders = /borders="([^"]*)"/.exec(markdown)?.[1] ?? "";
+    // The lines of the names and of the corner are taken away, and the payoffs, rows 3 and 4 and columns 3 and 4, are boxed
+    expect(borders).toContain("h0.*=none");
+    expect(borders).toContain("v0.*=none");
+    expect(borders.split(";")).toEqual(expect.arrayContaining(["h2.2-3=0.5", "h3.2-3=0.5", "h4.2-3=0.5", "v2.2-3=0.5", "v3.2-3=0.5", "v4.2-3=0.5"]));
+    expect(markdown).toContain("$(x, y)$");
+  });
+
   it("the regression has a row of standard errors below each variable and the lines of a table with models", () => {
     const markdown = buildTable(find("regression-multi-model"), "en", { models: 2, variables: 2 });
     expect(markdown.split("\n").filter((line) => line.includes("(0.000)"))).toHaveLength(2);

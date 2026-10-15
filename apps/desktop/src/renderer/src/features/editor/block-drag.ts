@@ -1,5 +1,5 @@
 import type { Editor } from "@tiptap/core";
-import type { Node as PmNode } from "@tiptap/pm/model";
+import type { Node as PmNode, Slice } from "@tiptap/pm/model";
 import { NodeSelection } from "@tiptap/pm/state";
 
 /** Blocks that get a handle at their left, a table has its own handle at the corner. */
@@ -28,13 +28,25 @@ export function movableAt(editor: Editor, x: number, y: number): Movable | null 
   return after && MOVABLE.has(after.type.name) ? { pos: $pos.pos, node: after } : null;
 }
 
-/** Starts a drag of the node at pos, the editor takes the drop and moves it. */
+export type NodeDrag = { slice: Slice; from: number; to: number };
+let current: NodeDrag | null = null;
+
+/** The drag of a block that a handle started, null when there is none. */
+export const nodeDrag = (): NodeDrag | null => current;
+export const endNodeDrag = (): void => {
+  current = null;
+};
+
+/**
+ * Starts a drag of the node at pos. The editor takes the drop, see BlockDrop, and moves the node.
+ * The selection is not changed, since a table that is selected shows its tools and the page would move under the pointer.
+ */
 export function startNodeDrag(editor: Editor, pos: number, image: Element | null, event: { dataTransfer: DataTransfer | null; preventDefault: () => void }): void {
   const { view } = editor;
   const data = event.dataTransfer;
-  if (!data || !view.state.doc.nodeAt(pos)) return event.preventDefault();
-  view.dispatch(view.state.tr.setSelection(NodeSelection.create(view.state.doc, pos)));
-  const slice = view.state.selection.content();
+  const node = view.state.doc.nodeAt(pos);
+  if (!data || !node) return event.preventDefault();
+  const slice = NodeSelection.create(view.state.doc, pos).content();
   const { dom, text } = view.serializeForClipboard(slice);
   data.clearData();
   data.setData("text/html", dom.innerHTML);
@@ -42,4 +54,5 @@ export function startNodeDrag(editor: Editor, pos: number, image: Element | null
   data.effectAllowed = "copyMove";
   if (image) data.setDragImage(image, 0, 0);
   view.dragging = { slice, move: true };
+  current = { slice, from: pos, to: pos + node.nodeSize };
 }

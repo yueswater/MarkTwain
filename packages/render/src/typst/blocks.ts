@@ -142,6 +142,11 @@ function renderTableBody(block: TableBlock, ctx: BlockContext): string[] {
   const rowCount = (block.header ? 1 : 0) + block.rows.length;
   const heights = block.heights.some((h) => h !== null) ? Array.from({ length: rowCount }, (_, i) => block.heights[i] ?? "auto") : null;
 
+  // A cell of the header that spans rows pulls those rows into the header, since a header cannot be cut through a merged cell
+  const reach = block.header ? Math.max(1, ...block.header.map((cell) => cell.rowspan)) : 0;
+  const headRows = block.header ? [block.header, ...block.rows.slice(0, reach - 1)] : [];
+  const bodyRows = block.rows.slice(Math.max(reach - 1, 0));
+
   const inner = [
     "    table(",
     `      columns: (${(widths ?? Array.from({ length: columns }, () => "1fr")).join(", ")},),`,
@@ -152,13 +157,13 @@ function renderTableBody(block: TableBlock, ctx: BlockContext): string[] {
     ...(block.header
       ? [
           grid || custom ? "      table.header(repeat: true," : "      table.header(repeat: true, toprule,",
-          ...cellsOf(block.header, 0),
+          ...headRows.flatMap((r, i) => cellsOf(r, i)),
           grid || custom ? "      )," : "      midrule),",
         ]
       : grid || custom
         ? []
         : ["      toprule,"]),
-    ...block.rows.flatMap((r, i) => cellsOf(r, i + (block.header ? 1 : 0))),
+    ...bodyRows.flatMap((r, i) => cellsOf(r, i + headRows.length)),
     ...(grid || custom ? [] : ["      bottomrule,"]),
     ...(lines ? lineEntries(lines).map((entry) => `      ${entry},`) : []),
     "    )",

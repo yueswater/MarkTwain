@@ -20,18 +20,20 @@ type Props = {
   onSubmitTemplate: (markdown: string) => void;
   onClose: () => void;
   onRestoreFocus: () => void;
+  /** The dialog gives a table that is there another template, so it only offers the templates */
+  replace?: boolean;
 };
 
 const PICKER = 10;
 
 /** Asks for the size and the optional caption before a table is inserted. */
-export function TableInsertDialog({ onSubmit, onSubmitTemplate, onClose, onRestoreFocus }: Props) {
+export function TableInsertDialog({ onSubmit, onSubmitTemplate, onClose, onRestoreFocus, replace = false }: Props) {
   const { t } = useTranslation("editor");
   const [rows, setRows] = useState(3);
   const [columns, setColumns] = useState(3);
   const [hover, setHover] = useState<{ rows: number; cols: number } | null>(null);
   const [caption, setCaption] = useState("");
-  const [mode, setMode] = useState<"grid" | "template">("grid");
+  const [mode, setMode] = useState<"grid" | "template">(replace ? "template" : "grid");
   const [template, setTemplate] = useState<string | null>(null);
 
   return (
@@ -55,10 +57,10 @@ export function TableInsertDialog({ onSubmit, onSubmitTemplate, onClose, onResto
           }}
         >
           <DialogHeader>
-            <DialogTitle>{t("table.insertTitle")}</DialogTitle>
-            <DialogDescription>{t("table.insertHint")}</DialogDescription>
+            <DialogTitle>{t(replace ? "table.replaceTitle" : "table.insertTitle")}</DialogTitle>
+            <DialogDescription>{t(replace ? "table.replaceHint" : "table.insertHint")}</DialogDescription>
           </DialogHeader>
-          <div role="tablist" aria-label={t("tableTemplates.mode")} className="flex w-fit rounded-lg border p-0.5">
+          {!replace && <div role="tablist" aria-label={t("tableTemplates.mode")} className="flex w-fit rounded-lg border p-0.5">
             {(["grid", "template"] as const).map((name) => (
               <button
                 key={name}
@@ -71,7 +73,7 @@ export function TableInsertDialog({ onSubmit, onSubmitTemplate, onClose, onResto
                 {t(`tableTemplates.mode_${name}`)}
               </button>
             ))}
-          </div>
+          </div>}
           {mode === "template" && <TemplatePicker onChange={setTemplate} />}
           {mode === "grid" && (<>
           <div className="flex flex-col gap-2">
@@ -123,7 +125,7 @@ export function TableInsertDialog({ onSubmit, onSubmitTemplate, onClose, onResto
             <Button type="button" variant="outline" onClick={onClose}>
               {t("action.cancel", { ns: "common" })}
             </Button>
-            <Button type="submit" disabled={mode === "template" && !template}>{t("table.insert")}</Button>
+            <Button type="submit" disabled={mode === "template" && !template}>{t(replace ? "table.replace" : "table.insert")}</Button>
           </DialogFooter>
         </form>
       </DialogContent>

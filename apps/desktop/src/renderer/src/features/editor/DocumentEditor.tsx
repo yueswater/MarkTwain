@@ -167,6 +167,8 @@ function EditorSurface({
   const [atom, setAtom] = useState<AtomTarget | null>(null);
   const [caption, setCaption] = useState<CaptionTarget | null>(null);
   const [tableDialog, setTableDialog] = useState(false);
+  // The position of a table that is given another template
+  const [replacing, setReplacing] = useState<number | null>(null);
   const [find, setFind] = useState<{ open: boolean; term: string }>({ open: false, term: "" });
   const [crop, setCrop] = useState<{ pos: number; src: string } | null>(null);
   const [figure, setFigure] = useState<FigureTarget | null>(null);
@@ -504,6 +506,37 @@ function EditorSurface({
     if (node) editor.chain().focus().deleteRange({ from: pos, to: pos + node.nodeSize }).run();
   };
 
+  /** Opens the templates for the table that holds the selection, what it has is replaced when one is chosen */
+  const changeTemplate = () => {
+    const found = findTable(editor.state.selection.$from);
+    if (found) setReplacing(found.pos);
+  };
+
+  /** Puts the table of a template where the table at pos is, and keeps what the person gave it: label, caption, notes, place and size. */
+  const replaceTable = (pos: number, markdown: string) => {
+    const old = editor.state.doc.nodeAt(pos);
+    const made = parseMarkdown(markdown).content?.[0] as JSONContent | undefined;
+    if (!old || old.type.name !== "table" || !made) return;
+    const keep = (name: string, fallback: unknown) => (old.attrs[name] ? old.attrs[name] : fallback);
+    const attrs = {
+      ...(made.attrs ?? {}),
+      label: old.attrs.label ?? null,
+      caption: keep("caption", made.attrs?.caption ?? ""),
+      notes: keep("notes", made.attrs?.notes ?? ""),
+      placement: old.attrs.placement ?? null,
+      width: old.attrs.width ?? null,
+      size: old.attrs.size ?? null,
+    };
+    editor
+      .chain()
+      .focus()
+      .command(({ tr, state }) => {
+        tr.replaceWith(pos, pos + old.nodeSize, state.schema.nodeFromJSON({ ...made, attrs }));
+        return true;
+      })
+      .run();
+  };
+
   const submitCrossRef = async (choice: CrossRefChoice, pos: number | null) => {
     let label: string;
     if (choice.kind === "existing") label = choice.label;
@@ -550,6 +583,7 @@ function EditorSurface({
         onInsertMath={(kind) => setMath({ kind, latex: "", pos: null, anchor: anchorAtCursor(editor) })}
         onInsertAtom={openAtom}
         onInsertTable={() => setTableDialog(true)}
+        onChangeTemplate={changeTemplate}
         onInsertImage={insertImage}
         onEditCaption={() => {
           const attrs = editor.getAttributes(editor.isActive("table") ? "table" : "codeBlock");
@@ -570,7 +604,7 @@ function EditorSurface({
         onCropFigure={(pos, src) => setCrop({ pos, src })}
       />
       <div className="relative min-h-0 flex-1" ref={editorFrame}>
-      <TableHandle editor={editor} frame={editorFrame} scroller={scroller} />
+      <TableHandle editor={editor} frame={editorFrame} scroller={scroller} onChangeTemplate={changeTemplate} />
       <BlockHandle editor={editor} frame={editorFrame} inset={prefs.lineNumbers ? 30 : 0} />
       {hint && (
         <div className={cn("pointer-events-none absolute inset-x-0 z-10 flex justify-center px-4", hint.edge === "end" ? "bottom-4" : "top-4")} role="status" data-testid="edge-hint">
@@ -684,6 +718,15 @@ function EditorSurface({
             } else chain.insertContent(table as JSONContent).run();
           }}
           onClose={() => setTableDialog(false)}
+          onRestoreFocus={() => editor.commands.focus()}
+        />
+      )}
+      {replacing !== null && (
+        <TableInsertDialog
+          replace
+          onSubmit={() => undefined}
+          onSubmitTemplate={(markdown) => replaceTable(replacing, markdown)}
+          onClose={() => setReplacing(null)}
           onRestoreFocus={() => editor.commands.focus()}
         />
       )}

@@ -9,6 +9,7 @@ import {
   AlignVerticalJustifyStartIcon,
   ColumnsIcon,
   Grid3x3Icon,
+  LayoutTemplateIcon,
   MinusIcon,
   RowsIcon,
   Table2Icon,
@@ -27,7 +28,7 @@ import { PlacementPicker } from "./PlacementPicker";
 import type { Placement } from "@marktwain/schema";
 import { setColumnAlign, setColumnWidth, setRowHeight, tableMetrics } from "./table-commands";
 
-type Props = { editor: Editor; onEditCaption: () => void };
+type Props = { editor: Editor; onEditCaption: () => void; onChangeTemplate: () => void };
 
 /** Sets the width or the text size of the table, a blank or full value clears it and a value below the least is ignored. */
 function setTableShare(editor: Editor, name: "width" | "size", raw: string, least: number): void {
@@ -39,7 +40,7 @@ function setTableShare(editor: Editor, name: "width" | "size", raw: string, leas
 }
 
 /** Second toolbar shown while the cursor is in a table, most commands come from the TipTap table extension. */
-export function TableTools({ editor, onEditCaption }: Props) {
+export function TableTools({ editor, onEditCaption, onChangeTemplate }: Props) {
   const { t } = useTranslation("editor");
 
   const state = useEditorState({
@@ -108,6 +109,7 @@ export function TableTools({ editor, onEditCaption }: Props) {
       )}
       <BordersMenu editor={editor} />
       {button(t("table.caption"), TypeIcon, onEditCaption)}
+      {button(t("table.changeTemplate"), LayoutTemplateIcon, onChangeTemplate)}
       {divider("e")}
       <PlacementPicker compact value={state.placement} onChange={(placement) => editor.chain().focus().updateAttributes("table", { placement }).run()} />
       {button(t("table.deleteTable"), Trash2Icon, () => editor.chain().focus().deleteTable().run())}
