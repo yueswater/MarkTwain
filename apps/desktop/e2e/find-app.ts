@@ -1,5 +1,5 @@
 import { existsSync, readdirSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 
 /** Finds the executable made by electron-builder --dir, folder names differ per platform and architecture. */
 export function findPackagedExecutable(distDir: string): string {
@@ -28,4 +28,11 @@ export function findPackagedExecutable(distDir: string): string {
     );
   }
   return found;
+}
+
+/** The Typst that the installed app carries, so the tests need no Typst on the machine. */
+export function findBundledTypst(distDir: string): string {
+  const executable = findPackagedExecutable(distDir);
+  const resources = process.platform === "darwin" ? join(dirname(executable), "..", "Resources") : join(dirname(executable), "resources");
+  return join(resources, "typst", process.platform === "win32" ? "typst.exe" : "typst");
 }

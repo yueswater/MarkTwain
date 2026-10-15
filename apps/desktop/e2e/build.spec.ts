@@ -3,7 +3,7 @@ import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import { findPackagedExecutable } from "./find-app";
+import { findBundledTypst, findPackagedExecutable } from "./find-app";
 import { viewerState } from "./preview-viewer";
 
 const dist = resolve(__dirname, "../dist");
@@ -11,7 +11,7 @@ const templateDir = resolve(__dirname, "../../../resources/templates/typ");
 
 function hasTypst(): boolean {
   try {
-    execFileSync(process.env.MARKTWAIN_TYPST || "typst", ["--version"], { stdio: "ignore" });
+    execFileSync(process.env.MARKTWAIN_TYPST || findBundledTypst(dist), ["--version"], { stdio: "ignore" });
     return true;
   } catch {
     return false;
