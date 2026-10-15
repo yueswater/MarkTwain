@@ -23,6 +23,18 @@ extraResources:
       - "!.vscode/**"
       - "!docs/**"
       - "!tests/**"
+  # Typst is pinned in typst.lock.json and fetched by pnpm typst:fetch. Only the folder of the platform being built is packed.
+  - from: ../../resources/typst/${os}-${arch}
+    to: typst
+    filter:
+      - typst
+      - typst.exe
+  # Packages the template imports, so the first build needs no network.
+  - from: ../../resources/typst-packages
+    to: typst-packages
+    filter:
+      - "**/*"
+      - "!**/.marktwain-typst.json"
 
 mac:
   icon: build/icon.icns
