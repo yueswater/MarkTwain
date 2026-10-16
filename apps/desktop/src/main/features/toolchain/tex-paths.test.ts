@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
-import { join } from "node:path";
+import { posix, win32 } from "node:path";
 import { missingTexPrograms, resolveTexBin, texBinCandidates, type TexPathInput } from "./tex-paths";
 
 function input(files: string[], tree: Record<string, string[]> = {}, over: Partial<TexPathInput> = {}): TexPathInput {
@@ -15,7 +15,7 @@ function input(files: string[], tree: Record<string, string[]> = {}, over: Parti
   };
 }
 
-const programs = (dir: string, ext = "") => ["xelatex", "latexmk", "texlua"].map((name) => join(dir, `${name}${ext}`));
+const programs = (dir: string, ext = "") => ["xelatex", "latexmk", "texlua"].map((name) => (ext ? win32 : posix).join(dir, `${name}${ext}`));
 
 describe("resolveTexBin", () => {
   it("prefers the folder of the environment", () => {
@@ -39,7 +39,7 @@ describe("resolveTexBin", () => {
   });
 
   it("reads the PATH after the usual places", () => {
-    const found = resolveTexBin(input(programs("/custom/bin"), {}, { pathEnv: ["/usr/bin", "/custom/bin"].join(process.platform === "win32" ? ";" : ":") }));
+    const found = resolveTexBin(input(programs("/custom/bin"), {}, { pathEnv: "/usr/bin:/custom/bin" }));
     expect(found).toBe("/custom/bin");
   });
 
@@ -49,11 +49,11 @@ describe("resolveTexBin", () => {
   });
 
   it("uses the exe names and the folders of Windows", () => {
-    const tree = { "C:\\texlive": ["2026"], [join("C:\\texlive", "2026", "bin")]: ["windows"], [join("C:\\Users\\me\\AppData\\Roaming", "TinyTeX", "bin")]: ["windows"] };
-    const bin = join("C:\\texlive", "2026", "bin", "windows");
+    const tree = { "C:\\texlive": ["2026"], [win32.join("C:\\texlive", "2026", "bin")]: ["windows"], [win32.join("C:\\Users\\me\\AppData\\Roaming", "TinyTeX", "bin")]: ["windows"] };
+    const bin = win32.join("C:\\texlive", "2026", "bin", "windows");
     expect(resolveTexBin(input(programs(bin, ".exe"), tree, { platform: "win32", homeDir: "C:\\Users\\me", appData: "C:\\Users\\me\\AppData\\Roaming" }))).toBe(bin);
     expect(texBinCandidates(input([], tree, { platform: "win32", homeDir: "C:\\Users\\me", appData: "C:\\Users\\me\\AppData\\Roaming" }))).toContain(
-      join("C:\\Users\\me\\AppData\\Roaming", "TinyTeX", "bin", "windows"),
+      win32.join("C:\\Users\\me\\AppData\\Roaming", "TinyTeX", "bin", "windows"),
     );
   });
 });
