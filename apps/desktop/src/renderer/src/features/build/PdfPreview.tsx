@@ -80,6 +80,34 @@ function capability<T>(registry: PluginRegistry, id: string): T | null {
   return plugin?.provides?.() ?? null;
 }
 
+/** Every element that matches, also inside the shadow roots, where the viewer draws itself. */
+function deepFind(root: ParentNode, selector: string): Element[] {
+  const found = Array.from(root.querySelectorAll(selector));
+  for (const el of Array.from(root.querySelectorAll("*"))) if (el.shadowRoot) found.push(...deepFind(el.shadowRoot, selector));
+  return found;
+}
+
+const SEARCH_WORD = /search|搜尋|搜索/i;
+
+/** The viewer opens its search box without focus, so the letters that follow went to the editor. The box gets the focus when the search button was pressed. */
+function focusSearch(event: React.MouseEvent<HTMLDivElement>): void {
+  // The click comes from inside a shadow root, so the target seen from here is the host of the viewer
+  const origin = event.nativeEvent.composedPath()[0];
+  const button = origin instanceof Element ? origin.closest("button") : null;
+  const name = button ? `${button.getAttribute("aria-label") ?? ""} ${button.getAttribute("title") ?? ""}` : "";
+  if (!SEARCH_WORD.test(name)) return;
+  const host = event.currentTarget;
+  // The box appears a moment after the click, and is tried again while the panel opens
+  for (const delay of [0, 16, 32, 64, 120, 250, 500]) {
+    setTimeout(() => {
+      const boxes = deepFind(host, "input").filter((el): el is HTMLInputElement => el instanceof HTMLInputElement && el.offsetParent !== null && !el.disabled);
+      const box = boxes.find((input) => SEARCH_WORD.test(input.placeholder));
+      if (box && box.getRootNode() instanceof ShadowRoot && (box.getRootNode() as ShadowRoot).activeElement === box) return;
+      box?.focus();
+    }, delay);
+  }
+}
+
 /**
  * The PDF of the build in a PDF viewer, so links, search, zoom and text selection work as in any PDF reader.
  * Every build opens as a new document, the place of the reader is found again in it.
@@ -243,7 +271,7 @@ export function PdfPreview({ revision, placeKey, anchors, follow, onPick }: Prop
   }
 
   return (
-    <div className="h-full w-full" onMouseDownCapture={(event) => pointer(event, false)} onMouseUpCapture={(event) => pointer(event, true)}>
+    <div className="h-full w-full" onMouseDownCapture={(event) => pointer(event, false)} onMouseUpCapture={(event) => pointer(event, true)} onClick={focusSearch}>
       <PDFViewer config={config} className="h-full w-full" style={{ height: "100%", width: "100%" }} onReady={setRegistry} />
     </div>
   );

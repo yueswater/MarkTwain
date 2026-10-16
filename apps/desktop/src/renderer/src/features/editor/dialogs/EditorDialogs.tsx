@@ -35,7 +35,11 @@ type Props = {
  */
 export function EditorDialogs({ editor, targets, documentId, labels, onOpenTarget }: Props) {
   const { math, atom, caption, figure, statement, crop, tableDialog, replacing, unlabeled } = targets;
-  const restoreFocus = () => editor.commands.focus();
+  // The focus goes back at once, the focus command of the editor waits for a frame, and what is typed in that frame was lost
+  const restoreFocus = () => {
+    editor.view.focus();
+    editor.commands.focus();
+  };
 
   /** Writes the reference, after the block that it points to has its label, which may be in another document. */
   const submitCrossRef = async (choice: CrossRefChoice, pos: number | null) => {

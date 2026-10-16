@@ -7,7 +7,6 @@ import { createBackupPath } from "../../helpers/backup.helper";
 import { openDatabase, type Database } from "../../infra/db";
 import {
   currentVersion,
-  isEmptyDatabase,
   migrate,
   pendingMigrations,
   type Migration,
@@ -53,7 +52,8 @@ export class ProjectService {
     const db = this.openChecked(path);
     try {
       const version = currentVersion(db);
-      if (version === 0 && !isEmptyDatabase(db)) {
+      // A file with no project in it, empty or not, is refused before anything is written, migrating it would make it a file that never opens
+      if (version === 0) {
         throw new AppError(ErrorCode.ProjectInvalid);
       }
       const pending = pendingMigrations(db, this.migrations);
