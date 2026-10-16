@@ -1,4 +1,4 @@
-import { parseAttributes } from "../attributes";
+import { parseAttributes, splitTrailingAttributes } from "../attributes";
 import { isPlacement } from "../../placement";
 import { formatBorders, parseBorders } from "../table-borders";
 import { normalizeWidths, parseCells, parseHeights, parseWidths, type CellExtra } from "../table-extras";
@@ -9,7 +9,6 @@ type Token = CoreState["tokens"][number];
 
 /** The caption line after a table, : caption {#tbl:x notes=…}, the braces may be left out. */
 const CAPTION = /^:\s+/;
-const TRAILING_ATTRIBUTES = /\s*\{([^{}]*)\}\s*$/;
 
 type CaptionMeta = {
   caption: string;
@@ -45,8 +44,8 @@ function parseCaption(content: string): CaptionMeta {
   let heights = new Map<number, string>();
   let cells = new Map<string, CellExtra>();
 
-  const match = TRAILING_ATTRIBUTES.exec(caption);
-  const attributes = match ? parseAttributes(match[1] ?? "") : null;
+  const match = splitTrailingAttributes(caption);
+  const attributes = match ? parseAttributes(match.inner) : null;
   if (match && attributes) {
     label = attributes.id;
     notes = attributes.props.notes ?? "";
