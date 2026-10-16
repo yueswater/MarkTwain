@@ -27,8 +27,6 @@ const ASCII = /^[\x20-\x7e]*$/;
  * with such characters, usually the name of the user, is replaced by a fixed folder with an ASCII path.
  */
 export function latexWorkDir(workDir: string, platform: NodeJS.Platform = process.platform, programData: string | undefined = process.env.ProgramData): string {
-  // Temporary switch for the spike of issue 53, it turns the fallback off
-  if (process.env.MARKTWAIN_TEX_RAW_PATH === "1") return workDir;
   if (platform !== "win32" || ASCII.test(workDir)) return workDir;
   const base = programData && ASCII.test(programData) ? programData : join(parse(workDir).root, "ProgramData");
   const fallback = join(base, "MarkTwain", "build");

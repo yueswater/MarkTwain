@@ -26,6 +26,7 @@ jobs:
     env:
       # Unit tests do not need the Electron binary, so skip the download.
       ELECTRON_SKIP_BINARY_DOWNLOAD: "1"
+      TEMPLATES_TOKEN: ${{ secrets.TEMPLATES_TOKEN }}
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -44,23 +45,23 @@ jobs:
           if [ "$RUNNER_OS" = "Windows" ]; then exe=typst.exe; fi
           echo "MARKTWAIN_TYPST=$GITHUB_WORKSPACE/resources/typst/$key/$exe" >> "$GITHUB_ENV"
           echo "MARKTWAIN_TYPST_PACKAGES=$GITHUB_WORKSPACE/resources/typst-packages" >> "$GITHUB_ENV"
+      # The LaTeX template is in a private repository, so its tests run only when the repository has a token that can read it
       - name: Install a TeX Live for the LaTeX output
+        if: env.TEMPLATES_TOKEN != ''
         shell: bash
         run: bash tools/ci/install-texlive.sh
       - name: Fetch the pinned templates
-        run: pnpm templates:fetch typ tex
+        run: pnpm templates:fetch typ
         env:
           GH_TOKEN: ${{ github.token }}
+      - name: Fetch the pinned LaTeX template
+        if: env.TEMPLATES_TOKEN != ''
+        run: pnpm templates:fetch tex
+        env:
+          GH_TOKEN: ${{ secrets.TEMPLATES_TOKEN }}
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm test
-      # Temporary, measures what LaTeX does with a non-ASCII path on Windows without the fallback, issue 53
-      - name: Spike, build in a folder with Chinese characters on Windows without the ASCII fallback
-        if: runner.os == 'Windows'
-        continue-on-error: true
-        env:
-          MARKTWAIN_TEX_RAW_PATH: "1"
-        run: pnpm --filter @marktwain/build exec jest src/build-latex.test.ts
 
   package:
     name: package (${{ matrix.os }})
@@ -70,6 +71,8 @@ jobs:
       fail-fast: false
       matrix:
         os: ${{ fromJSON(inputs.include-macos && '["ubuntu-latest","windows-latest","macos-latest"]' || '["ubuntu-latest","windows-latest"]') }}
+    env:
+      TEMPLATES_TOKEN: ${{ secrets.TEMPLATES_TOKEN }}
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -81,13 +84,20 @@ jobs:
       # No MARKTWAIN_TYPST here, the end-to-end tests must use the Typst inside the packaged app.
       - name: Fetch the pinned Typst and its packages
         run: pnpm typst:fetch
+      # The LaTeX template is in a private repository, so its tests run only when the repository has a token that can read it
       - name: Install a TeX Live for the LaTeX output
+        if: env.TEMPLATES_TOKEN != ''
         shell: bash
         run: bash tools/ci/install-texlive.sh
       - name: Fetch the pinned templates
-        run: pnpm templates:fetch typ tex
+        run: pnpm templates:fetch typ
         env:
           GH_TOKEN: ${{ github.token }}
+      - name: Fetch the pinned LaTeX template
+        if: env.TEMPLATES_TOKEN != ''
+        run: pnpm templates:fetch tex
+        env:
+          GH_TOKEN: ${{ secrets.TEMPLATES_TOKEN }}
       - run: pnpm build:unpacked
       - name: End-to-end tests (Linux needs a virtual display)
         if: runner.os == 'Linux'
