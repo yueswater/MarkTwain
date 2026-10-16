@@ -26,7 +26,7 @@ export function SaveVersionDialog({ busy, error, onSubmit, onClose }: Props) {
           onSubmit={async (event) => {
             event.preventDefault();
             const done = await onSubmit(message);
-            if (done !== undefined) onClose();
+            if (done) onClose();
           }}
         >
           <DialogHeader>

@@ -65,11 +65,18 @@ export function useVersions({ projectKey, saveTick, flush, onReplaced }: Options
     [t],
   );
 
-  const save = useCallback(async (message: string) => run(async () => setStatus(await api.invoke(IpcChannel.VersionSave, { message })), false), [run]);
-  const start = useCallback(async (name: string) => run(async () => setStatus(await api.invoke(IpcChannel.VersionBranchStart, { name })), false), [run]);
-  const switchTo = useCallback(async (name: string) => run(async () => setStatus(await api.invoke(IpcChannel.VersionBranchSwitch, { name })), true), [run]);
-  const discard = useCallback(async (name: string) => run(async () => setStatus(await api.invoke(IpcChannel.VersionBranchDiscard, { name })), true), [run]);
-  const restore = useCallback(async (snapshotId: string, message: string) => run(async () => setStatus(await api.invoke(IpcChannel.VersionRestore, { snapshotId, message })), true), [run]);
+  /** An operation that ends with a new status. The answer is true when it worked, so that a dialog knows when to close. */
+  const attempt = useCallback(async (operation: () => Promise<VersionStatus>, replaces: boolean): Promise<boolean> => {
+    const next = await run(operation, replaces);
+    if (next) setStatus(next);
+    return next !== undefined;
+  }, [run]);
+
+  const save = useCallback((message: string) => attempt(() => api.invoke(IpcChannel.VersionSave, { message }), false), [attempt]);
+  const start = useCallback((name: string) => attempt(() => api.invoke(IpcChannel.VersionBranchStart, { name }), false), [attempt]);
+  const switchTo = useCallback((name: string) => attempt(() => api.invoke(IpcChannel.VersionBranchSwitch, { name }), true), [attempt]);
+  const discard = useCallback((name: string) => attempt(() => api.invoke(IpcChannel.VersionBranchDiscard, { name }), true), [attempt]);
+  const restore = useCallback((snapshotId: string, message: string) => attempt(() => api.invoke(IpcChannel.VersionRestore, { snapshotId, message }), true), [attempt]);
   const history = useCallback(async (): Promise<VersionEntry[]> => (await run(() => api.invoke(IpcChannel.VersionHistory), false)) ?? [], [run]);
 
   return { status, error, busy, clearError: () => setError(null), refresh, run, save, start, switchTo, discard, restore, history };

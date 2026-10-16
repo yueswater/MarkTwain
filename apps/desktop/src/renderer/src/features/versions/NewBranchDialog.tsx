@@ -25,7 +25,7 @@ export function NewBranchDialog({ busy, error, onSubmit, onClose }: Props) {
           onSubmit={async (event) => {
             event.preventDefault();
             const done = await onSubmit(name);
-            if (done !== undefined) onClose();
+            if (done) onClose();
           }}
         >
           <DialogHeader>

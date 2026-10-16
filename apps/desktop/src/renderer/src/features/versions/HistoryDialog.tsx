@@ -72,7 +72,7 @@ export function HistoryDialog({ branch, headId, load, busy, error, onRestore, on
                         disabled={busy}
                         onClick={async () => {
                           const done = await onRestore(entry.id, t("history.restoreMessage", { label: labelOf(entry) }));
-                          if (done !== undefined) onClose();
+                          if (done) onClose();
                         }}
                       >
                         {t("history.restore")}

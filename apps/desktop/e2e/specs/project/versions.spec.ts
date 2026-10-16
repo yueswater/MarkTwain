@@ -64,8 +64,10 @@ test("a version is saved, a change is started and opened again, the history rest
   const history = page.getByRole("dialog");
   await expect(history.getByRole("listitem")).toHaveCount(3);
   await expect(history.getByRole("listitem").first()).toContainText("Rewrote it");
-  await history.getByRole("listitem").filter({ hasText: "The first draft" }).getByRole("button", { name: "Restore" }).click();
-  await history.getByRole("button", { name: "Restore", exact: true }).click();
+  const row = history.getByRole("listitem").filter({ hasText: "The first draft" });
+  await row.getByRole("button", { name: "Restore" }).click();
+  // The row asks first, and then the only button of the row that restores is the one that confirms
+  await row.getByRole("button", { name: "Restore" }).click();
   await expect(history).toBeHidden();
   await expect(editor).not.toContainText("a rewrite");
   await expect(bar).toHaveAttribute("data-dirty", "false");

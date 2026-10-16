@@ -35,7 +35,7 @@ export function DiscardBranchDialog({ name, busy, error, onConfirm, onClose }: P
             disabled={busy}
             onClick={async () => {
               const done = await onConfirm();
-              if (done !== undefined) onClose();
+              if (done) onClose();
             }}
           >
             {t("discard.confirm")}
