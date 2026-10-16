@@ -35,7 +35,7 @@ export type { EditorPrefs } from "../prefs";
 export type { AuthorProfile } from "../profile";
 export type { BuildAnchor, BuildDiagnostic, BuildOutcome } from "./build";
 export type { AdvancedState, ConfigState } from "./config";
-export type { BranchInfo, ChangeView, ChoiceInput, CompareView, ConflictView, DocumentDiffView, MergePreview, VersionEntry, VersionStatus } from "./version";
+export type { BranchInfo, ChangeItemView, ChangeView, ChoiceInput, CompareView, ConflictView, DocumentDiffView, MergePreview, VersionEntry, VersionStatus } from "./version";
 export type { LabelIndex, LabelPreview, LabelPreviewContent, LabelReference, LabelTarget, UnlabeledRemote } from "./label";
 
 /** Contracts of all features are merged here, add & XxxContract when adding a feature. */

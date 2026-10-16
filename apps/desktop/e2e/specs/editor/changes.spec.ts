@@ -71,7 +71,10 @@ test("what was added, changed and taken away since the saved version is marked i
   await page.keyboard.type("A paragraph that goes");
   const fresh = editor.locator('.change-added[data-change="added"]');
   await fresh.hover();
-  await fresh.getByRole("button", { name: "Put back" }).dispatchEvent("mousedown");
+  // The button is in a line of no height before the block, and shows when the pointer is over the block
+  const revert = editor.locator(".change-revert-anchor").getByRole("button", { name: "Put back" });
+  await expect(revert).toBeVisible();
+  await revert.dispatchEvent("mousedown");
   await expect(fresh).toHaveCount(0);
   await editor.getByText("First paragraph and more").click();
   await page.keyboard.type(" again");

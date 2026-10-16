@@ -18,7 +18,7 @@ type Dialog = "save" | "start" | "history" | "discard" | "merge" | "revert" | nu
 export function BranchBar({ versions }: { versions: Versions }) {
   const { t } = useTranslation("versions");
   const [dialog, setDialog] = useState<Dialog>(null);
-  const [comparing, setComparing] = useState<{ from: string; to: string; label: string } | null>(null);
+  const [comparing, setComparing] = useState<{ from: string; to: string; label: string; pair?: boolean } | null>(null);
   const { status } = versions;
   if (!status) return null;
 
@@ -63,12 +63,12 @@ export function BranchBar({ versions }: { versions: Versions }) {
           {others.length === 0 && <DropdownMenuItem disabled className="pl-8">{t("branch.none")}</DropdownMenuItem>}
         </DropdownMenuContent>
       </DropdownMenu>
-      {dialog === "save" && <SaveVersionDialog busy={versions.busy} error={versions.error} onSubmit={versions.save} onClose={close} />}
+      {dialog === "save" && <SaveVersionDialog busy={versions.busy} error={versions.error} load={versions.changes} onSubmit={versions.save} onClose={close} />}
       {dialog === "revert" && <RevertDialog busy={versions.busy} error={versions.error} onConfirm={versions.revert} onClose={close} />}
       {dialog === "start" && <NewBranchDialog busy={versions.busy} error={versions.error} onSubmit={versions.start} onClose={close} />}
       {dialog === "discard" && <DiscardBranchDialog name={status.branch} busy={versions.busy} error={versions.error} onConfirm={() => versions.discard(status.branch)} onClose={close} />}
-      {dialog === "history" && <HistoryDialog branch={name} headId={status.headId} load={versions.history} busy={versions.busy} error={versions.error} onRestore={versions.restore} onCompare={(entry, label) => setComparing({ from: entry.parentId as string, to: entry.id, label })} onClose={close} />}
-      {comparing && <CompareDialog label={comparing.label} load={() => versions.compare(comparing.from, comparing.to)} error={versions.error} onClose={() => setComparing(null)} />}
+      {dialog === "history" && <HistoryDialog branch={name} headId={status.headId} load={versions.history} busy={versions.busy} error={versions.error} onRestore={versions.restore} onCompare={(entry, label) => setComparing({ from: entry.parentId as string, to: entry.id, label })} onCompareTwo={(older, newer, labels) => setComparing({ from: older.id, to: newer.id, label: `${labels[0]} → ${labels[1]}`, pair: true })} onClose={close} />}
+      {comparing && <CompareDialog label={comparing.label} pair={comparing.pair} load={() => versions.compare(comparing.from, comparing.to)} error={versions.error} onClose={() => setComparing(null)} />}
       {dialog === "merge" && <MergeDialog source={status.branch} dirty={status.dirty} busy={versions.busy} error={versions.error} preview={versions.previewMerge} onMerge={versions.merge} onSaveFirst={() => setDialog("save")} onClose={close} />}
     </>
   );

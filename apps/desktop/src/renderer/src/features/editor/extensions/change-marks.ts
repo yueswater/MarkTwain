@@ -80,8 +80,21 @@ function build(doc: PmNode, base: string[], label: string, revert: (mark: Change
     const pos = starts[mark.index] as number;
     decorations.push(Decoration.node(pos, pos + node.nodeSize, { class: "change-added", "data-change": mark.type }));
     if (mark.type === "added") {
-      // Shown when the pointer is over the block, a block that is new has no old text to put above it
-      decorations.push(Decoration.widget(pos + 1, () => revertButton(label, () => revert(mark)), { side: -1, key: `revert:${order}` }));
+      // Shown when the pointer is over the block, a block that is new has no old text to put above it. It sits outside the block, in a line of no height before it,
+      // so that the words of the block stay the words of the block.
+      decorations.push(
+        Decoration.widget(
+          pos,
+          () => {
+            const anchor = document.createElement("div");
+            anchor.className = "change-revert-anchor";
+            anchor.contentEditable = "false";
+            anchor.append(revertButton(label, () => revert(mark)));
+            return anchor;
+          },
+          { side: -1, key: `revert:${order}` },
+        ),
+      );
       return;
     }
     // A block that was changed shows the old text above it, and when it is a line of text the words that differ are marked in both

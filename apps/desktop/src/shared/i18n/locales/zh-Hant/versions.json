@@ -43,7 +43,10 @@
     "restoreBody": "文件會變回「{{label}}」的樣子，並存成一個新版本，所以歷史紀錄不會有任何遺失。尚未儲存的變動會被取代。",
     "restoreMessage": "還原「{{label}}」",
     "current": "目前",
-    "compare": "改了什麼"
+    "compare": "改了什麼",
+    "pickHint": "勾選兩個版本，就能看它們之間差了什麼。",
+    "compareTwo": "比較這兩個",
+    "pick": "選取「{{label}}」來比較"
   },
   "error": {
     "title": "沒有成功"
@@ -73,7 +76,9 @@
     "legend": "顏色",
     "legendAdded": "新增",
     "legendRemoved": "刪除",
-    "legendModified": "段落內有修改"
+    "legendModified": "段落內有修改",
+    "titlePair": "差異：{{label}}",
+    "descriptionPair": "箭頭左邊是較舊的版本，下面顯示從它到較新版本之間改了什麼。"
   },
   "merge": {
     "title": "把「{{name}}」合併回主線",
@@ -114,5 +119,18 @@
     "title": "放棄你輸入的內容？",
     "description": "文件會回到最新的版本，之後輸入的內容會消失，而且無法復原。",
     "confirm": "放棄"
+  },
+  "stage": {
+    "title": "這次版本包含的變動",
+    "count": "已選 {{chosen}} / {{total}}",
+    "all": "全選",
+    "none": "全不選",
+    "rest": "沒有選的 {{count}} 處變動會留在文件裡，之後可以存成另一個版本。",
+    "kind": {
+      "hunk": "文字變動",
+      "fields": "標題或順序",
+      "document": "文件",
+      "file": "檔案"
+    }
   }
 }

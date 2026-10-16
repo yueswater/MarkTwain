@@ -40,6 +40,7 @@ export const IpcChannel = {
   LabelEnsure: "label:ensure",
   VersionStatus: "version:status",
   VersionSave: "version:save",
+  VersionChanges: "version:changes",
   VersionBranchStart: "version:branch-start",
   VersionBranchSwitch: "version:branch-switch",
   VersionBranchDiscard: "version:branch-discard",

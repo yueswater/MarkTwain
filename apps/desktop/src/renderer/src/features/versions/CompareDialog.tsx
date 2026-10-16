@@ -7,13 +7,15 @@ import { ChangeList } from "./ChangeList";
 type Props = {
   /** The name of the version, in the language of the person */
   label: string;
+  /** Two versions that were picked, and not a version with the one before it */
+  pair?: boolean;
   load: () => Promise<CompareView | undefined>;
   error: string | null;
   onClose: () => void;
 };
 
 /** What a version changed, as the blocks that were added, removed and changed. */
-export function CompareDialog({ label, load, error, onClose }: Props) {
+export function CompareDialog({ label, pair = false, load, error, onClose }: Props) {
   const { t } = useTranslation("versions");
   const [view, setView] = useState<CompareView | null>(null);
   useEffect(() => {
@@ -24,8 +26,8 @@ export function CompareDialog({ label, load, error, onClose }: Props) {
     <Dialog open onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>{t("compare.title", { label })}</DialogTitle>
-          <DialogDescription>{t("compare.description")}</DialogDescription>
+          <DialogTitle>{t(pair ? "compare.titlePair" : "compare.title", { label })}</DialogTitle>
+          <DialogDescription>{t(pair ? "compare.descriptionPair" : "compare.description")}</DialogDescription>
         </DialogHeader>
         {error && (
           <p role="alert" className="text-sm text-destructive">

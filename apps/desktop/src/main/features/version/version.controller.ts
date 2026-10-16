@@ -4,7 +4,8 @@ import type { VersionService } from "./version.service";
 
 export function registerVersionController(service: VersionService): void {
   handle(IpcChannel.VersionStatus, () => service.status());
-  handle(IpcChannel.VersionSave, ({ message }) => service.save(message));
+  handle(IpcChannel.VersionChanges, () => service.changes());
+  handle(IpcChannel.VersionSave, ({ message, include }) => service.save(message, include));
   handle(IpcChannel.VersionBranchStart, ({ name }) => service.startBranch(name));
   handle(IpcChannel.VersionBranchSwitch, ({ name }) => service.switchBranch(name));
   handle(IpcChannel.VersionBranchDiscard, ({ name }) => service.discardBranch(name));

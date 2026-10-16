@@ -85,6 +85,61 @@ describe("status and saving", () => {
   });
 });
 
+describe("choosing what goes into a version", () => {
+  const setupTwo = () => {
+    write("# One\n\nalpha\n\nbeta\n\ngamma\n\ndelta\n");
+    versions.save("base");
+    write("# One\n\nALPHA\n\nbeta\n\ngamma\n\nDELTA\n");
+  };
+
+  it("lists each run of changed blocks with the text of both sides", () => {
+    setupTwo();
+    const items = versions.changes();
+    expect(items.map((item) => item.type)).toEqual(["hunk", "hunk"]);
+    expect(items[0]).toMatchObject({ id: expect.stringMatching(/:0$/), changes: [{ type: "modified", before: "alpha", after: "ALPHA" }] });
+    expect(items[1]).toMatchObject({ changes: [{ type: "modified", before: "delta", after: "DELTA" }] });
+  });
+
+  it("makes a version of the chosen changes only, and the others stay as changes that are not saved", () => {
+    setupTwo();
+    const [first] = versions.changes();
+    const status = versions.save("only the first", [first!.id]);
+    expect(status.dirty).toBe(true);
+    expect(text()).toBe("# One\n\nALPHA\n\nbeta\n\ngamma\n\nDELTA\n");
+    const saved = versions.history()[0]!;
+    expect(saved.message).toBe("only the first");
+    // The version holds the first change and not the second
+    expect(versions.headText(chapter().id)).toBe("# One\n\nALPHA\n\nbeta\n\ngamma\n\ndelta\n");
+    // The second change is the only one left
+    const left = versions.changes();
+    expect(left).toHaveLength(1);
+    expect(left[0]).toMatchObject({ changes: [{ type: "modified", before: "delta", after: "DELTA" }] });
+    versions.save("the rest");
+    expect(versions.status().dirty).toBe(false);
+    expect(versions.headText(chapter().id)).toBe(text());
+  });
+
+  it("takes every change when none are named, and refuses a choice that holds none of the changes", () => {
+    setupTwo();
+    expect(codeOf(() => versions.save("nothing chosen", []))).toBe("version.nothing-to-save");
+    expect(codeOf(() => versions.save("unknown", ["hunk:nope:0"]))).toBe("version.nothing-to-save");
+    expect(versions.save("all").dirty).toBe(false);
+  });
+
+  it("lists a document that was added and a file, and takes them only when chosen", () => {
+    versions.status();
+    const extra = documents.create("chapter" as never);
+    write("new document\n", extra.id);
+    assets.replaceAllFiles([{ path: "images/a.png", data: new Uint8Array([5]) }]);
+    const items = versions.changes();
+    expect(items.map((item) => item.type).sort()).toEqual(["document", "file"]);
+    const file = items.find((item) => item.type === "file")!;
+    versions.save("the file", [file.id]);
+    expect(versions.status().dirty).toBe(true);
+    expect(versions.changes().map((item) => item.type)).toEqual(["document"]);
+  });
+});
+
 describe("branches", () => {
   it("needs a name that is not empty and not used", () => {
     versions.status();

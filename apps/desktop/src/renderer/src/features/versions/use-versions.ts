@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { IpcChannel } from "../../../../shared/enums/ipc-channel.enum";
-import type { ChoiceInput, CompareView, MergePreview, VersionEntry, VersionStatus } from "../../../../shared/ipc";
+import type { ChangeItemView, ChoiceInput, CompareView, MergePreview, VersionEntry, VersionStatus } from "../../../../shared/ipc";
 import { api } from "../../shared/api";
 import { errorMessage } from "../../shared/error-message";
 
@@ -72,7 +72,8 @@ export function useVersions({ projectKey, saveTick, flush, onReplaced }: Options
     return next !== undefined;
   }, [run]);
 
-  const save = useCallback((message: string) => attempt(() => api.invoke(IpcChannel.VersionSave, { message }), false), [attempt]);
+  const save = useCallback((message: string, include?: string[]) => attempt(() => api.invoke(IpcChannel.VersionSave, { message, include }), false), [attempt]);
+  const changes = useCallback(async (): Promise<ChangeItemView[]> => (await run(() => api.invoke(IpcChannel.VersionChanges), false)) ?? [], [run]);
   const start = useCallback((name: string) => attempt(() => api.invoke(IpcChannel.VersionBranchStart, { name }), false), [attempt]);
   const switchTo = useCallback((name: string) => attempt(() => api.invoke(IpcChannel.VersionBranchSwitch, { name }), true), [attempt]);
   const discard = useCallback((name: string) => attempt(() => api.invoke(IpcChannel.VersionBranchDiscard, { name }), true), [attempt]);
@@ -88,7 +89,7 @@ export function useVersions({ projectKey, saveTick, flush, onReplaced }: Options
     [attempt, t],
   );
 
-  return { status, error, busy, clearError: () => setError(null), refresh, run, save, start, switchTo, discard, restore, revert, history, compare, previewMerge, merge };
+  return { status, error, busy, clearError: () => setError(null), refresh, run, save, start, switchTo, discard, restore, revert, history, changes, compare, previewMerge, merge };
 }
 
 export type Versions = ReturnType<typeof useVersions>;
