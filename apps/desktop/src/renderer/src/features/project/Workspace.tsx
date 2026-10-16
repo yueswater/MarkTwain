@@ -141,7 +141,17 @@ function WorkspaceBody({ state, build, previewOpen, onClosePreview, onOpenSettin
         onReorder={(id, targetId, placement) => void state.reorderDocument(id, targetId, placement)}
         collapsed={collapsed}
         onToggleCollapsed={toggleCollapsed}
-        onAdd={(kind) => void state.addDocument(kind)}
+        onAdd={(kind) =>
+          void state.addDocument(kind).then(async (id) => {
+            if (!id) return;
+            // What was typed goes to the document it was typed in, then the new one opens
+            await flush.current?.();
+            setTarget(null);
+            setSelectedId(id);
+            setShowBibliography(false);
+            setShowFonts(false);
+          })
+        }
         onRename={(id, title) => void state.renameDocument(id, title)}
         onMove={(id, delta) => void state.moveDocument(id, delta)}
         onDelete={(id) => void state.removeDocument(id)}

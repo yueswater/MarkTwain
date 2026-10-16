@@ -20,6 +20,15 @@ test("create a project, manage documents, close and reopen it", async ({ launch 
   await sidebar.getByRole("button", { name: "新增文件" }).click();
   await page.getByRole("menuitem", { name: "章", exact: true }).click();
   await expect(item("第 2 章")).toBeVisible();
+  // The new document opens at once, so what is typed next does not land in the old one
+  await expect(item("第 2 章")).toHaveAttribute("aria-current", "true");
+  await expect(item("第 1 章")).not.toHaveAttribute("aria-current", "true");
+  await page.locator(".ProseMirror").click();
+  await page.keyboard.type("新章的內容");
+  await expect(page.locator(".ProseMirror")).toContainText("新章的內容");
+  await item("第 1 章").click();
+  await expect(page.locator(".ProseMirror")).not.toContainText("新章的內容");
+  await item("第 2 章").click();
 
   // Only one abstract is allowed so the menu item is disabled
   await sidebar.getByRole("button", { name: "新增文件" }).click();
