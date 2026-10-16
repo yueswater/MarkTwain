@@ -6,7 +6,7 @@ How the code is divided, and the rules that keep the parts apart. Two of the rul
 
 ```
 packages/*            pure TypeScript libraries, no Electron, no app
-                      (schema: Markdown and its blocks, render: Typst, build: the build, versioning: snapshots, diff and merge)
+                      (schema: Markdown and its blocks, render: Typst, build: the build, versioning: snapshots, the alignment of blocks, diff and three-way merge)
 apps/desktop/src/
   shared/             what both sides know: the IPC contract, enums, preferences
   main/               the back end (Node.js, Electron)
@@ -39,6 +39,10 @@ A feature has the same parts, and only the ones it needs:
 
 A feature takes what it needs from the **service** of another feature, passed in by `index.ts`, never from its controller. A thing that two features need and that is not a feature itself goes to `features/toolchain` (where the tools of a build are), `helpers` or `core`. That is how the build, the fonts and the watermark use the same paths without importing each other.
 
+### The versions as an example
+
+The versions show the rules at work. What decides a merge is `packages/versioning`: pure functions of block hashes, with no database and no Electron, tested with random scenarios. What writes is `features/version`: its service keeps the snapshots in its own tables, and it reaches the documents and the files of the project through a `WorkingCopy` that `index.ts` builds from the document and asset features, so it never writes their tables. A merge, a restore and a change of branch each run in one transaction, which is why the WorkingCopy writes without opening one. The front end only asks through the IPC contract in `shared/ipc/version.ts`.
+
 ## The front end: `renderer/src`
 
 ```
@@ -49,7 +53,7 @@ theme/                colors
 features/<name>/      one part of the interface
 ```
 
-The features are `editor`, `project`, `settings`, `build` (the preview), `bibliography`, `fonts` and `shortcuts`. A feature is divided again by what its files are about, not by what they are:
+The features are `editor`, `project`, `settings`, `build` (the preview), `bibliography`, `fonts`, `shortcuts` and `versions` (the branch bar, the history, the comparison and the merge). A feature is divided again by what its files are about, not by what they are:
 
 ```
 features/editor/

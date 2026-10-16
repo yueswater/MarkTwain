@@ -22,7 +22,7 @@ MarkTwain is an editor for the [TW-Thesis](https://github.com/TW-Thesis) templat
 
 > **Disclaimer**: The format presets come from the TW-Thesis templates and are for reference only. Always follow your school's official thesis regulations and your department's requirements.
 
-> **Status**: under development. v0.3.6 writes and builds PDFs with the Typst template. Installers, LaTeX output and version control come in later releases (see [ROADMAP.md](ROADMAP.md)), so for now you run MarkTwain from source.
+> **Status**: under development. v0.4.0 writes and builds PDFs with the Typst template and keeps versions of the thesis. Installers and LaTeX output come in later releases (see [ROADMAP.md](ROADMAP.md)), so for now you run MarkTwain from source.
 
 ## What it does
 
@@ -30,6 +30,7 @@ MarkTwain is an editor for the [TW-Thesis](https://github.com/TW-Thesis) templat
 - **Tables.** Merged cells, the borders menu of a word processor, a width and a text size for the whole table, and a library of templates by field of study (economics, statistics, engineering, medicine, social science, management), such as a payoff matrix or a regression table.
 - **Cross-references.** Refer to a heading, figure, table, formula or theorem, even when it sits in another chapter. A label is added where it is missing.
 - **Preview.** The PDF sits next to the editor. It follows your caret and your scrolling, and a click in the PDF takes the caret to that text.
+- **Versions.** Save a version, try a change on a branch without touching the main line, and merge it back. The merge works on blocks, shows the base, the main line and your change side by side when both changed the same part, and writes nothing until you have chosen. A version shows what it changed in green and red. It needs no git and no account.
 - **Format.** Pick one of 15 schools, then adjust margins, fonts, heading numbers, list markers and the numbering of figures and tables in the settings.
 - **Fonts.** Add fonts to a project from your computer. The project carries them, and the build prefers them.
 - **Bibliography.** Import BibTeX, pick a citation style, and hover a citation to see which work it is.
@@ -37,7 +38,7 @@ MarkTwain is an editor for the [TW-Thesis](https://github.com/TW-Thesis) templat
 
 The interface is in Traditional Chinese and English.
 
-Still to come: local version control with named branches and block-level merging (v0.4.0), and LaTeX output (v0.5.0).
+Still to come: LaTeX output (v0.5.0).
 
 ## Run from source
 

@@ -2,7 +2,7 @@
 
 MarkTwain is developed against version milestones. Each version maps to a [GitHub Milestone](../../milestones), and the work items are tracked as issues.
 
-Current version: v0.3.6.
+Current version: v0.4.0.
 
 | Version | Theme | Status |
 |---|---|---|
@@ -14,7 +14,7 @@ Current version: v0.3.6.
 | [v0.3.4](#v034--settings-and-watermark) | Settings and watermark | Released |
 | [v0.3.5](#v035--blocks-and-tables) | Blocks and tables | Released |
 | [v0.3.6](#v036--toolchain-and-preview) | Toolchain and preview | Released |
-| [v0.4.0](#v040--version-control) | Version control | Not started |
+| [v0.4.0](#v040--version-control) | Version control | Released |
 | [v0.5.0](#v050--latex-output) | LaTeX output | Not started |
 | [v0.6.0](#v060--thesis-features) | Thesis features | Not started |
 | [v0.7.0](#v070--offline-packaging) | Offline packaging | Not started |
@@ -130,11 +130,14 @@ The toolchain travels with the app, so a build needs nothing installed on the ma
 
 Local version control that does not depend on git.
 
-- Save a version, create a named branch, discard a branch
-- Three-way merge at block level, merged back into the main line
-- Block-level diff and a side-by-side conflict resolver
-- SQLite storage; a merge is a single transaction
-- Locust load tests: large merges (1k to 50k blocks) and snapshot write latency after long use
+- Save a version, start a named change (a branch), open another one, discard one. Changes that are not saved wait on their branch and come back when it is opened again
+- The version history of the branch that is open, with a restore that adds a new version and never rewrites the past
+- What a version changed, shown as a change history: green for what was added, red for what was taken away, and the characters that changed inside a paragraph
+- Three-way merge at block level, with the blocks lined up first (Myers, and anchors on blocks that occur once for large differences). What one side changed is taken, insertions at different places are both kept, different changes to the same blocks are a conflict, and a move is a deletion and an addition
+- A side-by-side conflict resolver: the base, the main line and the change, and a choice of the main line, the change, both, or a text of one's own. Nothing is written until every conflict has a choice
+- SQLite storage: blocks, files and block sequences are kept by hash, so what did not change is stored once. A merge is a single transaction, and a test kills a process in the middle of one
+- Locust load tests: a merge of two branches at 1k, 10k and 50k blocks and 1, 10 and 50 percent changed (130 ms at the 95th percentile for 50k blocks and half changed), and the time of a save over 3 600 versions (it does not grow)
+- Property tests of the merge with random scenarios: no conflict and no lost change when the places are apart, the same blocks whichever side is the main line, a line merged with itself
 
 **Done when:** you can branch, edit, and merge; a deliberate conflict can be resolved block by block; and killing the app mid-merge leaves the data as it was before the merge.
 
