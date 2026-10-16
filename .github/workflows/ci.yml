@@ -44,13 +44,50 @@ jobs:
           if [ "$RUNNER_OS" = "Windows" ]; then exe=typst.exe; fi
           echo "MARKTWAIN_TYPST=$GITHUB_WORKSPACE/resources/typst/$key/$exe" >> "$GITHUB_ENV"
           echo "MARKTWAIN_TYPST_PACKAGES=$GITHUB_WORKSPACE/resources/typst-packages" >> "$GITHUB_ENV"
+      - name: Install a TeX Live for the LaTeX output
+        uses: teatimeguest/setup-texlive-action@v3
+        with:
+          # The packages that the template of tw-thesis-tex reads, found from the file list of a build
+          packages: |
+            scheme-basic
+            collection-xetex
+            collection-luatex
+            collection-latexrecommended
+            collection-fontsrecommended
+            collection-langchinese
+            latexmk
+            citation-style-language
+            lua-tinyyaml
+            lipsum
+            listings
+            makecell
+            multirow
+            pdflscape
+            metalogo
+            titlesec
+            enumitem
+            eso-pic
+            fancyhdr
+            chngcntr
+            zhlipsum
+            zhnumber
+            xecjk
+            ctex
+            pgf
       - name: Fetch the pinned templates
-        run: pnpm templates:fetch typ
+        run: pnpm templates:fetch typ tex
         env:
           GH_TOKEN: ${{ github.token }}
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm test
+      # Temporary, measures what LaTeX does with a non-ASCII path on Windows without the fallback, issue 53
+      - name: Spike, build in a folder with Chinese characters on Windows without the ASCII fallback
+        if: runner.os == 'Windows'
+        continue-on-error: true
+        env:
+          MARKTWAIN_TEX_RAW_PATH: "1"
+        run: pnpm --filter @marktwain/build exec jest src/build-latex.test.ts
 
   package:
     name: package (${{ matrix.os }})
@@ -71,8 +108,38 @@ jobs:
       # No MARKTWAIN_TYPST here, the end-to-end tests must use the Typst inside the packaged app.
       - name: Fetch the pinned Typst and its packages
         run: pnpm typst:fetch
+      - name: Install a TeX Live for the LaTeX output
+        uses: teatimeguest/setup-texlive-action@v3
+        with:
+          # The packages that the template of tw-thesis-tex reads, found from the file list of a build
+          packages: |
+            scheme-basic
+            collection-xetex
+            collection-luatex
+            collection-latexrecommended
+            collection-fontsrecommended
+            collection-langchinese
+            latexmk
+            citation-style-language
+            lua-tinyyaml
+            lipsum
+            listings
+            makecell
+            multirow
+            pdflscape
+            metalogo
+            titlesec
+            enumitem
+            eso-pic
+            fancyhdr
+            chngcntr
+            zhlipsum
+            zhnumber
+            xecjk
+            ctex
+            pgf
       - name: Fetch the pinned templates
-        run: pnpm templates:fetch typ
+        run: pnpm templates:fetch typ tex
         env:
           GH_TOKEN: ${{ github.token }}
       - run: pnpm build:unpacked
