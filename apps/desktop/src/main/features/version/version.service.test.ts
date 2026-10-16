@@ -278,6 +278,33 @@ describe("history, restoring and comparing", () => {
     expect(codeOf(() => versions.restore("nope", "x"))).toBe("version.snapshot-not-found");
   });
 
+  it("saves what was written since the last version before going back, so the text that was not saved is never lost", () => {
+    write("# One\n\nfirst\n");
+    const first = versions.save("first").headId;
+    write("# One\n\nsecond\n");
+    versions.save("second");
+    // An hour of writing that no version holds
+    write("# One\n\nsecond\n\nA long paragraph that was typed after the last version.\n");
+    const status = versions.restore(first, "Restored first", "Before going back");
+    expect(text()).toBe("# One\n\nfirst\n");
+    expect(status.dirty).toBe(false);
+    const history = versions.history();
+    expect(history.map((entry) => entry.message)).toEqual(["Restored first", "Before going back", "second", "first", ""]);
+    // The version that keeps the typed text can be restored, and the text comes back
+    const kept = history[1]!;
+    versions.restore(kept.id, "Back again");
+    expect(text()).toBe("# One\n\nsecond\n\nA long paragraph that was typed after the last version.\n");
+  });
+
+  it("does not add a version of its own when there was nothing unsaved", () => {
+    write("# One\n\nfirst\n");
+    const first = versions.save("first").headId;
+    write("# One\n\nsecond\n");
+    versions.save("second");
+    versions.restore(first, "Restored first", "Before going back");
+    expect(versions.history().map((entry) => entry.message)).toEqual(["Restored first", "second", "first", ""]);
+  });
+
   it("shows what changed between two versions with the text of the blocks, and collapses what stayed", () => {
     write("# One\n\nalpha\n\nbeta\n\ngamma\n");
     const before = versions.save("before").headId;

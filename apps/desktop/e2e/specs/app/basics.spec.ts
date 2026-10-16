@@ -1,5 +1,8 @@
+import { spawn } from "node:child_process";
 import { realpathSync } from "node:fs";
 import { join } from "node:path";
+import { findPackagedExecutable } from "../../support/find-app";
+import { DIST } from "../../support/paths";
 import { expect, test } from "../../support/test";
 
 test("the app is named MarkTwain without moving its data, the window has a smallest size, and the page language follows the interface", async ({ launch }) => {
@@ -16,4 +19,28 @@ test("the app is named MarkTwain without moving its data, the window has a small
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
   await page.getByTestId("language-toggle").click();
   await expect(page.locator("html")).toHaveAttribute("lang", "zh-Hant");
+});
+
+test("a second MarkTwain on the same data goes away and the first one keeps working", async ({ launch }) => {
+  const first = await launch({ name: "單一" });
+  const page = await first.app.firstWindow();
+  await expect(page.getByRole("button", { name: "New project" })).toBeVisible();
+
+  // The second one has the same folder of user data, it asks the first to come forward and quits
+  // It is started on its own, because Playwright cannot attach to a process that quits at once
+  const args = [`--user-data-dir=${join(first.dir, "userData")}`, ...(process.platform === "linux" ? ["--no-sandbox"] : [])];
+  const second = spawn(findPackagedExecutable(DIST), args, { env: { ...process.env, MARKTWAIN_HEADLESS: "1" }, stdio: "ignore" });
+  const code = await new Promise<number | null>((resolve) => {
+    const timer = setTimeout(() => {
+      second.kill();
+      resolve(null);
+    }, 20_000);
+    second.once("exit", (exitCode) => {
+      clearTimeout(timer);
+      resolve(exitCode);
+    });
+  });
+  expect(code).toBe(0);
+  await expect(page.getByRole("button", { name: "New project" })).toBeVisible();
+  expect(first.app.process().exitCode).toBeNull();
 });

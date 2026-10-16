@@ -12,7 +12,7 @@
     "history": "版本紀錄…",
     "merge": "合併回主線…",
     "discard": "放棄這次修改…",
-    "revert": "放棄未儲存的變動…"
+    "revert": "回到上次儲存的版本…"
   },
   "save": {
     "title": "儲存版本",
@@ -40,13 +40,14 @@
     "merge": "合併",
     "restore": "還原",
     "restoreTitle": "還原到這個版本？",
-    "restoreBody": "文件會變回「{{label}}」的樣子，並存成一個新版本，所以歷史紀錄不會有任何遺失。尚未儲存的變動會被取代。",
+    "restoreBody": "文件會變回「{{label}}」的樣子，並存成一個新版本，歷史紀錄不會有任何遺失。上次存版本之後寫的內容，會先另存成一個版本，之後還找得回來。",
     "restoreMessage": "還原「{{label}}」",
     "current": "目前",
     "compare": "改了什麼",
     "pickHint": "勾選兩個版本，就能看它們之間差了什麼。",
     "compareTwo": "比較這兩個",
-    "pick": "選取「{{label}}」來比較"
+    "pick": "選取「{{label}}」來比較",
+    "keptMessage": "回到較早版本之前"
   },
   "error": {
     "title": "沒有成功"
@@ -116,9 +117,10 @@
     "deletedTheirs": "你的修改把它刪了"
   },
   "revert": {
-    "title": "放棄你輸入的內容？",
-    "description": "文件會回到最新的版本，之後輸入的內容會消失，而且無法復原。",
-    "confirm": "放棄"
+    "title": "回到上次儲存的版本？",
+    "description": "文件會回到最新的版本，之後寫的內容會消失，而且無法復原。",
+    "confirm": "放棄",
+    "descriptionCount": "文件會回到最新儲存的版本，之後做的 {{count}} 處變動會消失，而且無法復原。"
   },
   "stage": {
     "title": "這次版本包含的變動",

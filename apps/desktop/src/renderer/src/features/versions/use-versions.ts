@@ -77,7 +77,7 @@ export function useVersions({ projectKey, saveTick, flush, onReplaced }: Options
   const start = useCallback((name: string) => attempt(() => api.invoke(IpcChannel.VersionBranchStart, { name }), false), [attempt]);
   const switchTo = useCallback((name: string) => attempt(() => api.invoke(IpcChannel.VersionBranchSwitch, { name }), true), [attempt]);
   const discard = useCallback((name: string) => attempt(() => api.invoke(IpcChannel.VersionBranchDiscard, { name }), true), [attempt]);
-  const restore = useCallback((snapshotId: string, message: string) => attempt(() => api.invoke(IpcChannel.VersionRestore, { snapshotId, message }), true), [attempt]);
+  const restore = useCallback((snapshotId: string, message: string, keptMessage?: string) => attempt(() => api.invoke(IpcChannel.VersionRestore, { snapshotId, message, keptMessage }), true), [attempt]);
   const revert = useCallback(() => attempt(() => api.invoke(IpcChannel.VersionDiscardChanges), true), [attempt]);
   const history = useCallback(async (): Promise<VersionEntry[]> => (await run(() => api.invoke(IpcChannel.VersionHistory), false)) ?? [], [run]);
 

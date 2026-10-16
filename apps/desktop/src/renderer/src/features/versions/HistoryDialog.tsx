@@ -13,7 +13,7 @@ type Props = {
   busy: boolean;
   error: string | null;
   /** Makes the documents as they were in a version, the label is the name of the version in the language of the person */
-  onRestore: (snapshotId: string, label: string) => Promise<unknown>;
+  onRestore: (snapshotId: string, message: string, keptMessage?: string) => Promise<unknown>;
   /** Shows what a version changed from the one before it */
   onCompare: (entry: VersionEntry, label: string) => void;
   /** Shows what differs between two versions, the older first */
@@ -97,7 +97,7 @@ export function HistoryDialog({ branch, headId, load, busy, error, onRestore, on
                         size="sm"
                         disabled={busy}
                         onClick={async () => {
-                          const done = await onRestore(entry.id, t("history.restoreMessage", { label: labelOf(entry) }));
+                          const done = await onRestore(entry.id, t("history.restoreMessage", { label: labelOf(entry) }), t("history.keptMessage"));
                           if (done) onClose();
                         }}
                       >
