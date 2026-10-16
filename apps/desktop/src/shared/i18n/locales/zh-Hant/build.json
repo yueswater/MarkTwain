@@ -30,5 +30,11 @@
     "table-lines": "LaTeX 輸出只畫與文字同色的實線，表格的虛線、點線、彩色線與斜線不會畫出。",
     "table-heights": "LaTeX 輸出不套用表格的列高。",
     "table-vertical-align": "LaTeX 輸出不套用表格儲存格的垂直對齊。"
-  }
+  },
+  "unknownCitation": "不在參考文獻裡，以純文字顯示：{{keys}}",
+  "imageMissing": "找不到這張圖片，先以灰色方框代替。",
+  "imageUnreadable": "這個檔案不是圖片，先以灰色方框代替。",
+  "brokenRef": "這個引用指到論文裡沒有的項目，會照原樣印出名稱：{{label}}",
+  "duplicateLabel": "這個名稱已被另一個區塊使用，由第一個保留，引用會指到那一個：{{label}}",
+  "glyphMissing": "字型裡沒有這些字元，會印成空白方框：{{chars}}"
 }

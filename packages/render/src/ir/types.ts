@@ -105,7 +105,7 @@ export type IrDocument = {
 };
 
 export type IrIssue = {
-  code: "broken-ref" | "unknown-node";
+  code: "broken-ref" | "unknown-node" | "duplicate-label";
   documentId: string;
   /** Index of the top level block */
   block: number;

@@ -34,6 +34,38 @@ describe("warningItems", () => {
     ]);
   });
 
+  it("lists a reference to something that is not in the thesis with its block", () => {
+    const source = { documentId: "c1", block: 4 };
+    expect(warningItems([diag({ code: "reference-broken", message: "fig:nope", source })], [])).toEqual([{ kind: "brokenRef", label: "fig:nope", source }]);
+  });
+
+  it("lists a name that more than one block uses with the block that lost it", () => {
+    const source = { documentId: "c1", block: 3 };
+    expect(warningItems([diag({ code: "label-duplicate", message: "fig:dup", source })], [])).toEqual([{ kind: "duplicateLabel", label: "fig:dup", source }]);
+  });
+
+  it("lists the characters that the font does not have", () => {
+    expect(warningItems([diag({ code: "glyph-missing", message: "😀 한" })], [])).toEqual([{ kind: "glyphMissing", chars: "😀 한" }]);
+  });
+
+  it("lists every picture that is missing or is not a picture with its block, and the unknown citations by key", () => {
+    const source = { documentId: "c1", block: 3 };
+    expect(
+      warningItems(
+        [
+          diag({ code: "image-missing", message: "images/a.png", source }),
+          diag({ code: "image-unreadable", message: "images/b.png", source: { documentId: "c2", block: 0 } }),
+          diag({ code: "citation-unknown", message: "ghost" }),
+        ],
+        [],
+      ),
+    ).toEqual([
+      { kind: "image", reason: "missing", source },
+      { kind: "image", reason: "unreadable", source: { documentId: "c2", block: 0 } },
+      { kind: "unknownCitation", keys: ["ghost"] },
+    ]);
+  });
+
   it("lists a feature that LaTeX output only approximates by its name", () => {
     expect(warningItems([diag({ code: "latex-approximate", message: "table-lines" })], [])).toEqual([{ kind: "approximate", feature: "table-lines" }]);
   });

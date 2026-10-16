@@ -130,6 +130,20 @@ describe("blocks", () => {
     expect(plain).not.toContain("tabularx");
   });
 
+  it("sets a table of many rows as a longtable that repeats its header, and a short one as tlt", () => {
+    const rows = Array.from({ length: 30 }, (_, i) => `| 列${i} | ${i} |`).join("\n");
+    const long = render(`| 名稱 | 數值 |\n|:--|--:|\n${rows}\n\n: 長表 {#tbl:l notes="來源"}\n`).text;
+    expect(long).toContain("\\begin{longtable}");
+    expect(long).toContain("\\endfirsthead");
+    expect(long).toContain("\\endhead");
+    expect(long).toContain("\\caption{長表}\\label{tbl:l}");
+    expect(long).toContain("\\mtnoteslabel 來源");
+    expect(long).not.toContain("\\begin{tlt}");
+    const short = render("| 名稱 | 數值 |\n|:--|--:|\n| 甲 | 1 |\n\n: 短表 {#tbl:s}\n").text;
+    expect(short).toContain("\\begin{tlt}");
+    expect(short).not.toContain("longtable");
+  });
+
   it("writes code with a language that listings knows, and plain text for the others", () => {
     expect(render('```python {#lst:x caption="範例"}\nprint(1)\n```\n').text).toBe(
       "\\begin{lstlisting}[language=Python,caption={範例},label=lst:x]\nprint(1)\n\\end{lstlisting}\n",

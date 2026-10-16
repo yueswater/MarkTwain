@@ -10,6 +10,10 @@ export type InlineContext = {
   hasBibliography?: boolean;
   /** Called with the keys of a citation that fell back to plain text. */
   onCitationFallback?: (keys: string[]) => void;
+  /** The keys that the bibliography has, null when they are not known. A citation of another key stays plain text, Typst would fail the whole build on it. */
+  knownCitationKeys?: ReadonlySet<string> | null;
+  /** Called with the keys that are not in the bibliography. */
+  onUnknownCitation?: (keys: string[]) => void;
 };
 
 type Piece = { text: string; call: boolean };
@@ -53,7 +57,13 @@ function renderOne(node: Inline, ctx: InlineContext): Piece {
         return { text: escapeMarkup(`[${node.keys.join("; ")}]`), call: false };
       }
       const fn = CITE_FUNCTION[node.form];
-      return { text: node.keys.map((key) => `#${fn}("${escapeString(key)}")`).join(""), call: true };
+      const known = ctx.knownCitationKeys;
+      const unknown = known ? node.keys.filter((key) => !known.has(key)) : [];
+      if (unknown.length > 0) ctx.onUnknownCitation?.(unknown);
+      return {
+        text: node.keys.map((key) => (unknown.includes(key) ? escapeMarkup(`[${key}]`) : `#${fn}("${escapeString(key)}")`)).join(""),
+        call: node.keys.some((key) => !unknown.includes(key)),
+      };
     }
     case "ref":
       // A block of a mathematical thesis is numbered by its own helper

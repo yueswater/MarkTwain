@@ -1,8 +1,10 @@
 import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync } from "node:fs";
 import { delimiter, join, parse } from "node:path";
 import { collectTargets, parseMarkdown, resolveListLevels, resolvePlacementDefaults, resolveStatementStyle } from "@marktwain/schema";
-import { renderLatexFile, renderStatementsLatex, toIr } from "@marktwain/render";
+import { renderLatexFile, renderStatementsLatex, toIr, type IrDocument, type IrIssue } from "@marktwain/render";
+import { bibliographyKeys } from "./bibliography-keys";
 import { completeConfig } from "./config";
+import { checkImages, type ImageIssue } from "./images";
 import type { LineMap } from "./diagnostics";
 import { parseTexLog } from "./diagnostics-tex";
 import { assignPaths, renderMainLatex } from "./layout";
@@ -47,6 +49,9 @@ type Prepared = {
   lineMap: LineMap;
   mathFailures: string[];
   citationFallbacks: string[];
+  unknownCitations: string[];
+  imageIssues: ImageIssue[];
+  irIssues: IrIssue[];
   unsupported: string[];
 };
 
@@ -54,6 +59,8 @@ type Prepared = {
 function prepare(input: LatexBuildInput, root: string): Prepared {
   const mathFailures: string[] = [];
   const citationFallbacks: string[] = [];
+  const unknownCitations: string[] = [];
+  const knownCitationKeys = bibliographyKeys(input.bibliography);
   const unsupported: string[] = [];
 
   for (const name of SHARED) {
@@ -79,23 +86,31 @@ function prepare(input: LatexBuildInput, root: string): Prepared {
 
   const paths = assignPaths(input.documents, "tex");
   const lineMap: LineMap = new Map();
-  for (const { doc, json } of parsed) {
+  // Every document is read first, so an image that is missing or is not an image is known before anything is rendered
+  const usedLabels = new Set<string>();
+  const irResults = parsed.map(({ doc, json }) => ({ id: doc.id, ...toIr(json, { documentId: doc.id, knownLabels, usedLabels }) }));
+  const rendered = irResults.map(({ id, document }) => ({ id, document }));
+  const irIssues = irResults.flatMap((result) => result.issues);
+  const { issues: imageIssues, replace: imageReplace } = checkImages({ documents: rendered, files: input.files, write: (src, data) => writeBytes(root, join("figures", src), data) });
+  for (const { doc } of parsed) {
     const path = paths.get(doc.id) as string;
-    const { document } = toIr(json, { documentId: doc.id, knownLabels });
+    const document = (rendered.find((r) => r.id === doc.id) as { document: IrDocument }).document;
     const file = renderLatexFile(document, {
       kind: doc.kind,
-      imagePath: (src) => `figures/${src}`,
+      imagePath: (src) => `figures/${imageReplace.get(src) ?? src}`,
       onMathFailure: (latex) => mathFailures.push(latex),
       hasBibliography: input.bibliography.length > 0,
       defaultPlacement: resolvePlacementDefaults(completed.placement),
       onCitationFallback: (keys) => citationFallbacks.push(...keys),
+      knownCitationKeys,
+      onUnknownCitation: (keys) => unknownCitations.push(...keys),
       onUnsupported: (feature) => unsupported.push(feature),
     });
     writeText(root, path, file.text);
     lineMap.set(path, { documentId: doc.id, blockLines: file.blockLines });
   }
   writeText(root, "main.tex", renderMainLatex(input.documents, paths, input.bibliography.length > 0, input.watermark === true));
-  return { missing: completed.missing, lineMap, mathFailures, citationFallbacks, unsupported };
+  return { missing: completed.missing, lineMap, mathFailures, citationFallbacks, unknownCitations, imageIssues, irIssues, unsupported };
 }
 
 function warnings(prepared: Prepared): Diagnostic[] {
@@ -103,6 +118,19 @@ function warnings(prepared: Prepared): Diagnostic[] {
   return [
     ...prepared.missing.map<Diagnostic>((field) => ({ severity: "warning", code: "config-missing", message: field, ...empty })),
     ...[...new Set(prepared.citationFallbacks)].map<Diagnostic>((key) => ({ severity: "warning", code: "citation-no-bibliography", message: key, ...empty })),
+    ...[...new Set(prepared.unknownCitations)].map<Diagnostic>((key) => ({ severity: "warning", code: "citation-unknown", message: key, ...empty })),
+    ...prepared.irIssues
+      .filter((issue) => issue.code === "broken-ref" || issue.code === "duplicate-label")
+      .map<Diagnostic>((issue) => ({ severity: "warning", code: issue.code === "broken-ref" ? "reference-broken" : "label-duplicate", message: issue.detail, file: null, line: null, column: null, source: { documentId: issue.documentId, block: issue.block } })),
+    ...prepared.imageIssues.map<Diagnostic>((issue) => ({
+      severity: "warning",
+      code: issue.reason === "missing" ? "image-missing" : "image-unreadable",
+      message: issue.src,
+      file: null,
+      line: null,
+      column: null,
+      source: { documentId: issue.documentId, block: issue.block },
+    })),
     ...[...new Set(prepared.unsupported)].map<Diagnostic>((feature) => ({ severity: "warning", code: "latex-approximate", message: feature, ...empty })),
   ];
 }

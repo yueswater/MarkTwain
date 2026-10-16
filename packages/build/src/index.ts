@@ -5,3 +5,4 @@ export { renderThumbnail, type ThumbnailInput } from "./thumbnail";
 export { parseDiagnostics, locate, type LineMap } from "./diagnostics";
 export { assignPaths, renderMain, renderMainLatex } from "./layout";
 export type * from "./types";
+export { looksLikeImage } from "./images";

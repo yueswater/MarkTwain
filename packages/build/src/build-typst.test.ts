@@ -1,9 +1,10 @@
 import { describe, expect, it } from "@jest/globals";
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { buildTypst } from "./build-typst";
+import { copyTree } from "./process";
 import { renderThumbnail } from "./thumbnail";
 import { decodeGray, verticalLines } from "./test-png";
 import type { BuildInput } from "./types";
@@ -51,6 +52,23 @@ const maybe = available ? describe : describe.skip;
 
 import { PNG } from "./fixtures";
 
+/**
+ * A copy of the template whose figure helper fails, so a build fails the way an error of the template would, with the call stack in the content file.
+ * Nothing in the thesis makes the build fail any more that is not an error of the template itself.
+ */
+function brokenTemplate(): string {
+  const dir = mkdtempSync(join(tmpdir(), "marktwain 壞模板 "));
+  for (const name of readdirSync(templateDir)) {
+    const source = join(templateDir, name);
+    if (!statSync(source).isDirectory()) continue;
+    if (name === "helper") copyTree(source, join(dir, name));
+    else symlinkSync(source, join(dir, name), "junction");
+  }
+  const file = join(dir, "helper", "figure.typ");
+  writeFileSync(file, readFileSync(file, "utf8").replace("#let as-image(src, width: 100%) = if type(src) == str {", '#let as-image(src, width: 100%) = if type(src) == str {\n  panic("test failure")'));
+  return dir;
+}
+
 const config = 'title: "測試論文"\nauthor: "王小明"\nkeywords: ["甲", "乙"]\nkeywords-en: ["a", "b"]\n';
 
 function input(workDir: string, overrides: Partial<BuildInput>): BuildInput {
@@ -67,6 +85,24 @@ function input(workDir: string, overrides: Partial<BuildInput>): BuildInput {
 }
 
 maybe("buildTypst with the real template", () => {
+  it("builds with a citation of a key that the bibliography does not have, and says so", async () => {
+    const work = mkdtempSync(join(tmpdir(), "marktwain 引用 "));
+    try {
+      const bib = new TextEncoder().encode("@article{wang2020, author={Wang, A.}, title={Deep things}, journal={J. Stuff}, year={2020}}\n");
+      const result = await buildTypst(
+        input(work, {
+          config: `${config}bibliography:\n  path: ["/contents/back/refs.bib"]\n`,
+          documents: [{ id: "c1", kind: "chapter", text: "# 緒論\n\n見 [@wang2020; @ghost2099] 與 @ghost2099。\n" }],
+          bibliography: [{ path: "refs.bib", data: bib }],
+        }),
+      );
+      if (!result.ok) throw new Error(result.diagnostics.map((d) => d.message).join("\n"));
+      expect(result.diagnostics.filter((d) => d.code === "citation-unknown").map((d) => d.message)).toEqual(["ghost2099"]);
+    } finally {
+      rmSync(work, { recursive: true, force: true });
+    }
+  }, 120_000);
+
   it("builds a PDF from every kind of document", async () => {
     const work = mkdtempSync(join(tmpdir(), "marktwain 建置 "));
     try {
@@ -419,12 +455,56 @@ maybe("buildTypst with the real template", () => {
     }
   }, 120_000);
 
-  it("reports a typst error against the source block", async () => {
-    const work = mkdtempSync(join(tmpdir(), "marktwain 錯誤 "));
+  it("builds with an image that is missing and one that is not an image, shows a grey box for each and names the block", async () => {
+    const work = mkdtempSync(join(tmpdir(), "marktwain 缺圖 "));
     try {
       const result = await buildTypst(
         input(work, {
-          documents: [{ id: "c1", kind: "chapter", text: "# 標題\n\n正常段落。\n\n![缺圖](images/missing.png)\n" }],
+          documents: [{ id: "c1", kind: "chapter", text: "# 標題\n\n![缺圖](images/missing.png){#fig:gone}\n\n![假圖](images/fake.png)\n\n見 @fig:gone。\n" }],
+          files: [{ path: "images/fake.png", data: new TextEncoder().encode("this is a text file and not a picture") }],
+        }),
+      );
+      if (!result.ok) throw new Error(result.diagnostics.map((d) => d.message).join("\n"));
+      expect(result.diagnostics.filter((d) => d.code === "image-missing" || d.code === "image-unreadable").map((d) => [d.code, d.source])).toEqual([
+        ["image-missing", { documentId: "c1", block: 1 }],
+        ["image-unreadable", { documentId: "c1", block: 2 }],
+      ]);
+    } finally {
+      rmSync(work, { recursive: true, force: true });
+    }
+  }, 120_000);
+
+  it("builds with a reference to nothing and a name used twice, and names the block of each", async () => {
+    const work = mkdtempSync(join(tmpdir(), "marktwain 引用壞 "));
+    try {
+      const result = await buildTypst(
+        input(work, {
+          documents: [
+            { id: "c1", kind: "chapter", text: "# 標題\n\n![圖一](images/a.png){#fig:dup}\n\n![圖二](images/a.png){#fig:dup}\n\n見 @fig:dup 與 @fig:nope。\n" },
+            { id: "c2", kind: "chapter", text: "# 第二章\n\n![圖三](images/a.png){#fig:dup}\n" },
+          ],
+        }),
+      );
+      if (!result.ok) throw new Error(result.diagnostics.map((d) => d.message).join("\n"));
+      const named = result.diagnostics.filter((d) => d.code === "reference-broken" || d.code === "label-duplicate").map((d) => [d.code, d.message, d.source]);
+      expect(named).toEqual([
+        ["reference-broken", "fig:nope", { documentId: "c1", block: 3 }],
+        ["label-duplicate", "fig:dup", { documentId: "c1", block: 2 }],
+        ["label-duplicate", "fig:dup", { documentId: "c2", block: 1 }],
+      ]);
+    } finally {
+      rmSync(work, { recursive: true, force: true });
+    }
+  }, 120_000);
+
+  it("reports a typst error against the source block", async () => {
+    const work = mkdtempSync(join(tmpdir(), "marktwain 錯誤 "));
+    const template = brokenTemplate();
+    try {
+      const result = await buildTypst(
+        input(work, {
+          templateDir: template,
+          documents: [{ id: "c1", kind: "chapter", text: "# 標題\n\n正常段落。\n\n![圖](images/a.png)\n" }],
         }),
       );
       expect(result.ok).toBe(false);
@@ -433,16 +513,18 @@ maybe("buildTypst with the real template", () => {
       expect(error.source).toEqual({ documentId: "c1", block: 2 });
     } finally {
       rmSync(work, { recursive: true, force: true });
+      rmSync(template, { recursive: true, force: true });
     }
   }, 120_000);
 
   it("returns the error and leaves nothing behind when the build fails while the anchors are being read", async () => {
     const work = mkdtempSync(join(tmpdir(), "marktwain 錯誤 "));
+    const template = brokenTemplate();
     try {
       // The query for the anchors runs beside the compile and fails too, so it is still running when the compile has returned
       for (let round = 0; round < 3; round += 1) {
         const result = await buildTypst({
-          ...input(work, { documents: [{ id: "c1", kind: "chapter", text: "# 標題\n\n![缺圖](images/missing.png)\n" }] }),
+          ...input(work, { templateDir: template, documents: [{ id: "c1", kind: "chapter", text: "# 標題\n\n![圖](images/a.png)\n" }] }),
           anchors: true,
         });
         expect(result.ok).toBe(false);
@@ -451,6 +533,7 @@ maybe("buildTypst with the real template", () => {
       }
     } finally {
       rmSync(work, { recursive: true, force: true });
+      rmSync(template, { recursive: true, force: true });
     }
   }, 180_000);
 

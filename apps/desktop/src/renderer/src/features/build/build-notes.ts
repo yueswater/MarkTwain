@@ -3,6 +3,11 @@ import type { BuildDiagnostic } from "../../../../shared/ipc";
 export type WarningItem =
   | { kind: "configMissing"; fields: string[] }
   | { kind: "citation"; keys: string[] }
+  | { kind: "unknownCitation"; keys: string[] }
+  | { kind: "glyphMissing"; chars: string }
+  | { kind: "brokenRef"; label: string; source: BuildDiagnostic["source"] }
+  | { kind: "duplicateLabel"; label: string; source: BuildDiagnostic["source"] }
+  | { kind: "image"; reason: "missing" | "unreadable"; source: BuildDiagnostic["source"] }
   | { kind: "approximate"; feature: string }
   | { kind: "math"; latex: string }
   | { kind: "font"; font: string }
@@ -20,6 +25,16 @@ export function warningItems(diagnostics: readonly BuildDiagnostic[], mathFailur
   if (fields.length > 0) items.push({ kind: "configMissing", fields });
   const keys = warnings.filter((d) => d.code === "citation-no-bibliography").map((d) => d.message);
   if (keys.length > 0) items.push({ kind: "citation", keys });
+  for (const d of warnings) if (d.code === "glyph-missing") items.push({ kind: "glyphMissing", chars: d.message });
+  // A reference to something that is not in the thesis prints its label, so it is listed with its block
+  for (const d of warnings) if (d.code === "reference-broken") items.push({ kind: "brokenRef", label: d.message, source: d.source });
+  for (const d of warnings) if (d.code === "label-duplicate") items.push({ kind: "duplicateLabel", label: d.message, source: d.source });
+  // Every picture is listed with the block that holds it, so it can be found
+  for (const d of warnings) {
+    if (d.code === "image-missing" || d.code === "image-unreadable") items.push({ kind: "image", reason: d.code === "image-missing" ? "missing" : "unreadable", source: d.source });
+  }
+  const unknown = warnings.filter((d) => d.code === "citation-unknown").map((d) => d.message);
+  if (unknown.length > 0) items.push({ kind: "unknownCitation", keys: unknown });
 
   // A feature that LaTeX output only approximates, each is listed once
   for (const d of warnings.filter((w) => w.code === "latex-approximate")) items.push({ kind: "approximate", feature: d.message });
@@ -28,7 +43,7 @@ export function warningItems(diagnostics: readonly BuildDiagnostic[], mathFailur
 
   const seen = new Set<string>();
   for (const d of warnings) {
-    if (d.code === "config-missing" || d.code === "citation-no-bibliography" || d.code === "latex-approximate") continue;
+    if (d.code === "config-missing" || d.code === "citation-no-bibliography" || d.code === "citation-unknown" || d.code === "image-missing" || d.code === "image-unreadable" || d.code === "glyph-missing" || d.code === "reference-broken" || d.code === "label-duplicate" || d.code === "latex-approximate") continue;
     // A warning that repeats on every page is listed once
     if (seen.has(d.message)) continue;
     seen.add(d.message);
