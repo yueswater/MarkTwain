@@ -12,7 +12,8 @@ import { AssetRepository } from "../asset/asset.repository";
 import { ConfigService } from "../config/config.service";
 import { DocumentService } from "../document/document.service";
 import { ProjectRepository } from "../project/project.repository";
-import { BuildService, pageCountOf } from "./build.service";
+import { BuildService } from "./build.service";
+import { pageCountOf } from "./pdf-pages";
 
 let documents: DocumentService;
 let session: DatabaseSession;
@@ -83,11 +84,6 @@ describe("BuildService", () => {
     await s.build();
     expect((await s.build()).revision).toBe(2);
     expect([...(s.latestPdf() ?? [])]).toEqual([1, 2]);
-  });
-
-  it("counts the pages from the page tree, the largest count is the root", () => {
-    expect(pageCountOf(new TextEncoder().encode("/Count 2 /Kids [] /Count 7 /Count 3"))).toBe(7);
-    expect(pageCountOf(new Uint8Array())).toBe(0);
   });
 
   it("returns diagnostics for a failed build without a preview", async () => {

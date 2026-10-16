@@ -94,7 +94,7 @@ function prepare(input: LatexBuildInput, root: string): Prepared {
     writeText(root, path, file.text);
     lineMap.set(path, { documentId: doc.id, blockLines: file.blockLines });
   }
-  writeText(root, "main.tex", renderMainLatex(input.documents, paths, input.bibliography.length > 0));
+  writeText(root, "main.tex", renderMainLatex(input.documents, paths, input.bibliography.length > 0, input.watermark === true));
   return { missing: completed.missing, lineMap, mathFailures, citationFallbacks, unsupported };
 }
 
@@ -124,7 +124,7 @@ export async function buildLatex(input: LatexBuildInput): Promise<BuildResult> {
       return { ok: false, diagnostics, mathFailures: prepared.mathFailures };
     }
 
-    const args = ["-xelatex", "-interaction=nonstopmode", "-halt-on-error", ...(input.watermark ? ["-usepretex=\\def\\twwatermark{1}"] : []), "main.tex"];
+    const args = ["-xelatex", "-interaction=nonstopmode", "-halt-on-error", "main.tex"];
     const result = await run("latexmk", args, root, timeout, env, { killTree: true });
     const logPath = join(root, ".tw-thesis-build/aux/main.log");
     const logged = existsSync(logPath) ? parseTexLog(readFileSync(logPath, "utf8"), prepared.lineMap) : [];

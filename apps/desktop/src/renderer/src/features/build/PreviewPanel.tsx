@@ -185,7 +185,7 @@ export function PreviewPanel({ build, saveTick, placeKey, engine, onClose, onJum
       )}
 
       <div className="min-h-0 flex-1 bg-muted/40" data-testid="preview-pages">
-        {outcome && outcome.pageCount > 0 ? (
+        {outcome && outcome.ok ? (
           <PdfPreview revision={outcome.revision} placeKey={placeKey} anchors={outcome.anchors} follow={follow} onPick={(target) => onPick(target.documentId, target.block)} />
         ) : (
           <p className="p-6 text-sm text-muted-foreground">{building ? t("building") : outcome ? t("failed") : t("empty")}</p>

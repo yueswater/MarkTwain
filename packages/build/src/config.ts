@@ -1,4 +1,4 @@
-import { parseDocument } from "yaml";
+import { Scalar, parseDocument } from "yaml";
 
 const TEXT_FIELDS = [
   "title", "title-en", "author", "author-en", "id", "advisor", "advisor-en",
@@ -37,10 +37,12 @@ export function completeConfig(text: string, today: string): CompletedConfig {
   }
   for (const key of DATE_FIELDS) {
     const value = String(doc.get(key) ?? "");
-    if (!ISO_DATE.test(value)) {
-      missing.push(key);
-      doc.set(key, today);
-    }
+    const date = ISO_DATE.test(value) ? value : today;
+    if (date !== value) missing.push(key);
+    // Quoted, the LaTeX side reads a plain date as a timestamp and the day would come out as 15T00:00:00.000
+    const quoted = new Scalar(date);
+    quoted.type = Scalar.QUOTE_DOUBLE;
+    doc.set(key, quoted);
   }
   for (const key of LIST_FIELDS) {
     const value = doc.get(key, true) as { items?: unknown[] } | undefined;

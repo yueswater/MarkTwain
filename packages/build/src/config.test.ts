@@ -9,7 +9,13 @@ describe("completeConfig", () => {
     expect(missing).toContain("keywords");
     expect(missing).not.toContain("title");
     expect(text).toContain("school: ntu");
-    expect(text).toContain("date: 2026-10-14");
+    expect(text).toContain('date: "2026-10-14"');
+  });
+
+  it("writes the dates as quoted strings, the LaTeX side reads a plain date as a timestamp", () => {
+    const { text } = completeConfig("date: 2026-01-02\noral-date: 2026-06-15\n", "2026-10-14");
+    expect(text).toContain('date: "2026-01-02"');
+    expect(text).toContain('oral-date: "2026-06-15"');
   });
 
   it("leaves a complete config untouched", () => {
@@ -24,7 +30,7 @@ describe("completeConfig", () => {
   });
 
   it("treats a malformed date as missing", () => {
-    expect(completeConfig("date: tomorrow\n", "2026-10-14").text).toContain("date: 2026-10-14");
+    expect(completeConfig("date: tomorrow\n", "2026-10-14").text).toContain('date: "2026-10-14"');
   });
 
   it("turns a watermark of none into the null that the template reads", () => {

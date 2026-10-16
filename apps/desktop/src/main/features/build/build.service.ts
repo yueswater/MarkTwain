@@ -14,15 +14,7 @@ import type { ConfigService } from "../config/config.service";
 import type { BuildPaths } from "../toolchain/build-paths";
 import type { DocumentService } from "../document/document.service";
 import { ProjectRepository } from "../project/project.repository";
-
-/** The number of pages from the page tree of a PDF, the root has the largest count. */
-export function pageCountOf(pdf: Uint8Array): number {
-  const text = Buffer.from(pdf).toString("latin1");
-  let count = 0;
-  for (const match of text.matchAll(/\/Count (\d+)/g)) count = Math.max(count, Number(match[1]));
-  return count;
-}
-
+import { pageCountOf } from "./pdf-pages";
 
 type Runner = typeof buildTypst;
 type LatexRunner = typeof buildLatex;

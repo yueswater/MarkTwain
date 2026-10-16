@@ -68,11 +68,13 @@ export function renderMain(
  * Generates main.tex from the documents that exist, in the order of the template.
  * The helpers of MarkTwain are read after the class, before the document starts.
  */
-export function renderMainLatex(documents: BuildDocument[], paths: Map<string, string>, hasBibliography: boolean): string {
+export function renderMainLatex(documents: BuildDocument[], paths: Map<string, string>, hasBibliography: boolean, watermark = false): string {
   const include = (kind: BuildDocument["kind"]) =>
     documents.filter((d) => d.kind === kind).map((d) => `\\input{${(paths.get(d.id) ?? "").replace(/\.tex$/, "")}}`);
   const appendices = include("appendix");
   const lines = [
+    // The template reads this switch, latexmk -usepretex would set it too but then replaces the tw_xelatex of the latexmkrc and citeproc never runs
+    ...(watermark ? ["\\def\\twwatermark{1}"] : []),
     "\\documentclass{tw-thesis}",
     "\\input{marktwain}",
     "",
