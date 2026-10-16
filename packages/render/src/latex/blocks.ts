@@ -51,6 +51,9 @@ function listingsLanguage(language: string | null): string {
   return (language && LISTINGS_LANGUAGE[language.toLowerCase()]) || "plain";
 }
 
+/** From this many rows on, a table is set so that it can run over pages. */
+const LONG_TABLE_ROWS = 25;
+
 const label = (value: string | null) => (value ? `\\label{${value}}` : "");
 const text = (nodes: Inline[], ctx: BlockContext) => renderInline(nodes, ctx);
 
@@ -230,25 +233,52 @@ function renderTableBody(block: TableBlock, ctx: BlockContext): string[] {
     return parts.join(" & ");
   };
 
-  const body: string[] = [];
-  all.forEach((cells, r) => {
+  // The lines of each row, so that the header can be set apart for a table that runs over pages
+  const rowLines: string[][] = all.map((cells, r) => {
+    const lines: string[] = [];
     if (rules) {
       const rule = ruleLine(rules.above.get(r), columns);
-      if (rule) body.push(rule);
+      if (rule) lines.push(rule);
     }
-    body.push(`${rowText(cells, r)} \\\\`);
-    if (plain && r === 0 && block.header) body.push("\\midrule");
+    lines.push(`${rowText(cells, r)} \\\\`);
+    if (plain && r === 0 && block.header) lines.push("\\midrule");
+    return lines;
   });
+  const closing: string[] = [];
   if (rules) {
     const rule = ruleLine(rules.above.get(all.length), columns);
-    if (rule) body.push(rule);
+    if (rule) closing.push(rule);
   }
+  const body = [...rowLines.flat(), ...closing];
 
   const spec = columnSpec(block, columnAlign, rules?.bars ?? new Array<boolean>(columns + 1).fill(false), width);
   if (!captioned) {
     const top = plain ? ["\\toprule"] : [];
     const bottom = plain ? ["\\bottomrule"] : [];
     return ["\\begin{center}", `\\begin{tabular}{${spec}}`, ...top, ...body, ...bottom, "\\end{tabular}", "\\end{center}"];
+  }
+  // A table with many rows does not fit a page, tlt keeps it in one piece and the rest would run off the page, so longtable breaks it and repeats the header
+  if (all.length > LONG_TABLE_ROWS) {
+    const caption = `\\caption{${text(block.caption, ctx)}}${label(block.label)}`;
+    const head = block.header ? rowLines[0] ?? [] : [];
+    const top = plain ? ["\\toprule"] : [];
+    const bottom = plain ? ["\\bottomrule"] : [];
+    return [
+      "\\begin{longtable}{" + spec + "}",
+      `\\twifstr{\\twget{d.caption.table}}{top}{${caption}\\\\}{}`,
+      ...top,
+      ...head,
+      ...(block.header ? ["\\endfirsthead", ...top, ...head, "\\endhead"] : ["\\endfirsthead"]),
+      ...bottom,
+      "\\endfoot",
+      ...bottom,
+      `\\twifstr{\\twget{d.caption.table}}{top}{}{${caption}\\\\}`,
+      "\\endlastfoot",
+      ...rowLines.slice(block.header ? 1 : 0).flat(),
+      ...closing,
+      "\\end{longtable}",
+      ...(notes ? [`\\par\\noindent{\\fontsize{10.8}{16.2}\\selectfont\\mtnoteslabel ${notes}}\\par`] : []),
+    ];
   }
   const options = notes ? `notes={${notes}}` : "";
   const env = plain ? "tlt" : "tbl";

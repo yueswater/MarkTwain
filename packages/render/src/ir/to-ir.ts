@@ -24,6 +24,11 @@ export type IrOptions = {
   documentId: string;
   /** Every label defined in the project, references to labels not in it fall back to plain text and are reported */
   knownLabels: ReadonlySet<string>;
+  /**
+   * The labels that earlier documents of the project already use. A label used a second time is dropped from its block and reported, since
+   * two blocks with one label fail the build of Typst when it is referred to. The set grows with each document, so it is passed on in order.
+   */
+  usedLabels?: Set<string>;
 };
 
 /** The number of columns of a grid of figures, the document keeps it as text, so a number written as text counts. */
@@ -36,6 +41,41 @@ const str = (value: unknown): string => (typeof value === "string" ? value : "")
 const placementOrNull = (value: unknown): Placement | null => (isPlacement(value) ? value : null);
 const strOrNull = (value: unknown): string | null =>
   typeof value === "string" && value !== "" ? value : null;
+
+/** Takes the label off a block whose label is used already, the first block that has it keeps it. */
+function dropDuplicateLabels(block: Block, used: Set<string>, report: (label: string) => void): void {
+  const claim = (label: string | null): string | null => {
+    if (label === null) return null;
+    if (used.has(label)) {
+      report(label);
+      return null;
+    }
+    used.add(label);
+    return label;
+  };
+  switch (block.type) {
+    case "heading":
+    case "code":
+    case "math":
+    case "figure":
+    case "figureGroup":
+    case "table":
+      block.label = claim(block.label);
+      break;
+    case "div":
+      block.id = claim(block.id);
+      for (const child of block.children) dropDuplicateLabels(child, used, report);
+      break;
+    case "quote":
+      for (const child of block.children) dropDuplicateLabels(child, used, report);
+      break;
+    case "list":
+      for (const item of block.items) for (const child of item) dropDuplicateLabels(child, used, report);
+      break;
+    default:
+      break;
+  }
+}
 
 /** Converts TipTap or ProseMirror JSON to IR, a pure function with no DOM. */
 export function toIr(doc: DocJson, options: IrOptions): IrResult {
@@ -258,6 +298,13 @@ export function toIr(doc: DocJson, options: IrOptions): IrResult {
     const converted = block(node);
     // A block that cannot be converted still takes an index so output maps back to the source block
     top.push(converted ?? { type: "paragraph", content: [] });
+  }
+  const used = options.usedLabels;
+  if (used) {
+    top.forEach((blockOfTop, index) => {
+      current = index;
+      dropDuplicateLabels(blockOfTop, used, (label) => report("duplicate-label", label));
+    });
   }
   return { document: { documentId: options.documentId, blocks: top }, issues };
 }

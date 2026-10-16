@@ -30,5 +30,11 @@
     "table-lines": "LaTeX output draws only solid lines in the color of the text, the dashed, dotted and colored lines and the diagonals of a table are left out.",
     "table-heights": "LaTeX output ignores the row heights of a table.",
     "table-vertical-align": "LaTeX output ignores the vertical alignment of a table cell."
-  }
+  },
+  "unknownCitation": "Not in the bibliography, shown as plain text: {{keys}}",
+  "imageMissing": "A picture is missing, a grey box stands in its place.",
+  "imageUnreadable": "A file that is not a picture was used as one, a grey box stands in its place.",
+  "brokenRef": "This reference points to something that is not in the thesis, its name is printed as it is: {{label}}",
+  "duplicateLabel": "This name is already used by another block, the first one keeps it and references go to that one: {{label}}",
+  "glyphMissing": "The font has no glyph for these characters, they print as empty boxes: {{chars}}"
 }

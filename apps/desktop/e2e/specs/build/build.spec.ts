@@ -5,6 +5,7 @@ import { execFileSync } from "node:child_process";
 import { findBundledTypst } from "../../support/find-app";
 import { viewerState } from "../../support/preview-viewer";
 import { DIST, TEMPLATE_DIR } from "../../support/paths";
+import { brokenTemplate } from "../../support/broken-template";
 import { closeProject, createProject, seedChapter } from "../../support/project";
 
 function hasTypst(): boolean {
@@ -59,8 +60,8 @@ test("opening the preview builds and shows the PDF, and the watch switch decides
 });
 
 
-test("a build error points back to the block that caused it", async ({ launch }) => {
-  const { app } = await launch({ name: "錯誤", projectName: "論文.marktwain" });
+test("a picture that is missing does not fail the build, the list says so and points to its block", async ({ launch }) => {
+  const { app } = await launch({ name: "缺圖", projectName: "論文.marktwain" });
   const page = await app.firstWindow();
   await createProject(page);
   await seedChapter(page, "# 標題\n\n正常段落。\n\n![缺圖](images/missing.png)\n");
@@ -68,11 +69,46 @@ test("a build error points back to the block that caused it", async ({ launch })
   await page.getByRole("button", { name: "Open project" }).click();
   await page.getByRole("button", { name: "Preview" }).click();
 
+  // The PDF is there, with a grey box where the picture should be
+  await expect.poll(async () => (await viewerState(page))?.total ?? 0, { timeout: 90_000 }).toBeGreaterThan(1);
   const log = page.getByRole("log");
-  await expect(log).toContainText("file not found", { timeout: 90_000 });
-  await log.getByRole("button", { name: "Go to the source" }).click();
+  await expect(log).toContainText("A picture is missing");
+  await log.getByRole("button", { name: "Go to the source" }).first().click();
+  // The block that holds the picture is the figure, which becomes the selected node
+  await expect(page.locator(".ProseMirror figure.is-selected")).toBeAttached();
+});
+
+
+test("a build error points back to the block that caused it", async ({ launch }) => {
+  // The template fails on a figure, as a fault of the template would
+  const { app } = await launch({ name: "錯誤", projectName: "論文.marktwain", env: (folder) => ({ MARKTWAIN_TEMPLATE_DIR: brokenTemplate(folder) }) });
+  const page = await app.firstWindow();
+  await createProject(page);
+  await seedChapter(page, "# 標題\n\n正常段落。\n\n![圖](images/a.png)\n");
+  await closeProject(page);
+  await page.getByRole("button", { name: "Open project" }).click();
+  await page.getByRole("button", { name: "Preview" }).click();
+
+  const log = page.getByRole("log");
+  await expect(log.getByRole("heading", { name: "Errors" })).toBeVisible({ timeout: 90_000 });
+  await log.getByRole("button", { name: "Go to the source" }).first().click();
   // The failing block is the figure, which becomes the selected node
   await expect(page.locator(".ProseMirror figure.is-selected")).toBeAttached();
+});
+
+
+test("a reference to nothing and a name used twice are listed with their blocks, and the PDF is built", async ({ launch }) => {
+  const { app } = await launch({ name: "引用", projectName: "論文.marktwain" });
+  const page = await app.firstWindow();
+  await createProject(page);
+  await seedChapter(page, "# 標題\n\n![圖一](images/missing.png){#fig:dup}\n\n![圖二](images/missing.png){#fig:dup}\n\n見 @fig:dup 與 @fig:nope。\n");
+  await closeProject(page);
+  await page.getByRole("button", { name: "Open project" }).click();
+  await page.getByRole("button", { name: "Preview" }).click();
+  await expect.poll(async () => (await viewerState(page))?.total ?? 0, { timeout: 90_000 }).toBeGreaterThan(1);
+  const log = page.getByRole("log");
+  await expect(log).toContainText("points to something that is not in the thesis");
+  await expect(log).toContainText("is already used by another block");
 });
 
 
