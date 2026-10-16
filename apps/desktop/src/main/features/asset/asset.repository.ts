@@ -16,6 +16,19 @@ export class AssetRepository {
     return this.db.all<{ path: string; data: Uint8Array }>("SELECT path, data FROM files WHERE path NOT IN ('config.yml', 'references.bib') AND path NOT LIKE 'watermarks/%' AND path NOT LIKE 'fonts/%'");
   }
 
+  /** Every file of the project, the settings, the bibliography, fonts and watermarks too, with the time it was last written. */
+  all(): { path: string; data: Uint8Array; updated_at: number }[] {
+    return this.db.all<{ path: string; data: Uint8Array; updated_at: number }>("SELECT path, data, updated_at FROM files");
+  }
+
+  paths(): string[] {
+    return this.db.all<{ path: string }>("SELECT path FROM files").map((row) => row.path);
+  }
+
+  delete(path: string): void {
+    this.db.run("DELETE FROM files WHERE path = ?", [path]);
+  }
+
   get(path: string): Uint8Array | undefined {
     return this.db.get<{ data: Uint8Array }>("SELECT data FROM files WHERE path = ?", [path])?.data;
   }

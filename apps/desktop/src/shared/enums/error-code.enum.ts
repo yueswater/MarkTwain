@@ -25,6 +25,16 @@ export const ErrorCode = {
   BibliographyDuplicateKey: "bibliography.duplicate-key",
   BibliographyNotFound: "bibliography.not-found",
   TableTemplateUnknown: "table-template.unknown",
+  VersionNameEmpty: "version.name-empty",
+  VersionNameTaken: "version.name-taken",
+  VersionBranchNotFound: "version.branch-not-found",
+  VersionSnapshotNotFound: "version.snapshot-not-found",
+  VersionMainProtected: "version.main-protected",
+  VersionNothingToSave: "version.nothing-to-save",
+  VersionUnsavedChanges: "version.unsaved-changes",
+  VersionMainHasDraft: "version.main-has-draft",
+  VersionConflicts: "version.conflicts",
+  VersionNothingToMerge: "version.nothing-to-merge",
 } as const;
 
 export type ErrorCode = (typeof ErrorCode)[keyof typeof ErrorCode];

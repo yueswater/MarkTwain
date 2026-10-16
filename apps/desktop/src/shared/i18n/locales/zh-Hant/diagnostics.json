@@ -39,6 +39,18 @@
       "not-found": "找不到這份文件。",
       "singleton": "這個專案已經有這種文件了。"
     },
-    "table-template.unknown": "找不到這個表格範本。"
+    "table-template.unknown": "找不到這個表格範本。",
+    "version": {
+      "name-empty": "請輸入名稱。",
+      "name-taken": "已經有名為「{{name}}」的修改。",
+      "branch-not-found": "找不到這個修改。",
+      "snapshot-not-found": "找不到這個版本。",
+      "main-protected": "主線不能放棄。",
+      "nothing-to-save": "自上次儲存版本後沒有任何變動。",
+      "unsaved-changes": "請先儲存版本，合併需要這個分支已儲存的內容。",
+      "main-has-draft": "主線有尚未儲存的變動，請先切換過去並儲存版本。",
+      "conflicts": "還有 {{count}} 個衝突沒有選擇。",
+      "nothing-to-merge": "沒有可以合併的內容。"
+    }
   }
 }

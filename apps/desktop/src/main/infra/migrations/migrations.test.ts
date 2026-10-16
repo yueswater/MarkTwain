@@ -10,7 +10,7 @@ describe("MIGRATIONS", () => {
     const names = db
       .all<{ name: string }>("SELECT name FROM sqlite_master WHERE type = 'table'")
       .map((row) => row.name);
-    expect(names).toEqual(expect.arrayContaining(["project", "documents", "files"]));
+    expect(names).toEqual(expect.arrayContaining(["project", "documents", "files", "blocks", "blobs", "sequences", "snapshots", "snap_docs", "snap_files", "branches", "drafts", "version_state"]));
     db.close();
   });
 });

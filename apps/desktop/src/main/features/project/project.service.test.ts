@@ -98,9 +98,10 @@ describe("open", () => {
   });
 
   it("檔案比程式新時丟出 project.too-new，並保留原本開啟的專案", () => {
-    const v2: Migration = { version: 2, name: "later", sql: "CREATE TABLE later (id INTEGER)" };
+    // One migration after the last that this program has
+    const later: Migration = { version: MIGRATIONS.length + 1, name: "later", sql: "CREATE TABLE later (id INTEGER)" };
     const newer = join(dir, "newer.marktwain");
-    service([MIGRATIONS[0]!, v2]).create(newer, "新");
+    service([...MIGRATIONS, later]).create(newer, "新");
     session.close();
 
     service().create(file, "舊");
@@ -114,8 +115,8 @@ describe("open", () => {
     documents.save(chapter.id, "keep me");
     session.close();
 
-    const v2: Migration = { version: 2, name: "later", sql: "CREATE TABLE later (id INTEGER)" };
-    service([MIGRATIONS[0]!, v2]).open(file);
+    const later: Migration = { version: MIGRATIONS.length + 1, name: "later", sql: "CREATE TABLE later (id INTEGER)" };
+    service([...MIGRATIONS, later]).open(file);
 
     const backups = readdirSync(dir).filter((name) => name.includes(".bak-"));
     expect(backups).toEqual(["我的論文.marktwain.bak-20261014-133005"]);
