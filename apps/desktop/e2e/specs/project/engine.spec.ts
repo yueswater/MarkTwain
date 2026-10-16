@@ -62,11 +62,12 @@ test.describe("with a TeX Live", () => {
   const texBin = findTexBin();
   test.skip(texBin === null || !existsSync(TEX_TEMPLATE_DIR), "needs a TeX Live and the fetched LaTeX template");
 
+  // The template is the one that travels inside the packaged app, no variable points to it
   test("a LaTeX project builds its PDF with LaTeX and has no Typst project to export", async ({ launch }) => {
     const first = await launch({
       name: "拉鐵",
       projectName: "論文.marktwain",
-      env: (folder) => ({ MARKTWAIN_TEX_BIN: texBin as string, MARKTWAIN_TEX_TEMPLATE_DIR: TEX_TEMPLATE_DIR, MARKTWAIN_TEST_EXPORT_PATH: join(folder, "輸出.pdf") }),
+      env: (folder) => ({ MARKTWAIN_TEX_BIN: texBin as string, MARKTWAIN_TEST_EXPORT_PATH: join(folder, "輸出.pdf") }),
     });
     const page = await first.app.firstWindow();
     await createProject(page, "en-US", "latex");

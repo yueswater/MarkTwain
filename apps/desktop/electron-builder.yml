@@ -26,6 +26,18 @@ extraResources:
       - "!.vscode/**"
       - "!docs/**"
       - "!tests/**"
+  # The LaTeX template, only what a build reads. The tutorial chapters, figures and documents of the template stay out.
+  - from: ../../resources/templates/tex
+    to: resources/templates/tex
+    filter:
+      - tw-thesis.cls
+      - tw-thesis.sty
+      - latexmkrc
+      - assets/**
+      - fonts/**
+      - i18n/**
+      - schools/**
+      - scripts/**
   # Typst is pinned in typst.lock.json and fetched by pnpm typst:fetch. Only the folder of the platform being built is packed.
   - from: ../../resources/typst/${os}-${arch}
     to: typst
