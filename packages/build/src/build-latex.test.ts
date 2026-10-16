@@ -2,7 +2,7 @@ import { describe, expect, it } from "@jest/globals";
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { dirname, join, resolve } from "node:path";
+import { delimiter, dirname, join, resolve } from "node:path";
 import { buildLatex, latexWorkDir, texEnvironment } from "./build-latex";
 import { PNG, SAMPLE_CONFIG, SAMPLE_DOCUMENTS } from "./fixtures";
 import type { LatexBuildInput } from "./build-latex";
@@ -34,8 +34,8 @@ describe("latexWorkDir", () => {
 
 describe("texEnvironment", () => {
   it("puts the folder of the binaries first on the PATH, whatever the variable is called", () => {
-    expect(texEnvironment("/tex/bin", { PATH: "/usr/bin" })).toEqual({ PATH: "/tex/bin:/usr/bin" });
-    expect(texEnvironment("C:\\tex", { Path: "C:\\win" })).toEqual({ Path: `C:\\tex${process.platform === "win32" ? ";" : ":"}C:\\win` });
+    expect(texEnvironment("/tex/bin", { PATH: "/usr/bin" })).toEqual({ PATH: `/tex/bin${delimiter}/usr/bin` });
+    expect(texEnvironment("C:\\tex", { Path: "C:\\win" })).toEqual({ Path: `C:\\tex${delimiter}C:\\win` });
     expect(texEnvironment(null, { PATH: "/usr/bin" })).toEqual({});
   });
 });
