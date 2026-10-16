@@ -15,7 +15,7 @@ let service: ConfigService;
 beforeEach(() => {
   db = openDatabase(":memory:");
   migrate(db, MIGRATIONS);
-  new ProjectRepository(db).insert("我的論文", 0);
+  new ProjectRepository(db).insert("我的論文", "typst", 0);
   const session = new DatabaseSession();
   session.open(db, ":memory:");
   service = new ConfigService(session, () => new Date(5));
@@ -63,7 +63,7 @@ describe("advanced settings", () => {
     const session = new DatabaseSession();
     const db2 = openDatabase(":memory:");
     migrate(db2, MIGRATIONS);
-    new ProjectRepository(db2).insert("論文", 0);
+    new ProjectRepository(db2).insert("論文", "typst", 0);
     session.open(db2, ":memory:");
     const files: Record<string, string> = {
       "schools/default.yml": "layout:\n  font-size: 12\n  margin:\n    top: 3\n",

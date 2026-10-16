@@ -20,6 +20,8 @@ import type { DialogService } from "./features/dialog/dialog.service";
 import { registerExportController } from "./features/build/export.controller";
 import { registerBuildController } from "./features/build/build.controller";
 import { resolveBuildPaths } from "./features/toolchain/build-paths";
+import { registerToolchainController } from "./features/toolchain/toolchain.controller";
+import { ToolchainService } from "./features/toolchain/toolchain.service";
 import { BuildService } from "./features/build/build.service";
 import { registerConfigController } from "./features/config/config.controller";
 import { ConfigService } from "./features/config/config.service";
@@ -103,5 +105,6 @@ bootstrap([
   () => registerFontController(fonts),
   () => registerTableTemplateController(tableTemplates),
   () => registerBuildController(build),
+  () => registerToolchainController(new ToolchainService(resolveBuildPaths)),
   () => registerExportController(build, dialogs),
 ]);

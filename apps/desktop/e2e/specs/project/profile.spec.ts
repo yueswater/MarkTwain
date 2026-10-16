@@ -1,5 +1,5 @@
 import { expect, test } from "../../support/test";
-import { createProject } from "../../support/project";
+import { chooseEngine, createProject } from "../../support/project";
 
 // The other tests skip the question of the thesis, these ones are about it
 const ASKS = { MARKTWAIN_TEST_NO_PROFILE_DIALOG: "0" };
@@ -42,6 +42,7 @@ test("a new project asks for the thesis, can be skipped, and the next one starts
   // The app reopens the last project, so close it to start a new one
   await page2.getByRole("button", { name: "Close project" }).click();
   await page2.getByRole("button", { name: "New project" }).click();
+  await chooseEngine(page2);
   const dialog2 = page2.getByTestId("new-project-dialog");
   await expect(dialog2.getByLabel("Author (Chinese)")).toHaveValue("宋品岳");
   await expect(dialog2).toContainText("Filled in from your earlier project");
@@ -62,6 +63,7 @@ test("a new project asks for the thesis, can be skipped, and the next one starts
   // The app reopens the last project, so close it to start a new one
   await page3.getByRole("button", { name: "Close project" }).click();
   await page3.getByRole("button", { name: "New project" }).click();
+  await chooseEngine(page3);
   const dialog3 = page3.getByTestId("new-project-dialog");
   await dialog3.getByRole("switch", { name: "Do not ask again" }).click();
   await dialog3.getByRole("button", { name: "Skip" }).click();
@@ -72,6 +74,7 @@ test("a new project asks for the thesis, can be skipped, and the next one starts
   // The app reopens the last project, so close it to start a new one
   await page4.getByRole("button", { name: "Close project" }).click();
   await page4.getByRole("button", { name: "New project" }).click();
+  await chooseEngine(page4);
   await expect(page4.getByTestId("new-project-dialog")).toBeHidden();
   await expect.poll(async () => page4.evaluate(async () => {
     const r = await window.marktwain.invoke("config:get");

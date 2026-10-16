@@ -12,6 +12,7 @@ export const IpcChannel = {
   RecentRemove: "recent:remove",
   BuildTypst: "build:typst",
   BuildSetWatermark: "build:set-watermark",
+  ToolchainStatus: "toolchain:status",
   WatermarkGet: "watermark:get",
   WatermarkChoose: "watermark:choose",
   ExportFinalPdf: "export:final-pdf",

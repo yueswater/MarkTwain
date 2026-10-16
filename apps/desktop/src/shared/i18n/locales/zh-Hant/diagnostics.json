@@ -11,12 +11,14 @@
       "invalid": "這不是有效的 MarkTwain 專案檔。",
       "too-new": "這個專案檔是由較新版本的 MarkTwain 建立的（檔案格式版本 {{found}}，目前支援到 {{supported}}）。請先更新 MarkTwain。",
       "none-open": "目前沒有開啟的專案。",
-      "exists": "這個位置已經有檔案了，不能覆蓋。"
+      "exists": "這個位置已經有檔案了，不能覆蓋。",
+      "engine-unavailable": "這個輸出方式不能用在新專案。"
     },
     "build": {
       "busy": "已經有一個建置正在進行。",
       "typst-missing": "找不到內建的 Typst，請重新安裝 MarkTwain。從原始碼執行時，請執行 pnpm typst:fetch，或以 MARKTWAIN_TYPST 指定 typst 的路徑。",
-      "template-missing": "找不到論文模板。請執行 pnpm templates:fetch。"
+      "template-missing": "找不到論文模板。請執行 pnpm templates:fetch。",
+      "tex-missing": "找不到 LaTeX。請安裝 TeX Live 或 TinyTeX，或以 MARKTWAIN_TEX_BIN 指定放有 xelatex、latexmk、texlua 的資料夾。安裝版之後會內建。"
     },
     "export": {
       "no-pdf": "請先建置 PDF 再匯出。",

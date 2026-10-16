@@ -1,6 +1,6 @@
 import { copyFileSync, existsSync, rmSync } from "node:fs";
 import { ErrorCode } from "../../../shared/enums/error-code.enum";
-import type { ProjectInfo } from "../../../shared/ipc";
+import type { OutputEngine, ProjectInfo } from "../../../shared/ipc";
 import type { DatabaseSession } from "../../core/database-session";
 import { AppError } from "../../core/errors";
 import { createBackupPath } from "../../helpers/backup.helper";
@@ -16,6 +16,9 @@ import { MIGRATIONS } from "../../infra/migrations";
 import type { DocumentService } from "../document/document.service";
 import { ProjectRepository } from "./project.repository";
 
+/** The engines that a new project can be written for, Word follows in v0.6.0. */
+const NEW_PROJECT_ENGINES: readonly OutputEngine[] = ["typst", "latex"];
+
 export class ProjectService {
   constructor(
     private readonly session: DatabaseSession,
@@ -24,7 +27,8 @@ export class ProjectService {
     private readonly now: () => Date = () => new Date(),
   ) {}
 
-  create(path: string, name: string): ProjectInfo {
+  create(path: string, name: string, engine: OutputEngine = "typst"): ProjectInfo {
+    if (!NEW_PROJECT_ENGINES.includes(engine)) throw new AppError(ErrorCode.ProjectEngineUnavailable);
     if (existsSync(path)) throw new AppError(ErrorCode.ProjectExists);
 
     let db: Database | null = null;
@@ -32,7 +36,7 @@ export class ProjectService {
       db = openDatabase(path);
       migrate(db, this.migrations);
       this.session.open(db, path);
-      new ProjectRepository(db).insert(name, this.now().getTime());
+      new ProjectRepository(db).insert(name, engine, this.now().getTime());
       this.documents.seedDefaults();
       return this.info();
     } catch (error) {
@@ -93,6 +97,7 @@ export class ProjectService {
     return {
       name: project.name,
       path: this.session.path ?? "",
+      engine: project.engine,
       documents: this.documents.list(),
     };
   }

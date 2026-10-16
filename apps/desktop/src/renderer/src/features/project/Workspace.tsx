@@ -202,6 +202,7 @@ function WorkspaceBody({ state, build, previewOpen, onClosePreview, onOpenSettin
           build={build}
           saveTick={saveTick}
           placeKey={project.path}
+          engine={project.engine}
           onClose={onClosePreview}
           follow={follow}
           onPick={(documentId, block) => {

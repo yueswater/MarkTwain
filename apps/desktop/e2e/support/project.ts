@@ -2,13 +2,21 @@ import type { Page } from "@playwright/test";
 import type { Lang } from "./launch";
 
 const NAMES = {
-  "en-US": { create: "New project", close: "Close project", open: "Open project", recent: "Recent projects" },
-  "zh-TW": { create: "新增專案", close: "關閉專案", open: "開啟專案", recent: "最近的專案" },
+  "en-US": { create: "New project", confirm: "Create project", close: "Close project", open: "Open project", recent: "Recent projects", engines: { typst: "Typst", latex: "LaTeX" } },
+  "zh-TW": { create: "新增專案", confirm: "建立專案", close: "關閉專案", open: "開啟專案", recent: "最近的專案", engines: { typst: "Typst", latex: "LaTeX" } },
 } as const;
 
+/** Answers the question about the output of a new project, Typst unless another is named. */
+export async function chooseEngine(page: Page, engine: "typst" | "latex" = "typst", lang: Lang = "en-US"): Promise<void> {
+  const dialog = page.getByTestId("engine-dialog");
+  if (engine !== "typst") await dialog.getByRole("radio", { name: new RegExp(NAMES[lang].engines[engine]) }).check();
+  await dialog.getByRole("button", { name: NAMES[lang].confirm }).click();
+}
+
 /** Creates a project from the welcome screen, the file dialog answers with the file of the launch. */
-export async function createProject(page: Page, lang: Lang = "en-US"): Promise<void> {
+export async function createProject(page: Page, lang: Lang = "en-US", engine: "typst" | "latex" = "typst"): Promise<void> {
   await page.getByRole("button", { name: NAMES[lang].create }).click();
+  await chooseEngine(page, engine, lang);
 }
 
 /** Closes the project that is open, back to the welcome screen. */

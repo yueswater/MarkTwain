@@ -8,7 +8,7 @@ import { relativeTime } from "./relative-time";
 
 type Props = {
   recent: RecentProject[];
-  onCreate: (suggestedName: string) => void;
+  onCreate: () => void;
   onOpen: () => void;
   onOpenRecent: (path: string) => void;
   onRemoveRecent: (path: string) => void;
@@ -28,7 +28,7 @@ export function WelcomeScreen({ recent, onCreate, onOpen, onOpenRecent, onRemove
           <p className="text-sm text-muted-foreground">{t("welcome.description")}</p>
         </div>
         <div className="flex gap-2">
-          <Button onClick={() => onCreate(t("welcome.defaultName"))}>
+          <Button onClick={onCreate}>
             <PlusIcon aria-hidden="true" />
             {t("welcome.new")}
           </Button>

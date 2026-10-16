@@ -11,12 +11,14 @@
       "invalid": "This is not a valid MarkTwain project file.",
       "too-new": "This project was created by a newer version of MarkTwain (file format version {{found}}; this version supports up to {{supported}}). Please update MarkTwain.",
       "none-open": "No project is open.",
-      "exists": "A file already exists at that location and will not be overwritten."
+      "exists": "A file already exists at that location and will not be overwritten.",
+      "engine-unavailable": "This output engine cannot be used for a new project."
     },
     "build": {
       "busy": "A build is already running.",
       "typst-missing": "The bundled Typst is missing. Reinstall MarkTwain. When running from source, run pnpm typst:fetch or set MARKTWAIN_TYPST to the path of typst.",
-      "template-missing": "The thesis template was not found. Run pnpm templates:fetch."
+      "template-missing": "The thesis template was not found. Run pnpm templates:fetch.",
+      "tex-missing": "LaTeX was not found. Install TeX Live or TinyTeX, or set MARKTWAIN_TEX_BIN to the folder that holds xelatex, latexmk and texlua. The installed app will carry its own later."
     },
     "export": {
       "no-pdf": "Build the PDF before exporting it.",
