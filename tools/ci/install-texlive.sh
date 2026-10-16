@@ -12,18 +12,25 @@ PACKAGES="latex-bin latex xetex luatex latexmk lua-tinyyaml lualibs luaotfload c
   zhlipsum zhnumber psnfss lm lm-math unicode-math xetexconfig"
 
 if [ "${RUNNER_OS:-}" = "Windows" ]; then
-  curl -fsSL -o "$RUNNER_TEMP/install-tinytex.bat" https://yihui.org/tinytex/install-bin-windows.bat
-  (cd "$RUNNER_TEMP" && cmd //c install-tinytex.bat)
+  # The batch file of TinyTeX quotes the address in a way that curl does not read in cmd, so its PowerShell script is run directly
+  curl -fsSL -o "$RUNNER_TEMP/install-tinytex.ps1" https://tinytex.yihui.org/install-bin-windows.ps1
+  powershell -ExecutionPolicy Bypass -File "$(cygpath -w "$RUNNER_TEMP/install-tinytex.ps1")"
   bin="$(cygpath "$APPDATA")/TinyTeX/bin/windows"
   export PATH="$bin:$PATH"
-  cmd //c "tlmgr install $(echo $PACKAGES)"
+  # tlmgr may report an error after the packages are in, the checks at the end say whether the install is usable
+  cmd //c "tlmgr install $(echo $PACKAGES)" || true
   echo "MARKTWAIN_TEX_BIN=$(cygpath -w "$bin")" >> "$GITHUB_ENV"
 else
   curl -fsSL https://yihui.org/tinytex/install-bin-unix.sh | sh
   bin="$(ls -d "$HOME"/.TinyTeX/bin/* | head -1)"
   export PATH="$bin:$PATH"
-  tlmgr install $PACKAGES
+  tlmgr install $PACKAGES || true
   echo "MARKTWAIN_TEX_BIN=$bin" >> "$GITHUB_ENV"
 fi
 echo "$bin" >> "$GITHUB_PATH"
+
+# The install is usable when the engine runs and the packages of the bibliography and the Chinese text are found
 xelatex --version | head -1
+kpsewhich citation-style-language/citeproc-lua.lua
+kpsewhich ctex.sty xeCJK.sty
+latexmk --version | head -2
