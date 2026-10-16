@@ -45,35 +45,8 @@ jobs:
           echo "MARKTWAIN_TYPST=$GITHUB_WORKSPACE/resources/typst/$key/$exe" >> "$GITHUB_ENV"
           echo "MARKTWAIN_TYPST_PACKAGES=$GITHUB_WORKSPACE/resources/typst-packages" >> "$GITHUB_ENV"
       - name: Install a TeX Live for the LaTeX output
-        uses: teatimeguest/setup-texlive-action@v3
-        with:
-          # The packages that the template of tw-thesis-tex reads, found from the file list of a build
-          packages: |
-            scheme-basic
-            collection-xetex
-            collection-luatex
-            collection-latexrecommended
-            collection-fontsrecommended
-            collection-langchinese
-            latexmk
-            citation-style-language
-            lua-tinyyaml
-            lipsum
-            listings
-            makecell
-            multirow
-            pdflscape
-            metalogo
-            titlesec
-            enumitem
-            eso-pic
-            fancyhdr
-            chngcntr
-            zhlipsum
-            zhnumber
-            xecjk
-            ctex
-            pgf
+        shell: bash
+        run: bash tools/ci/install-texlive.sh
       - name: Fetch the pinned templates
         run: pnpm templates:fetch typ tex
         env:
@@ -109,35 +82,8 @@ jobs:
       - name: Fetch the pinned Typst and its packages
         run: pnpm typst:fetch
       - name: Install a TeX Live for the LaTeX output
-        uses: teatimeguest/setup-texlive-action@v3
-        with:
-          # The packages that the template of tw-thesis-tex reads, found from the file list of a build
-          packages: |
-            scheme-basic
-            collection-xetex
-            collection-luatex
-            collection-latexrecommended
-            collection-fontsrecommended
-            collection-langchinese
-            latexmk
-            citation-style-language
-            lua-tinyyaml
-            lipsum
-            listings
-            makecell
-            multirow
-            pdflscape
-            metalogo
-            titlesec
-            enumitem
-            eso-pic
-            fancyhdr
-            chngcntr
-            zhlipsum
-            zhnumber
-            xecjk
-            ctex
-            pgf
+        shell: bash
+        run: bash tools/ci/install-texlive.sh
       - name: Fetch the pinned templates
         run: pnpm templates:fetch typ tex
         env:
