@@ -188,7 +188,9 @@ test("a heading of another document that has no label can be referenced, and get
   await dialog.getByRole("combobox", { name: "Type" }).click();
   await page.getByRole("option", { name: "Heading" }).click();
   await dialog.getByRole("combobox", { name: "Target" }).click();
-  await page.getByRole("option", { name: /Section · Sampling/ }).click();
+  // The document has no title of its own, so it is named by its kind and number and not by empty brackets
+    await expect(page.getByRole("option", { name: "Section · Sampling ()" })).toHaveCount(0);
+    await page.getByRole("option", { name: /Section · Sampling \(Chapter 2\)/ }).click();
   await dialog.getByRole("button", { name: "Insert" }).click();
   await expect(dialog).toBeHidden();
   await expect(editor.locator("[data-cross-ref]")).toHaveAttribute("data-display", "Sampling");

@@ -51,4 +51,19 @@ describe("buildRefOptions with blocks of other documents", () => {
       { value: "r:d2:3:cha", kind: "heading", text: "Chapter · Method (Chapter 2)", full: "Chapter · Method (Chapter 2)", labeled: false },
     ]);
   });
+
+  it("names the document by its kind and number when it has no title of its own", () => {
+    const options = buildRefOptions(
+      [],
+      [],
+      name,
+      [
+        { documentId: "d2", block: 3, kind: "cha", text: "Method", document: { kind: "chapter", position: 2, title: "" } },
+        { documentId: "d3", block: 1, kind: "sec", text: "Data", document: { kind: "chapter", position: 3, title: "Data chapter" } },
+      ],
+      (document) => document.title || `${document.kind} ${document.position}`,
+    );
+    expect(options.map((o) => o.text)).toEqual(["Chapter · Method (chapter 2)", "Section · Data (Data chapter)"]);
+    expect(options.every((o) => !o.text.includes("()"))).toBe(true);
+  });
 });

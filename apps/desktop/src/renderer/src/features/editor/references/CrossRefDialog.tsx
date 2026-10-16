@@ -5,6 +5,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { IpcChannel } from "../../../../../shared/enums/ipc-channel.enum";
 import type { LabelTarget, UnlabeledRemote } from "../../../../../shared/ipc/index";
 import { api } from "../../../shared/api";
+import type { DocumentKind } from "../../../../../shared/enums/document-kind.enum";
+import { documentTitle } from "../../project/sidebar/document-title";
 import { AtomDialogFrame, type Common } from "./AtomDialogFrame";
 import type { AtomTarget, CrossRefChoice } from "./atom-target";
 import { REF_KINDS, buildRefOptions, kindsWithTargets, readLastKind, refKindOfLabel, rememberKind, type RefKind } from "./crossref-options";
@@ -26,6 +28,7 @@ export function CrossRefDialog({
   onSubmit: (choice: CrossRefChoice) => void;
 }) {
   const { t } = useTranslation("editor");
+  const { t: tp } = useTranslation();
   const editing = target.pos !== null;
   const [value, setValue] = useState(target.label ? `l:${target.label}` : "");
 
@@ -43,8 +46,8 @@ export function CrossRefDialog({
   }, [documentId]);
 
   const options = useMemo(
-    () => buildRefOptions(labeled, unlabeled, (kind) => t(`crossRef.kind.${kind}`), remote),
-    [labeled, unlabeled, remote, t],
+    () => buildRefOptions(labeled, unlabeled, (kind) => t(`crossRef.kind.${kind}`), remote, (document) => documentTitle(tp, { kind: document.kind as DocumentKind, position: document.position, title: document.title })),
+    [labeled, unlabeled, remote, t, tp],
   );
   const available = kindsWithTargets(options);
   // The kind comes from the label when editing, otherwise from the last choice if it still has targets
