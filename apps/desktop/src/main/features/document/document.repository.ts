@@ -31,6 +31,14 @@ export class DocumentRepository {
     );
   }
 
+  /** Inserts the row, or changes the row that has its id. */
+  upsert(row: DocumentRow): void {
+    this.db.run(
+      "INSERT INTO documents (id, kind, position, title, text, updated_at) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET kind = excluded.kind, position = excluded.position, title = excluded.title, text = excluded.text, updated_at = excluded.updated_at",
+      [row.id, row.kind, row.position, row.title, row.text, row.updated_at],
+    );
+  }
+
   listByKind(kind: string): DocumentRow[] {
     return this.db.all<DocumentRow>(
       "SELECT id, kind, position, title, text, updated_at FROM documents WHERE kind = ? ORDER BY position",

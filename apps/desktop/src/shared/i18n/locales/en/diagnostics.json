@@ -39,6 +39,18 @@
       "not-found": "The document could not be found.",
       "singleton": "This project already has a document of that kind."
     },
-    "table-template.unknown": "This table template does not exist."
+    "table-template.unknown": "This table template does not exist.",
+    "version": {
+      "name-empty": "A name is needed.",
+      "name-taken": "A change with the name \"{{name}}\" exists already.",
+      "branch-not-found": "That change could not be found.",
+      "snapshot-not-found": "That version could not be found.",
+      "main-protected": "The main line cannot be discarded.",
+      "nothing-to-save": "Nothing has changed since the last version.",
+      "unsaved-changes": "Save a version first, the merge needs the changes of this branch saved.",
+      "main-has-draft": "The main line has changes that were not saved. Open it and save a version first.",
+      "conflicts": "{{count}} conflicts have no choice yet.",
+      "nothing-to-merge": "There is nothing to merge."
+    }
   }
 }

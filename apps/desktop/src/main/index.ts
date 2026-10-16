@@ -40,6 +40,9 @@ import { registerPrefsController } from "./features/prefs/prefs.controller";
 import { RecentService } from "./features/recent/recent.service";
 import { SettingsRepository } from "./features/settings/settings.repository";
 import { registerSettingsController } from "./features/settings/settings.controller";
+import { registerVersionController } from "./features/version/version.controller";
+import { VersionService } from "./features/version/version.service";
+import { projectWorkingCopy } from "./features/version/working-copy";
 
 // Composition root, creates the shared objects and passes each feature controller to bootstrap.
 const session = new DatabaseSession();
@@ -72,6 +75,7 @@ const watermarks = new WatermarkService(session, config, resolveBuildPaths);
 const tableTemplates = new TableTemplateService(tableTemplatesFolder);
 const fonts = new FontService(session, config, resolveBuildPaths);
 const build = new BuildService(session, documents, config, resolveBuildPaths, undefined, undefined, undefined, bibliography, watermarks, fonts);
+const versions = new VersionService(session, projectWorkingCopy(documents, assets));
 let dialogs: DialogService;
 
 // The custom protocol must be declared before app ready
@@ -89,6 +93,7 @@ bootstrap([
   () => registerProjectController(projects, recent),
   () => registerDocumentController(documents),
   () => registerLabelController(labels),
+  () => registerVersionController(versions),
   () => registerConfigController(config),
   () => registerPrefsController(prefs),
   () => registerProfileController(profile),

@@ -24,6 +24,20 @@ export class AssetService {
     private readonly now: () => Date = () => new Date(),
   ) {}
 
+  /** Every file of the project, for the versions to keep. */
+  readAllFiles(): { path: string; data: Uint8Array; updatedAt: number }[] {
+    return new AssetRepository(this.session.db).all().map((row) => ({ path: row.path, data: row.data, updatedAt: row.updated_at }));
+  }
+
+  /** Makes the files exactly these. It does not open a transaction, the caller does. */
+  replaceAllFiles(files: { path: string; data: Uint8Array }[]): void {
+    const repository = new AssetRepository(this.session.db);
+    const keep = new Set(files.map((file) => file.path));
+    for (const path of repository.paths()) if (!keep.has(path)) repository.delete(path);
+    const updatedAt = this.now().getTime();
+    for (const file of files) repository.put(file.path, file.data, updatedAt);
+  }
+
   /**
    * Stores an image from disk in the project, the path comes from a hash of the content so one image is stored once.
    * That makes a project movable while paths in documents stay valid.

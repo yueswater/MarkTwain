@@ -73,6 +73,25 @@ export class DocumentService {
     if (!updated) throw new AppError(ErrorCode.DocumentNotFound);
   }
 
+  /** Every document with its text, for the versions to keep. */
+  readAll(): { id: string; kind: string; title: string; position: number; text: string; updatedAt: number }[] {
+    return this.repository()
+      .list()
+      .map((row) => ({ id: row.id, kind: row.kind, title: row.title, position: row.position, text: row.text, updatedAt: row.updated_at }));
+  }
+
+  /**
+   * Makes the documents exactly these: those that are not in the list go, the others take the kind, the title, the position and the text.
+   * It does not open a transaction, the caller does, so that a restore or a merge is one step.
+   */
+  replaceAll(documents: { id: string; kind: string; title: string; position: number; text: string }[]): void {
+    const repository = this.repository();
+    const keep = new Set(documents.map((doc) => doc.id));
+    for (const row of repository.list()) if (!keep.has(row.id)) repository.delete(row.id);
+    const updatedAt = this.now().getTime();
+    for (const doc of documents) repository.upsert({ id: doc.id, kind: doc.kind, position: doc.position, title: doc.title, text: normalizeNewlines(doc.text), updated_at: updatedAt });
+  }
+
   create(kind: DocumentKind): DocumentSummary {
     const repository = this.repository();
     const existing = repository.listByKind(kind);

@@ -14,6 +14,7 @@ import type { SearchContract } from "./search";
 import type { WatermarkContract } from "./watermark";
 import type { FontContract } from "./font";
 import type { TableTemplateContract } from "./table-template";
+import type { VersionContract } from "./version";
 import type { ProjectContract } from "./project";
 import type { RecentContract } from "./recent";
 import type { IpcResult } from "./result";
@@ -34,10 +35,11 @@ export type { EditorPrefs } from "../prefs";
 export type { AuthorProfile } from "../profile";
 export type { BuildAnchor, BuildDiagnostic, BuildOutcome } from "./build";
 export type { AdvancedState, ConfigState } from "./config";
+export type { BranchInfo, ChangeView, ChoiceInput, CompareView, ConflictView, DocumentDiffView, MergePreview, VersionEntry, VersionStatus } from "./version";
 export type { LabelIndex, LabelPreview, LabelPreviewContent, LabelReference, LabelTarget, UnlabeledRemote } from "./label";
 
 /** Contracts of all features are merged here, add & XxxContract when adding a feature. */
-export type IpcContract = AppContract & SettingsContract & ProjectContract & DocumentContract & DialogContract & LabelContract & AssetContract & ConfigContract & BuildContract & ExportContract & RecentContract & PrefsContract & SearchContract & BibliographyContract & WatermarkContract & ProfileContract & FontContract & TableTemplateContract;
+export type IpcContract = AppContract & SettingsContract & ProjectContract & DocumentContract & DialogContract & LabelContract & AssetContract & ConfigContract & BuildContract & ExportContract & RecentContract & PrefsContract & SearchContract & BibliographyContract & WatermarkContract & ProfileContract & FontContract & TableTemplateContract & VersionContract;
 
 export type IpcChannelName = keyof IpcContract;
 export type IpcRequest<C extends IpcChannelName> = IpcContract[C]["req"];
