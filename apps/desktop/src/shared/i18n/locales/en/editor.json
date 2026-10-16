@@ -56,7 +56,8 @@
     "blockTitle": "Display formula",
     "done": "Done ↵",
     "hintInline": "A formula inside the line. Enter confirms, Esc cancels.",
-    "hintBlock": "A formula on its own line. Enter confirms, Shift+Enter adds a line, Esc cancels."
+    "hintBlock": "A formula on its own line. Enter confirms, Shift+Enter adds a line, Esc cancels.",
+    "near": "Near: {{near}}"
   },
   "footnote": {
     "insertTitle": "Insert footnote",

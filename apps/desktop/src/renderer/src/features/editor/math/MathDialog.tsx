@@ -29,6 +29,22 @@ export function renderLatex(latex: string, displayMode: boolean): string | null 
   }
 }
 
+/**
+ * Where KaTeX stopped on a formula that it cannot read, as the few letters around the place, null when the formula is fine.
+ * The message of KaTeX is in English and for a person who knows TeX, the place is what helps.
+ */
+export function latexErrorNear(latex: string): string | null {
+  try {
+    katex.renderToString(latex, { displayMode: false, throwOnError: true });
+    return null;
+  } catch (error) {
+    const position = typeof (error as { position?: unknown }).position === "number" ? (error as { position: number }).position : latex.length;
+    const start = Math.max(0, position - 8);
+    const near = latex.slice(start, Math.min(latex.length, position + 12)).trim();
+    return near === "" ? latex.slice(-12) : near;
+  }
+}
+
 const GAP = 8;
 const MARGIN = 8;
 
@@ -124,6 +140,10 @@ export function MathDialog({ target, onSubmit, onRemove, onClose, onRestoreFocus
         ) : html === null ? (
           <span role="alert" className="text-sm text-destructive">
             {t("math.invalid")}
+            {(() => {
+              const near = latexErrorNear(trimmed);
+              return near ? ` ${t("math.near", { near })}` : "";
+            })()}
           </span>
         ) : (
           <span data-testid="math-preview" dangerouslySetInnerHTML={{ __html: html }} />
@@ -137,7 +157,7 @@ export function MathDialog({ target, onSubmit, onRemove, onClose, onRestoreFocus
           rows={block ? 3 : 1}
           spellCheck={false}
           placeholder={block ? "\\int_0^T f(t)\\,\\mathrm{d}t" : "E = mc^2"}
-          className="min-h-9 flex-1 resize-none rounded-md border bg-background px-2 py-1.5 font-mono text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="min-h-9 flex-1 resize-none rounded-md border border-input bg-background px-2 py-1.5 font-mono text-sm outline-none transition-colors focus-visible:border-foreground"
           onChange={(event) => setLatex(event.target.value)}
           onKeyDown={(event) => {
             // Enter that ends a composition of a Chinese input method is not a confirmation

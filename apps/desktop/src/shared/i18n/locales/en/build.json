@@ -36,5 +36,12 @@
   "imageUnreadable": "A file that is not a picture was used as one, a grey box stands in its place.",
   "brokenRef": "This reference points to something that is not in the thesis, its name is printed as it is: {{label}}",
   "duplicateLabel": "This name is already used by another block, the first one keeps it and references go to that one: {{label}}",
-  "glyphMissing": "The font has no glyph for these characters, they print as empty boxes: {{chars}}"
+  "glyphMissing": "The font has no glyph for these characters, they print as empty boxes: {{chars}}",
+  "check": {
+    "title": "Some parts of the cover are not filled in",
+    "titleFinal": "This is the copy to hand in, and some parts of the cover are not filled in",
+    "description": "These are empty in the settings of the thesis. On the cover and the title pages they print as ○○○ or as nothing.",
+    "fill": "Fill them in",
+    "exportAnyway": "Export anyway"
+  }
 }

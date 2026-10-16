@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState, type MutableRefObject } from 
 import { useTranslation } from "react-i18next";
 import type { BuildState } from "../build/use-build";
 import { PreviewPanel } from "../build/PreviewPanel";
+import type { SettingsPageId } from "../settings/settings-pages";
 import type { ProjectState } from "./use-project";
 import { BibliographyPage } from "../bibliography/BibliographyPage";
 import { BibliographyProvider, useBibliography } from "../bibliography/bibliography-context";
@@ -14,8 +15,8 @@ import type { Edge } from "../editor/navigation/edge-flip";
 
 type Props = {
   state: ProjectState;
-  /** Opens the settings window */
-  onOpenSettings: () => void;
+  /** Opens the settings window, at a page when one is named */
+  onOpenSettings: (page?: SettingsPageId) => void;
   /** Grows whenever a document or the thesis settings were saved, the preview watches it */
   saveTick: number;
   onSaved: () => void;
@@ -213,6 +214,7 @@ function WorkspaceBody({ state, build, previewOpen, onClosePreview, onOpenSettin
           saveTick={saveTick}
           placeKey={project.path}
           engine={project.engine}
+          onFillIn={() => onOpenSettings("thesisInfo")}
           onClose={onClosePreview}
           follow={follow}
           onPick={(documentId, block) => {

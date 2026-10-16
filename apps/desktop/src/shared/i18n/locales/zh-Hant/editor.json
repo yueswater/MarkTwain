@@ -56,7 +56,8 @@
     "blockTitle": "獨立公式",
     "done": "完成 ↵",
     "hintInline": "夾在文字行中的公式。Enter 完成，Esc 取消。",
-    "hintBlock": "單獨成行的公式。Enter 完成，Shift+Enter 換行，Esc 取消。"
+    "hintBlock": "單獨成行的公式。Enter 完成，Shift+Enter 換行，Esc 取消。",
+    "near": "錯誤在這附近：{{near}}"
   },
   "footnote": {
     "insertTitle": "插入腳註",

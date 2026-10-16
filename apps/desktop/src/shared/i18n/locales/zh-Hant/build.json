@@ -36,5 +36,12 @@
   "imageUnreadable": "這個檔案不是圖片，先以灰色方框代替。",
   "brokenRef": "這個引用指到論文裡沒有的項目，會照原樣印出名稱：{{label}}",
   "duplicateLabel": "這個名稱已被另一個區塊使用，由第一個保留，引用會指到那一個：{{label}}",
-  "glyphMissing": "字型裡沒有這些字元，會印成空白方框：{{chars}}"
+  "glyphMissing": "字型裡沒有這些字元，會印成空白方框：{{chars}}",
+  "check": {
+    "title": "封面還有地方沒有填",
+    "titleFinal": "這份是要繳交的版本，封面還有地方沒有填",
+    "description": "論文設定裡這些欄位是空的，在封面與前面的頁面會印成 ○○○ 或什麼都沒有。",
+    "fill": "去填寫",
+    "exportAnyway": "仍然匯出"
+  }
 }
