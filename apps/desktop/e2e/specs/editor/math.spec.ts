@@ -115,3 +115,26 @@ test("a display formula has no number until it is named from the box next to it"
   await places.getByRole("button").click();
   await expect(box).toBeHidden();
 });
+
+test("what is typed right after the formula box closes is not lost", async ({ launch }) => {
+  const { app } = await launch({ name: "公式焦點" });
+  const page = await app.firstWindow();
+  await createProject(page);
+  const editor = page.locator(".ProseMirror");
+  await editor.click();
+  await page.getByRole("button", { name: "Inline formula" }).click();
+  await page.getByRole("dialog").getByLabel("LaTeX").fill("x^2");
+  // The key and the look at the focus are one step, so no frame passes between them for the focus to come back
+  const focused = await page.evaluate(
+    `new Promise(function (resolve) {
+      var box = document.querySelector('[data-testid="math-box"] textarea');
+      box.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true }));
+      var active = document.activeElement;
+      resolve(!!active && active.classList.contains("ProseMirror"));
+    })`,
+  );
+  expect(focused).toBe(true);
+  await page.keyboard.type(" 為一連續函數。");
+  await expect(editor).toContainText("為一連續函數。");
+  await expect(editor.locator(".katex")).toHaveCount(1);
+});

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "@jest/globals";
-import { existsSync, mkdtempSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { AppError } from "../../core/errors";
@@ -166,5 +166,21 @@ describe("engine", () => {
     db.run("INSERT INTO project (id, name, created_at) VALUES (1, 'old', 0)");
     db.close();
     expect(service().open(file).engine).toBe("typst");
+  });
+});
+
+describe("a file that holds no project", () => {
+  it("is refused and left as it was, an empty file and an empty SQLite file alike", () => {
+    writeFileSync(file, "");
+    expect(codeOf(() => service().open(file))).toBe("project.invalid");
+    expect(statSync(file).size).toBe(0);
+
+    const emptyDb = join(dir, "empty.marktwain");
+    openDatabase(emptyDb).close();
+    const before = statSync(emptyDb).size;
+    expect(codeOf(() => service().open(emptyDb))).toBe("project.invalid");
+    expect(statSync(emptyDb).size).toBe(before);
+    // Again, it is refused the same way and not for a different reason the second time
+    expect(codeOf(() => service().open(emptyDb))).toBe("project.invalid");
   });
 });

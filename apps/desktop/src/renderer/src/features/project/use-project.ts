@@ -24,12 +24,13 @@ export function useProject() {
   const cancelCreate = useCallback(() => setChoosingEngine(false), []);
 
   const run = useCallback(
-    async (action: () => Promise<void>): Promise<void> => {
+    async <T,>(action: () => Promise<T>): Promise<T | undefined> => {
       try {
         setError(null);
-        await action();
+        return await action();
       } catch (e) {
         setError(errorMessage(t, e));
+        return undefined;
       }
     },
     [t],
@@ -88,10 +89,12 @@ export function useProject() {
       await refreshRecent();
     });
 
+  /** Makes a document and returns its id, so the editor can open it. */
   const addDocument = (kind: DocumentKind) =>
     run(async () => {
-      await api.invoke(IpcChannel.DocumentCreate, { kind });
+      const created = await api.invoke(IpcChannel.DocumentCreate, { kind });
       await refresh();
+      return created.id;
     });
 
   const removeDocument = (id: string) =>
