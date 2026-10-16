@@ -34,7 +34,8 @@ export const DEFAULT_PREFS: EditorPrefs = {
   contentWidth: "normal",
   headingNames: ["", "", ""],
   lineNumbers: true,
-  showChanges: true,
+  // Off: in a new project everything typed would be marked as new, and a person who has not saved a version has no use for it. It is one switch in the settings.
+  showChanges: false,
   spellcheck: false,
   fontFamily: "sans",
   codeFontSize: 14,

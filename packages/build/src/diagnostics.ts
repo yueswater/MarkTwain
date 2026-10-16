@@ -65,3 +65,13 @@ export function locate(lineMap: LineMap, file: string, line: number): SourceRef 
   });
   return found === null ? null : { documentId: entry.documentId, block: found };
 }
+
+/**
+ * Warnings of Typst that mean nothing to the person who writes. The template lists DFKai-SB, a font of Windows, after the font that it ships,
+ * so on any other system Typst says that it is unknown on every build, although the first font of the list is used.
+ */
+const HARMLESS = [/^unknown font family: dfkai-sb$/i];
+
+export function isHarmless(diagnostic: Diagnostic): boolean {
+  return diagnostic.severity === "warning" && HARMLESS.some((pattern) => pattern.test(diagnostic.message.trim()));
+}

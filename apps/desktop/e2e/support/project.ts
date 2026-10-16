@@ -1,4 +1,4 @@
-import type { Page } from "@playwright/test";
+import { expect, type Page } from "@playwright/test";
 import type { Lang } from "./launch";
 
 const NAMES = {
@@ -76,4 +76,15 @@ export async function savedChapter(page: Page): Promise<string> {
     previous = current;
   }
   return previous;
+}
+
+/** The marks of what changed since the last version are off until they are asked for, this turns them on in the settings. */
+export async function showChangeMarks(page: Page): Promise<void> {
+  await page.getByRole("button", { name: "Settings", exact: true }).click();
+  const dialog = page.getByRole("dialog");
+  await dialog.getByRole("button", { name: "Writing" }).click();
+  const marks = dialog.getByRole("switch", { name: "Mark changes since the last version" });
+  if ((await marks.getAttribute("aria-checked")) !== "true") await marks.click();
+  await page.keyboard.press("Escape");
+  await expect(dialog).toBeHidden();
 }

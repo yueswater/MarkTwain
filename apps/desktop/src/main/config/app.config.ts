@@ -3,6 +3,7 @@ export const APP_NAME = "MarkTwain";
 export const WEBSITE_URL = "https://github.com/yueswater/MarkTwain";
 
 export const WINDOW_SIZE = { width: 1280, height: 800 } as const;
+export const MIN_WINDOW_SIZE = { width: 960, height: 600 } as const;
 
 /** Environment variable holding the electron-vite dev server URL. */
 export const RENDERER_URL_ENV = "ELECTRON_RENDERER_URL";

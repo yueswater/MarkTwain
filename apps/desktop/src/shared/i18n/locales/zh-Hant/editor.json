@@ -249,6 +249,10 @@
         "name": "文字",
         "description": "一般的文字，內文預設的區塊。"
       },
+      "heading1": {
+        "name": "章標題",
+        "description": "這一章的標題，在論文裡會另起一頁。"
+      },
       "heading2": {
         "name": "節",
         "description": "章裡一節的標題。"
@@ -344,6 +348,14 @@
       "statement_proof": {
         "name": "證明",
         "description": "不編號，結尾加方框。"
+      },
+      "abstractZh": {
+        "name": "中文摘要",
+        "description": "中文的摘要，自己一頁，並附上中文關鍵字。"
+      },
+      "abstractEn": {
+        "name": "英文摘要",
+        "description": "英文的摘要，自己一頁，並附上英文關鍵字。"
       },
       "landscape": {
         "name": "橫向頁面",
@@ -482,5 +494,10 @@
   },
   "changes": {
     "revert": "還原這處"
+  },
+  "abstract": {
+    "headZh": "中文摘要，印在「摘要」標題下，關鍵字取自論文設定的中文關鍵字",
+    "headEn": "英文摘要，印在「Abstract」標題下，關鍵字取自論文設定的英文關鍵字",
+    "remove": "移除這個區段，保留裡面寫的內容"
   }
 }

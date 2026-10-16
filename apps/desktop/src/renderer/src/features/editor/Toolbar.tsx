@@ -78,8 +78,8 @@ const TOOLBAR_COMMAND: Record<string, string> = {
   landscape: "landscape",
 };
 
-const BLOCKS = ["paragraph", "heading2", "heading3", "heading4"] as const;
-type Block = (typeof BLOCKS)[number] | "heading1";
+const BLOCKS = ["paragraph", "heading1", "heading2", "heading3", "heading4"] as const;
+type Block = (typeof BLOCKS)[number];
 
 function currentBlock(editor: Editor): Block {
   for (let level = 1; level <= 4; level++) {
@@ -199,8 +199,6 @@ export function Toolbar({ editor, onInsertMath, onInsertAtom, onEditCaption, onC
           <SelectValue />
         </SelectTrigger>
         <SelectContent onCloseAutoFocus={(event) => { event.preventDefault(); editor.commands.focus(); }}>
-          {/* The chapter title is not chosen here, it is listed only while the cursor is in one */}
-          {state.block === "heading1" && <SelectItem value="heading1">{t("toolbar.heading1")}</SelectItem>}
           {BLOCKS.map((block) => (
             <SelectItem key={block} value={block}>
               {blockName(block)}

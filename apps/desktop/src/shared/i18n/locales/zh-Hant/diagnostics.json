@@ -16,16 +16,16 @@
     },
     "build": {
       "busy": "已經有一個建置正在進行。",
-      "typst-missing": "找不到內建的 Typst，請重新安裝 MarkTwain。從原始碼執行時，請執行 pnpm typst:fetch，或以 MARKTWAIN_TYPST 指定 typst 的路徑。",
-      "template-missing": "找不到論文模板。請執行 pnpm templates:fetch。",
-      "tex-missing": "找不到 LaTeX。請安裝 TeX Live 或 TinyTeX，或以 MARKTWAIN_TEX_BIN 指定放有 xelatex、latexmk、texlua 的資料夾。安裝版之後會內建。"
+      "typst-missing": "缺少產生 PDF 需要的內建工具。請重新安裝 MarkTwain。",
+      "template-missing": "找不到論文模板。請重新安裝 MarkTwain。",
+      "tex-missing": "這台電腦找不到 LaTeX。請安裝 TeX Live 或 TinyTeX，再重新開啟專案。"
     },
     "export": {
       "no-pdf": "請先建置 PDF 再匯出。",
       "failed": "無法匯出專案：{{reason}}"
     },
     "config": {
-      "invalid": "專案設定（config.yml）不是有效的 YAML。"
+      "invalid": "這個專案的設定格式有誤，無法讀取。請到「設定」檢查，或還原到較早的版本。"
     },
     "asset": {
       "unsupported": "不支援這種檔案。請使用 PNG、JPEG 或 SVG 圖片。",

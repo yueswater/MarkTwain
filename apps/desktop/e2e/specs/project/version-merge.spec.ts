@@ -1,5 +1,5 @@
 import { expect, test } from "../../support/test";
-import { closeProject, createProject, openRecent, readChapter, seedChapter } from "../../support/project";
+import { closeProject, createProject, openRecent, readChapter, seedChapter, showChangeMarks } from "../../support/project";
 
 const BASE = "# One\n\nalpha\n\nbeta\n\ngamma\n";
 
@@ -7,6 +7,7 @@ test("the changes of a version are shown in green and red, and a merge with a co
   const { app } = await launch({ name: "version-merge" });
   const page = await app.firstWindow();
   await createProject(page);
+  await showChangeMarks(page);
   const editor = page.locator(".ProseMirror");
   const bar = page.getByTestId("branch-bar");
   const menu = () => bar.click();

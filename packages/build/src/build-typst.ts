@@ -5,7 +5,7 @@ import { renderStatementsTypst, renderTypstFile, toIr, type IrDocument, type IrI
 import { bibliographyKeys } from "./bibliography-keys";
 import { completeConfig } from "./config";
 import { checkImages, type ImageIssue } from "./images";
-import { parseDiagnostics, type LineMap } from "./diagnostics";
+import { isHarmless, parseDiagnostics, type LineMap } from "./diagnostics";
 import { assignPaths, renderMain } from "./layout";
 import { copyTree, run, writeBytes, writeText } from "./process";
 import type { Anchor, BuildInput, BuildResult, Diagnostic } from "./types";
@@ -201,7 +201,7 @@ export async function buildTypst(input: BuildInput): Promise<BuildResult> {
       input.timeoutMs ?? 120_000,
       input.env,
     );
-    const diagnostics = [...warnings(prepared), ...parseDiagnostics(stderr, prepared.lineMap, root)];
+    const diagnostics = [...warnings(prepared), ...parseDiagnostics(stderr, prepared.lineMap, root)].filter((d) => !isHarmless(d));
     const mathFailures = prepared.mathFailures;
     if (code === 0 && png) {
       const pages = readdirSync(root)

@@ -3,10 +3,12 @@ import {
   AsteriskIcon,
   BookMarkedIcon,
   FileCodeIcon,
+  Heading1Icon,
   Heading2Icon,
   Heading3Icon,
   Heading4Icon,
   ImageIcon,
+  LanguagesIcon,
   LinkIcon,
   ListIcon,
   ListOrderedIcon,
@@ -20,7 +22,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { STATEMENT_KINDS } from "@marktwain/schema";
-import { insertLandscape, insertStatement } from "../blocks/statement-commands";
+import { insertAbstract, insertLandscape, insertStatement } from "../blocks/statement-commands";
 import { statementIcon } from "../blocks/statement-icons";
 
 /** What the menu asks the editor view to do, the same functions the toolbar uses. */
@@ -52,6 +54,7 @@ const here = (editor: Editor, range: Range) => editor.chain().focus().deleteRang
 
 const BASE_ITEMS: readonly SlashItem[] = [
   { id: "text", group: "basic", icon: TypeIcon, aliases: ["paragraph", "text", "文字", "段落", "內文"], preview: "text", run: (e, r) => here(e, r).setParagraph().run() },
+  { id: "heading1", group: "basic", icon: Heading1Icon, aliases: ["h1", "heading", "chapter", "標題", "章", "章標題"], markdown: "#", preview: "heading", run: (e, r) => here(e, r).setHeading({ level: 1 }).run() },
   { id: "heading2", group: "basic", icon: Heading2Icon, aliases: ["h2", "heading", "section", "標題", "節"], markdown: "##", preview: "heading", run: (e, r) => here(e, r).setHeading({ level: 2 }).run() },
   { id: "heading3", group: "basic", icon: Heading3Icon, aliases: ["h3", "heading", "subsection", "標題", "小節"], markdown: "###", preview: "heading", run: (e, r) => here(e, r).setHeading({ level: 3 }).run() },
   { id: "heading4", group: "basic", icon: Heading4Icon, aliases: ["h4", "heading", "標題"], markdown: "####", preview: "heading", run: (e, r) => here(e, r).setHeading({ level: 4 }).run() },
@@ -64,6 +67,8 @@ const BASE_ITEMS: readonly SlashItem[] = [
   { id: "figure", group: "thesis", icon: ImageIcon, aliases: ["image", "picture", "figure", "photo", "圖", "圖片", "插圖"], preview: "figure", run: (e, r, h) => { here(e, r).run(); h.insertImage(); } },
   { id: "table", group: "thesis", icon: TableIcon, aliases: ["table", "grid", "表", "表格"], preview: "table", run: (e, r, h) => { here(e, r).run(); h.insertTable(); } },
   { id: "codeBlock", group: "thesis", icon: FileCodeIcon, aliases: ["code", "snippet", "程式", "程式碼"], markdown: "```", preview: "code", run: (e, r) => here(e, r).toggleCodeBlock().run() },
+  { id: "abstractZh", group: "thesis", icon: LanguagesIcon, aliases: ["abstract", "摘要", "中文摘要"], markdown: "::: {.abstract-zh}", preview: "text", run: (e, r) => { here(e, r).run(); insertAbstract(e, "abstract-zh"); } },
+  { id: "abstractEn", group: "thesis", icon: LanguagesIcon, aliases: ["abstract", "english", "摘要", "英文摘要"], markdown: "::: {.abstract-en}", preview: "text", run: (e, r) => { here(e, r).run(); insertAbstract(e, "abstract-en"); } },
   { id: "landscape", group: "thesis", icon: RectangleHorizontalIcon, aliases: ["landscape", "wide", "sideways", "橫向", "橫式", "寬表", "轉向"], markdown: "::: landscape", preview: "landscape", run: (e, r) => { here(e, r).run(); insertLandscape(e); } },
   { id: "footnote", group: "thesis", icon: AsteriskIcon, aliases: ["footnote", "note", "腳註", "註腳", "註解"], preview: "footnote", run: (e, r, h) => { here(e, r).run(); h.insertAtom("footnote"); } },
   { id: "citation", group: "thesis", icon: BookMarkedIcon, aliases: ["citation", "cite", "reference", "bibliography", "引用文獻", "文獻", "參考"], preview: "citation", run: (e, r, h) => { here(e, r).run(); h.insertAtom("citation"); } },

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "@jest/globals";
 import { assignPaths, renderMain } from "./layout";
-import { locate, parseDiagnostics, type LineMap } from "./diagnostics";
+import { isHarmless, locate, parseDiagnostics, type LineMap } from "./diagnostics";
 import type { BuildDocument } from "./types";
 
 const doc = (id: string, kind: BuildDocument["kind"]): BuildDocument => ({ id, kind, text: "" });
@@ -34,6 +34,17 @@ describe("assignPaths and renderMain", () => {
 
   it("omits references without bibliography files", () => {
     expect(renderMain(docs, assignPaths(docs), false)).not.toContain("#references()");
+  });
+});
+
+describe("isHarmless", () => {
+  const warning = (message: string) => ({ severity: "warning" as const, message, file: null, line: null, column: null, source: null });
+
+  it("drops the font that the template lists for Windows only and keeps any other font that is unknown", () => {
+    expect(isHarmless(warning("unknown font family: dfkai-sb"))).toBe(true);
+    expect(isHarmless(warning("unknown font family: DFKai-SB"))).toBe(true);
+    expect(isHarmless(warning("unknown font family: my font"))).toBe(false);
+    expect(isHarmless({ ...warning("unknown font family: dfkai-sb"), severity: "error" })).toBe(false);
   });
 });
 

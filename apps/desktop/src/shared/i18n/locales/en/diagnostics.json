@@ -16,16 +16,16 @@
     },
     "build": {
       "busy": "A build is already running.",
-      "typst-missing": "The bundled Typst is missing. Reinstall MarkTwain. When running from source, run pnpm typst:fetch or set MARKTWAIN_TYPST to the path of typst.",
-      "template-missing": "The thesis template was not found. Run pnpm templates:fetch.",
-      "tex-missing": "LaTeX was not found. Install TeX Live or TinyTeX, or set MARKTWAIN_TEX_BIN to the folder that holds xelatex, latexmk and texlua. The installed app will carry its own later."
+      "typst-missing": "A tool that the app needs to make the PDF is missing. Reinstall MarkTwain.",
+      "template-missing": "The thesis template was not found. Reinstall MarkTwain.",
+      "tex-missing": "LaTeX was not found on this computer. Install TeX Live or TinyTeX, then open the project again."
     },
     "export": {
       "no-pdf": "Build the PDF before exporting it.",
       "failed": "The project could not be exported: {{reason}}"
     },
     "config": {
-      "invalid": "The project settings (config.yml) are not valid YAML."
+      "invalid": "The settings of this project cannot be read, their format is wrong. Look at them in the settings, or go back to an earlier version."
     },
     "asset": {
       "unsupported": "This file type is not supported. Use PNG, JPEG or SVG images.",

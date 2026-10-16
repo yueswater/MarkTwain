@@ -15,7 +15,7 @@ import { IpcChannel } from "../../../../shared/enums/ipc-channel.enum";
 import type { OutputEngine } from "../../../../shared/ipc";
 import { api } from "../../shared/api";
 import { errorMessage } from "../../shared/error-message";
-import { showNotes, warningItems } from "./build-notes";
+import { configFieldName, showNotes, warningItems } from "./build-notes";
 import { PdfPreview } from "./PdfPreview";
 import type { BuildState } from "./use-build";
 
@@ -56,6 +56,7 @@ function readWatch(): boolean {
 
 export function PreviewPanel({ build, saveTick, placeKey, engine, onClose, onJump, follow, onPick }: Props) {
   const { t } = useTranslation("build");
+  const { t: tConfig } = useTranslation("config");
   const { t: tRoot } = useTranslation();
   const [exportNote, setExportNote] = useState<{ ok: boolean; text: string } | null>(null);
   const [watch, setWatch] = useState(readWatch);
@@ -221,7 +222,7 @@ export function PreviewPanel({ build, saveTick, placeKey, engine, onClose, onJum
           <ul className="flex flex-col gap-1 text-muted-foreground">
             {items.map((item, i) => (
               <li key={`w${i}`} className="select-text">
-                {item.kind === "configMissing" && t("configMissing", { field: item.fields.join(", ") })}
+                {item.kind === "configMissing" && t("configMissing", { field: item.fields.map((key) => tConfig(`field.${configFieldName(key)}`, { defaultValue: key })).join(", ") })}
                 {item.kind === "citation" && t("citationNoBibliography", { keys: item.keys.join(", ") })}
                 {item.kind === "glyphMissing" && t("glyphMissing", { chars: item.chars })}
                 {item.kind === "brokenRef" && (

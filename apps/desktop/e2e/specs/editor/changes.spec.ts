@@ -1,10 +1,11 @@
 import { expect, test } from "../../support/test";
-import { createProject } from "../../support/project";
+import { createProject, showChangeMarks } from "../../support/project";
 
 test("what was added, changed and taken away since the saved version is marked in the editor, and the mark goes with the next version", async ({ launch }) => {
   const { app } = await launch({ name: "changes" });
   const page = await app.firstWindow();
   await createProject(page);
+  await showChangeMarks(page);
   const editor = page.locator(".ProseMirror");
   const bar = page.getByTestId("branch-bar");
   const save = async (message: string) => {

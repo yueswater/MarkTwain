@@ -238,13 +238,13 @@ test("delays are chosen with ten step sliders and sizes with named levels", asyn
 });
 
 
-test("the heading menu has no heading 1, names the other levels, and the names can be changed", async ({ launch }) => {
+test("the heading menu lists the chapter title, names the other levels, and the names can be changed", async ({ launch }) => {
   const { app } = await launch({ name: "標題名" });
   const page = await app.firstWindow();
   await createProject(page);
   await page.locator(".ProseMirror").click();
   await page.getByRole("combobox", { name: "Text style" }).click();
-  await expect(page.getByRole("option")).toHaveText(["Paragraph", "Section", "Subsection", "Sub-subsection"]);
+  await expect(page.getByRole("option")).toHaveText(["Paragraph", "Chapter title", "Section", "Subsection", "Sub-subsection"]);
   await page.keyboard.press("Escape");
 
   // A name of the author's own replaces the default in the toolbar and in the slash menu
@@ -254,7 +254,7 @@ test("the heading menu has no heading 1, names the other levels, and the names c
   await dialog.getByRole("textbox", { name: /Names of the heading levels Level 2/ }).fill("Part");
   await page.keyboard.press("Escape");
   await page.getByRole("combobox", { name: "Text style" }).click();
-  await expect(page.getByRole("option")).toHaveText(["Paragraph", "Part", "Subsection", "Sub-subsection"]);
+  await expect(page.getByRole("option")).toHaveText(["Paragraph", "Chapter title", "Part", "Subsection", "Sub-subsection"]);
   await page.keyboard.press("Escape");
   await page.locator(".ProseMirror").click();
   await page.keyboard.type("/");

@@ -48,7 +48,7 @@
   },
   "hint": {
     "keywords": "Press Enter or a comma to add; each keyword becomes a # tag.",
-    "school": "Formatting rules of the chosen university. Leave empty to use the default format."
+    "school": "Formatting rules made from what the school publishes, for reference only. Check the latest rules of your school and department before you hand in. Leave empty to use the default format."
   },
   "noSchool": "No school preset (default format)",
   "issue": {

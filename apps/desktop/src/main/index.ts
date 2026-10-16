@@ -1,3 +1,4 @@
+import { app } from "electron";
 import { declareAssetScheme, handleAssetProtocol } from "./core/asset-protocol";
 import { settingsFilePath } from "./config/paths.config";
 import { readFileSync } from "node:fs";
@@ -45,6 +46,12 @@ import { registerSettingsController } from "./features/settings/settings.control
 import { registerVersionController } from "./features/version/version.controller";
 import { VersionService } from "./features/version/version.service";
 import { projectWorkingCopy } from "./features/version/working-copy";
+
+// The name shows in the menu of macOS and in the dock, it comes from the scoped name of the package otherwise.
+// The folder of the user data is named after it, so it keeps the path that it has had and nobody loses their settings.
+const userData = app.getPath("userData");
+app.setName("MarkTwain");
+app.setPath("userData", userData);
 
 // Composition root, creates the shared objects and passes each feature controller to bootstrap.
 const session = new DatabaseSession();
