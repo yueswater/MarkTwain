@@ -44,7 +44,14 @@ test("the preview follows the caret of the editor, keeps its page after a rebuil
   expect((await viewerState(page))!.page).toBeGreaterThan(5);
 
   // A click on the text of the PDF takes the caret of the editor to the paragraph that holds it
-  const number = async () => (await page.evaluate(() => document.getSelection()?.anchorNode?.textContent ?? "")).match(/number (\d+)/)?.[1];
+  // The paragraph that holds the caret, read as a whole: a paragraph that was changed is cut into pieces by the marks, and the caret is in one of them
+    const number = async () =>
+      (
+        await page.evaluate(() => {
+          const node = document.getSelection()?.anchorNode;
+          return (node instanceof Element ? node : node?.parentElement)?.closest(".ProseMirror > p")?.textContent ?? "";
+        })
+      ).match(/number (\d+)/)?.[1];
   const before = Number(await number());
   const box = (await page.getByTestId("preview-pages").boundingBox())!;
   // The page that is shown may have the caret paragraph at its middle, so a few places are tried until one is another paragraph

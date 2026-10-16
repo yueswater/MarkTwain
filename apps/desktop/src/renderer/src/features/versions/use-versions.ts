@@ -77,6 +77,7 @@ export function useVersions({ projectKey, saveTick, flush, onReplaced }: Options
   const switchTo = useCallback((name: string) => attempt(() => api.invoke(IpcChannel.VersionBranchSwitch, { name }), true), [attempt]);
   const discard = useCallback((name: string) => attempt(() => api.invoke(IpcChannel.VersionBranchDiscard, { name }), true), [attempt]);
   const restore = useCallback((snapshotId: string, message: string) => attempt(() => api.invoke(IpcChannel.VersionRestore, { snapshotId, message }), true), [attempt]);
+  const revert = useCallback(() => attempt(() => api.invoke(IpcChannel.VersionDiscardChanges), true), [attempt]);
   const history = useCallback(async (): Promise<VersionEntry[]> => (await run(() => api.invoke(IpcChannel.VersionHistory), false)) ?? [], [run]);
 
   const compare = useCallback((from: string, to: string): Promise<CompareView | undefined> => run(() => api.invoke(IpcChannel.VersionCompare, { from, to }), false), [run]);
@@ -87,7 +88,7 @@ export function useVersions({ projectKey, saveTick, flush, onReplaced }: Options
     [attempt, t],
   );
 
-  return { status, error, busy, clearError: () => setError(null), refresh, run, save, start, switchTo, discard, restore, history, compare, previewMerge, merge };
+  return { status, error, busy, clearError: () => setError(null), refresh, run, save, start, switchTo, discard, restore, revert, history, compare, previewMerge, merge };
 }
 
 export type Versions = ReturnType<typeof useVersions>;

@@ -72,6 +72,10 @@ export class VersionRepository {
     return this.db.all<SnapDocRow>("SELECT doc_id, kind, title, position, sequence_hash FROM snap_docs WHERE snapshot_id = ?", [snapshotId]);
   }
 
+  snapDoc(snapshotId: string, docId: string): SnapDocRow | undefined {
+    return this.db.get<SnapDocRow>("SELECT doc_id, kind, title, position, sequence_hash FROM snap_docs WHERE snapshot_id = ? AND doc_id = ?", [snapshotId, docId]);
+  }
+
   snapFiles(snapshotId: string): { path: string; blob_hash: string }[] {
     return this.db.all<{ path: string; blob_hash: string }>("SELECT path, blob_hash FROM snap_files WHERE snapshot_id = ?", [snapshotId]);
   }

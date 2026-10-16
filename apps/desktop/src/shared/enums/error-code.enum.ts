@@ -26,6 +26,7 @@ export const ErrorCode = {
   BibliographyNotFound: "bibliography.not-found",
   TableTemplateUnknown: "table-template.unknown",
   VersionNameEmpty: "version.name-empty",
+  VersionMessageEmpty: "version.message-empty",
   VersionNameTaken: "version.name-taken",
   VersionBranchNotFound: "version.branch-not-found",
   VersionSnapshotNotFound: "version.snapshot-not-found",

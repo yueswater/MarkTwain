@@ -44,6 +44,8 @@ export const IpcChannel = {
   VersionBranchSwitch: "version:branch-switch",
   VersionBranchDiscard: "version:branch-discard",
   VersionHistory: "version:history",
+  VersionHeadText: "version:head-text",
+  VersionDiscardChanges: "version:discard-changes",
   VersionRestore: "version:restore",
   VersionCompare: "version:compare",
   VersionMergePreview: "version:merge-preview",

@@ -50,7 +50,8 @@
       "unsaved-changes": "Save a version first, the merge needs the changes of this branch saved.",
       "main-has-draft": "The main line has changes that were not saved. Open it and save a version first.",
       "conflicts": "{{count}} conflicts have no choice yet.",
-      "nothing-to-merge": "There is nothing to merge."
+      "nothing-to-merge": "There is nothing to merge.",
+      "message-empty": "Say what you changed. A version needs a description."
     }
   }
 }

@@ -18,6 +18,8 @@ import { EditorDialogs } from "./dialogs/EditorDialogs";
 import { useDialogTargets } from "./dialogs/use-dialog-targets";
 import { EditorBubbleMenu } from "./EditorBubbleMenu";
 import { buildEditorProps, buildExtensions, type EditorContext } from "./editor-config";
+import { savedBlocks } from "./changes/change-marks";
+import { CHANGES_CHANGED } from "./extensions/change-marks";
 import { REFS_CHANGED } from "./extensions/ref-decorations";
 import { STATEMENTS_CHANGED } from "./extensions/statement-decorations";
 import { FindBar } from "./find/FindBar";
@@ -56,10 +58,12 @@ type Props = {
   arrive?: { edge: Edge; nonce: number } | null;
   /** Called once the end was shown, so that opening the document again later does not repeat it */
   onArrived?: () => void;
+  /** Changes when a version is saved or another one is opened, so the marks of what changed since the latest version are worked out again */
+  versionKey?: string | null;
 };
 
 /** Loads one document. The caller remounts with key when the document changes, so each document has its own editor and undo history. */
-export function DocumentEditor({ documentId, scrollTo, onSaved, registerFlush, onOpenTarget, onCaretBlock, onTopBlock, neighbors, onFlip, arrive, onArrived }: Props) {
+export function DocumentEditor({ documentId, scrollTo, onSaved, registerFlush, onOpenTarget, onCaretBlock, onTopBlock, neighbors, onFlip, arrive, onArrived, versionKey }: Props) {
   const { t } = useTranslation();
   const [doc, setDoc] = useState<DocumentData | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -84,7 +88,7 @@ export function DocumentEditor({ documentId, scrollTo, onSaved, registerFlush, o
     );
   }
   if (!doc) return null;
-  return <EditorSurface doc={doc} scrollTo={scrollTo ?? null} onSaved={onSaved} registerFlush={registerFlush} onOpenTarget={onOpenTarget} onCaretBlock={onCaretBlock} onTopBlock={onTopBlock} neighbors={neighbors} onFlip={onFlip} arrive={arrive ?? null} onArrived={onArrived} />;
+  return <EditorSurface doc={doc} scrollTo={scrollTo ?? null} onSaved={onSaved} registerFlush={registerFlush} onOpenTarget={onOpenTarget} onCaretBlock={onCaretBlock} onTopBlock={onTopBlock} neighbors={neighbors} onFlip={onFlip} arrive={arrive ?? null} onArrived={onArrived} versionKey={versionKey ?? null} />;
 }
 
 const WIDTH = { narrow: "max-w-xl", normal: "max-w-3xl", wide: "max-w-5xl" } as const;
@@ -101,9 +105,10 @@ type SurfaceProps = {
   onFlip?: (edge: Edge) => void;
   arrive: { edge: Edge; nonce: number } | null;
   onArrived?: () => void;
+  versionKey: string | null;
 };
 
-function EditorSurface({ doc, scrollTo, onSaved, registerFlush, onOpenTarget, onCaretBlock, onTopBlock, neighbors, onFlip, arrive, onArrived }: SurfaceProps) {
+function EditorSurface({ doc, scrollTo, onSaved, registerFlush, onOpenTarget, onCaretBlock, onTopBlock, neighbors, onFlip, arrive, onArrived, versionKey }: SurfaceProps) {
   const { t } = useTranslation("editor");
   const { t: tCommon } = useTranslation();
   const { prefs } = usePrefs();
@@ -129,6 +134,9 @@ function EditorSurface({ doc, scrollTo, onSaved, registerFlush, onOpenTarget, on
   const targetsRef = useLatest(targets);
   const caretRef = useLatest(onCaretBlock);
   const savedRef = useLatest(onSaved);
+  // The blocks of the latest saved version of this document, which the editor compares itself with
+  const [saved, setSaved] = useState<string[] | null>(null);
+  const savedBlocksRef = useLatest(saved);
   const editorRef = useRef<ReturnType<typeof useEditor>>(null);
   // What the slash menu asks the view to do, the same functions the toolbar uses
   const slashRef = useRef<SlashHandlers>({ insertMath: () => undefined, insertAtom: () => undefined, insertImage: () => undefined, insertTable: () => undefined, insertLandscape: () => undefined });
@@ -156,6 +164,7 @@ function EditorSurface({ doc, scrollTo, onSaved, registerFlush, onOpenTarget, on
     tableLayout: () => tableLayoutRef.current,
     listLevels: () => listLevelsRef.current,
     citations: () => citationsRef.current,
+    savedBlocks: () => savedBlocksRef.current,
     editor: () => editorRef.current,
     slash: () => slashRef.current,
     targets: () => targetsRef.current,
@@ -188,6 +197,25 @@ function EditorSurface({ doc, scrollTo, onSaved, registerFlush, onOpenTarget, on
   useEffect(() => {
     if (scrollTo?.term) setFind({ open: true, term: scrollTo.term });
   }, [scrollTo]);
+
+  // The latest saved version of the document is read when the document opens and again when a version is saved or another one is opened.
+  // A document that the version does not have counts as empty there, and an empty one is not marked.
+  useEffect(() => {
+    let cancelled = false;
+    api
+      .invoke(IpcChannel.VersionHeadText, { documentId: doc.id })
+      .then((text) => !cancelled && setSaved(text === null ? [] : savedBlocks(text)))
+      .catch(() => !cancelled && setSaved(null));
+    return () => {
+      cancelled = true;
+    };
+  }, [doc.id, versionKey]);
+
+  // Mark again what differs when the saved version or the setting changed
+  useEffect(() => {
+    if (!editor || editor.isDestroyed) return;
+    editor.view.dispatch(editor.state.tr.setMeta(CHANGES_CHANGED, true));
+  }, [editor, saved, prefs.showChanges]);
 
   // Tell the editor to recompute the display text of cross-references when numbers change
   useEffect(() => {

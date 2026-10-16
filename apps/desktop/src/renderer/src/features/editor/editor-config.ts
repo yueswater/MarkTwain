@@ -11,6 +11,7 @@ import { anchorOfNode } from "./dialogs/editor-commands";
 import type { DialogTargets } from "./dialogs/use-dialog-targets";
 import { createSchemaExtensions } from "./extensions/schema-extensions";
 import { CodeBlockWithLanguage } from "./extensions/nodes/code-block-view";
+import { ChangeMarks } from "./extensions/change-marks";
 import { EquationShortcut } from "./extensions/equation-shortcut";
 import { LandscapeMarks } from "./extensions/landscape-marks";
 import { ListMarkers } from "./extensions/list-markers";
@@ -41,6 +42,8 @@ export type EditorContext = {
   tableLayout: () => TableLayoutSettings;
   listLevels: () => ListLevelsState;
   citations: () => Record<string, CitationInfo>;
+  /** The blocks of the latest saved version of the document as Markdown, null while they are not known */
+  savedBlocks: () => string[] | null;
   editor: () => Editor | null;
   slash: () => SlashHandlers;
   targets: () => DialogTargets;
@@ -74,6 +77,7 @@ export function buildExtensions(ctx: EditorContext): Extensions {
     MarkdownPaste.configure({ enabled: () => ctx.prefs().pasteMarkdown }),
     Placeholder.configure({ placeholder: t()("placeholder") }),
     PlacementMarks,
+    ChangeMarks.configure({ getBase: () => ctx.savedBlocks(), enabled: () => ctx.prefs().showChanges }),
     LandscapeMarks.configure({
       label: () => t()("landscape.head"),
       removeLabel: () => t()("landscape.remove"),

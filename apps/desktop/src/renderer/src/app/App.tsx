@@ -119,6 +119,7 @@ export function App() {
             saveTick={saveTick}
             flushRef={flushRef}
             generation={generation}
+            versionKey={versions.status?.headId ?? null}
             onSaved={bumpSaved}
           />
         ) : (

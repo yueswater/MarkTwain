@@ -123,6 +123,12 @@ export function EditorWritingSettings() {
         control={<Switch aria-label={t("editor.lineNumbers")} checked={prefs.lineNumbers} onCheckedChange={(lineNumbers) => setPrefs({ lineNumbers })} />}
       />
       <SettingsRow
+        id="setting-editor-showChanges"
+        label={t("editor.showChanges")}
+        hint={t("editor.showChangesHint")}
+        control={<Switch aria-label={t("editor.showChanges")} checked={prefs.showChanges} onCheckedChange={(showChanges) => setPrefs({ showChanges })} />}
+      />
+      <SettingsRow
         id="setting-editor-spellcheck"
         label={t("editor.spellcheck")}
         hint={t("editor.spellcheckHint")}

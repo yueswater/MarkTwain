@@ -39,7 +39,9 @@
     "statementHex": "Hex code",
     "headingNames": "Names of the heading levels",
     "headingNamesHint": "How levels 2, 3 and 4 are called in the toolbar and the slash menu. Empty keeps the default.",
-    "headingLevel": "Level {{level}}"
+    "headingLevel": "Level {{level}}",
+    "showChanges": "Mark changes since the last version",
+    "showChangesHint": "Marks in the text what was added, changed and taken away since the version that was saved last: green for what is new, red for what was there before."
   },
   "group": {
     "page": "Page",
