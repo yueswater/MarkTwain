@@ -19,6 +19,9 @@ test("math can be inserted from the dialog, typed with $…$, edited, and saved 
   // Enter confirms, as the button does
   await dialog.getByLabel("LaTeX").press("Enter");
   await expect(editor.locator(".katex")).toHaveCount(1);
+  // Typing starts only when the dialog is gone and the editor has the focus again, or the first characters go to the dialog
+  await expect(dialog).toBeHidden();
+  await expect(editor).toBeFocused();
 
   // Typing $...$ right after Chinese text also becomes a formula
   await page.keyboard.type("，且設$y=1$");
