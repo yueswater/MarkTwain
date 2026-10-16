@@ -101,6 +101,11 @@ describe("blocks", () => {
     );
   });
 
+  it("gives a heading with a footnote a title for the table of contents that has none", () => {
+    expect(render("## 標題[^1]\n\n[^1]: 註\n").text).toContain("\\section[標題]{標題\\footnote{註}}");
+    expect(render("## 標題\n").text).toBe("\\section{標題}\n");
+  });
+
   it("writes lists with their start number", () => {
     expect(render("- a\n  - b\n- c\n\n3. x\n4. y\n").text).toBe(
       "\\begin{itemize}\n\\item a\n\\begin{itemize}\n\\item b\n\\end{itemize}\n\\item c\n\\end{itemize}\n\n\\begin{enumerate}[start=3]\n\\item x\n\\item y\n\\end{enumerate}\n",

@@ -1,7 +1,7 @@
 import { applyProfile, isEmptyProfile, profileFromFields } from "../../../../../shared/profile";
 import type { ConfigFields, ConfigIssue } from "@marktwain/schema";
 import { ChevronDownIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -34,6 +34,9 @@ export function NewProjectDialog({ onClose }: Props) {
   const [issues, setIssues] = useState<ConfigIssue[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [filled, setFilled] = useState(false);
+  // What the dialog started with, to know whether anything was typed, and what the project has stored
+  const initial = useRef<ConfigFields | null>(null);
+  const stored = useRef<ConfigFields | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -48,7 +51,10 @@ export function NewProjectDialog({ onClose }: Props) {
       }
       setProfile(saved);
       setFilled(!isEmptyProfile(saved));
-      setFields(applyProfile(config.fields, saved));
+      const start = applyProfile(config.fields, saved);
+      initial.current = start;
+      stored.current = config.fields;
+      setFields(start);
     }).catch((e: unknown) => !cancelled && setError(errorMessage(tRoot, e)));
     return () => {
       cancelled = true;
@@ -58,18 +64,28 @@ export function NewProjectDialog({ onClose }: Props) {
   if (!fields || !profile) return null;
   const update = (patch: Partial<ConfigFields>) => setFields((current) => (current ? { ...current, ...patch } : current));
 
-  /** Saves the answers, or only the choice not to be asked again when the dialog is skipped. */
-  async function finish(save: boolean): Promise<void> {
+  /**
+   * Saves the answers. Done checks them and stays open on a wrong one. Every other way to close the dialog keeps what was typed too,
+   * so nothing is lost by pressing Skip or Esc, a field that cannot be used is left out then.
+   */
+  async function finish(mode: "done" | "close"): Promise<void> {
     try {
-      if (save && fields) {
+      let kept = fields;
+      if (fields && (mode === "done" || JSON.stringify(fields) !== JSON.stringify(stored.current))) {
         const result = await api.invoke(IpcChannel.ConfigSet, { fields });
         // A missing field is expected, the cover warns about it later. Something wrong is shown here.
         const wrong = result.issues.filter((issue) => issue.code !== "required");
         if (wrong.length > 0) {
-          setIssues(wrong);
-          return;
+          if (mode === "done") {
+            setIssues(wrong);
+            return;
+          }
+          kept = { ...fields, ...Object.fromEntries(wrong.map((issue) => [issue.field, stored.current?.[issue.field] ?? ""])) } as ConfigFields;
+          await api.invoke(IpcChannel.ConfigSet, { fields: kept });
         }
-        await api.invoke(IpcChannel.ProfileSet, { patch: profileFromFields(fields, !dontAsk) });
+      }
+      if (kept && (mode === "done" || JSON.stringify(kept) !== JSON.stringify(initial.current))) {
+        await api.invoke(IpcChannel.ProfileSet, { patch: profileFromFields(kept, !dontAsk) });
       } else if (dontAsk !== !profile?.ask) {
         await api.invoke(IpcChannel.ProfileSet, { patch: { ask: !dontAsk } });
       }
@@ -82,7 +98,7 @@ export function NewProjectDialog({ onClose }: Props) {
   const issueFor = (field: keyof ConfigFields) => issues.find((issue) => issue.field === field);
 
   return (
-    <Dialog open onOpenChange={(open) => !open && void finish(false)}>
+    <Dialog open onOpenChange={(open) => !open && void finish("close")}>
       <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-lg" data-testid="new-project-dialog">
         <DialogHeader>
           <DialogTitle>{t("newProject.title")}</DialogTitle>
@@ -92,7 +108,7 @@ export function NewProjectDialog({ onClose }: Props) {
           className="grid gap-4"
           onSubmit={(event) => {
             event.preventDefault();
-            void finish(true);
+            void finish("done");
           }}
         >
           {filled && <p className="text-xs text-muted-foreground">{t("newProject.filled")}</p>}
@@ -142,7 +158,7 @@ export function NewProjectDialog({ onClose }: Props) {
             <Switch checked={dontAsk} onCheckedChange={setDontAsk} aria-label={t("newProject.dontAsk")} />
           </label>
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => void finish(false)}>
+            <Button type="button" variant="outline" onClick={() => void finish("close")}>
               {t("newProject.skip")}
             </Button>
             <Button type="submit">{t("newProject.confirm")}</Button>

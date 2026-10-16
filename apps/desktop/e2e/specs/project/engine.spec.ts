@@ -5,6 +5,7 @@ import { dirname, join } from "node:path";
 import { closeProject, createProject, seedChapter } from "../../support/project";
 import { DIST, REPO_ROOT } from "../../support/paths";
 import { findBundledTypst } from "../../support/find-app";
+import { viewerState } from "../../support/preview-viewer";
 
 const TEX_TEMPLATE_DIR = join(REPO_ROOT, "resources/templates/tex");
 
@@ -75,6 +76,9 @@ test.describe("with a TeX Live", () => {
     await seedChapter(page, "# 緒論\n\n這是**第一章**，公式 $x^2$。\n");
 
     await page.getByRole("button", { name: "Preview" }).click();
+    // The preview shows the PDF of a LaTeX build, which has no plain page count in its bytes
+    await expect.poll(async () => (await viewerState(page))?.total ?? 0, { timeout: 120_000 }).toBeGreaterThan(1);
+    await expect(page.getByTestId("preview-pages")).not.toContainText("The build failed");
     await page.getByRole("button", { name: "Export" }).click();
     // The folder of a project is for Typst only, the PDF is the same for both
     await expect(page.getByRole("menuitem", { name: "Export Typst project…" })).toHaveCount(0);

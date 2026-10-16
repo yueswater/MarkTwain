@@ -276,7 +276,11 @@ export function renderBlock(block: Block, ctx: BlockContext): string[] {
   switch (block.type) {
     case "heading": {
       const command = HEADINGS[Math.min(Math.max(block.level, 1), 4) - 1];
-      return [`\\${command}{${text(block.content, ctx)}}${label(block.label)}`];
+      const full = text(block.content, ctx);
+      // A footnote in a heading would be copied into the table of contents and break the build, so that entry gets a title without it
+      const plain = text(block.content.filter((node) => node.type !== "footnote"), ctx);
+      const short = plain !== full ? `[${plain}]` : "";
+      return [`\\${command}${short}{${full}}${label(block.label)}`];
     }
 
     case "paragraph": {

@@ -36,7 +36,7 @@ test("a new project asks for the thesis, can be skipped, and the next one starts
   expect(profile).toMatchObject({ author: "宋品岳", id: "112351049", ask: true });
   expect(JSON.stringify(profile)).not.toContain("潘老師");
 
-  // The second project starts with the author, and the dialog can be skipped
+  // The second project starts with the author, and skipping the dialog keeps what it shows
   const second = await first.restart({ projectName: "two.marktwain" });
   const page2 = await second.app.firstWindow();
   // The app reopens the last project, so close it to start a new one
@@ -54,8 +54,8 @@ test("a new project asks for the thesis, can be skipped, and the next one starts
       const r = await window.marktwain.invoke("config:get");
       return r.ok ? r.data.fields : null;
     });
-  // Skipped, so nothing was written to the second project
-  expect((await fields2())?.author).toBe("");
+  // Skipping keeps what the dialog showed, here the author from the first project
+  expect((await fields2())?.author).toBe("宋品岳");
 
   // Do not ask again turns the question off, and a project starts with the known facts
   const third = await second.restart({ projectName: "three.marktwain" });
@@ -104,3 +104,29 @@ test("a bad answer is refused with a message and the dialog stays", async ({ lau
   // An empty title is a missing field, not a wrong answer, so the dialog closes and the cover warns later
   await expect(dialog).toBeHidden();
 });
+
+for (const how of ["Escape", "Skip", "Close"] as const) {
+  test(`what is typed in the dialog about the thesis is kept when it is closed with ${how}`, async ({ launch }) => {
+    const session = await launch({ name: "保留", projectName: `${how}.marktwain`, env: ASKS });
+    const page = await session.app.firstWindow();
+    await createProject(page);
+    const dialog = page.getByTestId("new-project-dialog");
+    await dialog.getByLabel("Title (Chinese)").fill("深度學習於醫療影像之研究");
+    await dialog.getByLabel("Author (Chinese)").fill("王小明");
+    await dialog.getByLabel("Advisor (Chinese)").fill("李大華");
+    await dialog.getByRole("button", { name: "More" }).click();
+    await dialog.getByLabel("Defense date").fill("2026-06-15");
+    if (how === "Escape") await page.keyboard.press("Escape");
+    else await dialog.getByRole("button", { name: how }).click();
+    await expect(dialog).toBeHidden();
+    const fields = await page.evaluate(async () => {
+      const r = await window.marktwain.invoke("config:get");
+      return r.ok ? r.data.fields : null;
+    });
+    expect(fields).toMatchObject({ title: "深度學習於醫療影像之研究", author: "王小明", advisor: "李大華", oralDate: "2026-06-15" });
+    // The settings show the same
+    await page.getByRole("button", { name: "Settings", exact: true }).click();
+    await page.getByRole("dialog").getByRole("button", { name: "Information" }).click();
+    await expect(page.getByRole("dialog").getByLabel("Title (Chinese)")).toHaveValue("深度學習於醫療影像之研究");
+  });
+}

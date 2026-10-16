@@ -62,4 +62,45 @@ maybe("buildLatex", () => {
       rmSync(input.workDir, { recursive: true, force: true });
     }
   }, 300_000);
+
+  it("builds a heading that holds a footnote, with the heading in the table of contents without it", async () => {
+    const input: LatexBuildInput = {
+      ...base(),
+      documents: [{ id: "c1", kind: "chapter", text: "# 緒論\n\n## 腳註在標題中[^1]\n\n內文。\n\n[^1]: 這是註。\n" }],
+      files: [],
+    };
+    try {
+      const result = await buildLatex(input);
+      if (!result.ok) throw new Error(result.diagnostics.map((d) => `${d.severity} ${d.message}`).join("\n"));
+      expect(Buffer.from(result.pdf.subarray(0, 5)).toString()).toBe("%PDF-");
+    } finally {
+      rmSync(input.workDir, { recursive: true, force: true });
+    }
+  }, 300_000);
+
+  it("resolves the citations in a final copy with the watermark, and draws the watermark of the school", async () => {
+    const bib = new TextEncoder().encode("@article{wang2020, author={Wang, A. and Lee, B.}, title={Deep things}, journal={J. Stuff}, year={2020}}\n");
+    const make = (watermark: boolean): LatexBuildInput => ({
+      ...base(),
+      config: `${SAMPLE_CONFIG}\nschool: ntu\nbibliography:\n  path: ["/contents/back/refs.bib"]\n`,
+      documents: [{ id: "c1", kind: "chapter", text: "# 緒論\n\n引用 [@wang2020]。\n" }],
+      files: [],
+      bibliography: [{ path: "refs.bib", data: bib }],
+      watermark,
+    });
+    const draft = make(false);
+    const final = make(true);
+    try {
+      const a = await buildLatex(draft);
+      const b = await buildLatex(final);
+      if (!a.ok || !b.ok) throw new Error([a, b].flatMap((r) => r.diagnostics).map((d) => `${d.severity} ${d.message}`).join("\n"));
+      // An unresolved citation is reported by the log, the latexmk option -usepretex used to leave it so
+      expect(b.diagnostics.filter((d) => /undefined citation/.test(d.message))).toEqual([]);
+      expect(a.diagnostics.filter((d) => /undefined citation/.test(d.message))).toEqual([]);
+      expect(b.pdf.length).toBeGreaterThan(a.pdf.length);
+    } finally {
+      rmSync(draft.workDir, { recursive: true, force: true });
+      rmSync(final.workDir, { recursive: true, force: true });
+    }
+  }, 600_000);
 });
