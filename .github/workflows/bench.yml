@@ -42,6 +42,14 @@ jobs:
         run: |
           locust -f tools/bench/locustfile.py ConcurrentUsers --headless -u 8 -r 8 -t 90s --csv out/concurrent
           python3 tools/bench/check_budgets.py out/concurrent_stats.csv
+      - name: Merges of two branches, up to 50 000 blocks
+        run: |
+          locust -f tools/bench/locustfile.py MergeUser --headless -u 1 -r 1 -t 45s --csv out/merge
+          python3 tools/bench/check_budgets.py out/merge_stats.csv
+      - name: Versions saved one after the other, a few thousand of them
+        run: |
+          locust -f tools/bench/locustfile.py SnapshotUser --headless -u 1 -r 1 -t 150s --csv out/snapshot
+          python3 tools/bench/check_budgets.py out/snapshot_stats.csv
       - uses: actions/upload-artifact@v4
         if: always()
         with:

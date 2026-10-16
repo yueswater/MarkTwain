@@ -74,3 +74,7 @@ docs/
 
 # load test output
 tools/bench/out/
+
+# Python bytecode of the load tests
+__pycache__/
+*.pyc
