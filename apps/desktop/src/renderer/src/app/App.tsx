@@ -14,6 +14,7 @@ import { api } from "../shared/api";
 import { errorMessage } from "../shared/error-message";
 import { useEffect, useRef, useState } from "react";
 import { SettingsDialog } from "../features/settings/SettingsDialog";
+import type { SettingsPageId } from "../features/settings/settings-pages";
 import { ShortcutsDialog } from "../features/shortcuts/ShortcutsDialog";
 import { AppShell } from "./AppShell";
 
@@ -23,6 +24,8 @@ export function App() {
   const build = useBuild();
   const [previewOpen, setPreviewOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  // The page that the settings open at when something sent the person there, null keeps the page that was open last
+  const [settingsPage, setSettingsPage] = useState<SettingsPageId | undefined>(undefined);
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
   // Grows whenever a document or the thesis settings were saved, the preview watches it
   const [saveTick, setSaveTick] = useState(0);
@@ -116,7 +119,10 @@ export function App() {
             build={build}
             previewOpen={previewOpen}
             onClosePreview={() => setPreviewOpen(false)}
-            onOpenSettings={() => setSettingsOpen(true)}
+            onOpenSettings={(page) => {
+              setSettingsPage(page);
+              setSettingsOpen(true);
+            }}
             saveTick={saveTick}
             flushRef={flushRef}
             generation={generation}
@@ -143,7 +149,11 @@ export function App() {
       <ShortcutsDialog open={shortcutsOpen} onOpenChange={setShortcutsOpen} />
       <SettingsDialog
         open={settingsOpen}
-        onOpenChange={setSettingsOpen}
+        initialPage={settingsPage}
+        onOpenChange={(open) => {
+          setSettingsOpen(open);
+          if (!open) setSettingsPage(undefined);
+        }}
         hasProject={state.project !== null}
         onThesisSaved={bumpSaved}
       />

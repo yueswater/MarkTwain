@@ -83,6 +83,8 @@ test.describe("with a TeX Live", () => {
     // The folder of a project is for Typst only, the PDF is the same for both
     await expect(page.getByRole("menuitem", { name: "Export Typst project…" })).toHaveCount(0);
     await page.getByRole("menuitem", { name: "Export draft PDF…" }).click();
+    // A new project has an empty cover, which is asked about first
+    await page.getByTestId("export-check").getByRole("button", { name: "Export anyway" }).click();
     await expect(page.getByRole("status").filter({ hasText: "Exported to" })).toBeVisible({ timeout: 120_000 });
     expect(readFileSync(join(first.dir, "輸出.pdf")).subarray(0, 5).toString()).toBe("%PDF-");
 

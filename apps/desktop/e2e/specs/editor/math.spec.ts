@@ -12,7 +12,7 @@ test("math can be inserted from the dialog, typed with $…$, edited, and saved 
   await page.getByRole("button", { name: "Inline formula" }).click();
   const dialog = page.getByRole("dialog");
   await dialog.getByLabel("LaTeX").fill("\\frac{a");
-  await expect(dialog.getByRole("alert")).toHaveText("This formula has a syntax error.");
+  await expect(dialog.getByRole("alert")).toContainText("This formula has a syntax error. Near:");
   await expect(dialog.getByRole("button", { name: /Done/ })).toBeDisabled();
   await dialog.getByLabel("LaTeX").fill("x^2");
   await expect(dialog.getByTestId("math-preview")).toBeVisible();

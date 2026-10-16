@@ -15,7 +15,10 @@ import { IpcChannel } from "../../../../shared/enums/ipc-channel.enum";
 import type { OutputEngine } from "../../../../shared/ipc";
 import { api } from "../../shared/api";
 import { errorMessage } from "../../shared/error-message";
+import type { ConfigFields } from "@marktwain/schema";
 import { configFieldName, showNotes, warningItems } from "./build-notes";
+import { ExportCheckDialog } from "./ExportCheckDialog";
+import { missingForSubmission } from "./export-check";
 import { PdfPreview } from "./PdfPreview";
 import type { BuildState } from "./use-build";
 
@@ -27,6 +30,8 @@ type Props = {
   placeKey: string;
   /** What the project is written for, the folder of a project can be exported only for Typst */
   engine: OutputEngine;
+  /** Opens the settings at the page of the information of the thesis */
+  onFillIn: () => void;
   onClose: () => void;
   onJump: (documentId: string, block: number) => void;
   /** The block that the editor is at, the preview follows it */
@@ -54,7 +59,7 @@ function readWatch(): boolean {
   }
 }
 
-export function PreviewPanel({ build, saveTick, placeKey, engine, onClose, onJump, follow, onPick }: Props) {
+export function PreviewPanel({ build, saveTick, placeKey, engine, onFillIn, onClose, onJump, follow, onPick }: Props) {
   const { t } = useTranslation("build");
   const { t: tConfig } = useTranslation("config");
   const { t: tRoot } = useTranslation();
@@ -102,6 +107,19 @@ export function PreviewPanel({ build, saveTick, placeKey, engine, onClose, onJum
     });
   }
 
+  /** A PDF is checked first: parts of the cover that are empty print as ○○○ or as nothing, and the person is asked before. */
+  const [asking, setAsking] = useState<{ channel: typeof IpcChannel.ExportPdf | typeof IpcChannel.ExportFinalPdf; missing: (keyof ConfigFields)[] } | null>(null);
+  async function requestExport(channel: typeof IpcChannel.ExportPdf | typeof IpcChannel.ExportFinalPdf): Promise<void> {
+    try {
+      const { fields } = await api.invoke(IpcChannel.ConfigGet);
+      const missing = missingForSubmission(fields);
+      if (missing.length > 0) setAsking({ channel, missing });
+      else await exportTo(channel);
+    } catch (e) {
+      setExportNote({ ok: false, text: errorMessage(tRoot, e) });
+    }
+  }
+
   async function exportTo(channel: typeof IpcChannel.ExportPdf | typeof IpcChannel.ExportFinalPdf | typeof IpcChannel.ExportProject): Promise<void> {
     try {
       const result = await api.invoke(channel);
@@ -113,6 +131,22 @@ export function PreviewPanel({ build, saveTick, placeKey, engine, onClose, onJum
 
   return (
     <aside className="relative flex shrink-0 flex-col border-l" style={{ width }} aria-label={t("preview")}>
+      {asking && (
+        <ExportCheckDialog
+          missing={asking.missing}
+          final={asking.channel === IpcChannel.ExportFinalPdf}
+          onClose={() => setAsking(null)}
+          onFill={() => {
+            setAsking(null);
+            onFillIn();
+          }}
+          onExport={() => {
+            const channel = asking.channel;
+            setAsking(null);
+            void exportTo(channel);
+          }}
+        />
+      )}
       <div
         {...separator}
         aria-label={t("resize")}
@@ -158,8 +192,8 @@ export function PreviewPanel({ build, saveTick, placeKey, engine, onClose, onJum
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onSelect={() => void exportTo(IpcChannel.ExportPdf)}>{t("exportPdf")}</DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => void exportTo(IpcChannel.ExportFinalPdf)}>{t("exportFinalPdf")}</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => void requestExport(IpcChannel.ExportPdf)}>{t("exportPdf")}</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => void requestExport(IpcChannel.ExportFinalPdf)}>{t("exportFinalPdf")}</DropdownMenuItem>
               {engine === "typst" && (
                 <DropdownMenuItem onSelect={() => void exportTo(IpcChannel.ExportProject)}>{t("exportProject")}</DropdownMenuItem>
               )}

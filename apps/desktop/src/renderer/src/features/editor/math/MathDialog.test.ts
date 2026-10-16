@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
-import { placeBox, renderLatex } from "./MathDialog";
+import { latexErrorNear, placeBox, renderLatex } from "./MathDialog";
 
 describe("renderLatex", () => {
   it("合法的公式回傳 HTML，含 KaTeX 的標記", () => {
@@ -32,5 +32,19 @@ describe("placeBox", () => {
 
   it("does not leave the top of the window", () => {
     expect(placeBox({ top: 20, bottom: 40, left: 10, right: 50 }, { width: 380, height: 700 }, view).top).toBe(8);
+  });
+});
+
+describe("latexErrorNear", () => {
+  it("is null for a formula that can be read", () => {
+    expect(latexErrorNear("\\frac{a}{b}")).toBeNull();
+  });
+
+  it("names the few letters around the place where KaTeX stopped", () => {
+    expect(latexErrorNear("\\badcommand{x} + 1")).toContain("\\badcommand");
+    expect(latexErrorNear("a + b ^")).toContain("^");
+    // A formula that ends before it is complete stops at its end
+    expect(latexErrorNear("\\frac{a")).toContain("frac");
+    expect(latexErrorNear("\\frac{a}{b")).not.toBeNull();
   });
 });

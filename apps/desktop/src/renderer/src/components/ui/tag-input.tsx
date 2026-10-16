@@ -35,7 +35,7 @@ export function TagInput({ id, value, onChange, removeLabel, placeholder, classN
   return (
     <div
       className={cn(
-        "flex min-h-9 flex-wrap items-center gap-1.5 rounded-md border border-input bg-transparent px-2 py-1 shadow-xs focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50",
+        "flex min-h-9 flex-wrap items-center gap-1.5 rounded-md border border-input bg-transparent px-2 py-1 shadow-xs focus-within:border-foreground",
         className,
       )}
       onClick={() => input.current?.focus()}

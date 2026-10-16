@@ -155,7 +155,7 @@ export function ClickNumber({ label, value, fallback, min, max, unit, onCommit }
         value={text}
         placeholder={String(fallback)}
         autoFocus
-        className={cn("h-8 w-16 rounded-md border bg-background px-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring", invalid && "border-destructive")}
+        className={cn("h-8 w-16 rounded-md border border-input bg-background px-2 text-sm outline-none transition-colors focus-visible:border-foreground", invalid && "border-destructive")}
         onChange={(event) => setText(event.target.value)}
         onBlur={() => finish(true)}
         onKeyDown={(event) => {

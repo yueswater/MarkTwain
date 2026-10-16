@@ -124,6 +124,8 @@ test("the PDF and the whole Typst project can be exported", async ({ launch }) =
   // The PDF is built at export time, no preview is needed first
   await page.getByRole("button", { name: "Export" }).click();
   await page.getByRole("menuitem", { name: "Export draft PDF…" }).click();
+  // A new project has an empty cover, which is asked about first
+  await page.getByTestId("export-check").getByRole("button", { name: "Export anyway" }).click();
   await expect(page.getByRole("status").filter({ hasText: "Exported to" })).toBeVisible();
   expect(readFileSync(pdfPath).subarray(0, 5).toString()).toBe("%PDF-");
 
@@ -139,4 +141,26 @@ test("the PDF and the whole Typst project can be exported", async ({ launch }) =
   expect(readFileSync(join(project, "contents/chapter01.typ"), "utf8")).toContain("= 緒論");
   expect(existsSync(join(project, "lib"))).toBe(true);
   expect(existsSync(join(project, "fonts"))).toBe(true);
+});
+
+
+test("exporting while the cover is empty asks first, lists what is empty, and leads to the settings", async ({ launch }) => {
+  const { app } = await launch({ name: "封面", projectName: "論文.marktwain" });
+  const page = await app.firstWindow();
+  await createProject(page);
+  await page.getByRole("button", { name: "Preview" }).click();
+  await page.getByRole("button", { name: "Export" }).click();
+  await page.getByRole("menuitem", { name: "Export final PDF with watermark" }).click();
+
+  // The copy to hand in is named, and every empty field is listed by its name in the settings
+  const check = page.getByTestId("export-check");
+  await expect(check).toContainText("the copy to hand in");
+  await expect(check).toContainText("Student ID");
+  await expect(check).toContainText("Keywords (English)");
+  await expect(check).not.toContainText("Title (Chinese)");
+
+  // Filling in goes to the information page of the settings, and nothing is exported
+  await check.getByRole("button", { name: "Fill them in" }).click();
+  await expect(page.getByRole("dialog", { name: "Settings" }).getByRole("heading", { name: "Information" })).toBeVisible();
+  await expect(page.getByRole("status").filter({ hasText: "Exported to" })).toHaveCount(0);
 });
