@@ -2,7 +2,7 @@
 
 MarkTwain is developed against version milestones. Each version maps to a [GitHub Milestone](../../milestones), and the work items are tracked as issues.
 
-Current version: v0.4.0.
+Current version: v0.5.0.
 
 | Version | Theme | Status |
 |---|---|---|
@@ -15,7 +15,7 @@ Current version: v0.4.0.
 | [v0.3.5](#v035--blocks-and-tables) | Blocks and tables | Released |
 | [v0.3.6](#v036--toolchain-and-preview) | Toolchain and preview | Released |
 | [v0.4.0](#v040--version-control) | Version control | Released |
-| [v0.5.0](#v050--latex-output) | LaTeX output | Not started |
+| [v0.5.0](#v050--latex-output) | LaTeX output | Released |
 | [v0.5.1](#v051--project-export) | Project export | Not started |
 | [v0.6.0](#v060--word-output) | Word output, the body | Not started |
 | [v0.6.1](#v061--word-output-front-matter-and-schools) | Word output, the front matter and the schools | Not started |
