@@ -8,6 +8,8 @@ export default defineConfig({
   testMatch: "**/*.spec.ts",
   // A build waits up to 90 s for the first PDF on a slow runner, so a test has to be allowed longer than that
   timeout: 150_000,
+  // The first start of the app on a cold runner can take longer than the 5 s that an expectation waits by default
+  expect: { timeout: 15_000 },
   retries: 0,
   workers: 1,
   reporter: [["list"]],
