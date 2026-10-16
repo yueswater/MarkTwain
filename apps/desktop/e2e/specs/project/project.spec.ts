@@ -13,7 +13,7 @@ test("a project survives being created, saved, closed, and reopened", async ({ l
   const result = await page.evaluate(
     async ({ file }) => {
       const api = window.marktwain;
-      const created = await api.invoke("project:create", { path: file, name: "我的論文" });
+      const created = await api.invoke("project:create", { path: file, name: "我的論文", engine: "typst" });
       if (!created.ok) return { step: "create", error: created.error };
       const chapter = created.data.documents.find((d) => d.kind === "chapter");
       if (!chapter) return { step: "find chapter" };

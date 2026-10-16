@@ -34,6 +34,9 @@ export const TEST_IMAGE_PATH_ENV = "MARKTWAIN_TEST_IMAGE_PATH";
 export const TYPST_PATH_ENV = "MARKTWAIN_TYPST";
 export const TYPST_PACKAGES_ENV = "MARKTWAIN_TYPST_PACKAGES";
 export const TEMPLATE_DIR_ENV = "MARKTWAIN_TEMPLATE_DIR";
+/** The folder with xelatex, latexmk and texlua of a TeX Live, found by hand in development until the installer carries one */
+export const TEX_BIN_ENV = "MARKTWAIN_TEX_BIN";
+export const TEX_TEMPLATE_DIR_ENV = "MARKTWAIN_TEX_TEMPLATE_DIR";
 
 /** URL scheme that serves the last built PDF to the preview. */
 export const PREVIEW_SCHEME = "marktwain-preview";

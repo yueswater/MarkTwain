@@ -65,5 +65,30 @@
     "dontAsk": "不要再詢問",
     "skip": "跳過",
     "confirm": "完成"
+  },
+  "engine": {
+    "title": "論文要用哪一種輸出？",
+    "description": "一個專案只輸出一種格式。請選學校或指導教授要求的那一種。",
+    "checking": "正在檢查這台電腦…",
+    "typst": {
+      "name": "Typst",
+      "note": "已內建，不用安裝。預覽很快。"
+    },
+    "latex": {
+      "name": "LaTeX",
+      "note": "使用這台電腦上的 TeX Live。編譯比 Typst 慢。",
+      "missing": {
+        "tex": "這台電腦找不到 TeX Live。請先安裝 TeX Live 或 TinyTeX。",
+        "citation-style-language": "這台電腦的 TeX Live 缺少 citation-style-language 套件。",
+        "template": "找不到 LaTeX 模板。請執行 pnpm templates:fetch。"
+      }
+    },
+    "word": {
+      "name": "Word",
+      "note": "目前還不能用，之後的版本會提供。"
+    },
+    "warning": "建立專案之後就不能更換。要用另一種輸出，請另外建立新專案。",
+    "cancel": "取消",
+    "confirm": "建立專案"
   }
 }

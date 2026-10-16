@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { usePrefs } from "@/lib/prefs";
 import { useResizableWidth } from "@/lib/resizable-width";
 import { IpcChannel } from "../../../../shared/enums/ipc-channel.enum";
+import type { OutputEngine } from "../../../../shared/ipc";
 import { api } from "../../shared/api";
 import { errorMessage } from "../../shared/error-message";
 import { showNotes, warningItems } from "./build-notes";
@@ -24,6 +25,8 @@ type Props = {
   saveTick: number;
   /** Tells projects apart, the place in the preview is kept for each */
   placeKey: string;
+  /** What the project is written for, the folder of a project can be exported only for Typst */
+  engine: OutputEngine;
   onClose: () => void;
   onJump: (documentId: string, block: number) => void;
   /** The block that the editor is at, the preview follows it */
@@ -51,7 +54,7 @@ function readWatch(): boolean {
   }
 }
 
-export function PreviewPanel({ build, saveTick, placeKey, onClose, onJump, follow, onPick }: Props) {
+export function PreviewPanel({ build, saveTick, placeKey, engine, onClose, onJump, follow, onPick }: Props) {
   const { t } = useTranslation("build");
   const { t: tRoot } = useTranslation();
   const [exportNote, setExportNote] = useState<{ ok: boolean; text: string } | null>(null);
@@ -156,7 +159,9 @@ export function PreviewPanel({ build, saveTick, placeKey, onClose, onJump, follo
             <DropdownMenuContent align="end">
               <DropdownMenuItem onSelect={() => void exportTo(IpcChannel.ExportPdf)}>{t("exportPdf")}</DropdownMenuItem>
               <DropdownMenuItem onSelect={() => void exportTo(IpcChannel.ExportFinalPdf)}>{t("exportFinalPdf")}</DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => void exportTo(IpcChannel.ExportProject)}>{t("exportProject")}</DropdownMenuItem>
+              {engine === "typst" && (
+                <DropdownMenuItem onSelect={() => void exportTo(IpcChannel.ExportProject)}>{t("exportProject")}</DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
           <Button variant="ghost" size="icon-sm" aria-label={t("close")} onClick={onClose}>

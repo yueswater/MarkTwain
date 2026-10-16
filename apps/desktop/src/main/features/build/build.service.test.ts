@@ -36,7 +36,7 @@ function service(result: BuildResult | (() => Promise<BuildResult>)) {
 beforeEach(() => {
   const db = openDatabase(":memory:");
   migrate(db, MIGRATIONS);
-  new ProjectRepository(db).insert("我的論文", 0);
+  new ProjectRepository(db).insert("我的論文", "typst", 0);
   session = new DatabaseSession();
   session.open(db, ":memory:");
   let n = 0;
@@ -147,5 +147,55 @@ describe("BuildService", () => {
       });
       expect(await code(async () => s.exportProject("/parent"))).toBe("export.failed");
     });
+  });
+});
+
+describe("BuildService with a project written for LaTeX", () => {
+  const ok: BuildResult = { ok: true, pdf: new Uint8Array([7]), pages: [], diagnostics: [], mathFailures: [], anchors: [] };
+
+  function latexService(tex: { bin: string | null; templateDir: string } | undefined) {
+    session.db.run("UPDATE project SET engine = 'latex'");
+    const latexSeen: unknown[] = [];
+    const s = new BuildService(
+      session,
+      documents,
+      config,
+      () => ({ typst: "typst", templateDir, tex }),
+      async () => {
+        throw new Error("the Typst builder must not run");
+      },
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      async (input) => {
+        latexSeen.push(input);
+        return ok;
+      },
+    );
+    return { s, latexSeen };
+  }
+
+  it("builds with the LaTeX builder and the template and TeX Live of the LaTeX side", async () => {
+    const { s, latexSeen } = latexService({ bin: "/tex/bin", templateDir });
+    const outcome = await s.build();
+    expect(outcome.ok).toBe(true);
+    expect(latexSeen[0]).toMatchObject({ templateDir, texBin: "/tex/bin", watermark: false });
+    expect([...(s.latestPdf() ?? [])]).toEqual([7]);
+  });
+
+  it("tells that LaTeX is missing before it builds anything", async () => {
+    expect(await code(() => latexService({ bin: null, templateDir }).s.build())).toBe("build.tex-missing");
+    expect(await code(() => latexService(undefined).s.build())).toBe("build.tex-missing");
+  });
+
+  it("exports the PDF with the same builder and refuses the folder of a Typst project", async () => {
+    const { s, latexSeen } = latexService({ bin: "/tex/bin", templateDir });
+    const out = join(mkdtempSync(join(tmpdir(), "mt-out ")), "a.pdf");
+    await s.savePdf(out, true);
+    expect(latexSeen[0]).toMatchObject({ watermark: true });
+    expect([...readFileSync(out)]).toEqual([7]);
+    expect(() => s.exportProject(tmpdir())).toThrow(AppError);
   });
 });

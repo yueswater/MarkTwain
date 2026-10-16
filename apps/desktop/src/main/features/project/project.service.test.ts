@@ -5,7 +5,7 @@ import { join } from "node:path";
 import { AppError } from "../../core/errors";
 import { DatabaseSession } from "../../core/database-session";
 import { openDatabase } from "../../infra/db";
-import type { Migration } from "../../infra/migrate";
+import { migrate, type Migration } from "../../infra/migrate";
 import { MIGRATIONS } from "../../infra/migrations";
 import { DocumentService } from "../document/document.service";
 import { ProjectService } from "./project.service";
@@ -140,5 +140,31 @@ describe("open", () => {
     expect(service().current()?.name).toBe("B");
     service().open(a);
     expect(service().current()?.name).toBe("A");
+  });
+});
+
+describe("engine", () => {
+  it("is Typst unless the project is created for another one, and is kept when the project is opened again", () => {
+    expect(service().create(file, "a").engine).toBe("typst");
+    service().close();
+    const latexFile = join(dir, "latex.marktwain");
+    expect(service().create(latexFile, "b", "latex").engine).toBe("latex");
+    service().close();
+    expect(service().open(latexFile).engine).toBe("latex");
+    expect(service().current()?.engine).toBe("latex");
+  });
+
+  it("refuses an engine that is not available and leaves no file", () => {
+    expect(codeOf(() => service().create(file, "w", "word"))).toBe("project.engine-unavailable");
+    expect(codeOf(() => service().create(file, "w", "nope" as never))).toBe("project.engine-unavailable");
+    expect(existsSync(file)).toBe(false);
+  });
+
+  it("gives a project from before the choice the Typst engine, the only output it had", () => {
+    const db = openDatabase(file);
+    migrate(db, MIGRATIONS.filter((m) => m.version <= 2));
+    db.run("INSERT INTO project (id, name, created_at) VALUES (1, 'old', 0)");
+    db.close();
+    expect(service().open(file).engine).toBe("typst");
   });
 });

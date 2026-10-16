@@ -65,5 +65,30 @@
     "dontAsk": "Do not ask again",
     "skip": "Skip",
     "confirm": "Done"
+  },
+  "engine": {
+    "title": "How will the thesis be made?",
+    "description": "The project is written for one output. Pick the one that your school or your advisor asks for.",
+    "checking": "Checking this computer…",
+    "typst": {
+      "name": "Typst",
+      "note": "Built in, nothing to install. The preview is quick."
+    },
+    "latex": {
+      "name": "LaTeX",
+      "note": "Uses the TeX Live of this computer. Builds are slower than Typst.",
+      "missing": {
+        "tex": "No TeX Live was found on this computer. Install TeX Live or TinyTeX first.",
+        "citation-style-language": "The TeX Live of this computer lacks the package citation-style-language.",
+        "template": "The LaTeX template was not found. Run pnpm templates:fetch."
+      }
+    },
+    "word": {
+      "name": "Word",
+      "note": "Not available yet, it comes in a later version."
+    },
+    "warning": "This cannot be changed after the project is created. To use another output, start a new project.",
+    "cancel": "Cancel",
+    "confirm": "Create project"
   }
 }

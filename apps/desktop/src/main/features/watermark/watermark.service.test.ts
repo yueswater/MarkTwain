@@ -23,7 +23,7 @@ const thumbs: string[] = [];
 beforeEach(() => {
   const db = openDatabase(":memory:");
   migrate(db, MIGRATIONS);
-  new ProjectRepository(db).insert("我的論文", 0);
+  new ProjectRepository(db).insert("我的論文", "typst", 0);
   session = new DatabaseSession();
   session.open(db, ":memory:");
   config = new ConfigService(session, () => new Date(5), (path) => {

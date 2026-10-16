@@ -4,6 +4,7 @@ import { IpcChannel } from "../../../shared/enums/ipc-channel.enum";
 import type { Locale } from "../../../shared/enums/locale.enum";
 import { useBuild } from "../features/build/use-build";
 import { useProject } from "../features/project/use-project";
+import { EngineDialog } from "../features/project/welcome/EngineDialog";
 import { NewProjectDialog } from "../features/project/welcome/NewProjectDialog";
 import { WelcomeScreen } from "../features/project/welcome/WelcomeScreen";
 import { Workspace } from "../features/project/Workspace";
@@ -61,7 +62,7 @@ export function App() {
     () =>
       window.marktwain.onMenuCommand((command) => {
         const current = stateRef.current;
-        if (command === MenuCommand.NewProject) void current.createProject(t("welcome.defaultName", { ns: "project" }));
+        if (command === MenuCommand.NewProject) current.beginCreate();
         else if (command === MenuCommand.OpenProject) void current.openProject();
         else if (command === MenuCommand.CloseProject) void current.closeProject();
         else if (command === MenuCommand.Shortcuts) setShortcutsOpen(true);
@@ -127,12 +128,17 @@ export function App() {
             recent={state.recent}
             onOpenRecent={(path) => void state.openRecent(path)}
             onRemoveRecent={(path) => void state.removeRecent(path)}
-            onCreate={(name) => void state.createProject(name)}
+            onCreate={state.beginCreate}
             onOpen={() => void state.openProject()}
           />
         )}
         </div>
       </div>
+      <EngineDialog
+        open={state.choosingEngine}
+        onCancel={state.cancelCreate}
+        onConfirm={(engine) => void state.createProject(t("welcome.defaultName", { ns: "project" }), engine)}
+      />
       {state.project && state.justCreated && <NewProjectDialog onClose={state.finishCreation} />}
       <ShortcutsDialog open={shortcutsOpen} onOpenChange={setShortcutsOpen} />
       <SettingsDialog

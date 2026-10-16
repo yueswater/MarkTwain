@@ -61,7 +61,7 @@ let service: FontService;
 beforeEach(() => {
   const db = openDatabase(":memory:");
   migrate(db, MIGRATIONS);
-  new ProjectRepository(db).insert("論文", 0);
+  new ProjectRepository(db).insert("論文", "typst", 0);
   session = new DatabaseSession();
   session.open(db, ":memory:");
   templateDir = mkdtempSync(join(tmpdir(), "marktwain font "));

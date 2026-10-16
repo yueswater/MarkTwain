@@ -4,8 +4,8 @@ import type { RecentService } from "../recent/recent.service";
 import type { ProjectService } from "./project.service";
 
 export function registerProjectController(service: ProjectService, recent: RecentService): void {
-  handle(IpcChannel.ProjectCreate, ({ path, name }) => {
-    const info = service.create(path, name);
+  handle(IpcChannel.ProjectCreate, ({ path, name, engine }) => {
+    const info = service.create(path, name, engine);
     recent.record(path, info.name);
     return info;
   });

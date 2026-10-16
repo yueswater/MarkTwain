@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { DocumentKind } from "../../../../shared/enums/document-kind.enum";
 import { IpcChannel } from "../../../../shared/enums/ipc-channel.enum";
-import type { ProjectInfo, RecentProject } from "../../../../shared/ipc";
+import type { OutputEngine, ProjectInfo, RecentProject } from "../../../../shared/ipc";
 import { api } from "../../shared/api";
 import { errorMessage } from "../../shared/error-message";
 import { projectNameFromPath } from "./sidebar/document-title";
@@ -15,9 +15,13 @@ export function useProject() {
   const [loading, setLoading] = useState(true);
   // True right after a project was made, the dialog about the thesis is shown until it is done
   const [justCreated, setJustCreated] = useState(false);
+  // True while the engine of a new project is asked, it cannot be changed once the project exists
+  const [choosingEngine, setChoosingEngine] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const finishCreation = useCallback(() => setJustCreated(false), []);
+  const beginCreate = useCallback(() => setChoosingEngine(true), []);
+  const cancelCreate = useCallback(() => setChoosingEngine(false), []);
 
   const run = useCallback(
     async (action: () => Promise<void>): Promise<void> => {
@@ -50,11 +54,12 @@ export function useProject() {
     // Fetch once on load
   }, []);
 
-  const createProject = (suggestedName: string) =>
+  const createProject = (suggestedName: string, engine: OutputEngine) =>
     run(async () => {
+      setChoosingEngine(false);
       const path = await api.invoke(IpcChannel.DialogChooseNewProject, { suggestedName });
       if (!path) return;
-      setProject(await api.invoke(IpcChannel.ProjectCreate, { path, name: projectNameFromPath(path) }));
+      setProject(await api.invoke(IpcChannel.ProjectCreate, { path, name: projectNameFromPath(path), engine }));
       setJustCreated(true);
       await refreshRecent();
     });
@@ -122,6 +127,9 @@ export function useProject() {
     error,
     justCreated,
     finishCreation,
+    choosingEngine,
+    beginCreate,
+    cancelCreate,
     refresh,
     createProject,
     openProject,

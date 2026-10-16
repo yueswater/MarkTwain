@@ -1,4 +1,5 @@
 import { expect, test } from "../../support/test";
+import { chooseEngine } from "../../support/project";
 
 test("the native menu follows the interface language and drives the app", async ({ launch }) => {
   const { app, file } = await launch({ name: "選單", lang: "zh-TW", projectName: "論文.marktwain" });
@@ -19,13 +20,14 @@ test("the native menu follows the interface language and drives the app", async 
   expect((await labels()).filter(Boolean)).toEqual(expect.arrayContaining(["檔案", "編輯", "檢視", "視窗", "說明"]));
   expect(await fileMenuItems()).toEqual(expect.arrayContaining(["新增專案…", "開啟專案…", "關閉專案"]));
 
-  // File, New Project triggers the new project flow in the renderer
+  // File, New Project triggers the new project flow in the renderer, which asks for the output first
   await app.evaluate(({ Menu }) => {
     const item = Menu.getApplicationMenu()
       ?.items.flatMap((i) => i.submenu?.items ?? [])
       .find((i) => i.accelerator === "CmdOrCtrl+N");
     item?.click();
   });
+  await chooseEngine(page, "typst", "zh-TW");
   await expect(page.getByRole("complementary", { name: "文件" })).toBeVisible();
 
   // File, Close Project returns to the welcome screen

@@ -152,8 +152,9 @@ The same content, rendered as LaTeX.
 - LaTeX renderer (shares the IR with Typst)
 - Finding a TeX Live (`xelatex`, `texlua`, `latexmk`, `citation-style-language`) through an environment variable or the PATH, as Typst is found in development. The installed app will carry its own, see v0.8.0
 - Runs the template's `gen.lua` and latexmk, and parses the TeX log
+- A project picks its output when it is created, Typst or LaTeX, and Word from v0.6.0. The choice cannot be changed afterwards, and the screen that asks for it says so. A computer with no TeX Live cannot pick LaTeX, and the screen says why
 
-**Done when:** the same sample thesis builds a LaTeX PDF with the TeX Live of the developer. Without one, LaTeX output is disabled with a message, and Typst is unaffected.
+**Done when:** the same sample thesis builds a LaTeX PDF with the TeX Live of the developer, from a LaTeX project. Without a TeX Live, LaTeX cannot be picked for a new project and Typst is unaffected.
 
 ## v0.5.1 · Project Export
 
