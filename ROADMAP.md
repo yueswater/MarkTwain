@@ -169,9 +169,11 @@ The zip holds a complete template project folder in the shape of `tw-thesis-typ`
 
 ## v0.6.0 · Word Output
 
-The same thesis structure and settings, written as a real `.docx`. This is split over three versions: v0.6.0 is the body, v0.6.1 the front matter and the schools, v0.6.2 citations and the math font.
+The same content and rules, written as a real `.docx`. This is split over three versions: v0.6.0 is the body, v0.6.1 the front matter and the schools, v0.6.2 citations and the math font.
 
-The promise is that PDF and Word come from the same thesis structure and the same formatting settings. It is not that they are identical line by line. Typst and Word are two layout engines, and one word of difference moves the later page numbers.
+The promise: Typst, LaTeX and Word get the same content and the same rules. The rules are paper size, margins, fonts, font sizes, line spacing, indents, heading format, chapter, figure, table and equation numbering, page number format, and headers and footers. Line breaks and page breaks are not promised to be identical. A PDF stores final glyph positions. A `.docx` stores content and rules, and Word computes the line and page breaks when the file is opened, on the reader's machine. So the pages end up close but can differ by a line or a page. The difference is measured and reported, not hidden. Issue #147.
+
+A fixed-layout Word mode, with hard line and page breaks copied from Typst, is not planned. It would make the file impossible to edit.
 
 The file has real Word structure, not just a look: heading styles, `SEQ` captions, `REF` cross-references with the result already filled in, `TOC` fields with the entries already filled in, footnotes in `footnotes.xml`, formulas as real Word equations (OMML) that can be edited, and sections with roman then arabic page numbers.
 
@@ -187,8 +189,44 @@ v0.6.0 is the body:
 - Captions, bookmarks, cross-references, footnotes. Issue #137
 - The export entry and `build-docx`. Issue #138
 - Validation in CI with the Open XML SDK validator and a LibreOffice conversion to PDF. Issue #139
+- A comparison of the Typst, LaTeX and Word outputs: content and spec checks that block CI, and a pagination report that never blocks. Issue #147
 
-**Done when:** a sample thesis exports to a `.docx` that passes the validator and opens in LibreOffice with the same numbers for figures, tables, formulas and blocks as the PDF.
+**Done when:** a sample thesis exports to a `.docx` that passes the validator and opens in LibreOffice with the same numbers for figures, tables, formulas and blocks as the PDF, and the content and spec checks of issue #147 pass for the three outputs.
+
+### How the Word file looks good
+
+Five layers, from the most basic to the last check:
+
+1. **Styles first.** A fixed set of named Word styles is generated from `thesis-spec`. There is no manual formatting on single paragraphs, so a user who changes a style changes the whole thesis.
+2. **A small fixed base.** Compatibility mode 15, `docDefaults`, default language `zh-TW`, the footnote text, footnote reference and hyperlink styles, and `docGrid` off.
+3. **Chinese typesetting details.**
+   - The font is set per kind of text: `ascii`, `eastAsia` and `hAnsi` are each explicit, and `eastAsia` gets one font name only.
+   - The first-line indent is 2 characters.
+   - Line spacing is "at least", not "exactly", so formulas are not clipped.
+   - The spacing between CJK and Latin text and the punctuation compression are tuned toward what Typst does.
+   - The `w14` ligature and kerning settings are set to match Typst.
+4. **Layout hygiene through styles.** `keepNext`, widow and orphan control, the page break before a chapter in the Heading 1 style, repeated table header rows, `cantSplit` rows, and an equation number placed with a center tab plus a right tab.
+5. **Checks.**
+   - Structure validation in CI with the OOXML validator. Issue #139
+   - LibreOffice converts the file to PDF, then to images, as a visual regression with Typst and Word side by side. Issue #139
+   - A manual check in a real Word before each release, with a checklist. Issue #145
+
+### OOXML scope
+
+We write the XML directly, with a small writer and `fflate` for the zip. The parts used are:
+
+- Wordprocessing: document, styles, numbering, settings, footnotes, headers and footers, fields, tables, sections
+- Packaging: zip parts, content types, relationships
+- Math (OMML)
+- Drawing.Wordprocessing and Drawing.Pictures, for inline images
+- ExtendedProperties and CustomProperties, for `docProps`
+- The Office 2010 Word (`w14`) extensions, for ligatures and number forms
+
+Maybe later: Bibliography (native sources), SVG with a PNG fallback, and CoverPageProps.
+
+Not used: Excel, PowerPoint, SmartArt, VML, comments, text-box layout.
+
+The Microsoft Open XML SDK is .NET only. We use it as a reference for element names and their order, and its validator runs in CI. We do not import it.
 
 Known limits of the Word output, for all of v0.6.x:
 
@@ -210,7 +248,7 @@ The parts of the thesis before and after the body, and the covers of the schools
 
 - Citations and the reference list with CSL (`citeproc-js`), written as static text with links, not as Word sources. Issue #143
 - A `layout.font-math` setting for Typst, LaTeX and Word, which needs a pull request in each template repository. Issue #144
-- A checklist for a real Word, to be done by hand before each release, and the list of fonts the file needs. Issue #145
+- A checklist for a real Word, to be done by hand before each release, and the list of fonts a reader needs. The Word output uses the fonts of the thesis settings. Issue #145
 
 **Done when:** citations match the PDF or the differences are listed, the math font setting works in the three outputs, and the checklist was done once in a real Word.
 
