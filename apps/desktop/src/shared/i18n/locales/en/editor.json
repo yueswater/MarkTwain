@@ -249,6 +249,10 @@
         "name": "Text",
         "description": "Plain text, the default block of the body."
       },
+      "heading1": {
+        "name": "Chapter title",
+        "description": "The title of the chapter, it starts a new page in the thesis."
+      },
       "heading2": {
         "name": "Section",
         "description": "The title of a section in a chapter."
@@ -344,6 +348,14 @@
       "statement_proof": {
         "name": "Proof",
         "description": "Not numbered, ends with a box."
+      },
+      "abstractZh": {
+        "name": "Chinese abstract",
+        "description": "The abstract in Chinese, with its own page and the Chinese keywords."
+      },
+      "abstractEn": {
+        "name": "English abstract",
+        "description": "The abstract in English, with its own page and the English keywords."
       },
       "landscape": {
         "name": "Landscape page",
@@ -482,5 +494,10 @@
   },
   "changes": {
     "revert": "Put back"
+  },
+  "abstract": {
+    "headZh": "Chinese abstract, printed under the title 摘要 with the Chinese keywords of the thesis settings",
+    "headEn": "English abstract, printed under the title Abstract with the English keywords of the thesis settings",
+    "remove": "Remove this part and keep what is written in it"
   }
 }

@@ -67,27 +67,27 @@
     "confirm": "Done"
   },
   "engine": {
-    "title": "How will the thesis be made?",
-    "description": "The project is written for one output. Pick the one that your school or your advisor asks for.",
+    "title": "How should the thesis be typeset?",
+    "description": "Each project is typeset in one way. Most people can pick Typst.",
     "checking": "Checking this computer…",
     "typst": {
       "name": "Typst",
-      "note": "Built in, nothing to install. The preview is quick."
+      "note": "Recommended. Built in, nothing to install, and the preview is quick."
     },
     "latex": {
       "name": "LaTeX",
-      "note": "Uses the TeX Live of this computer. Builds are slower than Typst.",
+      "note": "Only if your advisor or department already has a LaTeX template. It uses the TeX Live of this computer, and builds are slower than Typst.",
       "missing": {
-        "tex": "No TeX Live was found on this computer. Install TeX Live or TinyTeX first.",
-        "citation-style-language": "The TeX Live of this computer lacks the package citation-style-language.",
-        "template": "The LaTeX template was not found. Run pnpm templates:fetch."
+        "tex": "No TeX Live was found on this computer. Install TeX Live or TinyTeX first, then start again.",
+        "citation-style-language": "The TeX Live of this computer lacks the package citation-style-language, install it with tlmgr, then start again.",
+        "template": "The LaTeX template is missing from this copy of MarkTwain. Reinstall MarkTwain."
       }
     },
     "word": {
       "name": "Word",
-      "note": "Not available yet, it comes in a later version."
+      "note": "Not available yet, it comes in a later version. For now you can export a PDF for your advisor."
     },
-    "warning": "This cannot be changed after the project is created. To use another output, start a new project.",
+    "warning": "This cannot be changed after the project is created, because the files of the two ways are different. To use the other one, start a new project.",
     "cancel": "Cancel",
     "confirm": "Create project"
   }

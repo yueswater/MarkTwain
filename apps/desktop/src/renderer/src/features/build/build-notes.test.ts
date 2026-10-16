@@ -1,6 +1,6 @@
 import { describe, expect, it } from "@jest/globals";
 import type { BuildDiagnostic } from "../../../../shared/ipc";
-import { showNotes, warningItems } from "./build-notes";
+import { configFieldName, showNotes, warningItems } from "./build-notes";
 
 const diag = (over: Partial<BuildDiagnostic>): BuildDiagnostic => ({
   severity: "warning",
@@ -60,5 +60,14 @@ describe("showNotes", () => {
     expect(showNotes([], [])).toBe(false);
     expect(showNotes([diag({ severity: "error" })], [])).toBe(true);
     expect(showNotes([], [{ kind: "font", font: "x" }])).toBe(true);
+  });
+});
+
+describe("configFieldName", () => {
+  it("turns a key of config.yml into the name of the field of the settings", () => {
+    expect(configFieldName("title-en")).toBe("titleEn");
+    expect(configFieldName("oral-date")).toBe("oralDate");
+    expect(configFieldName("id")).toBe("id");
+    expect(configFieldName("keywords-en")).toBe("keywordsEn");
   });
 });

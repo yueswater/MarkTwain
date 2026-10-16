@@ -292,7 +292,7 @@
 .ProseMirror div[data-statement][data-statement-style="colored"] .statement-head { color: color-mix(in oklab, var(--st-accent) 80%, var(--foreground)); }
 
 /* A block printed on a page turned sideways is shown in a dashed frame with a head, the PDF turns the page */
-.ProseMirror div[data-landscape] { position: relative; margin: 1rem 0; padding: 0.25rem 0.75rem 0.5rem; border: 2px dashed color-mix(in oklab, var(--foreground) 35%, transparent); border-radius: 0.5rem; }
+.ProseMirror div[data-landscape], .ProseMirror div[data-abstract] { position: relative; margin: 1rem 0; padding: 0.25rem 0.75rem 0.5rem; border: 2px dashed color-mix(in oklab, var(--foreground) 35%, transparent); border-radius: 0.5rem; }
 .ProseMirror .landscape-head { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; padding: 0.35rem 0 0.15rem; font-size: 0.8rem; color: var(--muted-foreground); user-select: none; }
 .ProseMirror .landscape-head button { border-radius: 0.25rem; padding: 0 0.4rem; font-size: 1rem; line-height: 1.3; color: var(--muted-foreground); cursor: pointer; }
 .ProseMirror .landscape-head button:hover { background: var(--muted); color: var(--foreground); }

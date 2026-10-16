@@ -1,6 +1,6 @@
 import { app, BrowserWindow, shell } from "electron";
 import { join } from "node:path";
-import { HEADLESS_ENV, RENDERER_URL_ENV, WINDOW_SIZE } from "../config/app.config";
+import { HEADLESS_ENV, MIN_WINDOW_SIZE, RENDERER_URL_ENV, WINDOW_SIZE } from "../config/app.config";
 
 /** Window icon for Windows and Linux, macOS uses the app icon. Packaged as resources/icon.png. */
 function windowIconPath(): string {
@@ -15,6 +15,9 @@ export function createMainWindow(): BrowserWindow {
   if (headless) app.dock?.hide();
   const win = new BrowserWindow({
     ...WINDOW_SIZE,
+    // Smaller than this the text column of the editor next to the sidebar and the preview is a few letters wide
+    minWidth: MIN_WINDOW_SIZE.width,
+    minHeight: MIN_WINDOW_SIZE.height,
     show: !headless,
     icon: windowIconPath(),
     webPreferences: {

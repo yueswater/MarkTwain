@@ -43,3 +43,8 @@ export function warningItems(diagnostics: readonly BuildDiagnostic[], mathFailur
 export function showNotes(errors: readonly BuildDiagnostic[], items: readonly WarningItem[]): boolean {
   return errors.length > 0 || items.length > 0;
 }
+
+/** The name of a field of the thesis settings for a key of config.yml, title-en is titleEn, so the label of the field can be found. */
+export function configFieldName(key: string): string {
+  return key.replace(/-([a-z])/g, (_, letter: string) => letter.toUpperCase());
+}

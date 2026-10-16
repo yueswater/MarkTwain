@@ -85,7 +85,7 @@ export function EngineDialog({ open, onCancel, onConfirm }: Props) {
             </label>
           ))}
         </div>
-        <p role="note" className="rounded-lg border border-destructive/40 bg-destructive/5 p-3 text-sm">
+        <p role="note" className="rounded-lg border bg-muted/40 p-3 text-sm">
           {t("engine.warning")}
         </p>
         <DialogFooter>

@@ -1,10 +1,11 @@
 import { expect, test } from "../../support/test";
-import { closeProject, createProject, openRecent, readChapter, seedChapter } from "../../support/project";
+import { closeProject, createProject, openRecent, readChapter, seedChapter, showChangeMarks } from "../../support/project";
 
 test("a version takes only the changes that are chosen, and any two versions can be compared", async ({ launch }) => {
   const { app } = await launch({ name: "version-stage" });
   const page = await app.firstWindow();
   await createProject(page);
+  await showChangeMarks(page);
   const bar = page.getByTestId("branch-bar");
   const editor = page.locator(".ProseMirror");
   await expect(bar).toContainText("Main line");

@@ -80,6 +80,8 @@ export function buildExtensions(ctx: EditorContext): Extensions {
     ChangeMarks.configure({ getBase: () => ctx.savedBlocks(), enabled: () => ctx.prefs().showChanges, revertLabel: () => t()("changes.revert") }),
     LandscapeMarks.configure({
       label: () => t()("landscape.head"),
+      abstractLabel: (kind) => t()(kind === "abstract-zh" ? "abstract.headZh" : "abstract.headEn"),
+      abstractRemoveLabel: () => t()("abstract.remove"),
       removeLabel: () => t()("landscape.remove"),
       onRemove: (pos) => {
         const editor = ctx.editor();

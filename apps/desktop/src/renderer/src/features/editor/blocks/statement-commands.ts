@@ -43,3 +43,8 @@ export function unwrapStatement(editor: Editor, pos: number): void {
     })
     .run();
 }
+
+/** Wraps the selected blocks in one part of the abstract, the Chinese or the English one. */
+export function insertAbstract(editor: Editor, kind: "abstract-zh" | "abstract-en"): void {
+  editor.chain().focus().wrapIn("div", { id: null, classes: [kind], props: {} }).run();
+}
