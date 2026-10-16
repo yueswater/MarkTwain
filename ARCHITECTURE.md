@@ -6,6 +6,7 @@ How the code is divided, and the rules that keep the parts apart. Two of the rul
 
 ```
 packages/*            pure TypeScript libraries, no Electron, no app
+                      (schema: Markdown and its blocks, render: Typst, build: the build, versioning: snapshots, diff and merge)
 apps/desktop/src/
   shared/             what both sides know: the IPC contract, enums, preferences
   main/               the back end (Node.js, Electron)
