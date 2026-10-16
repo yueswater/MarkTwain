@@ -22,7 +22,7 @@ MarkTwain 是 [TW-Thesis](https://github.com/TW-Thesis) 模板的編輯器。你
 
 > **免責聲明**：格式設定來自 TW-Thesis 模板，僅供參考，實際仍請以學校公布的論文規範及系所要求為準。
 
-> **目前狀態**：開發中。v0.4.0 可以用 Typst 模板寫作、建置 PDF，並保存論文的版本。安裝檔和 LaTeX 輸出會在後續版本推出（見 [ROADMAP.md](ROADMAP.md)），目前請從原始碼執行。
+> **目前狀態**：開發中。v0.4.0 可以用 Typst 模板寫作、建置 PDF，並保存論文的版本。安裝檔、LaTeX 輸出和 Word 輸出會在後續版本推出（見 [ROADMAP.md](ROADMAP.md)），目前請從原始碼執行。
 
 ## 功能
 
@@ -38,7 +38,7 @@ MarkTwain 是 [TW-Thesis](https://github.com/TW-Thesis) 模板的編輯器。你
 
 介面有繁體中文和英文。
 
-還沒做的是 LaTeX 輸出（v0.5.0）。
+還沒做的是 LaTeX 輸出（v0.5.0）、把整份論文匯出成模板資料夾 zip 檔（v0.5.1），以及 Word 輸出（v0.6.x）。
 
 ## 從原始碼執行
 
