@@ -10,6 +10,10 @@ export type InlineContext = {
   hasBibliography?: boolean;
   /** Called with the keys of a citation that fell back to plain text */
   onCitationFallback?: (keys: string[]) => void;
+  /** The keys that the bibliography has, null when they are not known. A citation of another key stays plain text. */
+  knownCitationKeys?: ReadonlySet<string> | null;
+  /** Called with the keys that are not in the bibliography */
+  onUnknownCitation?: (keys: string[]) => void;
 };
 
 const CITE_COMMAND = { paren: "citep", prose: "citet", author: "citeauthor", year: "citeyear" } as const;
@@ -43,7 +47,12 @@ function renderOne(node: Inline, ctx: InlineContext): string {
         ctx.onCitationFallback?.(node.keys);
         return escapeTex(`[${node.keys.join("; ")}]`);
       }
-      return `\\${CITE_COMMAND[node.form]}{${node.keys.map(safeKey).join(",")}}`;
+      const known = ctx.knownCitationKeys;
+      const unknown = known ? node.keys.filter((key) => !known.has(key)) : [];
+      if (unknown.length > 0) ctx.onUnknownCitation?.(unknown);
+      const present = node.keys.filter((key) => !unknown.includes(key));
+      const plain = unknown.length > 0 ? escapeTex(unknown.map((key) => `[${key}]`).join("")) : "";
+      return `${present.length > 0 ? `\\${CITE_COMMAND[node.form]}{${present.map(safeKey).join(",")}}` : ""}${plain}`;
     }
     case "ref": {
       // A block of a mathematical thesis writes its own name and number

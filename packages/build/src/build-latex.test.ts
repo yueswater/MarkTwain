@@ -63,6 +63,34 @@ maybe("buildLatex", () => {
     }
   }, 300_000);
 
+  it("builds with an image that is missing, shows a grey box and names the block", async () => {
+    const input: LatexBuildInput = { ...base(), documents: [{ id: "c1", kind: "chapter", text: "# 緒論\n\n![缺圖](images/missing.png)\n" }], files: [] };
+    try {
+      const result = await buildLatex(input);
+      if (!result.ok) throw new Error(result.diagnostics.map((d) => d.message).join("\n"));
+      expect(result.diagnostics.filter((d) => d.code === "image-missing").map((d) => d.source)).toEqual([{ documentId: "c1", block: 1 }]);
+    } finally {
+      rmSync(input.workDir, { recursive: true, force: true });
+    }
+  }, 300_000);
+
+  it("builds a table of many rows so that it runs over pages and the header comes again", async () => {
+    const rows = Array.from({ length: 70 }, (_, i) => `| 列${i + 1} | ${i * 3} |`).join("\n");
+    const input: LatexBuildInput = {
+      ...base(),
+      documents: [{ id: "c1", kind: "chapter", text: `# 表\n\n| 名稱 | 數值 |\n|:--|--:|\n${rows}\n\n: 很長的表 {#tbl:long notes="資料來源：測試"}\n` }],
+      files: [],
+    };
+    try {
+      const result = await buildLatex(input);
+      if (!result.ok) throw new Error(result.diagnostics.map((d) => d.message).join("\n"));
+      // The table is longer than a page, the line "Infinite glue shrinkage" or a row cut off the page was what a table in one piece gave
+      expect(result.diagnostics.filter((d) => d.severity === "error")).toEqual([]);
+    } finally {
+      rmSync(input.workDir, { recursive: true, force: true });
+    }
+  }, 300_000);
+
   it("builds a heading that holds a footnote, with the heading in the table of contents without it", async () => {
     const input: LatexBuildInput = {
       ...base(),

@@ -1,11 +1,13 @@
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { basename, dirname, join } from "node:path";
 import { collectTargets, parseMarkdown, resolveListLevels, resolvePlacementDefaults, resolveStatementStyle } from "@marktwain/schema";
-import { renderStatementsTypst, renderTypstFile, toIr } from "@marktwain/render";
+import { renderStatementsTypst, renderTypstFile, toIr, type IrDocument, type IrIssue } from "@marktwain/render";
+import { bibliographyKeys } from "./bibliography-keys";
 import { completeConfig } from "./config";
+import { checkImages, type ImageIssue } from "./images";
 import { isHarmless, parseDiagnostics, type LineMap } from "./diagnostics";
 import { assignPaths, renderMain } from "./layout";
-import { copyTree, run, writeText } from "./process";
+import { copyTree, run, writeBytes, writeText } from "./process";
 import type { Anchor, BuildInput, BuildResult, Diagnostic } from "./types";
 
 export { run };
@@ -25,6 +27,9 @@ type Prepared = {
   lineMap: LineMap;
   mathFailures: string[];
   citationFallbacks: string[];
+  unknownCitations: string[];
+  imageIssues: ImageIssue[];
+  irIssues: IrIssue[];
 };
 
 /** Template entries that never belong in a generated project. */
@@ -37,6 +42,8 @@ const NOT_COPIED = new Set([".git", ".github", ".gitignore", ".marktwain-templat
 function prepare(input: BuildInput, root: string, link: boolean): Prepared {
   const mathFailures: string[] = [];
   const citationFallbacks: string[] = [];
+  const unknownCitations: string[] = [];
+  const knownCitationKeys = bibliographyKeys(input.bibliography);
 
   // A project font goes in a folder of its own, beside the linked template, or into the fonts folder of an exported project
   const projectFontsDir = (input.projectFonts ?? []).length > 0 ? (link ? "project-fonts" : join("fonts", "project")) : null;
@@ -87,25 +94,33 @@ function prepare(input: BuildInput, root: string, link: boolean): Prepared {
   const paths = assignPaths(input.documents);
   const lineMap: LineMap = new Map();
   let firstAppendix = true;
-  for (const { doc, json } of parsed) {
+  // Every document is read first, so an image that is missing or is not an image is known before anything is rendered
+  const usedLabels = new Set<string>();
+  const irResults = parsed.map(({ doc, json }) => ({ id: doc.id, ...toIr(json, { documentId: doc.id, knownLabels, usedLabels }) }));
+  const rendered = irResults.map(({ id, document }) => ({ id, document }));
+  const irIssues = irResults.flatMap((result) => result.issues);
+  const { issues: imageIssues, replace: imageReplace } = checkImages({ documents: rendered, files: input.files, write: (src, data) => writeBytes(root, join("figures", src), data) });
+  for (const { doc } of parsed) {
     const path = paths.get(doc.id) as string;
-    const { document } = toIr(json, { documentId: doc.id, knownLabels });
+    const document = (rendered.find((r) => r.id === doc.id) as { document: IrDocument }).document;
     const file = renderTypstFile(document, {
       kind: doc.kind,
       firstAppendix: doc.kind === "appendix" ? firstAppendix : undefined,
-      imagePath: (src) => `/figures/${src}`,
+      imagePath: (src) => `/figures/${imageReplace.get(src) ?? src}`,
       onMathFailure: (latex) => mathFailures.push(latex),
       hasBibliography: input.bibliography.length > 0,
       anchors: input.anchors,
       defaultPlacement: resolvePlacementDefaults(completed.placement),
       onCitationFallback: (keys) => citationFallbacks.push(...keys),
+      knownCitationKeys,
+      onUnknownCitation: (keys) => unknownCitations.push(...keys),
     });
     if (doc.kind === "appendix") firstAppendix = false;
     writeText(root, path, file.text);
     lineMap.set(path, { documentId: doc.id, blockLines: file.blockLines });
   }
   writeText(root, "main.typ", renderMain(input.documents, paths, input.bibliography.length > 0, { ordered: listLevels.ordered !== null, bullet: listLevels.bullet !== null }));
-  return { projectFontsDir, missing: completed.missing, lineMap, mathFailures, citationFallbacks };
+  return { projectFontsDir, missing: completed.missing, lineMap, mathFailures, citationFallbacks, unknownCitations, imageIssues, irIssues };
 }
 
 function warnings(prepared: Prepared): Diagnostic[] {
@@ -117,6 +132,19 @@ function warnings(prepared: Prepared): Diagnostic[] {
       code: "citation-no-bibliography",
       message: key,
       ...empty,
+    })),
+    ...[...new Set(prepared.unknownCitations)].map<Diagnostic>((key) => ({ severity: "warning", code: "citation-unknown", message: key, ...empty })),
+    ...prepared.irIssues
+      .filter((issue) => issue.code === "broken-ref" || issue.code === "duplicate-label")
+      .map<Diagnostic>((issue) => ({ severity: "warning", code: issue.code === "broken-ref" ? "reference-broken" : "label-duplicate", message: issue.detail, file: null, line: null, column: null, source: { documentId: issue.documentId, block: issue.block } })),
+    ...prepared.imageIssues.map<Diagnostic>((issue) => ({
+      severity: "warning",
+      code: issue.reason === "missing" ? "image-missing" : "image-unreadable",
+      message: issue.src,
+      file: null,
+      line: null,
+      column: null,
+      source: { documentId: issue.documentId, block: issue.block },
     })),
   ];
 }

@@ -48,7 +48,7 @@ export type SourceRef = { documentId: string; block: number };
 export type Diagnostic = {
   severity: "error" | "warning";
   /** Set for diagnostics that MarkTwain raises itself */
-  code?: "config-missing" | "citation-no-bibliography" | "latex-approximate";
+  code?: "config-missing" | "citation-no-bibliography" | "citation-unknown" | "image-missing" | "image-unreadable" | "glyph-missing" | "reference-broken" | "label-duplicate" | "latex-approximate";
   message: string;
   /** Path inside the build directory */
   file: string | null;

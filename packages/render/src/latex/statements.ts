@@ -53,6 +53,9 @@ export function renderStatementsLatex(style: StatementStyle, lists: { ordered: s
 % listings are counted through the thesis like figures and tables, the chapter is not part of the number
 \\AtBeginDocument{\\counterwithout{lstlisting}{chapter}}
 
+% the label of the notes under a table, for a table that runs over pages and has no tlt around it
+\\newcommand\\mtnoteslabel{\\tw@tblnoteslabel@default}
+
 % a circled number, one to fifty
 \\newcommand\\mtcircled[1]{%
   \\ifnum\\value{#1}<21 \\symbol{\\numexpr"245F+\\value{#1}\\relax}%

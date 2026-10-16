@@ -1,3 +1,4 @@
+import { looksLikeImage } from "@marktwain/build";
 import { createHash } from "node:crypto";
 import { readFileSync, statSync } from "node:fs";
 import { extname } from "node:path";
@@ -57,6 +58,8 @@ export class AssetService {
       if (error instanceof AppError) throw error;
       throw new AppError(ErrorCode.AssetUnreadable);
     }
+    // A text file with the name of an image would be stored, shown as a broken picture, and found only when a build tried to use it
+    if (!looksLikeImage(filePath, data)) throw new AppError(ErrorCode.AssetUnreadable);
     const hash = createHash("sha256").update(data).digest("hex").slice(0, 16);
     const path = `images/${hash}.${ext === "jpeg" ? "jpg" : ext}`;
     new AssetRepository(this.session.db).put(path, data, this.now().getTime());
@@ -66,8 +69,7 @@ export class AssetService {
   /** Stores PNG bytes from the editor, the path comes from the hash like it does for imported images. */
   storePng(data: Uint8Array): string {
     const png = Buffer.from(data);
-    const isPng = png.length > 8 && png.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]));
-    if (!isPng) throw new AppError(ErrorCode.AssetUnsupported);
+    if (!looksLikeImage("image.png", png)) throw new AppError(ErrorCode.AssetUnsupported);
     if (png.length > IMAGE_MAX_BYTES) throw new AppError(ErrorCode.AssetTooLarge, { max: String(IMAGE_MAX_BYTES / 1024 / 1024) });
     const hash = createHash("sha256").update(png).digest("hex").slice(0, 16);
     const path = `images/${hash}.png`;

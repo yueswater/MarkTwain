@@ -32,6 +32,28 @@ describe("跳脫", () => {
   });
 });
 
+describe("引用的書目 key", () => {
+  it("a key that the bibliography does not have stays plain text and is reported, the others are cited", () => {
+    const unknown: string[][] = [];
+    const { document } = toIr(parseMarkdown("見 [@a; @ghost] 與 @ghost。\n"), { documentId: "d", knownLabels: new Set() });
+    const file = renderTypstFile(document, {
+      kind: "chapter",
+      imagePath: (src) => src,
+      onMathFailure: () => undefined,
+      knownCitationKeys: new Set(["a"]),
+      onUnknownCitation: (keys) => unknown.push(keys),
+    });
+    expect(file.text).toContain('見 #cp("a")\\[ghost\\] 與 \\[ghost\\]。');
+    expect(unknown).toEqual([["ghost"], ["ghost"]]);
+  });
+
+  it("every key is cited when the keys of the bibliography are not known", () => {
+    const { document } = toIr(parseMarkdown("[@a]\n"), { documentId: "d", knownLabels: new Set() });
+    const file = renderTypstFile(document, { kind: "chapter", imagePath: (src) => src, onMathFailure: () => undefined, knownCitationKeys: null });
+    expect(file.text).toContain('#cp("a")');
+  });
+});
+
 describe("行內", () => {
   it("粗體斜體刪除線用函式形式，連結與行內程式碼", () => {
     expect(render("a **b** *c* ~~d~~ [e](https://x.y) `f\"g`\n").body).toBe(

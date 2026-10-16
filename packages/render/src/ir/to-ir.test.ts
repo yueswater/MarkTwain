@@ -108,3 +108,22 @@ describe("toIr：區塊", () => {
     expect(document.blocks).toHaveLength(3);
   });
 });
+
+describe("labels that are used twice", () => {
+  const md = "![一](a.png){#fig:dup}\n\n![二](a.png){#fig:dup}\n\n見 @fig:dup。\n";
+
+  it("drops the label from the second block and reports it, the first one keeps it", () => {
+    const used = new Set<string>();
+    const { document, issues } = toIr(parseMarkdown(md), { documentId: "d", knownLabels: new Set(["fig:dup"]), usedLabels: used });
+    expect(document.blocks.map((block) => (block.type === "figure" ? block.label : "-"))).toEqual(["fig:dup", null, "-"]);
+    expect(issues).toEqual([{ code: "duplicate-label", documentId: "d", block: 1, detail: "fig:dup" }]);
+  });
+
+  it("also finds the label that an earlier document uses, and changes nothing without the set", () => {
+    const used = new Set(["fig:dup"]);
+    const { issues } = toIr(parseMarkdown("![三](a.png){#fig:dup}\n"), { documentId: "e", knownLabels: new Set(["fig:dup"]), usedLabels: used });
+    expect(issues.map((i) => i.code)).toEqual(["duplicate-label"]);
+    const plain = toIr(parseMarkdown(md), { documentId: "d", knownLabels: new Set(["fig:dup"]) });
+    expect(plain.issues).toEqual([]);
+  });
+});

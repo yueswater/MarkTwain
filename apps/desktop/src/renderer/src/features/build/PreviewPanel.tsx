@@ -224,6 +224,38 @@ export function PreviewPanel({ build, saveTick, placeKey, engine, onClose, onJum
               <li key={`w${i}`} className="select-text">
                 {item.kind === "configMissing" && t("configMissing", { field: item.fields.map((key) => tConfig(`field.${configFieldName(key)}`, { defaultValue: key })).join(", ") })}
                 {item.kind === "citation" && t("citationNoBibliography", { keys: item.keys.join(", ") })}
+                {item.kind === "glyphMissing" && t("glyphMissing", { chars: item.chars })}
+                {item.kind === "brokenRef" && (
+                  <>
+                    {t("brokenRef", { label: item.label })}
+                    {item.source ? (
+                      <Button variant="link" size="sm" className="h-auto px-1 py-0" onClick={() => onJump(item.source!.documentId, item.source!.block)}>
+                        {t("goTo")}
+                      </Button>
+                    ) : null}
+                  </>
+                )}
+                {item.kind === "duplicateLabel" && (
+                  <>
+                    {t("duplicateLabel", { label: item.label })}
+                    {item.source ? (
+                      <Button variant="link" size="sm" className="h-auto px-1 py-0" onClick={() => onJump(item.source!.documentId, item.source!.block)}>
+                        {t("goTo")}
+                      </Button>
+                    ) : null}
+                  </>
+                )}
+                {item.kind === "image" && (
+                  <>
+                    {t(item.reason === "missing" ? "imageMissing" : "imageUnreadable")}
+                    {item.source ? (
+                      <Button variant="link" size="sm" className="h-auto px-1 py-0" onClick={() => onJump(item.source!.documentId, item.source!.block)}>
+                        {t("goTo")}
+                      </Button>
+                    ) : null}
+                  </>
+                )}
+                {item.kind === "unknownCitation" && t("unknownCitation", { keys: item.keys.join(", ") })}
                 {item.kind === "approximate" && t(`approximate.${item.feature}`, { defaultValue: item.feature })}
                 {item.kind === "math" && t("mathFailed", { latex: item.latex })}
                 {item.kind === "font" && t("fontMissing", { font: item.font })}
