@@ -19,7 +19,9 @@ const layout = fc
     style: fc.constantFrom("three-line", "grid"),
     widths: fc.constantFrom("", "20%,30%,50%,auto", "10cm,auto,auto,auto"),
     heights: fc.array(fc.option(fc.constantFrom("24pt", "2em", "1cm"), { nil: null }), { minLength: 5, maxLength: 5 }),
-    caption: fc.constantFrom("", "Caption"),
+    // Braces, quotes and backslashes in a caption or in notes sit next to the block of attributes, and none of them may change what is read back
+    caption: fc.constantFrom("", "Caption", "Cap {x}", 'Cap "q" \\ end', "混淆矩陣 (Confusion & 100%)"),
+    notes: fc.constantFrom("", "資料來源：A_b #1 {x}", 'say "hi" \\ done}', "a}b{c", "{", "}", '"', "\\"),
   })
   .map((input) => {
     let k = 0;
@@ -49,7 +51,7 @@ const layout = fc
     return { ...input, spans };
   });
 
-function build(model: ReturnType<typeof layout.map> extends never ? never : { rows: number; cols: number; spans: Span[]; style: string; widths: string; heights: (string | null)[]; caption: string }) {
+function build(model: ReturnType<typeof layout.map> extends never ? never : { rows: number; cols: number; spans: Span[]; style: string; widths: string; heights: (string | null)[]; caption: string; notes: string }) {
   const rows = Array.from({ length: model.rows }, (_, i) => ({
     type: "tableRow",
     attrs: { height: model.heights[i] ?? null },
@@ -63,7 +65,7 @@ function build(model: ReturnType<typeof layout.map> extends never ? never : { ro
   }));
   return {
     type: "doc" as const,
-    content: [{ type: "table", attrs: { label: null, caption: model.caption, notes: "", style: model.style, widths: model.widths }, content: rows }],
+    content: [{ type: "table", attrs: { label: null, caption: model.caption, notes: model.notes, style: model.style, widths: model.widths }, content: rows }],
   };
 }
 
@@ -84,6 +86,10 @@ describe("tables with merged cells", () => {
         const parsed = parseMarkdown(first);
         expect(serializeMarkdown(parsed)).toBe(first);
         expect(shape(parsed)).toEqual(shape(original as unknown as ReturnType<typeof parseMarkdown>));
+        // A caption with nothing else is the line itself, so it is the attributes that have to survive
+        const attrs = (parsed.content[0] as { attrs: { caption: string; notes: string } }).attrs;
+        expect(attrs.notes).toBe(model.notes.trim());
+        expect(attrs.caption).toBe(model.caption);
         return true;
       }),
       { numRuns: 600 },

@@ -95,3 +95,43 @@ export function formatAttributes(attributes: Attributes): string {
   }
   return parts.length === 0 ? "" : `{${parts.join(" ")}}`;
 }
+
+/**
+ * Cuts the block of attributes off the end of a line, braces and quotes inside a quoted value belong to the value.
+ * Returns where the block starts and what is between its braces, null when the line does not end in one.
+ * A brace in the text before it, such as "Caption {x} {#tbl:a}", is not taken for the start.
+ */
+export function splitTrailingAttributes(text: string): { index: number; inner: string } | null {
+  const end = text.trimEnd().length;
+  if (end === 0 || text.charAt(end - 1) !== "}") return null;
+  for (let start = 0; start < end; start += 1) {
+    if (text.charAt(start) !== "{") continue;
+    let depth = 0;
+    let quoted = false;
+    let balancedAt = -1;
+    for (let i = start; i < end; i += 1) {
+      const ch = text.charAt(i);
+      if (quoted) {
+        if (ch === "\\") i += 1;
+        else if (ch === '"') quoted = false;
+        continue;
+      }
+      if (ch === '"') quoted = true;
+      else if (ch === "{") depth += 1;
+      else if (ch === "}") {
+        depth -= 1;
+        if (depth === 0) {
+          balancedAt = i;
+          break;
+        }
+      }
+    }
+    if (balancedAt === end - 1) {
+      // Leading spaces belong to the separator, not to the text before
+      let from = start;
+      while (from > 0 && /\s/.test(text.charAt(from - 1))) from -= 1;
+      return { index: from, inner: text.slice(start + 1, end - 1) };
+    }
+  }
+  return null;
+}
