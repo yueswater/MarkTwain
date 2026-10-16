@@ -15,6 +15,8 @@ type Props = {
   onTogglePreview: (() => void) | null;
   previewOpen: boolean;
   onOpenSettings: () => void;
+  /** Next to the name of the project, the branch that is open */
+  branchBar?: ReactNode;
   onLocaleChange: (locale: Locale) => void;
 };
 
@@ -26,6 +28,7 @@ export function AppShell({
   onTogglePreview,
   previewOpen,
   onOpenSettings,
+  branchBar,
   onLocaleChange,
 }: Props) {
   const { t, i18n } = useTranslation();
@@ -43,6 +46,7 @@ export function AppShell({
               /
             </span>
             <span className="max-w-64 truncate text-sm">{projectName}</span>
+            {branchBar}
             <Button variant="ghost" size="sm" onClick={onCloseProject}>
               <XIcon aria-hidden="true" />
               {t("workspace.close", { ns: "project" })}

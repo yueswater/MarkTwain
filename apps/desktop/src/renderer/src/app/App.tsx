@@ -7,6 +7,8 @@ import { useProject } from "../features/project/use-project";
 import { NewProjectDialog } from "../features/project/welcome/NewProjectDialog";
 import { WelcomeScreen } from "../features/project/welcome/WelcomeScreen";
 import { Workspace } from "../features/project/Workspace";
+import { BranchBar } from "../features/versions/BranchBar";
+import { useVersions } from "../features/versions/use-versions";
 import { api } from "../shared/api";
 import { errorMessage } from "../shared/error-message";
 import { useEffect, useRef, useState } from "react";
@@ -24,6 +26,22 @@ export function App() {
   // Grows whenever a document or the thesis settings were saved, the preview watches it
   const [saveTick, setSaveTick] = useState(0);
   const bumpSaved = () => setSaveTick((n) => n + 1);
+  // Saves what is typed in the editor at once, the editor gives it to the ref
+  const flushRef = useRef<(() => Promise<void>) | null>(null);
+  // Grows when the documents were replaced by a version or a branch, the editor is made again for them
+  const [generation, setGeneration] = useState(0);
+  const versions = useVersions({
+    projectKey: state.project?.path ?? null,
+    saveTick,
+    flush: async () => {
+      await flushRef.current?.();
+    },
+    onReplaced: async () => {
+      await state.refresh();
+      setGeneration((n) => n + 1);
+      bumpSaved();
+    },
+  });
   const [localeError, setLocaleError] = useState<string | null>(null);
 
   async function changeLocale(locale: Locale): Promise<void> {
@@ -80,6 +98,7 @@ export function App() {
       onTogglePreview={state.project ? () => setPreviewOpen((open) => !open) : null}
       previewOpen={previewOpen}
       onOpenSettings={() => setSettingsOpen(true)}
+      branchBar={state.project ? <BranchBar versions={versions} /> : null}
       onLocaleChange={(locale) => void changeLocale(locale)}
     >
       {error && (
@@ -98,6 +117,8 @@ export function App() {
             onClosePreview={() => setPreviewOpen(false)}
             onOpenSettings={() => setSettingsOpen(true)}
             saveTick={saveTick}
+            flushRef={flushRef}
+            generation={generation}
             onSaved={bumpSaved}
           />
         ) : (

@@ -122,6 +122,7 @@ export function useProject() {
     error,
     justCreated,
     finishCreation,
+    refresh,
     createProject,
     openProject,
     closeProject,

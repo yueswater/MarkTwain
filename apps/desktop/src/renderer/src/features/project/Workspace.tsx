@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type MutableRefObject } from "react";
 import { useTranslation } from "react-i18next";
 import type { BuildState } from "../build/use-build";
 import { PreviewPanel } from "../build/PreviewPanel";
@@ -19,6 +19,10 @@ type Props = {
   /** Grows whenever a document or the thesis settings were saved, the preview watches it */
   saveTick: number;
   onSaved: () => void;
+  /** Where the editor puts the function that saves what is typed, the versions use it before they read the documents */
+  flushRef: MutableRefObject<(() => Promise<void>) | null>;
+  /** Grows when the documents were replaced, the editor is made again */
+  generation: number;
   build: BuildState;
   previewOpen: boolean;
   onClosePreview: () => void;
@@ -32,7 +36,7 @@ export function Workspace(props: Props) {
   );
 }
 
-function WorkspaceBody({ state, build, previewOpen, onClosePreview, onOpenSettings, saveTick, onSaved }: Props) {
+function WorkspaceBody({ state, build, previewOpen, onClosePreview, onOpenSettings, saveTick, onSaved, flushRef, generation }: Props) {
   const { t } = useTranslation("project");
   const project = state.project;
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -80,10 +84,10 @@ function WorkspaceBody({ state, build, previewOpen, onClosePreview, onOpenSettin
   // The preview follows the caret of the editor, and a click in the preview takes the caret to a block. A jump from the preview must not send the preview back.
   const [follow, setFollow] = useState<{ documentId: string; block: number; nonce: number; mode: "caret" | "scroll"; fraction: number } | null>(null);
   const quietUntil = useRef(0);
-  const flush = useRef<(() => Promise<void>) | null>(null);
+  const flush = flushRef;
   const registerFlush = useCallback((fn: (() => Promise<void>) | null) => {
     flush.current = fn;
-  }, []);
+  }, [flush]);
 
   const documents = project?.documents ?? [];
   const selected = documents.find((d) => d.id === selectedId) ?? null;
@@ -153,7 +157,7 @@ function WorkspaceBody({ state, build, previewOpen, onClosePreview, onOpenSettin
           />
         ) : selected ? (
           <DocumentEditor
-            key={selected.id}
+            key={`${selected.id}:${generation}`}
             documentId={selected.id}
             scrollTo={target}
             arrive={arrive}
