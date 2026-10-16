@@ -24,6 +24,8 @@ export function openDatabase(path: string): Database {
   if (path !== ":memory:") ensureDir(dirname(path));
   const db = new DatabaseSync(path);
   db.exec("PRAGMA foreign_keys = ON");
+  // A file that another connection is writing makes a call wait for a few seconds before it fails, it failed at once with a busy error before
+  db.exec("PRAGMA busy_timeout = 5000");
   let inTransaction = false;
   let closed = false;
 

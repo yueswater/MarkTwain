@@ -20,7 +20,7 @@ type Props = {
   saveTick: number;
   onSaved: () => void;
   /** Where the editor puts the function that saves what is typed, the versions use it before they read the documents */
-  flushRef: MutableRefObject<(() => Promise<void>) | null>;
+  flushRef: MutableRefObject<(() => Promise<boolean>) | null>;
   /** Grows when the documents were replaced, the editor is made again */
   generation: number;
   /** The latest version of the branch that is open, the editor marks what changed since it */
@@ -87,7 +87,7 @@ function WorkspaceBody({ state, build, previewOpen, onClosePreview, onOpenSettin
   const [follow, setFollow] = useState<{ documentId: string; block: number; nonce: number; mode: "caret" | "scroll"; fraction: number } | null>(null);
   const quietUntil = useRef(0);
   const flush = flushRef;
-  const registerFlush = useCallback((fn: (() => Promise<void>) | null) => {
+  const registerFlush = useCallback((fn: (() => Promise<boolean>) | null) => {
     flush.current = fn;
   }, [flush]);
 

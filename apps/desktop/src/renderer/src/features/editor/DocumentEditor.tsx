@@ -41,7 +41,7 @@ type Props = {
   documentId: string;
   scrollTo?: { block: number; nonce: number; term?: string } | null;
   /** Gives the parent a way to save what is being typed at once */
-  registerFlush?: (flush: (() => Promise<void>) | null) => void;
+  registerFlush?: (flush: (() => Promise<boolean>) | null) => void;
   /** Called every time the text has been saved */
   onSaved?: () => void;
   /** Goes to a block of a document from a card over a reference, opening the document first */
@@ -97,7 +97,7 @@ type SurfaceProps = {
   doc: DocumentData;
   scrollTo: { block: number; nonce: number; term?: string } | null;
   onSaved?: () => void;
-  registerFlush?: (flush: (() => Promise<void>) | null) => void;
+  registerFlush?: (flush: (() => Promise<boolean>) | null) => void;
   onOpenTarget?: (documentId: string, block: number) => void;
   onCaretBlock?: (block: number) => void;
   onTopBlock?: (block: number, fraction: number) => void;
@@ -328,9 +328,15 @@ function EditorSurface({ doc, scrollTo, onSaved, registerFlush, onOpenTarget, on
           {targets.importError}
         </p>
       )}
-      <p role="status" className="shrink-0 border-t px-4 py-1 text-xs text-muted-foreground" data-status={status}>
-        {status === "idle" ? "" : t(`save.${status}`)}
-      </p>
+      {status === "error" ? (
+        <p role="alert" className="shrink-0 border-t bg-destructive/5 px-4 py-1.5 text-sm text-destructive" data-status={status}>
+          {t("save.errorLong")}
+        </p>
+      ) : (
+        <p role="status" className="shrink-0 border-t px-4 py-1 text-xs text-muted-foreground" data-status={status}>
+          {status === "idle" ? "" : t(`save.${status}`)}
+        </p>
+      )}
       <EditorDialogs editor={editor} targets={targets} documentId={doc.id} labels={labels} onOpenTarget={onOpenTarget} />
     </div>
   );

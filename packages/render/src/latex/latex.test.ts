@@ -23,7 +23,7 @@ function render(md: string, kind: LatexKind = "chapter", labels: string[] = [], 
 describe("escape", () => {
   it("escapes the characters that LaTeX reads as commands", () => {
     expect(escapeTex("a & b % c $ d # e _ f { g } h ~ i ^ j \\ k")).toBe(
-      "a \\& b \\% c \\$ d \\# e \\_ f \\{ g \\} h \\textasciitilde{} i \\^{} j \\textbackslash{} k",
+      "a \\& b \\% c \\$ d \\# e \\_ f \\{ g \\} h \\textasciitilde{} i \\textasciicircum{} j \\textbackslash{} k",
     );
     expect(escapeTex("[a] 後")).toBe("{[}a{]} 後");
   });

@@ -84,7 +84,57 @@ describe("Autosaver", () => {
     saver.schedule(() => {
       throw new Error("bad doc");
     });
-    await expect(saver.flush()).resolves.toBeUndefined();
+    await expect(saver.flush()).resolves.toBe(false);
     expect(statuses.at(-1)).toBe("error");
+  });
+});
+
+describe("Autosaver after a failed save", () => {
+  it("tries again by itself, after a wait that grows, and says what is left unsaved until it works", async () => {
+    let fail = true;
+    const saved: string[] = [];
+    const { saver, statuses } = setup(async (text) => {
+      if (fail) throw new Error("read only");
+      saved.push(text);
+    });
+    saver.schedule(() => "kept");
+    expect(await saver.flush()).toBe(false);
+    expect(saver.hasUnsaved()).toBe(true);
+
+    // The first try again is after 2 s, and it fails too, the next wait is longer
+    await jest.advanceTimersByTimeAsync(2000);
+    expect(statuses.filter((s) => s === "error")).toHaveLength(2);
+    await jest.advanceTimersByTimeAsync(4999);
+    expect(statuses.filter((s) => s === "error")).toHaveLength(2);
+    fail = false;
+    await jest.advanceTimersByTimeAsync(1);
+    expect(saved).toEqual(["kept"]);
+    expect(statuses.at(-1)).toBe("saved");
+    expect(saver.hasUnsaved()).toBe(false);
+    // Nothing is tried again once it is saved
+    await jest.advanceTimersByTimeAsync(60000);
+    expect(saved).toEqual(["kept"]);
+  });
+
+  it("reports true when everything is saved", async () => {
+    const { saver } = setup();
+    saver.schedule(() => "x");
+    expect(await saver.flush()).toBe(true);
+    expect(saver.hasUnsaved()).toBe(false);
+  });
+
+  it("does not try again behind the back of a newer edit, that edit has its own save", async () => {
+    let fail = true;
+    const saved: string[] = [];
+    const { saver } = setup(async (text) => {
+      if (fail) throw new Error("busy");
+      saved.push(text);
+    });
+    saver.schedule(() => "old");
+    await saver.flush();
+    fail = false;
+    saver.schedule(() => "new");
+    await jest.advanceTimersByTimeAsync(500);
+    expect(saved).toEqual(["new"]);
   });
 });

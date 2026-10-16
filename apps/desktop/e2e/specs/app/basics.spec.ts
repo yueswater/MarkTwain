@@ -1,5 +1,6 @@
 import { realpathSync } from "node:fs";
 import { join } from "node:path";
+import { launchApp } from "../../support/launch";
 import { expect, test } from "../../support/test";
 
 test("the app is named MarkTwain without moving its data, the window has a smallest size, and the page language follows the interface", async ({ launch }) => {
@@ -16,4 +17,15 @@ test("the app is named MarkTwain without moving its data, the window has a small
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
   await page.getByTestId("language-toggle").click();
   await expect(page.locator("html")).toHaveAttribute("lang", "zh-Hant");
+});
+
+test("a second MarkTwain on the same data goes away and the first one keeps working", async ({ launch }) => {
+  const first = await launch({ name: "單一" });
+  const page = await first.app.firstWindow();
+  await expect(page.getByRole("button", { name: "New project" })).toBeVisible();
+
+  // The second one has the same folder of user data, it asks the first to come forward and quits, so Playwright cannot attach to it
+  await expect(launchApp({ dir: first.dir, name: "單一" })).rejects.toThrow();
+  await expect(page.getByRole("button", { name: "New project" })).toBeVisible();
+  expect(first.app.process().exitCode).toBeNull();
 });

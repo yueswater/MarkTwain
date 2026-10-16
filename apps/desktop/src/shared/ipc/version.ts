@@ -93,7 +93,8 @@ export type VersionContract = {
   /** Puts the documents back as they are in the latest version of the branch that is open, and throws away what was typed since */
   [IpcChannel.VersionDiscardChanges]: { req: void; res: VersionStatus };
   /** Makes the documents as they were in a version, and saves that as a new version, so the history is kept */
-  [IpcChannel.VersionRestore]: { req: { snapshotId: string; message: string }; res: VersionStatus };
+  /** keptMessage names the version that keeps what was written since the latest one, which is saved before going back */
+  [IpcChannel.VersionRestore]: { req: { snapshotId: string; message: string; keptMessage?: string }; res: VersionStatus };
   [IpcChannel.VersionCompare]: { req: { from: string; to: string }; res: CompareView };
   [IpcChannel.VersionMergePreview]: { req: { source: string }; res: MergePreview };
   /** Merges a branch into the main line, all conflicts need a choice or nothing is written */
