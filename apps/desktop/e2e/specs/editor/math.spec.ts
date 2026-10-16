@@ -88,7 +88,8 @@ test("a display formula has no number until it is named from the box next to it"
   await expect.poll(markdown).toContain("$$ {#eq:energy1}");
   await expect(box.getByTestId("equation-number")).toContainText("Numbered 1");
 
-  // Moving the pointer away closes the box
+  // Moving the pointer away closes the box, the box was made again for the new label, so the pointer enters it first
+  await box.hover();
   await page.mouse.move(5, 5);
   await expect(box).toBeHidden();
 
