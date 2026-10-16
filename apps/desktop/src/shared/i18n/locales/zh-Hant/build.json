@@ -25,5 +25,10 @@
   "fontMissing": "找不到字體：{{font}}。已改用其他字體，請檢查論文設定裡的字體名稱。",
   "watermark": "浮水印",
   "watermarkHint": "在預覽中顯示論文的浮水印",
-  "exportFinalPdf": "匯出定稿 PDF（含浮水印）"
+  "exportFinalPdf": "匯出定稿 PDF（含浮水印）",
+  "approximate": {
+    "table-lines": "LaTeX 輸出只畫與文字同色的實線，表格的虛線、點線、彩色線與斜線不會畫出。",
+    "table-heights": "LaTeX 輸出不套用表格的列高。",
+    "table-vertical-align": "LaTeX 輸出不套用表格儲存格的垂直對齊。"
+  }
 }

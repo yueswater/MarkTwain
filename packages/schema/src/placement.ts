@@ -25,6 +25,14 @@ export function typstPlacement(placement: Placement): string | null {
   return TYPST[placement];
 }
 
+/**
+ * The placement option of the LaTeX template for each choice, null keeps the figure in the text.
+ * The template knows only a figure that stays and one that floats like the htbp float, so every choice that floats follows auto.
+ */
+export function latexPlacement(placement: Placement): "auto" | null {
+  return placement === "here" ? null : "auto";
+}
+
 /** The placement of a figure or a table, the one the author wrote or else the default of the thesis. */
 export function effectivePlacement(own: string | null | undefined, thesisDefault: Placement): Placement {
   return isPlacement(own) ? own : thesisDefault;

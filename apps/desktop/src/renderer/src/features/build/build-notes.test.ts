@@ -34,6 +34,10 @@ describe("warningItems", () => {
     ]);
   });
 
+  it("lists a feature that LaTeX output only approximates by its name", () => {
+    expect(warningItems([diag({ code: "latex-approximate", message: "table-lines" })], [])).toEqual([{ kind: "approximate", feature: "table-lines" }]);
+  });
+
   it("lists a Typst warning that no kind knows, and the font warning by font", () => {
     const items = warningItems(
       [

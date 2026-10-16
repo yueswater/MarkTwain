@@ -25,5 +25,10 @@
   "fontMissing": "Font not found: {{font}}. Another font is used instead, check the font names in the thesis settings.",
   "watermark": "Watermark",
   "watermarkHint": "Show the watermark of the thesis in the preview",
-  "exportFinalPdf": "Export final PDF with watermark"
+  "exportFinalPdf": "Export final PDF with watermark",
+  "approximate": {
+    "table-lines": "LaTeX output draws only solid lines in the color of the text, the dashed, dotted and colored lines and the diagonals of a table are left out.",
+    "table-heights": "LaTeX output ignores the row heights of a table.",
+    "table-vertical-align": "LaTeX output ignores the vertical alignment of a table cell."
+  }
 }

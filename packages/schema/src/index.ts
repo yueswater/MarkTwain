@@ -119,7 +119,7 @@ export {
   type ListPreset,
   type OrderedStyle,
 } from "./lists/styles";
-export { DEFAULT_PLACEMENT, PLACEMENTS, effectivePlacement, isPlacement, resolvePlacementDefaults, typstPlacement, type Placement } from "./placement";
+export { DEFAULT_PLACEMENT, PLACEMENTS, effectivePlacement, isPlacement, latexPlacement, resolvePlacementDefaults, typstPlacement, type Placement } from "./placement";
 export {
   STATEMENT_KINDS,
   STATEMENT_PREFIXES,
