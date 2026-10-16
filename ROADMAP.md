@@ -16,13 +16,17 @@ Current version: v0.4.0.
 | [v0.3.6](#v036--toolchain-and-preview) | Toolchain and preview | Released |
 | [v0.4.0](#v040--version-control) | Version control | Released |
 | [v0.5.0](#v050--latex-output) | LaTeX output | Not started |
-| [v0.6.0](#v060--thesis-features) | Thesis features | Not started |
-| [v0.7.0](#v070--offline-packaging) | Offline packaging | Not started |
-| [v0.8.0](#v080--polish) | Polish | Not started |
+| [v0.5.1](#v051--project-export) | Project export | Not started |
+| [v0.6.0](#v060--word-output) | Word output, the body | Not started |
+| [v0.6.1](#v061--word-output-front-matter-and-schools) | Word output, the front matter and the schools | Not started |
+| [v0.6.2](#v062--word-output-citations-and-math-font) | Word output, citations and the math font | Not started |
+| [v0.7.0](#v070--thesis-features) | Thesis features | Not started |
+| [v0.8.0](#v080--offline-packaging) | Offline packaging | Not started |
+| [v0.9.0](#v090--polish) | Polish | Not started |
 | [v1.0.0-beta.1](#v100-beta1--public-beta) | Public beta | Not started |
 | [v1.0.0](#v100--release) | Release | Not started |
 
-v0.3.0 (Typst output) and v0.4.0 (version control) do not depend on each other and can be developed in parallel.
+v0.3.0 (Typst output) and v0.4.0 (version control) do not depend on each other and can be developed in parallel. v0.5.1 needs the LaTeX renderer of v0.5.0 for its LaTeX half.
 
 ## v0.1.0 · Foundation
 
@@ -69,7 +73,7 @@ The first version that produces a PDF.
 
 ## v0.3.2 · Editor and Bibliography Polish
 
-Work on the editor and the project window, plus a bibliography manager that was planned for v0.6.0.
+Work on the editor and the project window, plus a bibliography manager that was planned for v0.7.0.
 
 - Settings window with editor preferences and the thesis settings, basic and advanced
 - A preview that can be resized, a sidebar that folds into one icon, and documents that reorder by dragging
@@ -77,7 +81,7 @@ Work on the editor and the project window, plus a bibliography manager that was 
 - Pictures that resize by their corners and can be cropped, and tables that show their sizes while dragging
 - Bibliography: a manager with a list and a form, a BibTeX source view, import from BibTeX, CSL JSON and Hayagriva, a citation picker, and citations that are highlighted and flagged when the key is unknown
 
-**Not done:** keeping several bibliography files, custom `.csl` styles and the `bibliography.style` menu stay in v0.6.0.
+**Not done:** keeping several bibliography files, custom `.csl` styles and the `bibliography.style` menu stay in v0.7.0.
 
 ## v0.3.3 · Editor Fixes
 
@@ -115,7 +119,7 @@ Writing mathematics, and tables that look like the page.
 
 The toolchain travels with the app, so a build needs nothing installed on the machine, and the page can be seen and edited side by side.
 
-- Typst 0.15.1 and the two `@preview` packages that the template imports (`kouhu` and `ipsum`) ship in the installer, pinned in `typst.lock.json` and fetched with `pnpm typst:fetch`. A packaged app never uses a Typst of the system, and there is no Docker. LaTeX follows in v0.7.0 the same way, see there
+- Typst 0.15.1 and the two `@preview` packages that the template imports (`kouhu` and `ipsum`) ship in the installer, pinned in `typst.lock.json` and fetched with `pnpm typst:fetch`. A packaged app never uses a Typst of the system, and there is no Docker. LaTeX follows in v0.8.0 the same way, see there
 - The preview shows the PDF in a PDF viewer with working links. It follows the caret and the scroll of the editor, keeps its page after a rebuild, and a click in the PDF takes the caret to that text
 - Fonts are a page of their own: add fonts from the computer or by drag and drop, see which are in use, and the build prefers the fonts of the project. The font settings are selectors, and a Latin font with Chinese glyphs no longer takes the Chinese text
 - Lists take a marker for each level, from presets or a custom combination, drawn the same in the editor and in the PDF
@@ -146,12 +150,71 @@ Local version control that does not depend on git.
 The same content, rendered as LaTeX.
 
 - LaTeX renderer (shares the IR with Typst)
-- Finding a TeX Live (`xelatex`, `texlua`, `latexmk`, `citation-style-language`) through an environment variable or the PATH, as Typst is found in development. The installed app will carry its own, see v0.7.0
+- Finding a TeX Live (`xelatex`, `texlua`, `latexmk`, `citation-style-language`) through an environment variable or the PATH, as Typst is found in development. The installed app will carry its own, see v0.8.0
 - Runs the template's `gen.lua` and latexmk, and parses the TeX log
 
 **Done when:** the same sample thesis builds a LaTeX PDF with the TeX Live of the developer. Without one, LaTeX output is disabled with a message, and Typst is unaffected.
 
-## v0.6.0 · Thesis Features
+## v0.5.1 · Project Export
+
+The whole thesis leaves MarkTwain as one `.zip`.
+
+The zip holds a complete template project folder in the shape of `tw-thesis-typ` or `tw-thesis-tex`: the template itself, a `config.yml` generated from the project, `main.typ` or `main.tex`, every file under `contents/`, the bibliography files and the `.csl`, the fonts of the project, and the images. The user can unzip it and compile it with the template's own commands, without MarkTwain.
+
+- Export as Typst or as LaTeX. The Typst folder export exists since v0.3.x as a folder; this makes it a zip and adds LaTeX, which needs the renderer of v0.5.0. Issue #35
+- The zip is written in TypeScript (`fflate`), so it is the same on all three systems and uses no zip command
+- The Markdown sources and the images as a zip. Issue #131. Importing a `.md` stays in v0.9.0, issue #49
+
+**Done when:** a fixed sample thesis is exported for both Typst and LaTeX, unzipped, and compiled with the template's own commands, and the PDF has the same page count and text as the one MarkTwain builds.
+
+## v0.6.0 · Word Output
+
+The same thesis structure and settings, written as a real `.docx`. This is split over three versions: v0.6.0 is the body, v0.6.1 the front matter and the schools, v0.6.2 citations and the math font.
+
+The promise is that PDF and Word come from the same thesis structure and the same formatting settings. It is not that they are identical line by line. Typst and Word are two layout engines, and one word of difference moves the later page numbers.
+
+The file has real Word structure, not just a look: heading styles, `SEQ` captions, `REF` cross-references with the result already filled in, `TOC` fields with the entries already filled in, footnotes in `footnotes.xml`, formulas as real Word equations (OMML) that can be edited, and sections with roman then arabic page numbers.
+
+Method: a new `docx` renderer in `packages/render` takes the same IR as Typst and LaTeX and writes the XML of the package directly (OOXML parts and a zip). A new pure package `thesis-spec` merges `schools/default.yml`, the school preset and the project `config.yml` into one typed object. A parity test checks it against what Typst resolves, for each of the 15 schools. It runs without Typst or TeX Live, so it adds nothing to the installer.
+
+v0.6.0 is the body:
+
+- `thesis-spec`. Issue #132
+- The docx package writer. Issue #133
+- Blocks and inline text from the IR: headings with numbering, paragraphs, lists with the marker of each level, quotes, code, the blocks of a mathematical thesis, landscape pages. Issue #134
+- Tables with merged cells and the borders, and figures. Issue #135
+- Formulas as OMML, with equation numbers made of a row with a `SEQ` field. Issue #136
+- Captions, bookmarks, cross-references, footnotes. Issue #137
+- The export entry and `build-docx`. Issue #138
+- Validation in CI with the Open XML SDK validator and a LibreOffice conversion to PDF. Issue #139
+
+**Done when:** a sample thesis exports to a `.docx` that passes the validator and opens in LibreOffice with the same numbers for figures, tables, formulas and blocks as the PDF.
+
+Known limits of the Word output, for all of v0.6.x:
+
+- A float placement of a figure or table is not kept in Word. A figure is a paragraph of its own
+- Word does not embed fonts here, so a user without Times New Roman, a Kai font or XITS Math sees a substitute
+- Citations differ slightly from the PDF because the engine is another one
+
+## v0.6.1 · Word Output, Front Matter and Schools
+
+The parts of the thesis before and after the body, and the covers of the schools.
+
+- Cover, verification page, Chinese and English abstracts, acknowledgements, notation list, appendices, roman and arabic page numbers. Issue #140
+- Contents, list of figures and list of tables as fields. Issue #141
+- The cover data of the 15 schools, compared with the Typst cover. Issue #142
+
+**Done when:** all of the front matter is there in the order of the template, and all 15 school covers match.
+
+## v0.6.2 · Word Output, Citations and Math Font
+
+- Citations and the reference list with CSL (`citeproc-js`), written as static text with links, not as Word sources. Issue #143
+- A `layout.font-math` setting for Typst, LaTeX and Word, which needs a pull request in each template repository. Issue #144
+- A checklist for a real Word, to be done by hand before each release, and the list of fonts the file needs. Issue #145
+
+**Done when:** citations match the PDF or the differences are listed, the math font setting works in the three outputs, and the checklist was done once in a real Word.
+
+## v0.7.0 · Thesis Features
 
 The parts that make it a thesis.
 
@@ -161,7 +224,7 @@ The parts that make it a thesis.
 
 **Done when:** the PDF has a cover page, abstracts, a table of contents, and references, formatted according to the selected school.
 
-## v0.7.0 · Offline Packaging
+## v0.8.0 · Offline Packaging
 
 An installer that works without a network.
 
@@ -174,13 +237,12 @@ An installer that works without a network.
 
 **Done when:** CI passes the smoke test and end-to-end tests on the packaged app on all three platforms, and on a clean machine with no network you can install the app, create a project, edit, build a Typst PDF and a LaTeX PDF, and use version control.
 
-## v0.8.0 · Polish
+## v0.9.0 · Polish
 
 - Draft autosave, kept separate from versions
-- Export the whole project as a template folder (Typst or LaTeX), which compiles with the template's own commands without MarkTwain
 - Review of the Traditional Chinese and English interface and error messages
 
-**Done when:** after a forced quit, the draft is restored on reopen, and the exported folder compiles with `tw-thesis-typ` or `tw-thesis-tex` using their own commands.
+**Done when:** after a forced quit, the draft is restored on reopen.
 
 ## v1.0.0-beta.1 · Public Beta
 
