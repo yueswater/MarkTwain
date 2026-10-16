@@ -202,6 +202,8 @@ export class VersionService {
 
   /** Makes a version of the documents as they are, on the branch that is open. */
   save(message: string): VersionStatus {
+    // As a commit in git needs a message, a version needs to say what was changed
+    if (message.trim() === "") throw new AppError(ErrorCode.VersionMessageEmpty);
     this.ensureStarted();
     this.session.db.transaction(() => {
       const repository = this.repository();
@@ -295,6 +297,29 @@ export class VersionService {
       .map((id) => graph.get(id) as Snapshot)
       .sort((a, b) => b.createdAt - a.createdAt)
       .map((snapshot) => ({ id: snapshot.id, message: snapshot.message, createdAt: snapshot.createdAt, parentId: snapshot.parentId, parent2Id: snapshot.parent2Id, heads: heads.get(snapshot.id) ?? [] }));
+  }
+
+  /** Puts the documents back as they are in the latest version of the branch that is open, as git restore does with the working tree. */
+  discardChanges(): VersionStatus {
+    this.ensureStarted();
+    this.session.db.transaction(() => {
+      const repository = this.repository();
+      const current = this.current();
+      this.apply(this.loadSnapshot(this.requireBranch(current).head_id));
+      repository.deleteDraft(current);
+    });
+    return this.status();
+  }
+
+  /** The text of a document in the latest version of the branch that is open, null when that version has no such document. */
+  headText(documentId: string): string | null {
+    this.ensureStarted();
+    const repository = this.repository();
+    const row = repository.snapDoc(this.requireBranch(this.current()).head_id, documentId);
+    if (!row) return null;
+    const blocks = repository.sequence(row.sequence_hash);
+    const texts = repository.blockTexts(blocks);
+    return joinBlocks(blocks.map((hash) => texts.get(hash) ?? ""));
   }
 
   /** Puts the documents as they were in a version, and saves that as a new version after the latest one, so nothing of the history is rewritten. */

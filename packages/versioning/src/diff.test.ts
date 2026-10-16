@@ -30,3 +30,10 @@ describe("diffContent", () => {
     expect(diffContent(from, from)).toEqual({ documents: [], files: [] });
   });
 });
+
+describe("the sequence entry point", () => {
+  it("has what the front end needs and none of the hashing", async () => {
+    const sequence = await import("./sequence");
+    expect(Object.keys(sequence).sort()).toEqual(["align", "applyHunks", "diffBlocks", "hunksBetween"]);
+  });
+});

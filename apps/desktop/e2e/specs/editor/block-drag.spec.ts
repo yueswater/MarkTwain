@@ -20,6 +20,8 @@ test("a block is dragged by the grip at its left to another place, into a callou
 
   const editor = page.locator(".ProseMirror");
   const handle = page.getByTestId("block-handle");
+  // A block that was moved is marked as changed, with its old text in a ghost above it, so a line is found among the real paragraphs only
+  const line = (text: string) => editor.locator("p", { hasText: text });
   // The grip is taken with the mouse and brought over the place, as a person does it
   const drag = async (to: import("@playwright/test").Locator, at: { x: number; y: number }) => {
     const grip = await handle.boundingBox();
@@ -34,21 +36,21 @@ test("a block is dragged by the grip at its left to another place, into a callou
   const texts = () => editor.evaluate((root) => [...root.children].filter((c) => c.tagName === "P").map((c) => c.textContent ?? "").filter((text) => text !== ""));
 
   await expect(handle).toHaveCount(0);
-  await editor.getByText("Gamma line.").hover();
+  await line("Gamma line.").hover();
   await expect(handle).toBeVisible();
 
   // Up between two blocks
-  await drag(editor.getByText("Alpha line."), { x: 40, y: 2 });
+  await drag(line("Alpha line."), { x: 40, y: 2 });
   await expect.poll(texts).toEqual(["Gamma line.", "Alpha line.", "Beta line."]);
 
   // Into the callout, the paragraph is then a part of it
-  await editor.getByText("Beta line.").hover();
+  await line("Beta line.").hover();
   await drag(editor.getByText("Inside the theorem."), { x: 40, y: 20 });
   await expect(editor.locator('div[data-statement="theorem"]')).toContainText("Beta line.");
   await expect.poll(texts).toEqual(["Gamma line.", "Alpha line."]);
 
   // Into a cell of the table, it becomes the text of the cell
-  await editor.getByText("Alpha line.").hover();
+  await line("Alpha line.").hover();
   await drag(editor.locator("td").first(), { x: 20, y: 10 });
   await expect(editor.locator("td").first()).toContainText("Alpha line.");
   await expect.poll(texts).toEqual(["Gamma line."]);

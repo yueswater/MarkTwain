@@ -46,7 +46,7 @@ export function SaveVersionDialog({ busy, error, onSubmit, onClose }: Props) {
             <Button type="button" variant="outline" onClick={onClose}>
               {tc("action.cancel")}
             </Button>
-            <Button type="submit" disabled={busy}>
+            <Button type="submit" disabled={busy || message.trim() === ""}>
               {tc("action.save")}
             </Button>
           </DialogFooter>

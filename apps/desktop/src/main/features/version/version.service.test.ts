@@ -56,6 +56,12 @@ describe("status and saving", () => {
     expect(versions.history()).toHaveLength(1);
   });
 
+  it("needs a description for a version, as a commit needs a message", () => {
+    write("# One\n\nHello\n");
+    expect(codeOf(() => versions.save("   "))).toBe("version.message-empty");
+    expect(versions.status().dirty).toBe(true);
+  });
+
   it("sees a change as unsaved until a version is made, and refuses to make a version of nothing", () => {
     versions.status();
     write("# One\n\nHello\n");
@@ -150,6 +156,56 @@ describe("branches", () => {
     expect(versions.status().branches.map((b) => b.name)).toEqual(["main"]);
     expect(codeOf(() => versions.discardBranch("main"))).toBe("version.main-protected");
     expect(codeOf(() => versions.discardBranch("nope"))).toBe("version.branch-not-found");
+  });
+});
+
+describe("the text of the latest version", () => {
+  it("gives a document as it was saved, and not what has been typed since", () => {
+    write("# One\n\nsaved\n");
+    versions.save("saved");
+    write("# One\n\nsaved\n\ntyped after\n");
+    expect(versions.headText(chapter().id)).toBe("# One\n\nsaved\n");
+  });
+
+  it("is null for a document that the version does not have, and follows the branch that is open", () => {
+    write("# One\n\nmain\n");
+    versions.save("main");
+    versions.startBranch("work");
+    const extra = documents.create("chapter" as never);
+    expect(versions.headText(extra.id)).toBeNull();
+    write("# One\n\nwork\n");
+    versions.save("work");
+    expect(versions.headText(chapter().id)).toBe("# One\n\nwork\n");
+    versions.switchBranch("main");
+    expect(versions.headText(chapter().id)).toBe("# One\n\nmain\n");
+  });
+});
+
+describe("discarding what was typed", () => {
+  it("puts the documents and the files back as they are in the latest version", () => {
+    write("# One\n\nsaved\n");
+    versions.save("saved");
+    write("# One\n\nsaved\n\ntyped\n");
+    assets.replaceAllFiles([{ path: "images/a.png", data: new Uint8Array([1]) }]);
+    const extra = documents.create("chapter" as never);
+    expect(versions.status().dirty).toBe(true);
+    const status = versions.discardChanges();
+    expect(status.dirty).toBe(false);
+    expect(text()).toBe("# One\n\nsaved\n");
+    expect(assets.readAllFiles()).toEqual([]);
+    expect(documents.list().some((d) => d.id === extra.id)).toBe(false);
+  });
+
+  it("leaves the other branches and their versions alone", () => {
+    write("# One\n\nmain\n");
+    versions.save("main");
+    versions.startBranch("work");
+    write("# One\n\nwork\n");
+    versions.save("work");
+    write("# One\n\nwork, typed\n");
+    versions.discardChanges();
+    expect(text()).toBe("# One\n\nwork\n");
+    expect(versions.history().map((entry) => entry.message)).toEqual(["work", "main", ""]);
   });
 });
 

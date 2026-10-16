@@ -8,10 +8,11 @@ import { CompareDialog } from "./CompareDialog";
 import { HistoryDialog } from "./HistoryDialog";
 import { MergeDialog } from "./MergeDialog";
 import { NewBranchDialog } from "./NewBranchDialog";
+import { RevertDialog } from "./RevertDialog";
 import { SaveVersionDialog } from "./SaveVersionDialog";
 import type { Versions } from "./use-versions";
 
-type Dialog = "save" | "start" | "history" | "discard" | "merge" | null;
+type Dialog = "save" | "start" | "history" | "discard" | "merge" | "revert" | null;
 
 /** The branch that is open, at the top, with the menu of the versions: save, start a change, open another, history, discard. */
 export function BranchBar({ versions }: { versions: Versions }) {
@@ -42,6 +43,7 @@ export function BranchBar({ versions }: { versions: Versions }) {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" className="min-w-60">
           <DropdownMenuItem onSelect={() => setDialog("save")}>{t("action.save")}</DropdownMenuItem>
+          {status.dirty && <DropdownMenuItem onSelect={() => setDialog("revert")}>{t("action.revert")}</DropdownMenuItem>}
           <DropdownMenuItem onSelect={() => setDialog("start")}>{t("action.start")}</DropdownMenuItem>
           <DropdownMenuItem onSelect={() => setDialog("history")}>{t("action.history")}</DropdownMenuItem>
           {!isMain && <DropdownMenuItem onSelect={() => setDialog("merge")}>{t("action.merge")}</DropdownMenuItem>}
@@ -62,6 +64,7 @@ export function BranchBar({ versions }: { versions: Versions }) {
         </DropdownMenuContent>
       </DropdownMenu>
       {dialog === "save" && <SaveVersionDialog busy={versions.busy} error={versions.error} onSubmit={versions.save} onClose={close} />}
+      {dialog === "revert" && <RevertDialog busy={versions.busy} error={versions.error} onConfirm={versions.revert} onClose={close} />}
       {dialog === "start" && <NewBranchDialog busy={versions.busy} error={versions.error} onSubmit={versions.start} onClose={close} />}
       {dialog === "discard" && <DiscardBranchDialog name={status.branch} busy={versions.busy} error={versions.error} onConfirm={() => versions.discard(status.branch)} onClose={close} />}
       {dialog === "history" && <HistoryDialog branch={name} headId={status.headId} load={versions.history} busy={versions.busy} error={versions.error} onRestore={versions.restore} onCompare={(entry, label) => setComparing({ from: entry.parentId as string, to: entry.id, label })} onClose={close} />}

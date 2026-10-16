@@ -23,6 +23,8 @@ type Props = {
   flushRef: MutableRefObject<(() => Promise<void>) | null>;
   /** Grows when the documents were replaced, the editor is made again */
   generation: number;
+  /** The latest version of the branch that is open, the editor marks what changed since it */
+  versionKey: string | null;
   build: BuildState;
   previewOpen: boolean;
   onClosePreview: () => void;
@@ -36,7 +38,7 @@ export function Workspace(props: Props) {
   );
 }
 
-function WorkspaceBody({ state, build, previewOpen, onClosePreview, onOpenSettings, saveTick, onSaved, flushRef, generation }: Props) {
+function WorkspaceBody({ state, build, previewOpen, onClosePreview, onOpenSettings, saveTick, onSaved, flushRef, generation, versionKey }: Props) {
   const { t } = useTranslation("project");
   const project = state.project;
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -161,6 +163,7 @@ function WorkspaceBody({ state, build, previewOpen, onClosePreview, onOpenSettin
             documentId={selected.id}
             scrollTo={target}
             arrive={arrive}
+            versionKey={versionKey}
             onArrived={() => setArrive(null)}
             neighbors={{ previous: before ? documentTitle(t, before) : null, next: after ? documentTitle(t, after) : null }}
             onFlip={(edge) => void flipTo(edge)}

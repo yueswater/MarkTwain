@@ -9,6 +9,8 @@ export function registerVersionController(service: VersionService): void {
   handle(IpcChannel.VersionBranchSwitch, ({ name }) => service.switchBranch(name));
   handle(IpcChannel.VersionBranchDiscard, ({ name }) => service.discardBranch(name));
   handle(IpcChannel.VersionHistory, () => service.history());
+  handle(IpcChannel.VersionDiscardChanges, () => service.discardChanges());
+  handle(IpcChannel.VersionHeadText, ({ documentId }) => service.headText(documentId));
   handle(IpcChannel.VersionRestore, ({ snapshotId, message }) => service.restore(snapshotId, message));
   handle(IpcChannel.VersionCompare, ({ from, to }) => service.compare(from, to));
   handle(IpcChannel.VersionMergePreview, ({ source }) => service.previewMerge(source));

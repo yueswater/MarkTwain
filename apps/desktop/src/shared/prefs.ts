@@ -11,6 +11,8 @@ export type EditorPrefs = {
   headingNames: string[];
   /** Number the top level blocks in the margin */
   lineNumbers: boolean;
+  /** Mark in the editor what was added, changed and taken away since the latest saved version */
+  showChanges: boolean;
   spellcheck: boolean;
   fontFamily: "sans" | "serif";
   codeFontSize: number;
@@ -32,6 +34,7 @@ export const DEFAULT_PREFS: EditorPrefs = {
   contentWidth: "normal",
   headingNames: ["", "", ""],
   lineNumbers: true,
+  showChanges: true,
   spellcheck: false,
   fontFamily: "sans",
   codeFontSize: 14,
@@ -80,6 +83,7 @@ export function sanitizePrefs(input: unknown, base: EditorPrefs = DEFAULT_PREFS)
     contentWidth: pick(data.contentWidth ?? base.contentWidth, ["narrow", "normal", "wide"], base.contentWidth),
     headingNames: names(data.headingNames ?? base.headingNames, base.headingNames),
     lineNumbers: bool(data.lineNumbers ?? base.lineNumbers, base.lineNumbers),
+    showChanges: bool(data.showChanges ?? base.showChanges, base.showChanges),
     spellcheck: bool(data.spellcheck ?? base.spellcheck, base.spellcheck),
     fontFamily: pick(data.fontFamily ?? base.fontFamily, ["sans", "serif"], base.fontFamily),
     codeFontSize: Math.round(clamp(data.codeFontSize ?? base.codeFontSize, PREF_LIMITS.codeFontSize, base.codeFontSize)),

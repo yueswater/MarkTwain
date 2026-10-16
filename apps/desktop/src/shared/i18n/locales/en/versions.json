@@ -11,7 +11,8 @@
     "start": "Start a new change…",
     "history": "Version history…",
     "merge": "Merge into the main line…",
-    "discard": "Discard this change…"
+    "discard": "Discard this change…",
+    "revert": "Discard what I typed…"
   },
   "save": {
     "title": "Save a version",
@@ -108,5 +109,10 @@
     "delete": "Delete the document",
     "deletedOurs": "The main line deleted it",
     "deletedTheirs": "Your change deleted it"
+  },
+  "revert": {
+    "title": "Discard what you typed?",
+    "description": "The documents go back to the latest version. What you typed since is lost, and this cannot be undone.",
+    "confirm": "Discard"
   }
 }

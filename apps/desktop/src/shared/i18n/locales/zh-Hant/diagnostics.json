@@ -50,7 +50,8 @@
       "unsaved-changes": "請先儲存版本，合併需要這個分支已儲存的內容。",
       "main-has-draft": "主線有尚未儲存的變動，請先切換過去並儲存版本。",
       "conflicts": "還有 {{count}} 個衝突沒有選擇。",
-      "nothing-to-merge": "沒有可以合併的內容。"
+      "nothing-to-merge": "沒有可以合併的內容。",
+      "message-empty": "請寫下改了什麼，版本需要說明。"
     }
   }
 }

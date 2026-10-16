@@ -78,6 +78,10 @@ export type VersionContract = {
   [IpcChannel.VersionBranchDiscard]: { req: { name: string }; res: VersionStatus };
   /** The versions that lead to the latest one of the branch that is open, newest first */
   [IpcChannel.VersionHistory]: { req: void; res: VersionEntry[] };
+  /** The text of a document as it is in the latest version of the branch that is open, null when that version has no such document. The editor marks what differs from it. */
+  [IpcChannel.VersionHeadText]: { req: { documentId: string }; res: string | null };
+  /** Puts the documents back as they are in the latest version of the branch that is open, and throws away what was typed since */
+  [IpcChannel.VersionDiscardChanges]: { req: void; res: VersionStatus };
   /** Makes the documents as they were in a version, and saves that as a new version, so the history is kept */
   [IpcChannel.VersionRestore]: { req: { snapshotId: string; message: string }; res: VersionStatus };
   [IpcChannel.VersionCompare]: { req: { from: string; to: string }; res: CompareView };

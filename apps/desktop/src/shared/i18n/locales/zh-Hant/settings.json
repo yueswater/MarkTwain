@@ -39,7 +39,9 @@
     "statementHex": "色碼",
     "headingNames": "標題層級的名稱",
     "headingNamesHint": "工具列和 / 選單裡第 2、3、4 層標題的名稱，留空就用預設。",
-    "headingLevel": "第 {{level}} 層"
+    "headingLevel": "第 {{level}} 層",
+    "showChanges": "標示與上一版的差異",
+    "showChangesHint": "在文字裡標出自上次儲存的版本以來新增、修改、刪除的地方：綠色是新的內容，紅色是原本有的內容。"
   },
   "group": {
     "page": "頁面",
