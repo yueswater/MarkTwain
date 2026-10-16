@@ -1,4 +1,4 @@
-import { app } from "electron";
+import { app, BrowserWindow } from "electron";
 import { declareAssetScheme, handleAssetProtocol } from "./core/asset-protocol";
 import { settingsFilePath } from "./config/paths.config";
 import { readFileSync } from "node:fs";
@@ -90,7 +90,19 @@ let dialogs: DialogService;
 // The custom protocol must be declared before app ready
 declareAssetScheme();
 
-bootstrap([
+// One MarkTwain for one folder of user data. A second one on the same projects would write the same file next to the first, and the last to write would win.
+// It asks the first one to come to the front and goes away. The lock is per folder of user data, so a test or a copy with its own folder is not stopped.
+const first = app.requestSingleInstanceLock();
+if (!first) app.quit();
+app.on("second-instance", () => {
+  const window = BrowserWindow.getAllWindows()[0];
+  if (!window) return;
+  if (window.isMinimized()) window.restore();
+  window.show();
+  window.focus();
+});
+
+if (first) bootstrap([
   registerAppController,
   () => registerSettingsController(applyAppMenu),
   applyAppMenu,

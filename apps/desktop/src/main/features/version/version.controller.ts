@@ -12,7 +12,7 @@ export function registerVersionController(service: VersionService): void {
   handle(IpcChannel.VersionHistory, () => service.history());
   handle(IpcChannel.VersionDiscardChanges, () => service.discardChanges());
   handle(IpcChannel.VersionHeadText, ({ documentId }) => service.headText(documentId));
-  handle(IpcChannel.VersionRestore, ({ snapshotId, message }) => service.restore(snapshotId, message));
+  handle(IpcChannel.VersionRestore, ({ snapshotId, message, keptMessage }) => service.restore(snapshotId, message, keptMessage));
   handle(IpcChannel.VersionCompare, ({ from, to }) => service.compare(from, to));
   handle(IpcChannel.VersionMergePreview, ({ source }) => service.previewMerge(source));
   handle(IpcChannel.VersionMerge, ({ source, resolutions, deleteSource, message }) => service.merge(source, resolutions, deleteSource, message));

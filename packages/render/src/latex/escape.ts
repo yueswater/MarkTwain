@@ -5,7 +5,7 @@ const SPECIAL: Record<string, string> = {
   $: "\\$",
   "&": "\\&",
   "#": "\\#",
-  "^": "\\^{}",
+  "^": "\\textasciicircum{}",
   _: "\\_",
   "%": "\\%",
   "~": "\\textasciitilde{}",

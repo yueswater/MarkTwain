@@ -112,11 +112,13 @@ test("what was added, changed and taken away since the saved version is marked i
 
   // What was typed can be thrown away, and the editor is as the version has it, with no marks
   await bar.click();
-  await page.getByRole("menuitem", { name: "Discard what I typed…" }).click();
+  await page.getByRole("menuitem", { name: "Go back to the last saved version…" }).click();
+  // The dialog says how much is lost
+  await expect(page.getByRole("dialog")).toContainText(/\d+ changes that you made since are lost/);
   await page.getByRole("dialog").getByRole("button", { name: "Discard" }).click();
   await expect(bar).toHaveAttribute("data-dirty", "false");
   await expect(editor).toContainText("Second paragraph");
   await expect(editor.locator(".change-ghost")).toHaveCount(0);
   await bar.click();
-  await expect(page.getByRole("menuitem", { name: "Discard what I typed…" })).toHaveCount(0);
+  await expect(page.getByRole("menuitem", { name: "Go back to the last saved version…" })).toHaveCount(0);
 });

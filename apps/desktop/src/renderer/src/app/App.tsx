@@ -31,7 +31,7 @@ export function App() {
   const [saveTick, setSaveTick] = useState(0);
   const bumpSaved = () => setSaveTick((n) => n + 1);
   // Saves what is typed in the editor at once, the editor gives it to the ref
-  const flushRef = useRef<(() => Promise<void>) | null>(null);
+  const flushRef = useRef<(() => Promise<boolean>) | null>(null);
   // Grows when the documents were replaced by a version or a branch, the editor is made again for them
   const [generation, setGeneration] = useState(0);
   const versions = useVersions({
@@ -61,13 +61,34 @@ export function App() {
   // Native menu File commands, a ref keeps the latest state so the subscription is not repeated on every render
   const stateRef = useRef(state);
   stateRef.current = state;
+
+  /**
+   * Closes the project, unless text could not be saved, which would be lost: the first try says so and keeps it open.
+   * Asking again closes it, since a file that stays unwritable would otherwise keep the project open for ever.
+   */
+  const closeRefused = useRef(false);
+  async function closeSafely(): Promise<void> {
+    const saved = (await flushRef.current?.()) ?? true;
+    if (!saved && !closeRefused.current) {
+      closeRefused.current = true;
+      setLocaleError(t("save.cannotClose", { ns: "editor" }));
+      return;
+    }
+    closeRefused.current = false;
+    setLocaleError(null);
+    setPreviewOpen(false);
+    build.reset();
+    void stateRef.current.closeProject();
+  }
+  const closeRef = useRef(closeSafely);
+  closeRef.current = closeSafely;
   useEffect(
     () =>
       window.marktwain.onMenuCommand((command) => {
         const current = stateRef.current;
         if (command === MenuCommand.NewProject) current.beginCreate();
         else if (command === MenuCommand.OpenProject) void current.openProject();
-        else if (command === MenuCommand.CloseProject) void current.closeProject();
+        else if (command === MenuCommand.CloseProject) void closeRef.current();
         else if (command === MenuCommand.Shortcuts) setShortcutsOpen(true);
       }),
     [t],
@@ -94,11 +115,7 @@ export function App() {
   return (
     <AppShell
       projectName={state.project?.name ?? null}
-      onCloseProject={() => {
-        setPreviewOpen(false);
-        build.reset();
-        void state.closeProject();
-      }}
+      onCloseProject={() => void closeSafely()}
       onTogglePreview={state.project ? () => setPreviewOpen((open) => !open) : null}
       previewOpen={previewOpen}
       onOpenSettings={() => setSettingsOpen(true)}

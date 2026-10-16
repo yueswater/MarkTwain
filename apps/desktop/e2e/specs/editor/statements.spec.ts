@@ -26,7 +26,9 @@ test("definitions, lemmas and theorems are inserted, numbered, referenced and co
   await dialog.getByRole("button", { name: "Save" }).click();
   await expect(editor.locator('div[data-statement="lemma"] > .statement-head')).toHaveText("Lemma 1（Sum）");
 
-  // Seed a second block of the same kind and a reference, then the numbers follow the document order
+  // Seed a second block of the same kind and a reference, then the numbers follow the document order.
+  // What was typed is saved first, closing the project saves it too and would write it over the seed.
+  await expect(page.getByRole("status")).toHaveText("Saved");
   await page.evaluate(async () => {
     const list = await window.marktwain.invoke("document:list");
     if (!list.ok) return;

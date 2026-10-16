@@ -365,14 +365,23 @@ export class VersionService {
     return joinBlocks(blocks.map((hash) => texts.get(hash) ?? ""));
   }
 
-  /** Puts the documents as they were in a version, and saves that as a new version after the latest one, so nothing of the history is rewritten. */
-  restore(snapshotId: string, message: string): VersionStatus {
+  /**
+   * Puts the documents as they were in a version, and saves that as a new version after the latest one, so nothing of the history is rewritten.
+   * What was written since the latest version is saved first as a version of its own, so that going back never costs the text that was not saved.
+   */
+  restore(snapshotId: string, message: string, keptMessage = "Before going back"): VersionStatus {
     this.ensureStarted();
     const repository = this.repository();
     if (!repository.snapshot(snapshotId)) throw new AppError(ErrorCode.VersionSnapshotNotFound);
     this.session.db.transaction(() => {
       const current = this.current();
-      const head = this.requireBranch(current).head_id;
+      let head = this.requireBranch(current).head_id;
+      const working = this.hashWorking(this.workingCopy.read());
+      if (!this.sameAsSnapshot(working, head)) {
+        this.store(working);
+        head = this.writeSnapshot(working.content, head, null, keptMessage.trim() || "Before going back");
+        repository.moveHead(current, head);
+      }
       const content = this.loadSnapshot(snapshotId);
       const headContent = this.loadSnapshot(head);
       if (JSON.stringify(sortedContent(content)) === JSON.stringify(sortedContent(headContent))) throw new AppError(ErrorCode.VersionNothingToSave);

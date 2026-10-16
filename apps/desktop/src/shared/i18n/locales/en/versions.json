@@ -12,7 +12,7 @@
     "history": "Version history…",
     "merge": "Merge into the main line…",
     "discard": "Discard this change…",
-    "revert": "Discard what I typed…"
+    "revert": "Go back to the last saved version…"
   },
   "save": {
     "title": "Save a version",
@@ -40,13 +40,14 @@
     "merge": "Merge",
     "restore": "Restore",
     "restoreTitle": "Restore this version?",
-    "restoreBody": "The documents become what they were in “{{label}}”. It is saved as a new version, so nothing in the history is lost. Changes that you did not save are replaced.",
+    "restoreBody": "The documents become what they were in “{{label}}”. That is saved as a new version, so nothing in the history is lost. What you wrote since the last version is saved first, as a version of its own, so you can come back to it.",
     "restoreMessage": "Restored “{{label}}”",
     "current": "Current",
     "compare": "What changed",
     "pickHint": "Tick two versions to see what differs between them.",
     "compareTwo": "Compare the two",
-    "pick": "Pick “{{label}}” to compare"
+    "pick": "Pick “{{label}}” to compare",
+    "keptMessage": "Before going back"
   },
   "error": {
     "title": "That did not work"
@@ -116,9 +117,10 @@
     "deletedTheirs": "Your change deleted it"
   },
   "revert": {
-    "title": "Discard what you typed?",
-    "description": "The documents go back to the latest version. What you typed since is lost, and this cannot be undone.",
-    "confirm": "Discard"
+    "title": "Go back to the last saved version?",
+    "description": "The documents go back to the latest version. What you wrote since is lost, and this cannot be undone.",
+    "confirm": "Discard",
+    "descriptionCount": "The documents go back to the latest saved version. {{count}} changes that you made since are lost, and this cannot be undone."
   },
   "stage": {
     "title": "Changes in this version",

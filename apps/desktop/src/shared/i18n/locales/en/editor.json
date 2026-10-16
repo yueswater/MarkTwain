@@ -3,7 +3,9 @@
     "dirty": "Unsaved changes",
     "saving": "Saving…",
     "saved": "Saved",
-    "error": "Could not save"
+    "error": "Could not save",
+    "errorLong": "Could not save. Your text is still here and saving is tried again, check that the file can be written to.",
+    "cannotClose": "Your text could not be saved, so the project stays open. Check that the file and its folder can be written to. If you close it again now, the text that was not saved is lost."
   },
   "placeholder": "Start writing…",
   "toolbar": {

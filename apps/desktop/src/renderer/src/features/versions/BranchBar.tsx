@@ -64,7 +64,7 @@ export function BranchBar({ versions }: { versions: Versions }) {
         </DropdownMenuContent>
       </DropdownMenu>
       {dialog === "save" && <SaveVersionDialog busy={versions.busy} error={versions.error} load={versions.changes} onSubmit={versions.save} onClose={close} />}
-      {dialog === "revert" && <RevertDialog busy={versions.busy} error={versions.error} onConfirm={versions.revert} onClose={close} />}
+      {dialog === "revert" && <RevertDialog load={versions.changes} busy={versions.busy} error={versions.error} onConfirm={versions.revert} onClose={close} />}
       {dialog === "start" && <NewBranchDialog busy={versions.busy} error={versions.error} onSubmit={versions.start} onClose={close} />}
       {dialog === "discard" && <DiscardBranchDialog name={status.branch} busy={versions.busy} error={versions.error} onConfirm={() => versions.discard(status.branch)} onClose={close} />}
       {dialog === "history" && <HistoryDialog branch={name} headId={status.headId} load={versions.history} busy={versions.busy} error={versions.error} onRestore={versions.restore} onCompare={(entry, label) => setComparing({ from: entry.parentId as string, to: entry.id, label })} onCompareTwo={(older, newer, labels) => setComparing({ from: older.id, to: newer.id, label: `${labels[0]} → ${labels[1]}`, pair: true })} onClose={close} />}
