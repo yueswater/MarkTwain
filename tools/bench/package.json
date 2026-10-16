@@ -10,7 +10,8 @@
   },
   "dependencies": {
     "@marktwain/build": "workspace:*",
-    "@marktwain/schema": "workspace:*"
+    "@marktwain/schema": "workspace:*",
+    "@marktwain/versioning": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

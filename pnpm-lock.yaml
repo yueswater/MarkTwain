@@ -432,6 +432,9 @@ importers:
       '@marktwain/schema':
         specifier: workspace:*
         version: link:../../packages/schema
+      '@marktwain/versioning':
+        specifier: workspace:*
+        version: link:../../packages/versioning
     devDependencies:
       '@types/node':
         specifier: ^22.0.0

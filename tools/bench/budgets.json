@@ -1,5 +1,5 @@
 {
-  "comment": "Milliseconds. p95 is the 95th percentile of a request, failures is the allowed share of failed requests.",
+  "comment": "Milliseconds. p95 is the 95th percentile of a request, failures is the allowed share of failed requests. A merge or a save is a request of the bench server, so a merge that gives a wrong answer is a failure.",
   "long-thesis": {
     "p95": 5000,
     "failures": 0
@@ -10,6 +10,50 @@
   },
   "small-thesis": {
     "p95": 2000,
+    "failures": 0
+  },
+  "merge-1000-1": {
+    "p95": 200,
+    "failures": 0
+  },
+  "merge-1000-10": {
+    "p95": 200,
+    "failures": 0
+  },
+  "merge-1000-50": {
+    "p95": 200,
+    "failures": 0
+  },
+  "merge-10000-1": {
+    "p95": 500,
+    "failures": 0
+  },
+  "merge-10000-10": {
+    "p95": 500,
+    "failures": 0
+  },
+  "merge-10000-50": {
+    "p95": 500,
+    "failures": 0
+  },
+  "merge-50000-1": {
+    "p95": 1500,
+    "failures": 0
+  },
+  "merge-50000-10": {
+    "p95": 1500,
+    "failures": 0
+  },
+  "merge-50000-50": {
+    "p95": 1500,
+    "failures": 0
+  },
+  "snapshot-save": {
+    "p95": 200,
+    "failures": 0
+  },
+  "snapshot-growth": {
+    "p95": 1000,
     "failures": 0
   }
 }
