@@ -41,9 +41,72 @@
     "restoreTitle": "Restore this version?",
     "restoreBody": "The documents become what they were in “{{label}}”. It is saved as a new version, so nothing in the history is lost. Changes that you did not save are replaced.",
     "restoreMessage": "Restored “{{label}}”",
-    "current": "Current"
+    "current": "Current",
+    "compare": "What changed"
   },
   "error": {
     "title": "That did not work"
+  },
+  "compare": {
+    "title": "What changed in “{{label}}”",
+    "description": "Compared with the version before it.",
+    "none": "Nothing differs.",
+    "documentAdded": "Added",
+    "documentRemoved": "Removed",
+    "same_one": "{{count}} block that did not change",
+    "same_other": "{{count}} blocks that did not change",
+    "fieldChanged": "{{field}}: {{from}} → {{to}}",
+    "field": {
+      "kind": "Kind",
+      "title": "Title",
+      "position": "Position"
+    },
+    "files": "Files",
+    "file": {
+      "added": "added",
+      "removed": "removed",
+      "changed": "changed"
+    },
+    "empty": "(empty)",
+    "first": "This is the first version, so there is nothing before it.",
+    "legend": "Colors",
+    "legendAdded": "Added",
+    "legendRemoved": "Removed",
+    "legendModified": "Changed inside the paragraph"
+  },
+  "merge": {
+    "title": "Merge “{{name}}” into the main line",
+    "upToDate": "The main line already has everything that this change has.",
+    "fastForward": "The main line has nothing that this change lacks, so it only moves up to this change.",
+    "clean": "The main line and this change can be merged without a conflict.",
+    "deleteAfter": "Discard this change after merging",
+    "needSave": "Save a version first. A merge uses the versions of the change, and not what is typed now.",
+    "saveFirst": "Save a version…",
+    "submit": "Merge",
+    "conflicts_one": "{{count}} conflict needs your choice. Nothing is written until it has one.",
+    "conflicts_other": "{{count}} conflicts need your choice. Nothing is written until each one has a choice.",
+    "progress": "{{done}} of {{total}} chosen",
+    "message": "Merged “{{name}}”",
+    "loading": "Looking at the two lines…"
+  },
+  "conflict": {
+    "blocks": "Both sides changed the same part of {{title}}",
+    "field": "Both sides changed the {{field}} of {{title}}",
+    "file": "Both sides changed the file {{path}}",
+    "document": "{{title}} was deleted on one side and changed on the other",
+    "base": "Before",
+    "ours": "Main line",
+    "theirs": "Your change",
+    "empty": "(nothing)",
+    "deleted": "(deleted)",
+    "useOurs": "Use the main line",
+    "useTheirs": "Use my change",
+    "both": "Keep both",
+    "own": "Write my own",
+    "ownLabel": "Your text",
+    "keep": "Keep the document",
+    "delete": "Delete the document",
+    "deletedOurs": "The main line deleted it",
+    "deletedTheirs": "Your change deleted it"
   }
 }

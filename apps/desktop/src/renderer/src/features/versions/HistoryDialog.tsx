@@ -1,4 +1,4 @@
-import { GitMergeIcon, RotateCcwIcon } from "lucide-react";
+import { DiffIcon, GitMergeIcon, RotateCcwIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
@@ -14,11 +14,13 @@ type Props = {
   error: string | null;
   /** Makes the documents as they were in a version, the label is the name of the version in the language of the person */
   onRestore: (snapshotId: string, label: string) => Promise<unknown>;
+  /** Shows what a version changed from the one before it */
+  onCompare: (entry: VersionEntry, label: string) => void;
   onClose: () => void;
 };
 
 /** The versions that lead to the latest one of the branch, each with the way back to it. */
-export function HistoryDialog({ branch, headId, load, busy, error, onRestore, onClose }: Props) {
+export function HistoryDialog({ branch, headId, load, busy, error, onRestore, onCompare, onClose }: Props) {
   const { t, i18n } = useTranslation("versions");
   const { t: tc } = useTranslation();
   const [entries, setEntries] = useState<VersionEntry[] | null>(null);
@@ -84,6 +86,12 @@ export function HistoryDialog({ branch, headId, load, busy, error, onRestore, on
                   </div>
                 )}
               </div>
+              {entry.parentId !== null && (
+                <Button variant="ghost" size="sm" className="shrink-0" onClick={() => onCompare(entry, labelOf(entry))}>
+                  <DiffIcon aria-hidden="true" />
+                  {t("history.compare")}
+                </Button>
+              )}
               {entry.id === headId ? (
                 <span className="shrink-0 text-xs text-muted-foreground">{t("history.current")}</span>
               ) : (

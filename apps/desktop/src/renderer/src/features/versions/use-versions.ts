@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { IpcChannel } from "../../../../shared/enums/ipc-channel.enum";
-import type { VersionEntry, VersionStatus } from "../../../../shared/ipc";
+import type { ChoiceInput, CompareView, MergePreview, VersionEntry, VersionStatus } from "../../../../shared/ipc";
 import { api } from "../../shared/api";
 import { errorMessage } from "../../shared/error-message";
 
@@ -79,7 +79,15 @@ export function useVersions({ projectKey, saveTick, flush, onReplaced }: Options
   const restore = useCallback((snapshotId: string, message: string) => attempt(() => api.invoke(IpcChannel.VersionRestore, { snapshotId, message }), true), [attempt]);
   const history = useCallback(async (): Promise<VersionEntry[]> => (await run(() => api.invoke(IpcChannel.VersionHistory), false)) ?? [], [run]);
 
-  return { status, error, busy, clearError: () => setError(null), refresh, run, save, start, switchTo, discard, restore, history };
+  const compare = useCallback((from: string, to: string): Promise<CompareView | undefined> => run(() => api.invoke(IpcChannel.VersionCompare, { from, to }), false), [run]);
+  const previewMerge = useCallback((source: string): Promise<MergePreview | undefined> => run(() => api.invoke(IpcChannel.VersionMergePreview, { source }), false), [run]);
+  const merge = useCallback(
+    (source: string, resolutions: Record<string, ChoiceInput>, deleteSource: boolean) =>
+      attempt(() => api.invoke(IpcChannel.VersionMerge, { source, resolutions, deleteSource, message: t("merge.message", { ns: "versions", name: source }) }), true),
+    [attempt, t],
+  );
+
+  return { status, error, busy, clearError: () => setError(null), refresh, run, save, start, switchTo, discard, restore, history, compare, previewMerge, merge };
 }
 
 export type Versions = ReturnType<typeof useVersions>;

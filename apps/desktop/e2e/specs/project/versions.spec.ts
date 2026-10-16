@@ -48,7 +48,7 @@ test("a version is saved, a change is started and opened again, the history rest
   await expect(editor).toContainText("First draft and a rewrite");
 
   await menu();
-  await page.getByRole("menuitem", { name: "Main line" }).click();
+  await page.getByRole("menuitem", { name: "Main line", exact: true }).click();
   await expect(bar).toContainText("Main line");
   await expect(editor).toContainText("First draft");
   await expect(editor).not.toContainText("a rewrite");
