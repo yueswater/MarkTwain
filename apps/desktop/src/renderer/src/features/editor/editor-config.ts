@@ -77,7 +77,7 @@ export function buildExtensions(ctx: EditorContext): Extensions {
     MarkdownPaste.configure({ enabled: () => ctx.prefs().pasteMarkdown }),
     Placeholder.configure({ placeholder: t()("placeholder") }),
     PlacementMarks,
-    ChangeMarks.configure({ getBase: () => ctx.savedBlocks(), enabled: () => ctx.prefs().showChanges }),
+    ChangeMarks.configure({ getBase: () => ctx.savedBlocks(), enabled: () => ctx.prefs().showChanges, revertLabel: () => t()("changes.revert") }),
     LandscapeMarks.configure({
       label: () => t()("landscape.head"),
       removeLabel: () => t()("landscape.remove"),

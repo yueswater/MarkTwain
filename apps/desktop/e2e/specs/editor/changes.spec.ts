@@ -59,6 +59,32 @@ test("what was added, changed and taken away since the saved version is marked i
   await expect(removed).toContainText("Second paragraph");
   await expect(removed).toHaveAttribute("contenteditable", "false");
 
+  // One change is put back from its own button: the paragraph that was taken away comes back in its place
+  await removed.getByRole("button", { name: "Put back" }).dispatchEvent("mousedown");
+  await expect(editor.locator(".change-ghost")).toHaveCount(0);
+  await expect(editor.locator(".change-added")).toHaveCount(0);
+  await expect(editor.locator("> p")).toHaveText(["First paragraph and more", "Second paragraph", "A third paragraph"]);
+
+  // Typed again, an added paragraph shows the button when the pointer is over it, and a changed one has it in its ghost
+  await editor.getByText("A third paragraph").click();
+  await page.keyboard.press("Enter");
+  await page.keyboard.type("A paragraph that goes");
+  const fresh = editor.locator('.change-added[data-change="added"]');
+  await fresh.hover();
+  await fresh.getByRole("button", { name: "Put back" }).dispatchEvent("mousedown");
+  await expect(fresh).toHaveCount(0);
+  await editor.getByText("First paragraph and more").click();
+  await page.keyboard.type(" again");
+  await editor.locator('.change-ghost[data-change="modified"]').getByRole("button", { name: "Put back" }).dispatchEvent("mousedown");
+  await expect(editor.locator("> p").first()).toHaveText("First paragraph and more");
+  await expect(editor.locator(".change-ghost")).toHaveCount(0);
+
+  // The paragraph is taken away again for the next part
+  await editor.getByText("Second paragraph").click({ clickCount: 3 });
+  await page.keyboard.press("Backspace");
+  await page.keyboard.press("Backspace");
+  await expect(editor.locator('.change-ghost[data-change="removed"]')).toHaveCount(1);
+
   // The setting turns the marks off and on
   await page.keyboard.press("ControlOrMeta+,");
   const dialog = page.getByRole("dialog", { name: "Settings" });
