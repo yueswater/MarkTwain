@@ -240,9 +240,10 @@ An installer that works without a network.
 ## v0.9.0 · Polish
 
 - Draft autosave, kept separate from versions
+- Import a `.md` file into a document (the dialect of the project and plain Markdown), and the round trip of an exported file. Issue #49. Exporting the Markdown is in v0.5.1
 - Review of the Traditional Chinese and English interface and error messages
 
-**Done when:** after a forced quit, the draft is restored on reopen.
+**Done when:** after a forced quit, the draft is restored on reopen, and an exported `.md` imports back as it was.
 
 ## v1.0.0-beta.1 · Public Beta
 
