@@ -1,11 +1,13 @@
 import { joinBlocks, splitBlocks } from "@marktwain/schema";
 import {
   MAIN_BRANCH,
+  applySelection,
   commonAncestor,
   diffContent,
   hashBytes,
   hashText,
   isAncestor,
+  listChanges,
   resolveMerge,
   threeWayMerge,
   type Choice,
@@ -16,7 +18,7 @@ import {
   type SnapshotContent,
 } from "@marktwain/versioning";
 import { ErrorCode } from "../../../shared/enums/error-code.enum";
-import type { ChangeView, ChoiceInput, CompareView, ConflictView, MergePreview, VersionEntry, VersionStatus } from "../../../shared/ipc";
+import type { ChangeItemView, ChangeView, ChoiceInput, CompareView, ConflictView, MergePreview, VersionEntry, VersionStatus } from "../../../shared/ipc";
 import type { DatabaseSession } from "../../core/database-session";
 import { AppError } from "../../core/errors";
 import { VersionRepository } from "./version.repository";
@@ -200,8 +202,45 @@ export class VersionService {
 
   // Operations
 
-  /** Makes a version of the documents as they are, on the branch that is open. */
-  save(message: string): VersionStatus {
+  /** What differs between the latest version of the branch that is open and the documents now, as items to choose from. */
+  changes(): ChangeItemView[] {
+    this.ensureStarted();
+    const repository = this.repository();
+    const head = this.loadSnapshot(this.requireBranch(this.current()).head_id);
+    const hashed = this.hashWorking(this.workingCopy.read());
+    const items = listChanges(head, hashed.content);
+    const wanted: Hash[] = [];
+    for (const item of items) {
+      if (item.type === "hunk") for (const change of item.changes) wanted.push(...(change.type === "modified" ? [change.from] : [change.hash]));
+      if (item.type === "document" && item.status === "removed") wanted.push(...(head.documents[item.docId]?.blocks ?? []));
+    }
+    const saved = repository.blockTexts(wanted);
+    const text = (hash: Hash) => hashed.texts.get(hash) ?? saved.get(hash) ?? "";
+    const entry = (docId: string) => hashed.content.documents[docId] ?? head.documents[docId];
+    return items.map((item): ChangeItemView => {
+      if (item.type === "file") return item;
+      const document = entry(item.docId);
+      const about = { title: document?.title ?? "", kind: document?.kind ?? "" };
+      if (item.type === "fields") return { ...item, ...about };
+      if (item.type === "document") {
+        const blocks = item.status === "added" ? hashed.content.documents[item.docId]?.blocks : head.documents[item.docId]?.blocks;
+        return { ...item, ...about, blocks: (blocks ?? []).slice(0, 6).map(text) };
+      }
+      return {
+        ...item,
+        ...about,
+        changes: item.changes.map((change): Exclude<ChangeView, { type: "same" }> =>
+          change.type === "added" ? { type: "added", after: text(change.hash) } : change.type === "removed" ? { type: "removed", before: text(change.hash) } : { type: "modified", before: text(change.from), after: text(change.to) },
+        ),
+      };
+    });
+  }
+
+  /**
+   * Makes a version of the changes that are chosen, on the branch that is open, as a commit takes what was staged. All of them when none are named.
+   * What was not chosen stays in the documents and is still a change that is not saved.
+   */
+  save(message: string, include?: string[]): VersionStatus {
     // As a commit in git needs a message, a version needs to say what was changed
     if (message.trim() === "") throw new AppError(ErrorCode.VersionMessageEmpty);
     this.ensureStarted();
@@ -210,9 +249,13 @@ export class VersionService {
       const current = this.current();
       const head = this.requireBranch(current).head_id;
       const hashed = this.hashWorking(this.workingCopy.read());
-      if (this.sameAsSnapshot(hashed, head)) throw new AppError(ErrorCode.VersionNothingToSave);
+      const headContent = this.loadSnapshot(head);
+      const items = listChanges(headContent, hashed.content);
+      const chosen = include ? new Set(include) : new Set(items.map((item) => item.id));
+      if (!items.some((item) => chosen.has(item.id))) throw new AppError(ErrorCode.VersionNothingToSave);
       this.store(hashed);
-      repository.moveHead(current, this.writeSnapshot(hashed.content, head, null, message.trim()));
+      const content = applySelection(headContent, hashed.content, chosen);
+      repository.moveHead(current, this.writeSnapshot(content, head, null, message.trim()));
       repository.deleteDraft(current);
     });
     return this.status();

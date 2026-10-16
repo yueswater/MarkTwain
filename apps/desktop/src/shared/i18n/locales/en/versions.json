@@ -43,7 +43,10 @@
     "restoreBody": "The documents become what they were in “{{label}}”. It is saved as a new version, so nothing in the history is lost. Changes that you did not save are replaced.",
     "restoreMessage": "Restored “{{label}}”",
     "current": "Current",
-    "compare": "What changed"
+    "compare": "What changed",
+    "pickHint": "Tick two versions to see what differs between them.",
+    "compareTwo": "Compare the two",
+    "pick": "Pick “{{label}}” to compare"
   },
   "error": {
     "title": "That did not work"
@@ -73,7 +76,9 @@
     "legend": "Colors",
     "legendAdded": "Added",
     "legendRemoved": "Removed",
-    "legendModified": "Changed inside the paragraph"
+    "legendModified": "Changed inside the paragraph",
+    "titlePair": "What differs: {{label}}",
+    "descriptionPair": "The older version is on the left of the arrow, and what changed from it to the newer one is shown."
   },
   "merge": {
     "title": "Merge “{{name}}” into the main line",
@@ -114,5 +119,18 @@
     "title": "Discard what you typed?",
     "description": "The documents go back to the latest version. What you typed since is lost, and this cannot be undone.",
     "confirm": "Discard"
+  },
+  "stage": {
+    "title": "Changes in this version",
+    "count": "{{chosen}} of {{total}} chosen",
+    "all": "Choose all",
+    "none": "Choose none",
+    "rest": "{{count}} changes that you did not choose stay in the documents, and you can save them in another version.",
+    "kind": {
+      "hunk": "changed text",
+      "fields": "title or position",
+      "document": "document",
+      "file": "file"
+    }
   }
 }

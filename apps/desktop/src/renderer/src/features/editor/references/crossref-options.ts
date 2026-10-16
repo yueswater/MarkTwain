@@ -42,6 +42,8 @@ export function buildRefOptions(
   unlabeled: readonly UnlabeledTarget[],
   kindName: (labelKind: string) => string,
   remote: readonly UnlabeledRemote[] = [],
+  /** The name of the document that holds a block, its own title or else its kind and number, such as Chapter 2 */
+  documentName: (document: UnlabeledRemote["document"]) => string = (document) => document.title,
 ): RefOption[] {
   const out: RefOption[] = [];
   for (const item of labeled) {
@@ -72,8 +74,8 @@ export function buildRefOptions(
     out.push({
       value: `r:${item.documentId}:${item.block}:${item.kind}`,
       kind,
-      text: `${kindName(item.kind)} · ${short} (${item.document.title})`,
-      full: `${kindName(item.kind)} · ${body} (${item.document.title})`,
+      text: `${kindName(item.kind)} · ${short} (${documentName(item.document)})`,
+      full: `${kindName(item.kind)} · ${body} (${documentName(item.document)})`,
       labeled: false,
     });
   }

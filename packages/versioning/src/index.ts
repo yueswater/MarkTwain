@@ -15,4 +15,5 @@ export {
   type Resolutions,
 } from "./merge";
 export { mergeBlocks, type Part } from "./merge-blocks";
+export { applySelection, listChanges, type ChangeItem } from "./stage";
 export { MAIN_BRANCH, type Branch, type DocumentEntry, type Hash, type Snapshot, type SnapshotContent } from "./types";

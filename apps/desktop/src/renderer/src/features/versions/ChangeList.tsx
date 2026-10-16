@@ -14,7 +14,7 @@ const INSERTED = "bg-emerald-500/25 text-emerald-800 underline decoration-emeral
 const DELETED = "bg-red-500/20 text-red-800 line-through decoration-red-600/70 dark:text-red-300";
 
 /** A block that was changed, as one paragraph with the characters that went in green and those that went out in red. */
-function Modified({ before, after }: { before: string; after: string }) {
+export function Modified({ before, after }: { before: string; after: string }) {
   const runs = charDiff(before, after);
   return (
     <p className={`whitespace-pre-wrap break-words p-2 text-sm ${MARK.modified}`} data-change="modified">
@@ -28,7 +28,7 @@ function Modified({ before, after }: { before: string; after: string }) {
 }
 
 /** A block that was added or removed whole, with a mark in the margin. */
-function Whole({ type, text }: { type: "added" | "removed"; text: string }) {
+export function Whole({ type, text }: { type: "added" | "removed"; text: string }) {
   const { t } = useTranslation("versions");
   const added = type === "added";
   return (

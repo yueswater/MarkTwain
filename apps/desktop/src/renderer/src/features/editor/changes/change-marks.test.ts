@@ -2,7 +2,8 @@ import { describe, expect, it } from "@jest/globals";
 import { getSchema } from "@tiptap/core";
 import { parseMarkdown } from "@marktwain/schema";
 import { createSchemaExtensions } from "../extensions/schema-extensions";
-import { computeChanges, editorBlocks, savedBlocks, savedPlainText } from "./change-marks";
+import { EditorState } from "@tiptap/pm/state";
+import { computeChanges, editorBlocks, revertChange, savedBlocks, savedPlainText } from "./change-marks";
 
 const schema = getSchema(createSchemaExtensions());
 const doc = (markdown: string) => schema.nodeFromJSON(parseMarkdown(markdown));
@@ -53,5 +54,49 @@ describe("the blocks as Markdown", () => {
     expect(savedPlainText("## A heading")).toBe("A heading");
     expect(savedPlainText("- one\n- two")).toBeNull();
     expect(savedPlainText("$$\nx^2\n$$")).toBeNull();
+  });
+});
+
+describe("revertChange", () => {
+  const saved = "# Title\n\nFirst paragraph.\n\nSecond paragraph.\n\nThird paragraph.\n";
+
+  /** The editor text after the change that the first mark of the comparison with `saved` asks to put back, and the marks that are left. */
+  const revertFirst = (edited: string, which = 0) => {
+    const state = EditorState.create({ doc: doc(edited) });
+    const marks = computeChanges(savedBlocks(saved), editorBlocks(state.doc));
+    const tr = state.tr;
+    expect(revertChange(tr, marks[which]!)).toBe(true);
+    return { text: editorBlocks(tr.doc).join("").trim(), left: computeChanges(savedBlocks(saved), editorBlocks(tr.doc)) };
+  };
+
+  it("takes away a block that was added", () => {
+    const { text, left } = revertFirst(saved.replace("Second paragraph.", "A new one.\n\nSecond paragraph."));
+    expect(text).toBe(editorBlocks(doc(saved)).join("").trim());
+    expect(left).toEqual([]);
+  });
+
+  it("puts the old block back in place of one that was changed", () => {
+    const { text, left } = revertFirst(saved.replace("Second paragraph.", "Second paragraph, changed."));
+    expect(text).toBe(editorBlocks(doc(saved)).join("").trim());
+    expect(left).toEqual([]);
+  });
+
+  it("puts a block that was taken away back where it was, also at the end", () => {
+    expect(revertFirst(saved.replace("Second paragraph.\n\n", "")).left).toEqual([]);
+    expect(revertFirst(saved.replace("\n\nThird paragraph.", "")).left).toEqual([]);
+  });
+
+  it("reverts one change and leaves the others marked", () => {
+    const edited = saved.replace("First paragraph.", "First, changed.").replace("Third paragraph.", "Third paragraph.\n\nAdded last.");
+    const { left } = revertFirst(edited, 0);
+    expect(left).toEqual([{ type: "added", index: 4 }]);
+  });
+
+  it("empties the only block instead of leaving a document without one", () => {
+    const state = EditorState.create({ doc: doc("Only") });
+    const tr = state.tr;
+    expect(revertChange(tr, { type: "added", index: 0 })).toBe(true);
+    expect(tr.doc.childCount).toBe(1);
+    expect(tr.doc.textContent).toBe("");
   });
 });

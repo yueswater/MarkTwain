@@ -47,6 +47,13 @@ export type DocumentDiffView = {
   changes: ChangeView[];
 };
 
+/** One thing that a version can take or leave, with the text to show it. A run of blocks is the blocks that changed together. */
+export type ChangeItemView =
+  | { id: string; type: "document"; docId: string; title: string; kind: string; status: "added" | "removed"; blocks: string[] }
+  | { id: string; type: "fields"; docId: string; title: string; kind: string; fields: { field: "kind" | "title" | "position"; from: string | number; to: string | number }[] }
+  | { id: string; type: "hunk"; docId: string; title: string; kind: string; changes: Exclude<ChangeView, { type: "same" }>[] }
+  | { id: string; type: "file"; path: string; status: "added" | "removed" | "changed" };
+
 export type CompareView = {
   documents: DocumentDiffView[];
   files: { path: string; status: "added" | "removed" | "changed" }[];
@@ -72,7 +79,10 @@ export type MergePreview =
 
 export type VersionContract = {
   [IpcChannel.VersionStatus]: { req: void; res: VersionStatus };
-  [IpcChannel.VersionSave]: { req: { message: string }; res: VersionStatus };
+  /** What differs between the latest version and the documents now, as items to choose from for the next version */
+  [IpcChannel.VersionChanges]: { req: void; res: ChangeItemView[] };
+  /** Makes a version of the changes that are chosen, all of them when none are named. The others stay as changes that are not saved. */
+  [IpcChannel.VersionSave]: { req: { message: string; include?: string[] }; res: VersionStatus };
   [IpcChannel.VersionBranchStart]: { req: { name: string }; res: VersionStatus };
   [IpcChannel.VersionBranchSwitch]: { req: { name: string }; res: VersionStatus };
   [IpcChannel.VersionBranchDiscard]: { req: { name: string }; res: VersionStatus };

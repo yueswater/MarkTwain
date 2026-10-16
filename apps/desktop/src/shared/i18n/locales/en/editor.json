@@ -479,5 +479,8 @@
   "landscape": {
     "head": "Landscape page, what is here is printed on a page turned sideways",
     "remove": "Remove the landscape page and keep its content"
+  },
+  "changes": {
+    "revert": "Put back"
   }
 }

@@ -329,3 +329,8 @@
 .ProseMirror .change-ghost-text del { background: oklch(0.64 0.2 25 / 0.3); text-decoration: line-through; }
 .dark .ProseMirror .change-added { background: oklch(0.72 0.17 150 / 0.18); }
 .dark .ProseMirror .change-ghost { background: oklch(0.64 0.2 25 / 0.18); }
+.ProseMirror .change-revert { flex: none; margin-left: auto; align-self: flex-start; padding: 0 0.5rem; font-size: 0.75rem; line-height: 1.4rem; color: var(--foreground); background: var(--background); border: 1px solid var(--border); cursor: pointer; user-select: none; }
+.ProseMirror .change-revert:hover { background: var(--muted); }
+.ProseMirror .change-revert-anchor { position: relative; height: 0; overflow: visible; z-index: 1; }
+.ProseMirror .change-revert-anchor > .change-revert { position: absolute; top: 0.3rem; right: 0.25rem; display: none; margin: 0; }
+.ProseMirror .change-revert-anchor:hover > .change-revert, .ProseMirror .change-revert-anchor:has(+ .change-added:hover) > .change-revert { display: block; }

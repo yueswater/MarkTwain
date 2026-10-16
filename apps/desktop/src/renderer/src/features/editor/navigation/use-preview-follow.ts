@@ -61,7 +61,8 @@ export function usePreviewFollow({ editor, scroller, onTopBlock, scrollTo }: Opt
       if (index === scrollTo.block) pos = offset;
     });
     const node = editor.state.doc.nodeAt(pos);
-    const chain = editor.chain().focus();
+    // The editor does not scroll to the selection by itself, it would cut short the smooth scroll below when the block is out of view
+    const chain = editor.chain().focus(undefined, { scrollIntoView: false });
     // Atom blocks such as figures have no text, so select the whole node
     (node?.isAtom ? chain.setNodeSelection(pos) : chain.setTextSelection(Math.min(pos + 1, editor.state.doc.content.size))).run();
     // The block is shown in the middle of the editor, a block taller than the editor from near its top

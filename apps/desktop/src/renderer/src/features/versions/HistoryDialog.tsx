@@ -16,15 +16,20 @@ type Props = {
   onRestore: (snapshotId: string, label: string) => Promise<unknown>;
   /** Shows what a version changed from the one before it */
   onCompare: (entry: VersionEntry, label: string) => void;
+  /** Shows what differs between two versions, the older first */
+  onCompareTwo: (older: VersionEntry, newer: VersionEntry, labels: [string, string]) => void;
   onClose: () => void;
 };
 
 /** The versions that lead to the latest one of the branch, each with the way back to it. */
-export function HistoryDialog({ branch, headId, load, busy, error, onRestore, onCompare, onClose }: Props) {
+export function HistoryDialog({ branch, headId, load, busy, error, onRestore, onCompare, onCompareTwo, onClose }: Props) {
   const { t, i18n } = useTranslation("versions");
   const { t: tc } = useTranslation();
   const [entries, setEntries] = useState<VersionEntry[] | null>(null);
   const [asking, setAsking] = useState<string | null>(null);
+  // Two versions that are picked to be compared with each other, as git diff takes two commits
+  const [picked, setPicked] = useState<string[]>([]);
+  const pick = (id: string, on: boolean) => setPicked((current) => (on ? [...current, id].slice(-2) : current.filter((other) => other !== id)));
 
   useEffect(() => {
     void load().then(setEntries);
@@ -45,10 +50,29 @@ export function HistoryDialog({ branch, headId, load, busy, error, onRestore, on
             {error}
           </p>
         )}
+        {entries !== null && entries.length > 1 && (
+          <div className="flex items-center gap-3 text-sm">
+            <span className="text-muted-foreground">{t("history.pickHint")}</span>
+            <Button
+              size="sm"
+              variant="outline"
+              className="ml-auto"
+              disabled={picked.length !== 2}
+              onClick={() => {
+                const two = picked.map((id) => entries.find((entry) => entry.id === id) as VersionEntry).sort((a, b) => a.createdAt - b.createdAt || (a.id < b.id ? -1 : 1));
+                onCompareTwo(two[0] as VersionEntry, two[1] as VersionEntry, [labelOf(two[0] as VersionEntry), labelOf(two[1] as VersionEntry)]);
+              }}
+            >
+              <DiffIcon aria-hidden="true" />
+              {t("history.compareTwo")}
+            </Button>
+          </div>
+        )}
         {entries !== null && entries.length === 0 && <p className="text-sm text-muted-foreground">{t("history.empty")}</p>}
         <ol className="max-h-[60vh] divide-y overflow-y-auto rounded-md border" aria-label={t("history.title")}>
           {(entries ?? []).map((entry) => (
             <li key={entry.id} data-version={entry.id} className="flex items-start gap-3 px-3 py-2.5">
+              <input type="checkbox" className="mt-1" checked={picked.includes(entry.id)} onChange={(event) => pick(entry.id, event.target.checked)} aria-label={t("history.pick", { label: labelOf(entry) })} />
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="truncate text-sm font-medium">{labelOf(entry)}</span>
