@@ -2,27 +2,27 @@ import type { BuildDocument } from "./types";
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
-/** Content file path for each document, following the template layout. */
-export function assignPaths(documents: BuildDocument[]): Map<string, string> {
+/** Content file path for each document, following the template layout, ext is the extension of the output, typ or tex. */
+export function assignPaths(documents: BuildDocument[], ext: "typ" | "tex" = "typ"): Map<string, string> {
   const paths = new Map<string, string>();
   let chapters = 0;
   let appendices = 0;
   for (const doc of documents) {
     switch (doc.kind) {
       case "abstract":
-        paths.set(doc.id, "contents/front/abstract.typ");
+        paths.set(doc.id, `contents/front/abstract.${ext}`);
         break;
       case "acknowledgement":
-        paths.set(doc.id, "contents/front/acknowledgement.typ");
+        paths.set(doc.id, `contents/front/acknowledgement.${ext}`);
         break;
       case "denotation":
-        paths.set(doc.id, "contents/front/denotation.typ");
+        paths.set(doc.id, `contents/front/denotation.${ext}`);
         break;
       case "chapter":
-        paths.set(doc.id, `contents/chapter${pad(++chapters)}.typ`);
+        paths.set(doc.id, `contents/chapter${pad(++chapters)}.${ext}`);
         break;
       case "appendix":
-        paths.set(doc.id, `contents/back/appendix${pad(++appendices)}.typ`);
+        paths.set(doc.id, `contents/back/appendix${pad(++appendices)}.${ext}`);
         break;
     }
   }
@@ -60,6 +60,35 @@ export function renderMain(
     ...chapters,
     ...(hasBibliography ? ["", "#references()"] : []),
     ...(appendices.length > 0 ? ["", ...appendices] : []),
+  ];
+  return lines.join("\n") + "\n";
+}
+
+/**
+ * Generates main.tex from the documents that exist, in the order of the template.
+ * The helpers of MarkTwain are read after the class, before the document starts.
+ */
+export function renderMainLatex(documents: BuildDocument[], paths: Map<string, string>, hasBibliography: boolean): string {
+  const include = (kind: BuildDocument["kind"]) =>
+    documents.filter((d) => d.kind === kind).map((d) => `\\input{${(paths.get(d.id) ?? "").replace(/\.tex$/, "")}}`);
+  const appendices = include("appendix");
+  const lines = [
+    "\\documentclass{tw-thesis}",
+    "\\input{marktwain}",
+    "",
+    "\\begin{document}",
+    "",
+    "\\thesisfront",
+    "",
+    ...include("acknowledgement"),
+    ...include("abstract"),
+    ...include("denotation"),
+    "",
+    ...include("chapter"),
+    ...(hasBibliography ? ["", "\\references"] : []),
+    ...(appendices.length > 0 ? ["", "\\appendix", ...appendices] : []),
+    "",
+    "\\end{document}",
   ];
   return lines.join("\n") + "\n";
 }

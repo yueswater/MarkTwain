@@ -1,6 +1,7 @@
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { packageArgs, run } from "./build-typst";
+import { packageArgs } from "./build-typst";
+import { run } from "./process";
 
 export type ThumbnailInput = {
   typst: string;

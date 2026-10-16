@@ -218,6 +218,7 @@ export function PreviewPanel({ build, saveTick, placeKey, onClose, onJump, follo
               <li key={`w${i}`} className="select-text">
                 {item.kind === "configMissing" && t("configMissing", { field: item.fields.join(", ") })}
                 {item.kind === "citation" && t("citationNoBibliography", { keys: item.keys.join(", ") })}
+                {item.kind === "approximate" && t(`approximate.${item.feature}`, { defaultValue: item.feature })}
                 {item.kind === "math" && t("mathFailed", { latex: item.latex })}
                 {item.kind === "font" && t("fontMissing", { font: item.font })}
                 {item.kind === "other" && (

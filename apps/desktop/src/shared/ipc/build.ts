@@ -3,7 +3,7 @@ import { IpcChannel } from "../enums/ipc-channel.enum";
 export type BuildDiagnostic = {
   severity: "error" | "warning";
   /** Set for diagnostics that MarkTwain raises itself */
-  code: "config-missing" | "citation-no-bibliography" | null;
+  code: "config-missing" | "citation-no-bibliography" | "latex-approximate" | null;
   message: string;
   file: string | null;
   line: number | null;

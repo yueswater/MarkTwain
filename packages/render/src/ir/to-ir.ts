@@ -26,6 +26,12 @@ export type IrOptions = {
   knownLabels: ReadonlySet<string>;
 };
 
+/** The number of columns of a grid of figures, the document keeps it as text, so a number written as text counts. */
+function columnCount(value: unknown): number | null {
+  const count = typeof value === "number" ? value : typeof value === "string" ? Number.parseInt(value, 10) : Number.NaN;
+  return Number.isInteger(count) && count >= 1 ? count : null;
+}
+
 const str = (value: unknown): string => (typeof value === "string" ? value : "");
 const placementOrNull = (value: unknown): Placement | null => (isPlacement(value) ? value : null);
 const strOrNull = (value: unknown): string | null =>
@@ -187,7 +193,7 @@ export function toIr(doc: DocJson, options: IrOptions): IrResult {
           type: "figureGroup",
           placement: placementOrNull(attrs.placement),
           layout: attrs.layout === "grid" ? "grid" : "row",
-          columns: typeof attrs.columns === "number" ? attrs.columns : null,
+          columns: columnCount(attrs.columns),
           label: strOrNull(attrs.label),
           caption: inlineSource(attrs.caption),
           items: (node.content ?? []).map((item) => ({
