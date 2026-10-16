@@ -1,0 +1,49 @@
+{
+  "branch": {
+    "main": "Main line",
+    "menu": "Versions",
+    "unsaved": "Has changes that are not saved as a version",
+    "open": "Open a change",
+    "none": "No other change yet"
+  },
+  "action": {
+    "save": "Save a version…",
+    "start": "Start a new change…",
+    "history": "Version history…",
+    "merge": "Merge into the main line…",
+    "discard": "Discard this change…"
+  },
+  "save": {
+    "title": "Save a version",
+    "description": "A version is a point that you can come back to. Say what you changed.",
+    "label": "What did you change?",
+    "placeholder": "Finished the second section"
+  },
+  "start": {
+    "title": "Start a new change",
+    "description": "A change is a copy of the thesis to try something in. The main line stays as it is until you merge the change back.",
+    "label": "Name of the change",
+    "placeholder": "Rewrite chapter 2"
+  },
+  "discard": {
+    "title": "Discard “{{name}}”?",
+    "description": "The change and everything you did in it will go. The main line is not touched. This cannot be undone.",
+    "confirm": "Discard"
+  },
+  "history": {
+    "title": "Version history",
+    "description": "The versions of “{{branch}}”, the newest first.",
+    "empty": "No versions yet.",
+    "initial": "Initial version",
+    "untitled": "Version without a description",
+    "merge": "Merge",
+    "restore": "Restore",
+    "restoreTitle": "Restore this version?",
+    "restoreBody": "The documents become what they were in “{{label}}”. It is saved as a new version, so nothing in the history is lost. Changes that you did not save are replaced.",
+    "restoreMessage": "Restored “{{label}}”",
+    "current": "Current"
+  },
+  "error": {
+    "title": "That did not work"
+  }
+}

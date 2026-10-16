@@ -1,0 +1,49 @@
+{
+  "branch": {
+    "main": "主線",
+    "menu": "版本",
+    "unsaved": "有尚未儲存成版本的變動",
+    "open": "開啟修改",
+    "none": "還沒有其他修改"
+  },
+  "action": {
+    "save": "儲存版本…",
+    "start": "開始新的修改…",
+    "history": "版本紀錄…",
+    "merge": "合併回主線…",
+    "discard": "放棄這次修改…"
+  },
+  "save": {
+    "title": "儲存版本",
+    "description": "版本是可以回來的時間點，寫下你改了什麼。",
+    "label": "改了什麼？",
+    "placeholder": "寫完第二節"
+  },
+  "start": {
+    "title": "開始新的修改",
+    "description": "修改是論文的一份複本，讓你放心嘗試。合併回去之前，主線不會有任何變動。",
+    "label": "修改的名稱",
+    "placeholder": "重寫第二章"
+  },
+  "discard": {
+    "title": "放棄「{{name}}」？",
+    "description": "這次修改和裡面做過的所有事都會消失，主線不受影響。這個動作無法復原。",
+    "confirm": "放棄"
+  },
+  "history": {
+    "title": "版本紀錄",
+    "description": "「{{branch}}」的版本，最新的在最上面。",
+    "empty": "還沒有版本。",
+    "initial": "起始版本",
+    "untitled": "沒有說明的版本",
+    "merge": "合併",
+    "restore": "還原",
+    "restoreTitle": "還原到這個版本？",
+    "restoreBody": "文件會變回「{{label}}」的樣子，並存成一個新版本，所以歷史紀錄不會有任何遺失。尚未儲存的變動會被取代。",
+    "restoreMessage": "還原「{{label}}」",
+    "current": "目前"
+  },
+  "error": {
+    "title": "沒有成功"
+  }
+}
