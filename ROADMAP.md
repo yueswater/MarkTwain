@@ -2,7 +2,7 @@
 
 MarkTwain is developed against version milestones. Each version maps to a [GitHub Milestone](../../milestones), and the work items are tracked as issues.
 
-Current version: v0.5.0.
+Current version: v0.5.1.
 
 | Version | Theme | Status |
 |---|---|---|
@@ -16,7 +16,8 @@ Current version: v0.5.0.
 | [v0.3.6](#v036--toolchain-and-preview) | Toolchain and preview | Released |
 | [v0.4.0](#v040--version-control) | Version control | Released |
 | [v0.5.0](#v050--latex-output) | LaTeX output | Released |
-| [v0.5.1](#v051--project-export) | Project export | Not started |
+| [v0.5.1](#v051--safety-and-polish) | Safety and polish | Released |
+| [v0.5.2](#v052--project-export) | Project export | Not started |
 | [v0.6.0](#v060--word-output) | Word output, the body | Not started |
 | [v0.6.1](#v061--word-output-front-matter-and-schools) | Word output, the front matter and the schools | Not started |
 | [v0.6.2](#v062--word-output-citations-and-math-font) | Word output, citations and the math font | Not started |
@@ -26,7 +27,7 @@ Current version: v0.5.0.
 | [v1.0.0-beta.1](#v100-beta1--public-beta) | Public beta | Not started |
 | [v1.0.0](#v100--release) | Release | Not started |
 
-v0.3.0 (Typst output) and v0.4.0 (version control) do not depend on each other and can be developed in parallel. v0.5.1 needs the LaTeX renderer of v0.5.0 for its LaTeX half.
+v0.3.0 (Typst output) and v0.4.0 (version control) do not depend on each other and can be developed in parallel. v0.5.2 needs the LaTeX renderer of v0.5.0 for its LaTeX half.
 
 ## v0.1.0 · Foundation
 
@@ -156,7 +157,22 @@ The same content, rendered as LaTeX.
 
 **Done when:** the same sample thesis builds a LaTeX PDF with the TeX Live of the developer, from a LaTeX project. Without a TeX Live, LaTeX cannot be picked for a new project and Typst is unaffected.
 
-## v0.5.1 · Project Export
+## v0.5.1 · Safety and Polish
+
+Fixes and rough edges found in a review of v0.5.0, no new output.
+
+- Nothing typed is lost: going back to a version first saves what was typed after the last version, a failed save is retried and warned about, a second program on the same project goes away
+- LaTeX is built on CI for Ubuntu and Windows, and the Windows build keeps to an ASCII work folder. Issue #53
+- A build that fails shows its errors where the pages would be, in plain words, with a button to the source. A missing picture, a broken reference, a name used twice and a missing character are warnings and not failures
+- Two references or narrative citations that touch each other are kept
+- A check of the cover before export, the name of the list at the front (目次 or 目錄) follows the school, and the words of the interface are the same everywhere
+- A formula is typed in a code editor with colours and closing brackets, an error names its place
+- The engine of a new project is chosen on three squares, and a project is placed and opened with a picker of the app
+- Settings: the unit under the name, the reset next to the name, search by the words of a page
+
+**Done when:** the review items of the first three batches are closed and the four checks of CI are green on both systems with LaTeX included.
+
+## v0.5.2 · Project Export
 
 The whole thesis leaves MarkTwain as one `.zip`.
 
@@ -279,7 +295,7 @@ An installer that works without a network.
 ## v0.9.0 · Polish
 
 - Draft autosave, kept separate from versions
-- Import a `.md` file into a document (the dialect of the project and plain Markdown), and the round trip of an exported file. Issue #49. Exporting the Markdown is in v0.5.1
+- Import a `.md` file into a document (the dialect of the project and plain Markdown), and the round trip of an exported file. Issue #49. Exporting the Markdown is in v0.5.2
 - Review of the Traditional Chinese and English interface and error messages
 
 **Done when:** after a forced quit, the draft is restored on reopen, and an exported `.md` imports back as it was.
