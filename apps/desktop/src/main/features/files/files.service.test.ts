@@ -61,7 +61,7 @@ describe("FilesService.list", () => {
 
   it("offers the places that exist", () => {
     mkdirSync(join(home, "Desktop"));
-    const ids = new FilesService({ home }).list(home, null).places.map((place) => place.id);
+    const ids = new FilesService({ home, platform: "linux" }).list(home, null).places.map((place) => place.id);
     expect(ids).toEqual(["home", "desktop"]);
   });
 });
