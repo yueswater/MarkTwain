@@ -20,15 +20,15 @@
   "kind": {
     "title": {
       "abstract": "摘要",
-      "acknowledgement": "誌謝",
-      "denotation": "符號說明",
+      "acknowledgement": "致謝",
+      "denotation": "符號列表",
       "chapter": "第 {{n}} 章",
       "appendix": "附錄 {{n}}"
     },
     "name": {
       "abstract": "摘要",
-      "acknowledgement": "誌謝",
-      "denotation": "符號說明",
+      "acknowledgement": "致謝",
+      "denotation": "符號列表",
       "chapter": "章",
       "appendix": "附錄"
     }
@@ -60,7 +60,7 @@
     "title": "關於你的論文",
     "description": "這些資料會用在封面與題名頁。可以先跳過，之後都能在設定裡修改。",
     "filled": "已從你先前的專案帶入。",
-    "more": "更多",
+    "more": "更多資料，英文題目與關鍵字",
     "problem": "有些回答無法使用，請檢查標示的欄位。",
     "dontAsk": "不要再詢問",
     "skip": "跳過",

@@ -4,10 +4,10 @@
   "close": "關閉",
   "reset": "恢復預設",
   "inherited": "預設：{{value}}",
-  "followDefault": "跟隨預設",
+  "followDefault": "依預設",
   "invalid": "這個值不可以使用。",
   "editor": {
-    "fontFamily": "字體",
+    "fontFamily": "字型",
     "fontFamilyHint": "編輯區文字的字型。",
     "sans": "黑體",
     "serif": "明體",
@@ -27,12 +27,12 @@
     "autosaveDelayHint": "往右拉，停止輸入後會更快儲存。",
     "pasteMarkdown": "貼上 Markdown 時轉成結構",
     "pasteMarkdownHint": "把貼上的 Markdown 變成標題、清單與表格。",
-    "previewDelay": "儲存後重新建置預覽",
-    "previewDelayHint": "往右拉，儲存後會更快重新建置預覽。",
+    "previewDelay": "儲存後重新產生預覽",
+    "previewDelayHint": "往右拉，儲存後會更快重新產生預覽。",
     "codeSample": "print(\"hello\")",
     "statementStyle": "樣式",
-    "statementStyleHint": "Callout 是不上色的框，彩色會依種類上色。",
-    "statementCallout": "Callout",
+    "statementStyleHint": "提示框 是不上色的框，彩色會依種類上色。",
+    "statementCallout": "提示框",
     "statementColored": "彩色",
     "statementColor": "顏色",
     "statementColorReset": "還原預設色",
@@ -47,15 +47,15 @@
     "page": "頁面",
     "text": "文字",
     "numbering": "編號",
-    "captions": "圖表標題",
+    "captions": "圖說與表格標題",
     "headings": "標題",
     "pageNumber": "頁碼",
     "crossRef": "交叉引用",
     "bibliography": "參考文獻",
-    "outline": "目次",
+    "outline": "目錄",
     "watermark": "浮水印",
     "statements": "定理區塊名稱",
-    "placement": "浮動位置",
+    "placement": "位置",
     "lists": "清單"
   },
   "advancedHint": "留空表示跟隨學校格式。修改後只會覆蓋這份論文。",
@@ -113,11 +113,11 @@
       "subsection": "小節的引用格式"
     },
     "outline": {
-      "depth": "目次深度"
+      "depth": "目錄深度"
     },
     "bibliography": {
       "title": "參考文獻標題",
-      "full": "也列出未引用的條目"
+      "full": "也列出未引用的文獻"
     },
     "watermark": {
       "image": "浮水印圖片",
@@ -143,7 +143,7 @@
     },
     "lists": {
       "ordered": "編號清單的層級樣式",
-      "bullet": "符號清單的層級樣式"
+      "bullet": "項目清單的層級樣式"
     }
   },
   "hint": {
@@ -210,7 +210,7 @@
     },
     "editorPreview": {
       "title": "預覽",
-      "description": "論文預覽的建置方式。"
+      "description": "論文預覽的產生方式。"
     },
     "thesisSchool": {
       "title": "學校與格式",
@@ -234,11 +234,11 @@
     },
     "thesisCaptions": {
       "title": "圖表與引用",
-      "description": "圖表標題，以及交叉引用使用的文字。"
+      "description": "圖說與表格標題，以及交叉引用使用的文字。"
     },
     "thesisPageNumber": {
-      "title": "頁碼與目次",
-      "description": "前置部分與正文的頁碼，以及目次。"
+      "title": "頁碼與目錄",
+      "description": "前置部分與正文的頁碼，以及目錄。"
     },
     "thesisBibliography": {
       "title": "參考文獻",
@@ -257,8 +257,8 @@
       "description": "每一層清單用什麼符號或編號。會改變 PDF，編輯器也會跟著顯示。"
     },
     "editorShortcuts": {
-      "title": "快捷鍵",
-      "description": "所有快捷鍵，依區域分組。工具列按鈕的提示也會顯示對應的按鍵。"
+      "title": "快速鍵",
+      "description": "所有快速鍵，依區域分組。工具列按鈕的提示也會顯示對應的按鍵。"
     }
   },
   "search": {
@@ -278,7 +278,7 @@
       "3": "小節標題",
       "4": "小小節標題"
     },
-    "outline": "目次",
+    "outline": "目錄",
     "outlineLine": {
       "1": "章",
       "2": "節",
@@ -287,9 +287,9 @@
     },
     "printedAs": "印出來是",
     "tildeHint": "波浪號（~）會在字與字之間加上空白。",
-    "uncited": "列出的條目",
+    "uncited": "列出的文獻",
     "listCited": "只列被引用的",
-    "listAll": "全部條目",
+    "listAll": "全部文獻",
     "placeholder": {
       "C": "章號",
       "S": "節號",
@@ -303,9 +303,9 @@
     "hint": "畫在定稿正文頁上，開啟預覽中的浮水印開關時預覽也會顯示。",
     "school": "跟隨學校",
     "schoolHas": "學校的浮水印：{{name}}",
-    "schoolNone": "這間學校的模板沒有附浮水印。",
+    "schoolNone": "這間學校的範本沒有附浮水印。",
     "none": "不使用浮水印",
-    "noneBody": "論文建置時不加浮水印。",
+    "noneBody": "產生論文時不加浮水印。",
     "custom": "自己的圖片",
     "customBody": "從電腦選擇 PNG、JPEG、SVG 或 PDF。",
     "choose": "選擇檔案",
@@ -320,7 +320,7 @@
     "level": "第 {{n}} 級，共 {{total}} 級",
     "custom": "自訂",
     "describeSave": "停止輸入約 {{seconds}} 後儲存。",
-    "describePreview": "儲存約 {{seconds}} 後重新建置預覽。"
+    "describePreview": "儲存約 {{seconds}} 後重新產生預覽。"
   },
   "profile": {
     "ask": "建立專案時詢問",
@@ -331,19 +331,19 @@
     "preset": "組合",
     "presetHint": "先選一組，再逐層調整。",
     "presets": {
-      "default": "模板預設",
+      "default": "範本預設",
       "western": "西式",
       "chinese": "中文論文",
       "levels": "逐層不同",
       "custom": "自訂"
     },
     "ordered": "編號清單",
-    "bullet": "符號清單",
+    "bullet": "項目清單",
     "level": "第 {{n}} 層",
     "addLevel": "新增一層",
     "removeLevel": "移除第 {{n}} 層",
-    "reset": "還原成模板預設",
-    "usesTemplate": "沿用模板的預設樣式。",
+    "reset": "還原成範本預設",
+    "usesTemplate": "沿用範本的預設樣式。",
     "preview": "預覽",
     "sample": "第 {{n}} 層的項目",
     "styles": {
@@ -370,7 +370,7 @@
     }
   },
   "shortcuts": {
-    "title": "快捷鍵",
+    "title": "快速鍵",
     "description": "Mod 在 macOS 是 ⌘，在 Windows 與 Linux 是 Ctrl。",
     "search": "搜尋名稱或按鍵",
     "platform": "平台",
@@ -379,8 +379,8 @@
       "win": "Windows",
       "linux": "Linux"
     },
-    "none": "沒有符合的快捷鍵。",
-    "noKey": "沒有快捷鍵",
+    "none": "沒有符合的快速鍵。",
+    "noKey": "沒有快速鍵",
     "groups": {
       "text": "文字",
       "blocks": "區塊",
@@ -397,7 +397,7 @@
       "italic": "斜體",
       "strike": "刪除線",
       "code": "行內程式碼",
-      "bulletList": "符號清單",
+      "bulletList": "項目清單",
       "orderedList": "編號清單",
       "blockquote": "引文",
       "codeBlock": "程式碼區塊",
@@ -421,43 +421,43 @@
       "settings": "設定",
       "toggleSidebar": "收合或展開側邊欄",
       "togglePreview": "顯示或隱藏預覽",
-      "shortcuts": "快捷鍵一覽",
+      "shortcuts": "快速鍵一覽",
       "landscape": "橫向頁面"
     }
   },
   "fonts": {
-    "open": "字體",
-    "title": "字體",
-    "description": "論文可以使用的字體：模板附的、這份專案帶的，以及這台電腦裝的。",
-    "add": "新增字體",
-    "addFile": "加入字體檔",
-    "license": "加入的字體會存進專案檔，分享專案或匯出 Typst 專案時也會一起帶走。請確認字體的授權允許這樣使用。",
+    "open": "字型",
+    "title": "字型",
+    "description": "論文可以使用的字型：範本附的、這份專案帶的，以及這台電腦裝的。",
+    "add": "新增字型",
+    "addFile": "加入字型檔",
+    "license": "加入的字型會存進專案檔，分享專案或匯出 Typst 專案時也會一起帶走。請確認字型的授權允許這樣使用。",
     "added": "已加入：{{names}}",
     "skipped": {
-      "notFont": "{{name}} 不是字體檔，沒有加入。",
+      "notFont": "{{name}} 不是字型檔，沒有加入。",
       "notEmbeddable": "{{name}} 的授權資料禁止嵌入文件，沒有加入。",
-      "duplicate": "{{name}} 這個字體已經有了，沒有加入。",
+      "duplicate": "{{name}} 這個字型已經有了，沒有加入。",
       "tooLarge": "{{name}} 太大了，沒有加入。"
     },
-    "missing": "找不到的字體",
-    "missingHint": "設定裡用到這些名稱，但沒有任何字體叫這個名字，建置時會改用別的字體。加入字體檔，或到設定改用別的字體。",
-    "search": "搜尋字體名稱",
+    "missing": "找不到的字型",
+    "missingHint": "設定裡用到這些名稱，但沒有任何字型叫這個名字，產生時會改用別的字型。加入字型檔，或到設定改用別的字型。",
+    "search": "搜尋字型名稱",
     "filter": "來源",
     "sources": {
       "all": "全部",
       "project": "專案",
-      "template": "模板",
+      "template": "範本",
       "system": "這台電腦"
     },
     "used": "使用中",
-    "size": "專案裡的字體共 {{size}} MB。",
+    "size": "專案裡的字型共 {{size}} MB。",
     "sizeWarning": "檔案很大，會讓專案變慢。",
-    "none": "沒有符合的字體。",
-    "remove": "移除字體 {{name}}",
+    "none": "沒有符合的字型。",
+    "remove": "移除字型 {{name}}",
     "inUse": "{{name}} 正被「{{where}}」使用。",
     "removeAnyway": "仍然移除",
     "keep": "保留",
-    "sampleCjk": "論文的字體 永字八法 0123456789",
+    "sampleCjk": "論文的字型 永字八法 0123456789",
     "sampleLatin": "The quick brown fox jumps over the lazy dog"
   }
 }

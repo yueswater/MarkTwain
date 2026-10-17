@@ -63,18 +63,18 @@
     "insertTitle": "插入腳註",
     "editTitle": "編輯腳註",
     "text": "腳註內容",
-    "hint": "可以使用行內 Markdown，例如 **粗體** 或 $x^2$。"
+    "hint": "可以使用簡單格式，例如 **粗體** 或 $x^2$。"
   },
   "citation": {
     "insertTitle": "插入文獻引用",
     "editTitle": "編輯文獻引用",
-    "keys": "其他代號",
-    "keysHint": "尚未收進書目的代號，多個以逗號分隔，例如 wang2020, lee2019。",
+    "keys": "其他引用代碼",
+    "keysHint": "尚未收進參考文獻的代號，多個以逗號分隔，例如 wang2020, lee2019。",
     "form": "樣式",
-    "pick": "從書目選擇",
+    "pick": "從參考文獻選擇",
     "filter": "以作者、題名或代號搜尋",
     "noMatch": "沒有符合的文獻。",
-    "noBibliography": "書目是空的。請到側邊欄的「參考文獻」新增，或在下方直接輸入代號。沒有對應條目的引用在 PDF 中會維持純文字。",
+    "noBibliography": "參考文獻是空的。請到側邊欄的「參考文獻」新增，或在下方直接輸入代號。沒有對應文獻的引用在 PDF 中會維持純文字。",
     "forms": {
       "paren": "（作者，年份）",
       "prose": "作者（年份）",
@@ -86,8 +86,8 @@
     "insertTitle": "插入交叉引用",
     "editTitle": "編輯交叉引用",
     "target": "目標",
-    "labeled": "已有標籤",
-    "unlabeled": "尚未加標籤（會自動加上）",
+    "labeled": "已命名",
+    "unlabeled": "尚未命名，會自動命名",
     "none": "目前沒有可以引用的目標。請先加入有標籤的標題、圖、表或公式。",
     "kind": {
       "cha": "章",
@@ -179,7 +179,7 @@
     "tableTitle": "表格標題",
     "codeTitle": "程式碼標題",
     "captionLabel": "標題",
-    "captionHint": "可以使用行內 Markdown。留空表示沒有標題。",
+    "captionHint": "可以使用簡單格式，例如粗體、斜體、$公式$。留空表示沒有標題。",
     "notes": "附註",
     "notesHint": "顯示在表格下方，例如資料來源。",
     "save": "儲存"
@@ -188,7 +188,7 @@
     "insertTitle": "插入圖片",
     "editTitle": "編輯圖片",
     "caption": "圖說",
-    "captionHint": "可以使用行內 Markdown。沒有圖說的圖不會有編號。",
+    "captionHint": "可以使用簡單格式，例如粗體、斜體、$公式$。沒有圖說的圖不會有編號。",
     "width": "寬度",
     "widthAuto": "原始大小",
     "captionPlaceholder": "圖說，選填",
@@ -310,7 +310,7 @@
       },
       "citation": {
         "name": "文獻引用",
-        "description": "引用書目裡的一筆文獻。"
+        "description": "引用參考文獻裡的一筆文獻。"
       },
       "crossRef": {
         "name": "交叉引用",
@@ -417,7 +417,7 @@
     }
   },
   "placement": {
-    "label": "浮動位置",
+    "label": "位置",
     "followDefault": "都沒有選時，跟隨論文設定。",
     "auto": {
       "name": "自動",

@@ -15,13 +15,13 @@
       "engine-unavailable": "這個輸出方式不能用在新專案。"
     },
     "build": {
-      "busy": "已經有一個建置正在進行。",
+      "busy": "已經有一個 PDF 正在產生。",
       "typst-missing": "缺少產生 PDF 需要的內建工具。請重新安裝 MarkTwain。",
-      "template-missing": "找不到論文模板。請重新安裝 MarkTwain。",
+      "template-missing": "找不到論文範本。請重新安裝 MarkTwain。",
       "tex-missing": "這台電腦找不到 LaTeX。請安裝 TeX Live 或 TinyTeX，再重新開啟專案。"
     },
     "export": {
-      "no-pdf": "請先建置 PDF 再匯出。",
+      "no-pdf": "請先產生 PDF 再匯出。",
       "failed": "無法匯出專案：{{reason}}"
     },
     "config": {
@@ -33,7 +33,7 @@
       "unreadable": "無法讀取這個圖片檔。"
     },
     "bibliography": {
-      "invalid-key": "無法使用「{{key}}」作為識別名稱。請用英數字與 _ : . - / +，且不能以 fig: 這類標籤前綴開頭。",
+      "invalid-key": "無法使用「{{key}}」作為引用代碼。請用英數字與 _ : . - / +，且不能以 fig: 這類標籤前綴開頭。",
       "duplicate-key": "已經有另一筆文獻使用「{{key}}」。",
       "not-found": "找不到文獻「{{key}}」。"
     },
@@ -49,7 +49,7 @@
       "snapshot-not-found": "找不到這個版本。",
       "main-protected": "主線不能放棄。",
       "nothing-to-save": "自上次儲存版本後沒有任何變動。",
-      "unsaved-changes": "請先儲存版本，合併需要這個分支已儲存的內容。",
+      "unsaved-changes": "請先儲存版本，合併需要這個修改已儲存的內容。",
       "main-has-draft": "主線有尚未儲存的變動，請先切換過去並儲存版本。",
       "conflicts": "還有 {{count}} 個衝突沒有選擇。",
       "nothing-to-merge": "沒有可以合併的內容。",

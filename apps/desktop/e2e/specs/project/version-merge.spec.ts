@@ -28,9 +28,9 @@ test("the changes of a version are shown in green and red, and a merge with a co
   await expect(editor).toContainText("beta");
   await save("Base");
   await menu();
-  await page.getByRole("menuitem", { name: "Start a new change…" }).click();
+  await page.getByRole("menuitem", { name: "Try a change in a copy…" }).click();
   await page.getByLabel("Name of the change").fill("work");
-  await page.getByRole("dialog").getByRole("button", { name: "Start a new change" }).click();
+  await page.getByRole("dialog").getByRole("button", { name: "Try a change in a copy" }).click();
   await expect(bar).toContainText("work");
   await seedChapter(page, "# One\n\nalpha\n\nbeta from the change\n\ngamma\n\ndelta\n");
   await closeProject(page);

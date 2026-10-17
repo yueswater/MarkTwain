@@ -8,7 +8,7 @@
   },
   "action": {
     "save": "Save a version…",
-    "start": "Start a new change…",
+    "start": "Try a change in a copy…",
     "history": "Version history…",
     "merge": "Merge into the main line…",
     "discard": "Discard this change…",
@@ -21,7 +21,7 @@
     "placeholder": "Finished the second section"
   },
   "start": {
-    "title": "Start a new change",
+    "title": "Try a change in a copy",
     "description": "A change is a copy of the thesis to try something in. The main line stays as it is until you merge the change back.",
     "label": "Name of the change",
     "placeholder": "Rewrite chapter 2"
