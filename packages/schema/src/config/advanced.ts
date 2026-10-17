@@ -47,7 +47,7 @@ export const ADVANCED_FIELDS: readonly AdvancedField[] = [
   { path: "layout.font-latin", group: "text", kind: "list" },
   { path: "layout.font-cjk", group: "text", kind: "list" },
   { path: "layout.font-size", group: "text", kind: "number", min: 6, max: 24, unit: "pt" },
-  { path: "layout.line-height", group: "text", kind: "number", min: 1, max: 3 },
+  { path: "layout.line-height", group: "text", kind: "number", min: 1, max: 3, unit: "times" },
   { path: "layout.par-spacing", group: "text", kind: "number", min: 0, max: 5, unit: "em" },
   { path: "layout.first-line-indent", group: "text", kind: "number", min: 0, max: 5, unit: "em" },
   { path: "layout.first-line-indent-all", group: "text", kind: "bool" },
@@ -64,7 +64,7 @@ export const ADVANCED_FIELDS: readonly AdvancedField[] = [
 
   { path: "layout.heading.size", group: "headings", kind: "numbers4", min: 6, max: 40, unit: "pt" },
   { path: "layout.heading.align", group: "headings", kind: "select4", options: ALIGN },
-  { path: "layout.heading.line-height", group: "headings", kind: "number", min: 1, max: 3 },
+  { path: "layout.heading.line-height", group: "headings", kind: "number", min: 1, max: 3, unit: "times" },
 
   { path: "page-number.position", group: "pageNumber", kind: "select", options: SIDE },
   { path: "page-number.align", group: "pageNumber", kind: "select", options: ALIGN },

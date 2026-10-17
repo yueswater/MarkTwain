@@ -295,7 +295,8 @@
       "B": "Subsection number"
     },
     "example": "Example:",
-    "badPattern": "{{problem}} is not a placeholder that can be used. Use {C}, {S} and {B}."
+    "badPattern": "{{problem}} is not a placeholder that can be used. Use {C}, {S} and {B}.",
+    "marginUnit": "Margins are in cm (centimeters)"
   },
   "watermark": {
     "title": "Watermark",
@@ -465,6 +466,7 @@
     "cm": "cm (centimeters)",
     "em": "em (character widths)",
     "px": "px (pixels)",
-    "percent": "%"
+    "percent": "%",
+    "times": "times (a multiple of the text size)"
   }
 }

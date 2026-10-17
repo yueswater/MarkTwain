@@ -253,7 +253,7 @@ export function AdvancedForm({ groups, state, error, onSave }: Props) {
                 below={
                   field.path === "bibliography.title" ? <TitlePreview title={effectiveText("bibliography.title", "")} /> : field.path === "bibliography.full" ? <UncitedPreview listAll={effective("bibliography.full") === true} /> : undefined
                 }
-                unit={field.kind === "number" ? field.unit : undefined}
+                unit={field.unit}
                 reset={
                   current === undefined ? undefined : (
                     <Button variant="ghost" size="icon-xs" aria-label={`${t("reset")}: ${label}`} title={t("reset")} onClick={() => void save(field.path, null)}>
@@ -275,6 +275,7 @@ export function AdvancedForm({ groups, state, error, onSave }: Props) {
             return (
               <Fragment key={field.path}>
                 {row}
+                <p className="pt-3 text-xs text-muted-foreground">{t("diagram.marginUnit")}</p>
                 <PageDiagram
                   paper={effectiveText("layout.paper", "a4")}
                   margins={margins}

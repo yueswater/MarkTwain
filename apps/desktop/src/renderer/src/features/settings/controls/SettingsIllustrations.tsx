@@ -43,7 +43,7 @@ export function PageDiagram({
       onMouseLeave={() => setHover(null)}
       onFocus={() => setHover(side)}
       onBlur={() => setHover(null)}
-      className={cn("inline-flex rounded-md", hover === side && "ring-2 ring-ring")}
+      className="inline-flex rounded-md"
     >
       <ClickNumber
         label={label(side)}
@@ -51,7 +51,6 @@ export function PageDiagram({
         fallback={margins[side]}
         min={0}
         max={10}
-        unit="cm"
         onCommit={(value) => onCommit(side, value)}
       />
     </span>

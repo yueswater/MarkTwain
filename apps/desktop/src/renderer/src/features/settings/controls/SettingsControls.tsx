@@ -51,11 +51,10 @@ type LevelPickerProps = {
   onChange: (value: number) => void;
   /** What shows the effect of a level, drawn under the choices */
   sample?: (level: Level) => React.ReactNode;
-  unit: string;
 };
 
 /** A few named levels to choose from, with the real value written small. */
-export function LevelPicker({ label, levels, value, name, onChange, sample, unit }: LevelPickerProps) {
+export function LevelPicker({ label, levels, value, name, onChange, sample }: LevelPickerProps) {
   const current = nearestLevel(levels, value);
   return (
     <div className="flex flex-col items-end gap-1.5">
@@ -73,9 +72,7 @@ export function LevelPicker({ label, levels, value, name, onChange, sample, unit
           </button>
         ))}
       </span>
-      <span className="text-[11px] text-muted-foreground">
-        {value} {unit}
-      </span>
+      <span className="text-[11px] text-muted-foreground">{value}</span>
       {sample?.(current)}
     </div>
   );
@@ -89,7 +86,6 @@ type ClickNumberProps = {
   fallback: number;
   min: number;
   max: number;
-  unit: string;
   onCommit: (value: number | null) => void;
 };
 
@@ -97,7 +93,7 @@ type ClickNumberProps = {
  * A number shown as text that turns into a field when it is clicked. Enter or leaving keeps it,
  * Escape puts the old value back, and a value out of range is refused.
  */
-export function ClickNumber({ label, value, fallback, min, max, unit, onCommit }: ClickNumberProps) {
+export function ClickNumber({ label, value, fallback, min, max, onCommit }: ClickNumberProps) {
   const [editing, setEditing] = useState(false);
   const [text, setText] = useState("");
   const [invalid, setInvalid] = useState(false);
@@ -141,7 +137,6 @@ export function ClickNumber({ label, value, fallback, min, max, unit, onCommit }
         className={cn("inline-flex items-baseline gap-1 rounded-md border border-transparent px-2 py-1 text-sm hover:border-border hover:bg-muted", value === null && "text-muted-foreground")}
       >
         <span className="tabular-nums">{shown}</span>
-        <span className="text-xs text-muted-foreground">{unit}</span>
       </button>
     );
   }
@@ -166,7 +161,6 @@ export function ClickNumber({ label, value, fallback, min, max, unit, onCommit }
           }
         }}
       />
-      <span className="text-xs text-muted-foreground">{unit}</span>
     </span>
   );
 }

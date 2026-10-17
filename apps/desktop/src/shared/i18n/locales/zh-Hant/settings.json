@@ -295,7 +295,8 @@
       "B": "小節號"
     },
     "example": "範例：",
-    "badPattern": "{{problem}} 不是有效的代碼，請使用 {C}、{S}、{B}。"
+    "badPattern": "{{problem}} 不是有效的代碼，請使用 {C}、{S}、{B}。",
+    "marginUnit": "邊界單位為 cm（公分）"
   },
   "watermark": {
     "title": "浮水印",
@@ -465,6 +466,7 @@
     "cm": "cm（公分）",
     "em": "em（字寬）",
     "px": "px（像素）",
-    "percent": "%"
+    "percent": "%",
+    "times": "倍（文字大小的倍數）"
   }
 }
