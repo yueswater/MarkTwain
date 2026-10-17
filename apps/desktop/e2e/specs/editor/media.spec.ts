@@ -2,7 +2,7 @@ import { expect, test } from "../../support/test";
 import { PNG_1X1, makePng } from "../../support/png";
 import { writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { closeProject, createProject, savedChapter } from "../../support/project";
+import { closeProject, createProject, openProject, savedChapter, seedChapter } from "../../support/project";
 
 test("an image is stored in the project, shown in the editor, and saved as Markdown", async ({ launch }) => {
   const { app, dir, file } = await launch({ name: "圖片", projectName: "論文.marktwain", env: (folder) => ({ MARKTWAIN_TEST_IMAGE_PATH: join(folder, "我的 圖.png") }) });
@@ -93,4 +93,21 @@ test("a picture is resized by its corners and cropped, in the manner of Word", a
   const natural = await figure.locator("img").evaluate((el: HTMLImageElement) => [el.naturalWidth, el.naturalHeight]);
   expect(natural[0]).toBeLessThan(120);
   expect(natural[1]).toBe(100);
+});
+
+test("a figure with a caption has its number before the caption, a figure without one has none", async ({ launch }) => {
+  const { app } = await launch({ name: "圖號", projectName: "論文.marktwain" });
+  const page = await app.firstWindow();
+  await createProject(page);
+  await seedChapter(page, "# 標題\n\n![第一張](images/a.png)\n\n![](images/b.png)\n\n![第二張](images/c.png)\n");
+  await closeProject(page);
+  await openProject(page);
+  const numbers = () =>
+    page.locator(".ProseMirror figure").evaluateAll((figures) =>
+      figures.map((figure) => {
+        const caption = figure.querySelector("figcaption");
+        return caption ? `${getComputedStyle(caption, "::before").content}${caption.textContent}` : "";
+      }),
+    );
+  await expect.poll(numbers).toEqual(['"圖 1　"第一張', '""', '"圖 2　"第二張']);
 });

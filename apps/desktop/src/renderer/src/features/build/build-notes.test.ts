@@ -1,6 +1,6 @@
 import { describe, expect, it } from "@jest/globals";
 import type { BuildDiagnostic } from "../../../../shared/ipc";
-import { configFieldName, friendlyKind, showNotes, warningItems } from "./build-notes";
+import { configFieldName, friendlyKind, showNotes, unknownCommandOf, warningItems } from "./build-notes";
 
 const diag = (over: Partial<BuildDiagnostic>): BuildDiagnostic => ({
   severity: "warning",
@@ -119,5 +119,21 @@ describe("friendlyKind", () => {
     ["something else", "other"],
   ])("reads %s as %s", (message, kind) => {
     expect(friendlyKind(message)).toBe(kind);
+  });
+});
+
+describe("unknownCommandOf", () => {
+  it("names the command that TeX did not know", () => {
+    expect(unknownCommandOf("Undefined control sequence. \\foo")).toBe("\\foo");
+    expect(unknownCommandOf("Undefined control sequence. <argument> \\mathbbb")).toBe("\\mathbbb");
+  });
+
+  it("names the variable that Typst did not know", () => {
+    expect(unknownCommandOf("unknown variable: foo")).toBe("foo");
+  });
+
+  it("is null when the message names nothing", () => {
+    expect(unknownCommandOf("Missing $ inserted.")).toBeNull();
+    expect(unknownCommandOf("Undefined control sequence.")).toBeNull();
   });
 });

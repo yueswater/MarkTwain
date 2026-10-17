@@ -226,6 +226,8 @@
 .ProseMirror th, .ProseMirror td { padding: 0.45em 0.6em; vertical-align: middle; text-align: center; font-weight: 400; background: none; }
 .ProseMirror .table-caption, .ProseMirror .table-notes { display: block; width: 100%; box-sizing: border-box; text-align: center; line-height: 1.5; user-select: none; white-space: normal; }
 .ProseMirror .table-caption { margin: 0.35rem 0 0.9rem; }
+/* The number of a figure comes before its caption, the decoration sets the variable */
+.ProseMirror figure[data-figure] figcaption::before { content: var(--caption-number, ""); }
 .ProseMirror .table-notes { margin: 0.35rem 0 0; font-size: 0.9em; text-align: left; }
 .ProseMirror table td[style*="valign"], .ProseMirror table th[style*="valign"] { vertical-align: middle; }
 .ProseMirror td[data-valign="top"], .ProseMirror th[data-valign="top"] { vertical-align: top; }
