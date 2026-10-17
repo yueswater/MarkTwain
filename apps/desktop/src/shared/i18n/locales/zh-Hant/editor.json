@@ -4,8 +4,8 @@
     "saving": "儲存中…",
     "saved": "已儲存",
     "error": "無法儲存",
-    "errorLong": "無法儲存。文字還在這裡，會自動再試，請確認檔案可以寫入。",
-    "cannotClose": "文字還沒有存進檔案，所以專案不會關閉。請確認檔案與所在資料夾可以寫入。如果現在再按一次關閉，沒存下來的文字會消失。"
+    "errorLong": "無法儲存。內容仍保留在編輯器中，系統將自動重試，請確認檔案可寫入。",
+    "cannotClose": "內容尚未寫入檔案，因此未關閉專案。請確認檔案與所在資料夾可寫入。若現在再次關閉，未儲存的內容將會遺失。"
   },
   "placeholder": "開始撰寫…",
   "toolbar": {
@@ -47,7 +47,7 @@
     "latex": "LaTeX",
     "preview": "預覽",
     "empty": "輸入 LaTeX 即可預覽。",
-    "invalid": "這個公式有語法錯誤。",
+    "invalid": "此公式有語法錯誤。",
     "insert": "插入",
     "update": "更新",
     "remove": "移除",
@@ -55,9 +55,9 @@
     "inlineTitle": "行內公式",
     "blockTitle": "獨立公式",
     "done": "完成 ↵",
-    "hintInline": "夾在文字行中的公式。Enter 完成，Esc 取消。",
+    "hintInline": "嵌在文字行中的公式。Enter 完成，Esc 取消。",
     "hintBlock": "單獨成行的公式。Enter 完成，Shift+Enter 換行，Esc 取消。",
-    "near": "錯誤在這附近：{{near}}"
+    "near": "錯誤位置附近：{{near}}"
   },
   "footnote": {
     "insertTitle": "插入腳註",
@@ -69,17 +69,17 @@
     "insertTitle": "插入文獻引用",
     "editTitle": "編輯文獻引用",
     "keys": "其他引用代碼",
-    "keysHint": "尚未收進參考文獻的代號，多個以逗號分隔，例如 wang2020, lee2019。",
+    "keysHint": "尚未收錄於參考文獻的代碼，多個以逗號分隔，例如 wang2020, lee2019。",
     "form": "樣式",
     "pick": "從參考文獻選擇",
-    "filter": "以作者、題名或代號搜尋",
+    "filter": "依作者、題名或代碼搜尋",
     "noMatch": "沒有符合的文獻。",
-    "noBibliography": "參考文獻是空的。請到側邊欄的「參考文獻」新增，或在下方直接輸入代號。沒有對應文獻的引用在 PDF 中會維持純文字。",
+    "noBibliography": "參考文獻目前是空的。請至側邊欄的「參考文獻」新增，或在下方直接輸入代碼。沒有對應文獻的引用在 PDF 中會以純文字顯示。",
     "forms": {
       "paren": "（作者，年份）",
       "prose": "作者（年份）",
-      "year": "只有年份",
-      "author": "只有作者"
+      "year": "僅年份",
+      "author": "僅作者"
     }
   },
   "crossRef": {
@@ -88,7 +88,7 @@
     "target": "目標",
     "labeled": "已命名",
     "unlabeled": "尚未命名，會自動命名",
-    "none": "目前沒有可以引用的目標。請先加入有標籤的標題、圖、表或公式。",
+    "none": "目前沒有可引用的目標。請先加入已命名的標題、圖、表或公式。",
     "kind": {
       "cha": "章",
       "sec": "節",
@@ -107,7 +107,7 @@
     },
     "broken": "找不到目標",
     "chooseHint": "選擇要引用的目標。",
-    "placeholder": "請選擇欲引用目標",
+    "placeholder": "請選擇引用目標",
     "type": "種類",
     "typePlaceholder": "選擇種類",
     "chooseTypeFirst": "請先選擇種類",
@@ -134,7 +134,7 @@
     "deleteColumn": "刪除欄",
     "toggleHeader": "切換標題列",
     "replaceTitle": "更換表格範本",
-    "replaceHint": "表格的內容會換成範本的樣子，表號、說明、附註、位置與大小保留。換錯了可以按復原。",
+    "replaceHint": "表格內容將換成範本的樣式，表號、說明、附註、位置與大小維持不變。若換錯，可按復原。",
     "replace": "套用",
     "changeTemplate": "更換範本",
     "handle": "選取整個表格，拖曳可移動",
@@ -159,7 +159,7 @@
     "alignColumnCenter": "整欄置中",
     "alignColumnRight": "整欄靠右",
     "insertTitle": "插入表格",
-    "insertHint": "標題可以不填，沒有標題的表格不會有編號。",
+    "insertHint": "標題可不填寫；沒有標題的表格不會有編號。",
     "rows": "列數",
     "columns": "欄數",
     "captionPlaceholder": "表格標題，選填",
@@ -202,10 +202,10 @@
   },
   "crop": {
     "title": "裁切圖片",
-    "hint": "拖曳外框或四個角。原本的圖片仍保留在專案裡。",
+    "hint": "拖曳外框或四個角。原圖仍保留在專案中。",
     "apply": "裁切",
     "reset": "整張圖片",
-    "failed": "無法裁切這張圖片。"
+    "failed": "無法裁切此圖片。"
   },
   "figureMenu": {
     "label": "圖片工具",
@@ -215,7 +215,7 @@
     "remove": "移除圖片"
   },
   "find": {
-    "label": "在這份文件中尋找",
+    "label": "在此文件中尋找",
     "placeholder": "尋找",
     "none": "找不到",
     "next": "下一個",
@@ -229,9 +229,9 @@
     "placeholder": "名稱，僅限英數",
     "apply": "設定名稱",
     "remove": "取消編號",
-    "chars": "請只用英文字母與數字。",
-    "taken": "已經有其他項目使用這個名稱。",
-    "locked": "這條公式已被引用，無法更名或移除。",
+    "chars": "請僅使用英文字母與數字。",
+    "taken": "已有其他項目使用此名稱。",
+    "locked": "此公式已被引用，無法更名或移除。",
     "hint": "有名稱的公式會編號，也能被引用。",
     "numbered": "編號 {{number}}",
     "references_other": "被引用 {{count}} 處",
@@ -241,7 +241,7 @@
     "title": "插入區塊",
     "none": "沒有符合的區塊。",
     "close": "關閉選單",
-    "preview": "區塊的樣子",
+    "preview": "區塊預覽",
     "groups": {
       "basic": "基本區塊",
       "thesis": "論文區塊",
@@ -250,119 +250,119 @@
     "items": {
       "text": {
         "name": "文字",
-        "description": "一般的文字，內文預設的區塊。"
+        "description": "一般文字，內文的預設區塊。"
       },
       "heading1": {
         "name": "章標題",
-        "description": "這一章的標題，在論文裡會另起一頁。"
+        "description": "章的標題，在論文中會另起一頁。"
       },
       "heading2": {
         "name": "節",
-        "description": "章裡一節的標題。"
+        "description": "章內各節的標題。"
       },
       "heading3": {
         "name": "小節",
-        "description": "一小節的標題。"
+        "description": "小節的標題。"
       },
       "heading4": {
         "name": "小小節",
-        "description": "小節底下較小的標題。"
+        "description": "小節之下的更小層級標題。"
       },
       "bulletList": {
         "name": "項目清單",
-        "description": "沒有順序的要點。"
+        "description": "不具順序的要點。"
       },
       "orderedList": {
         "name": "編號清單",
-        "description": "需要計數的步驟或要點。"
+        "description": "具順序的步驟或要點。"
       },
       "quote": {
         "name": "引文",
-        "description": "摘自其他著作的段落。"
+        "description": "引自其他著作的段落。"
       },
       "rule": {
         "name": "分隔線",
-        "description": "用一條細線把前後兩段文字隔開。"
+        "description": "以細線分隔前後兩段文字。"
       },
       "displayMath": {
         "name": "獨立公式",
-        "description": "單獨成行的公式，取了名稱就會編號。"
+        "description": "單獨成行的公式，命名後即會編號。"
       },
       "inlineMath": {
         "name": "行內公式",
-        "description": "夾在文字行中的短公式。"
+        "description": "嵌在文字行中的短公式。"
       },
       "figure": {
         "name": "圖",
-        "description": "含圖說的圖片，從電腦上選檔案。"
+        "description": "附圖說的圖片，從電腦選取檔案。"
       },
       "table": {
         "name": "表格",
-        "description": "列與欄，可加表題與附註。"
+        "description": "由列與欄組成，可加上表題與附註。"
       },
       "codeBlock": {
         "name": "程式碼區塊",
-        "description": "框起來的程式文字，依語言上色。"
+        "description": "以方框呈現的程式碼，依語言標示顏色。"
       },
       "footnote": {
         "name": "腳註",
-        "description": "在頁面底部補充說明，內文裡留下標記。"
+        "description": "在頁面底部補充說明，並於內文留下標記。"
       },
       "citation": {
         "name": "文獻引用",
-        "description": "引用參考文獻裡的一筆文獻。"
+        "description": "引用參考文獻中的一筆文獻。"
       },
       "crossRef": {
         "name": "交叉引用",
-        "description": "連到圖、表、公式或標題。"
+        "description": "連結至圖、表、公式或標題。"
       },
       "statement_definition": {
         "name": "定義",
-        "description": "一個詞或符號的精確意義。"
+        "description": "詞彙或符號的精確定義。"
       },
       "statement_lemma": {
         "name": "引理",
-        "description": "用來證明定理的小結果。"
+        "description": "用以證明定理的輔助結果。"
       },
       "statement_theorem": {
         "name": "定理",
-        "description": "論文中主要的已證明結果。"
+        "description": "論文中主要的已證結果。"
       },
       "statement_proposition": {
         "name": "命題",
-        "description": "比定理次要的已證明結果。"
+        "description": "重要性次於定理的已證結果。"
       },
       "statement_corollary": {
         "name": "推論",
-        "description": "直接由定理推出的結果。"
+        "description": "可由定理直接推得的結果。"
       },
       "statement_case": {
         "name": "情況",
-        "description": "證明中分情形討論的一種。"
+        "description": "證明中分情形討論的其中一種情形。"
       },
       "statement_example": {
         "name": "範例",
-        "description": "用具體例子說明。"
+        "description": "以具體例子說明。"
       },
       "statement_remark": {
         "name": "註記",
-        "description": "補充說明，不屬於主線。"
+        "description": "補充說明，不屬於論證主線。"
       },
       "statement_proof": {
         "name": "證明",
-        "description": "不編號，結尾加方框。"
+        "description": "不編號，結尾加上方框。"
       },
       "abstractZh": {
         "name": "中文摘要",
-        "description": "中文的摘要，自己一頁，並附上中文關鍵字。"
+        "description": "中文摘要，獨立一頁，並附中文關鍵字。"
       },
       "abstractEn": {
         "name": "英文摘要",
-        "description": "英文的摘要，自己一頁，並附上英文關鍵字。"
+        "description": "英文摘要，獨立一頁，並附英文關鍵字。"
       },
       "landscape": {
         "name": "橫向頁面",
-        "description": "給寬的表格，內容單獨印在一頁轉向的頁面。"
+        "description": "適用於寬表格，內容單獨印在一頁橫向頁面上。"
       }
     },
     "sample": {
@@ -372,7 +372,7 @@
         "1": "第二項",
         "2": "第三項"
       },
-      "quote": "這是一段引用的文字。",
+      "quote": "此為一段引用的文字。",
       "inlineBefore": "變數",
       "inlineAfter": "代表一個數值。",
       "figure": "圖 1  圖說範例",
@@ -384,7 +384,7 @@
         "0": "甲",
         "1": "乙"
       },
-      "footnote": "這是一則腳註的內容",
+      "footnote": "此為腳註的內容",
       "citationBefore": "此處引用一筆文獻",
       "crossRefBefore": "請見",
       "crossRefTarget": "圖 1"
@@ -392,16 +392,16 @@
   },
   "card": {
     "footnote": "腳註",
-    "broken": "這個引用找不到目標。",
+    "broken": "此引用找不到目標。",
     "goTo": "前往",
     "moreRows": "…還有更多列",
-    "citationMissing": "找不到這筆文獻。"
+    "citationMissing": "找不到此文獻。"
   },
   "statement": {
     "editTitle": "編輯區塊",
     "kind": "種類",
     "titleLabel": "標題（選填）",
-    "titleHint": "顯示在編號後面，例如 定義 1（範數）。",
+    "titleHint": "顯示於編號之後，例如「定義 1（範數）」。",
     "save": "儲存",
     "unwrap": "移除區塊外框",
     "kinds": {
@@ -418,30 +418,30 @@
   },
   "placement": {
     "label": "位置",
-    "followDefault": "都沒有選時，跟隨論文設定。",
+    "followDefault": "未選擇時，依論文設定。",
     "auto": {
       "name": "自動",
-      "hint": "由排版決定放在頁面頂端或底端。"
+      "hint": "由排版引擎決定放在頁面頂端或底端。"
     },
     "near": {
       "name": "靠近文字",
-      "hint": "盡量靠近引用它的文字。Typst 沒有這個選項，輸出時等同自動。"
+      "hint": "盡量靠近引用它的文字。Typst 不支援此選項，輸出時視同自動。"
     },
     "top": {
       "name": "頁面頂端",
-      "hint": "放在某一頁的上方。"
+      "hint": "放在頁面上方。"
     },
     "bottom": {
       "name": "頁面底端",
-      "hint": "放在某一頁的下方。"
+      "hint": "放在頁面下方。"
     },
     "page": {
       "name": "獨立一頁",
-      "hint": "放在專屬的頁面。Typst 沒有這個選項，輸出時放在頁面頂端。"
+      "hint": "放在獨立的頁面。Typst 不支援此選項，輸出時放在頁面頂端。"
     },
     "here": {
       "name": "固定在此",
-      "hint": "不浮動，就留在文字中的這個位置。"
+      "hint": "不浮動，固定在文字中的此位置。"
     }
   },
   "borders": {
@@ -471,7 +471,7 @@
       "dotted": "點線"
     },
     "color": "線的顏色",
-    "applyPen": "套用到選取範圍內的線",
+    "applyPen": "套用至選取範圍內的線",
     "points": "{{value}} pt"
   },
   "tableTemplates": {
@@ -483,16 +483,16 @@
     "all": "全部",
     "list": "範本",
     "none": "沒有符合的範本。",
-    "choose": "選一個範本，會看到它的樣子。",
-    "needs": "這個範本需要：{{what}}。"
+    "choose": "選擇範本即可預覽樣式。",
+    "needs": "此範本需要：{{what}}。"
   },
-  "blockHandle": "拖曳移動這個區塊",
+  "blockHandle": "拖曳以移動此區塊",
   "flip": {
-    "next": "繼續往下滾動，前往「{{title}}」",
-    "previous": "繼續往上滾動，回到「{{title}}」"
+    "next": "繼續向下捲動，前往「{{title}}」",
+    "previous": "繼續向上捲動，回到「{{title}}」"
   },
   "landscape": {
-    "head": "橫向頁面，這裡的內容會印在轉向的頁面上",
+    "head": "橫向頁面，此處的內容會印在橫向頁面上",
     "remove": "取消橫向頁面，內容保留"
   },
   "changes": {
@@ -501,6 +501,6 @@
   "abstract": {
     "headZh": "中文摘要，印在「摘要」標題下，關鍵字取自論文設定的中文關鍵字",
     "headEn": "英文摘要，印在「Abstract」標題下，關鍵字取自論文設定的英文關鍵字",
-    "remove": "移除這個區段，保留裡面寫的內容"
+    "remove": "移除此區段，保留其中的內容"
   }
 }

@@ -74,7 +74,7 @@ describe("DialogService", () => {
     expect(await service.choosePdfPath("論文")).toBe("/x/t.pdf");
     expect(calls[0]).toMatchObject({ title: "匯出 PDF", defaultPath: "論文.pdf", filters: [{ name: "PDF 文件", extensions: ["pdf"] }] });
     expect(await service.chooseExportFolder()).toBe("/x/out");
-    expect(calls[1]).toMatchObject({ title: "選擇匯出專案的位置" });
+    expect(calls[1]).toMatchObject({ title: "選擇專案的匯出位置" });
 
     const forced = new DialogService(port, t(Locale.En), () => undefined, () => undefined, () => "/forced");
     expect(await forced.choosePdfPath("a")).toBe("/forced");

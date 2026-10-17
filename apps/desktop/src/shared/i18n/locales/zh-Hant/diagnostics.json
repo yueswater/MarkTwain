@@ -7,53 +7,53 @@
       "invalid-locale": "不支援的介面語言。"
     },
     "project": {
-      "not-found": "找不到這個專案檔。",
-      "invalid": "這不是有效的 MarkTwain 專案檔。",
-      "too-new": "這個專案檔是由較新版本的 MarkTwain 建立的（檔案格式版本 {{found}}，目前支援到 {{supported}}）。請先更新 MarkTwain。",
+      "not-found": "找不到此專案檔。",
+      "invalid": "此檔案不是有效的 MarkTwain 專案檔。",
+      "too-new": "此專案檔由較新版本的 MarkTwain 建立（檔案格式版本 {{found}}，目前支援至 {{supported}}）。請先更新 MarkTwain。",
       "none-open": "目前沒有開啟的專案。",
-      "exists": "這個位置已經有檔案了，不能覆蓋。",
-      "engine-unavailable": "這個輸出方式不能用在新專案。"
+      "exists": "此位置已有同名檔案，無法覆蓋。",
+      "engine-unavailable": "此輸出方式無法用於新專案。"
     },
     "build": {
-      "busy": "已經有一個 PDF 正在產生。",
-      "typst-missing": "缺少產生 PDF 需要的內建工具。請重新安裝 MarkTwain。",
+      "busy": "已有一份 PDF 正在產生。",
+      "typst-missing": "缺少產生 PDF 所需的內建工具。請重新安裝 MarkTwain。",
       "template-missing": "找不到論文範本。請重新安裝 MarkTwain。",
-      "tex-missing": "這台電腦找不到 LaTeX。請安裝 TeX Live 或 TinyTeX，再重新開啟專案。"
+      "tex-missing": "此電腦未安裝 LaTeX。請安裝 TeX Live 或 TinyTeX，再重新開啟專案。"
     },
     "export": {
       "no-pdf": "請先產生 PDF 再匯出。",
       "failed": "無法匯出專案：{{reason}}"
     },
     "config": {
-      "invalid": "這個專案的設定格式有誤，無法讀取。請到「設定」檢查，或還原到較早的版本。"
+      "invalid": "此專案的設定格式有誤，無法讀取。請至「設定」檢查，或還原至較早的版本。"
     },
     "asset": {
-      "unsupported": "不支援這種檔案。請使用 PNG、JPEG 或 SVG 圖片。",
-      "too-large": "這張圖片超過 {{max}} MB。",
-      "unreadable": "無法讀取這個圖片檔。"
+      "unsupported": "不支援此檔案格式。請使用 PNG、JPEG 或 SVG 圖片。",
+      "too-large": "此圖片超過 {{max}} MB 的上限。",
+      "unreadable": "無法讀取此圖片檔。"
     },
     "bibliography": {
-      "invalid-key": "無法使用「{{key}}」作為引用代碼。請用英數字與 _ : . - / +，且不能以 fig: 這類標籤前綴開頭。",
-      "duplicate-key": "已經有另一筆文獻使用「{{key}}」。",
+      "invalid-key": "無法使用「{{key}}」作為引用代碼。請僅使用英數字與 _ : . - / +，且不得以 fig: 等標籤前綴開頭。",
+      "duplicate-key": "已有另一筆文獻使用「{{key}}」。",
       "not-found": "找不到文獻「{{key}}」。"
     },
     "document": {
-      "not-found": "找不到這份文件。",
-      "singleton": "這個專案已經有這種文件了。"
+      "not-found": "找不到此文件。",
+      "singleton": "此專案已有這類文件。"
     },
-    "table-template.unknown": "找不到這個表格範本。",
+    "table-template.unknown": "找不到此表格範本。",
     "version": {
       "name-empty": "請輸入名稱。",
-      "name-taken": "已經有名為「{{name}}」的修改。",
-      "branch-not-found": "找不到這個修改。",
-      "snapshot-not-found": "找不到這個版本。",
-      "main-protected": "主線不能放棄。",
+      "name-taken": "已有名為「{{name}}」的修改。",
+      "branch-not-found": "找不到此修改。",
+      "snapshot-not-found": "找不到此版本。",
+      "main-protected": "主線無法放棄。",
       "nothing-to-save": "自上次儲存版本後沒有任何變動。",
-      "unsaved-changes": "請先儲存版本，合併需要這個修改已儲存的內容。",
-      "main-has-draft": "主線有尚未儲存的變動，請先切換過去並儲存版本。",
-      "conflicts": "還有 {{count}} 個衝突沒有選擇。",
-      "nothing-to-merge": "沒有可以合併的內容。",
-      "message-empty": "請寫下改了什麼，版本需要說明。"
+      "unsaved-changes": "請先儲存版本，合併時需要此修改已儲存的內容。",
+      "main-has-draft": "主線有尚未儲存的變動，請先切換至主線並儲存版本。",
+      "conflicts": "尚有 {{count}} 處衝突未選擇。",
+      "nothing-to-merge": "沒有可合併的內容。",
+      "message-empty": "請填寫此版本的修改說明。"
     }
   }
 }

@@ -5,7 +5,7 @@ import { captureDesktop } from "../../support/desktop-capture";
 import { OUT_DIR } from "../../support/paths";
 
 const cases = [
-  { locale: "zh-Hant", lang: "zh-TW", tagline: "離線撰寫你的論文。" },
+  { locale: "zh-Hant", lang: "zh-TW", tagline: "離線撰寫論文。" },
   { locale: "en", lang: "en-US", tagline: "Write your thesis, offline." },
 ] as const;
 
