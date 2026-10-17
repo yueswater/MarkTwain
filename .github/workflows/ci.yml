@@ -67,7 +67,6 @@ jobs:
       fail-fast: false
       matrix:
         os: ${{ fromJSON(inputs.include-macos && '["ubuntu-latest","windows-latest","macos-latest"]' || '["ubuntu-latest","windows-latest"]') }}
-    env:
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
