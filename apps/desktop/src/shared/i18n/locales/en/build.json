@@ -4,7 +4,7 @@
   "building": "Building…",
   "empty": "Build the PDF to see how the thesis looks.",
   "close": "Close preview",
-  "failed": "The build failed.",
+  "failed": "The PDF could not be made.",
   "errors": "Errors",
   "warnings": "Warnings",
   "goTo": "Go to the source",
@@ -43,5 +43,17 @@
     "description": "These are empty in the settings of the thesis. On the cover and the title pages they print as ○○○ or as nothing.",
     "fill": "Fill them in",
     "exportAnyway": "Export anyway"
+  },
+  "failedHint": "Fix what is listed below and it builds again by itself.",
+  "detail": "Detail",
+  "friendly": {
+    "picture": "A picture could not be read. Replace it with a PNG, JPEG or SVG file.",
+    "duplicate": "Two blocks have the same name. Rename one of them.",
+    "reference": "A cross-reference points to something that is not in the thesis.",
+    "command": "A formula or a piece of text uses a command that is not known. Check the spelling of the formula.",
+    "brackets": "A bracket, brace or dollar sign is not closed. Look for a missing } or $ near this place.",
+    "missingFile": "A file that the thesis needs was not found.",
+    "capacity": "Something in the thesis is too tangled to be typeset. Look at the place that is named, or at a formula or a footnote in a heading.",
+    "other": "Something here could not be turned into a PDF."
   }
 }

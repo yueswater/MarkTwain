@@ -16,7 +16,7 @@ import type { OutputEngine } from "../../../../shared/ipc";
 import { api } from "../../shared/api";
 import { errorMessage } from "../../shared/error-message";
 import type { ConfigFields } from "@marktwain/schema";
-import { configFieldName, showNotes, warningItems } from "./build-notes";
+import { configFieldName, friendlyKind, showNotes, warningItems } from "./build-notes";
 import { ExportCheckDialog } from "./ExportCheckDialog";
 import { missingForSubmission } from "./export-check";
 import { PdfPreview } from "./PdfPreview";
@@ -72,6 +72,9 @@ export function PreviewPanel({ build, saveTick, placeKey, engine, onFillIn, onCl
   const { width, separator } = useResizableWidth("marktwain.preview.width", 520, 320, 0.7);
 
   const errors = outcome?.diagnostics.filter((d) => d.severity === "error") ?? [];
+  // A failed build lists its errors in place of the pages, the area below the pages keeps the warnings
+  const failed = outcome !== null && !outcome.ok && !building;
+  const notesErrors = failed ? [] : errors;
   const items = warningItems(outcome?.diagnostics ?? [], outcome?.mathFailures ?? []);
 
   // Opening the preview starts watching, and every save rebuilds after a short pause
@@ -124,6 +127,8 @@ export function PreviewPanel({ build, saveTick, placeKey, engine, onFillIn, onCl
     try {
       const result = await api.invoke(channel);
       setExportNote(result ? { ok: true, text: t("exported", { path: result.path }) } : null);
+      // The export was made, so a failure that the preview still shows is out of date
+      if (result && outcome && !outcome.ok) void run();
     } catch (e) {
       setExportNote({ ok: false, text: errorMessage(tRoot, e) });
     }
@@ -222,16 +227,38 @@ export function PreviewPanel({ build, saveTick, placeKey, engine, onFillIn, onCl
       <div className="min-h-0 flex-1 bg-muted/40" data-testid="preview-pages">
         {outcome && outcome.ok ? (
           <PdfPreview revision={outcome.revision} placeKey={placeKey} anchors={outcome.anchors} follow={follow} onPick={(target) => onPick(target.documentId, target.block)} />
+        ) : failed ? (
+          <div role="alert" className="flex h-full flex-col gap-3 overflow-y-auto p-4 text-sm">
+            <div>
+              <p className="font-medium text-destructive">{t("failed")}</p>
+              <p className="text-muted-foreground">{t("failedHint")}</p>
+            </div>
+            <ul className="flex flex-col gap-2">
+              {errors.map((d, i) => (
+                <li key={`f${i}`} className="select-text rounded-md border border-destructive/30 bg-destructive/5 p-3">
+                  <p className="text-destructive">{t(`friendly.${friendlyKind(d.message)}`)}</p>
+                  <p className="mt-1 break-words text-xs text-muted-foreground">
+                    {t("detail")}: {d.message}
+                  </p>
+                  {d.source ? (
+                    <Button variant="outline" size="sm" className="mt-2" onClick={() => onJump(d.source!.documentId, d.source!.block)}>
+                      {t("goTo")}
+                    </Button>
+                  ) : null}
+                </li>
+              ))}
+            </ul>
+          </div>
         ) : (
           <p className="p-6 text-sm text-muted-foreground">{building ? t("building") : outcome ? t("failed") : t("empty")}</p>
         )}
       </div>
 
-      {showNotes(errors, items) && (
+      {showNotes(notesErrors, items) && (
         <div className="max-h-56 shrink-0 overflow-y-auto border-t p-3 text-sm" role="log" aria-label={t("errors")}>
-          {errors.length > 0 && <h3 className="mb-1 text-xs font-medium text-destructive">{t("errors")}</h3>}
+          {notesErrors.length > 0 && <h3 className="mb-1 text-xs font-medium text-destructive">{t("errors")}</h3>}
           <ul className="flex flex-col gap-1">
-            {errors.map((d, i) => (
+            {notesErrors.map((d, i) => (
               <li key={`e${i}`} className="select-text">
                 <span className="text-destructive">{d.message}</span>
                 {d.source ? (
@@ -248,7 +275,7 @@ export function PreviewPanel({ build, saveTick, placeKey, engine, onFillIn, onCl
             ))}
           </ul>
           {items.length > 0 && (
-            <h3 className={cn("mb-1 flex items-center gap-1 text-xs font-medium text-muted-foreground", errors.length > 0 && "mt-2")}>
+            <h3 className={cn("mb-1 flex items-center gap-1 text-xs font-medium text-muted-foreground", notesErrors.length > 0 && "mt-2")}>
               <AlertTriangleIcon className="size-3" aria-hidden="true" />
               {t("warnings")}
             </h3>
