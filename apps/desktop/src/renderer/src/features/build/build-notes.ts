@@ -80,3 +80,11 @@ export function friendlyKind(message: string): FriendlyKind {
   if (/capacity exceeded|emergency stop/i.test(message)) return "capacity";
   return "other";
 }
+
+/** The command that TeX or Typst did not know, from its message, null when the message does not name one. */
+export function unknownCommandOf(message: string): string | null {
+  const tex = /undefined control sequence[\s\S]*?(\\[A-Za-z@]+)/i.exec(message);
+  if (tex) return tex[1] ?? null;
+  const typst = /unknown variable:\s*([^\s,]+)/i.exec(message);
+  return typst ? (typst[1] ?? null) : null;
+}

@@ -16,7 +16,7 @@ import type { OutputEngine } from "../../../../shared/ipc";
 import { api } from "../../shared/api";
 import { errorMessage } from "../../shared/error-message";
 import type { ConfigFields } from "@marktwain/schema";
-import { configFieldName, friendlyKind, showNotes, warningItems } from "./build-notes";
+import { configFieldName, friendlyKind, showNotes, unknownCommandOf, warningItems } from "./build-notes";
 import { ExportCheckDialog } from "./ExportCheckDialog";
 import { missingForSubmission } from "./export-check";
 import { PdfPreview } from "./PdfPreview";
@@ -72,6 +72,12 @@ export function PreviewPanel({ build, saveTick, placeKey, engine, onFillIn, onCl
   const { width, separator } = useResizableWidth("marktwain.preview.width", 520, 320, 0.7);
 
   const errors = outcome?.diagnostics.filter((d) => d.severity === "error") ?? [];
+  // An unknown command is named in the message, so the person knows what to look for
+  const friendlyText = (message: string): string => {
+    const kind = friendlyKind(message);
+    const command = kind === "command" ? unknownCommandOf(message) : null;
+    return command ? t("friendly.commandNamed", { command }) : t(`friendly.${kind}`);
+  };
   // A failed build lists its errors in place of the pages, the area below the pages keeps the warnings
   const failed = outcome !== null && !outcome.ok && !building;
   const notesErrors = failed ? [] : errors;
@@ -236,7 +242,7 @@ export function PreviewPanel({ build, saveTick, placeKey, engine, onFillIn, onCl
             <ul className="flex flex-col gap-2">
               {errors.map((d, i) => (
                 <li key={`f${i}`} className="select-text rounded-md border border-destructive/30 bg-destructive/5 p-3">
-                  <p className="text-destructive">{t(`friendly.${friendlyKind(d.message)}`)}</p>
+                  <p className="text-destructive">{friendlyText(d.message)}</p>
                   <p className="mt-1 break-words text-xs text-muted-foreground">
                     {t("detail")}: {d.message}
                   </p>

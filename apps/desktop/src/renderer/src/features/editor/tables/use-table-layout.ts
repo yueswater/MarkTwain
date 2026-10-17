@@ -7,9 +7,11 @@ export type TableLayoutSettings = {
   position: "top" | "bottom";
   /** The word before the number of a table, the language of the thesis decides */
   prefix: string;
+  /** The word before the number of a figure */
+  figurePrefix: string;
 };
 
-const DEFAULT: TableLayoutSettings = { position: "bottom", prefix: "表" };
+const DEFAULT: TableLayoutSettings = { position: "bottom", prefix: "表", figurePrefix: "圖" };
 
 /** Where the caption of a table goes and what it starts with, from the settings of the thesis. */
 export function useTableLayout(): TableLayoutSettings {
@@ -26,7 +28,7 @@ export function useTableLayout(): TableLayoutSettings {
       .then(([advanced, config]) => {
         if (cancelled) return;
         const position = advanced.values["layout.caption-position.table"] ?? advanced.inherited["layout.caption-position.table"];
-        setSettings({ position: position === "top" ? "top" : "bottom", prefix: config.fields.language === "english" ? "Table" : "表" });
+        setSettings({ position: position === "top" ? "top" : "bottom", prefix: config.fields.language === "english" ? "Table" : "表", figurePrefix: config.fields.language === "english" ? "Figure" : "圖" });
       })
       .catch(() => undefined);
     return () => {

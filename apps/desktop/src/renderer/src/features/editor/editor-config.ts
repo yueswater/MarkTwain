@@ -20,6 +20,7 @@ import { PlacementMarks } from "./extensions/placement-marks";
 import { RefDecorations } from "./extensions/ref-decorations";
 import { StatementDecorations } from "./extensions/statement-decorations";
 import { TableBorders } from "./extensions/table-borders";
+import { FigureCaptions } from "./extensions/figure-captions";
 import { TableCaptions } from "./extensions/table-captions";
 import { TableLayout } from "./extensions/table-layout";
 import { ThesisShortcuts } from "./extensions/thesis-shortcuts";
@@ -91,6 +92,10 @@ export function buildExtensions(ctx: EditorContext): Extensions {
     TableBorders,
     ListMarkers.configure({ getLevels: () => ctx.listLevels() }),
     TableLayout,
+    FigureCaptions.configure({
+      getBase: () => ctx.labels().bases[ctx.documentId]?.fig ?? 0,
+      getPrefix: () => ctx.tableLayout().figurePrefix,
+    }),
     TableCaptions.configure({
       getBase: () => ctx.labels().bases[ctx.documentId]?.tbl ?? 0,
       getPosition: () => ctx.tableLayout().position,
