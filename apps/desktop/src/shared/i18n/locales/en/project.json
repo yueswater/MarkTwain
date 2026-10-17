@@ -19,14 +19,16 @@
   },
   "kind": {
     "title": {
-      "abstract": "Abstract",
+      "abstract": "Abstract in Chinese",
+      "abstractEn": "Abstract in English",
       "acknowledgement": "Acknowledgements",
       "denotation": "Notation",
       "chapter": "Chapter {{n}}",
       "appendix": "Appendix {{n}}"
     },
     "name": {
-      "abstract": "Abstract",
+      "abstract": "Abstract in Chinese",
+      "abstractEn": "Abstract in English",
       "acknowledgement": "Acknowledgements",
       "denotation": "Notation",
       "chapter": "Chapter",

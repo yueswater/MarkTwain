@@ -172,6 +172,8 @@ describe("documents", () => {
     const abstract = render("::: {.abstract-zh}\n中文\n:::\n\n::: {.abstract-en}\nEnglish\n:::\n", "abstract").text;
     expect(abstract).toBe("\\begin{abstractzh}\n中文\n\\end{abstractzh}\n\n\\begin{abstracten}\nEnglish\n\\end{abstracten}\n");
     expect(render("只有中文\n", "abstract").text).toBe("\\begin{abstractzh}\n只有中文\n\\end{abstractzh}\n");
+    // A document of its own for the English abstract, the whole of it is the abstract
+    expect(render("Only English\n", "abstractEn").text).toBe("\\begin{abstracten}\nOnly English\n\\end{abstracten}\n");
   });
 
   it("records where each block starts", () => {

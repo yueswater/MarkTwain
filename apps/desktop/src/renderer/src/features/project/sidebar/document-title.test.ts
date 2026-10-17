@@ -15,7 +15,7 @@ describe("documentTitle", () => {
   it("預設標題依種類與順序", () => {
     expect(documentTitle(zh, { kind: "chapter", position: 2, title: "" })).toBe("第 2 章");
     expect(documentTitle(en, { kind: "chapter", position: 2, title: "" })).toBe("Chapter 2");
-    expect(documentTitle(zh, { kind: "abstract", position: 1, title: "" })).toBe("摘要");
+    expect(documentTitle(zh, { kind: "abstract", position: 1, title: "" })).toBe("中文摘要");
     expect(documentTitle(en, { kind: "appendix", position: 3, title: "" })).toBe("Appendix 3");
   });
 });

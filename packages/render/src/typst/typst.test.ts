@@ -214,6 +214,8 @@ describe("文件種類", () => {
 
   it("摘要沒有 div 時整份當中文摘要；誌謝與符號說明套用模板的 show 規則", () => {
     expect(render("只有中文\n", "abstract").body).toBe("#abstract-zh(keywords: cfg.keywords)[\n只有中文\n]\n");
+    // A document of its own for the English abstract, the whole of it is the abstract
+    expect(render("Only English\n", "abstractEn").body).toBe("#abstract-en(keywords: cfg.keywords-en)[\nOnly English\n]\n");
     expect(render("謝謝\n", "acknowledgement").body).toBe("#show: acknowledgement\n\n謝謝\n");
     expect(render("PDF\n: x\n", "denotation").body).toMatch(/^#show: denotation\n\n/);
   });

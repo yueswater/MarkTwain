@@ -33,7 +33,8 @@ describe("seedDefaults", () => {
     service.seedDefaults();
     expect(service.list()).toEqual([
       { id: "id-1", kind: "abstract", position: 1, title: "" },
-      { id: "id-2", kind: "chapter", position: 1, title: "" },
+      { id: "id-2", kind: "abstractEn", position: 1, title: "" },
+      { id: "id-3", kind: "chapter", position: 1, title: "" },
     ]);
   });
 });
@@ -59,9 +60,9 @@ describe("list", () => {
 describe("get", () => {
   it("回傳文件內容", () => {
     service.seedDefaults();
-    service.save("id-2", "# 緒論\n");
-    expect(service.get("id-2")).toEqual({
-      id: "id-2",
+    service.save("id-3", "# 緒論\n");
+    expect(service.get("id-3")).toEqual({
+      id: "id-3",
       kind: "chapter",
       position: 1,
       title: "",
@@ -77,14 +78,14 @@ describe("get", () => {
 describe("save", () => {
   it("把 CRLF 正規化成 LF 再儲存（規格 9.1 節規則 3）", () => {
     service.seedDefaults();
-    service.save("id-2", "a\r\n\r\nb\rc");
-    expect(service.get("id-2").text).toBe("a\n\nb\nc");
+    service.save("id-3", "a\r\n\r\nb\rc");
+    expect(service.get("id-3").text).toBe("a\n\nb\nc");
   });
 
   it("更新修改時間", () => {
     service.seedDefaults();
-    service.save("id-2", "x");
-    expect(db.get<{ updated_at: number }>("SELECT updated_at FROM documents WHERE id = ?", ["id-2"])).toEqual({
+    service.save("id-3", "x");
+    expect(db.get<{ updated_at: number }>("SELECT updated_at FROM documents WHERE id = ?", ["id-3"])).toEqual({
       updated_at: 1000,
     });
   });
@@ -121,32 +122,32 @@ describe("create / remove / move / rename", () => {
   });
 
   it("刪除後同種類重新編號", () => {
-    service.seedDefaults(); // id-1 abstract, id-2 chapter1
-    service.create("chapter"); // id-3
+    service.seedDefaults(); // id-1 abstract, id-2 abstractEn, id-3 chapter1
     service.create("chapter"); // id-4
-    service.remove("id-3");
-    expect(ids()).toEqual(["abstract1:id-1", "chapter1:id-2", "chapter2:id-4"]);
-    expect(codeOf(() => service.get("id-3"))).toBe("document.not-found");
-    expect(codeOf(() => service.remove("id-3"))).toBe("document.not-found");
+    service.create("chapter"); // id-5
+    service.remove("id-4");
+    expect(ids()).toEqual(["abstract1:id-1", "abstractEn1:id-2", "chapter1:id-3", "chapter2:id-5"]);
+    expect(codeOf(() => service.get("id-4"))).toBe("document.not-found");
+    expect(codeOf(() => service.remove("id-4"))).toBe("document.not-found");
   });
 
   it("上移與下移在同種類內交換，邊界不動", () => {
     service.seedDefaults();
-    service.create("chapter"); // id-3 at 2
-    service.move("id-3", -1);
-    expect(ids()).toEqual(["abstract1:id-1", "chapter1:id-3", "chapter2:id-2"]);
-    service.move("id-3", -1);
-    service.move("id-2", 1);
-    expect(ids()).toEqual(["abstract1:id-1", "chapter1:id-3", "chapter2:id-2"]);
+    service.create("chapter"); // id-4 at 2
+    service.move("id-4", -1);
+    expect(ids()).toEqual(["abstract1:id-1", "abstractEn1:id-2", "chapter1:id-4", "chapter2:id-3"]);
+    service.move("id-4", -1);
+    service.move("id-3", 1);
+    expect(ids()).toEqual(["abstract1:id-1", "abstractEn1:id-2", "chapter1:id-4", "chapter2:id-3"]);
     expect(codeOf(() => service.move("nope", 1))).toBe("document.not-found");
   });
 
   it("重新命名會去掉前後空白，空字串表示用預設標題", () => {
     service.seedDefaults();
-    service.rename("id-2", "  緒論  ");
-    expect(service.get("id-2").title).toBe("緒論");
-    service.rename("id-2", "");
-    expect(service.get("id-2").title).toBe("");
+    service.rename("id-3", "  緒論  ");
+    expect(service.get("id-3").title).toBe("緒論");
+    service.rename("id-3", "");
+    expect(service.get("id-3").title).toBe("");
     expect(codeOf(() => service.rename("nope", "x"))).toBe("document.not-found");
   });
 });
@@ -155,21 +156,21 @@ describe("reorder", () => {
   const order = () => service.list().filter((d) => d.kind === "chapter").map((d) => d.id);
 
   it("moves a document before or after another one of the same kind and renumbers", () => {
-    service.seedDefaults(); // id-2 chapter 1
-    service.create("chapter"); // id-3
+    service.seedDefaults(); // id-3 chapter 1
     service.create("chapter"); // id-4
-    service.reorder("id-4", "id-2", "before");
-    expect(order()).toEqual(["id-4", "id-2", "id-3"]);
-    service.reorder("id-4", "id-3", "after");
-    expect(order()).toEqual(["id-2", "id-3", "id-4"]);
+    service.create("chapter"); // id-5
+    service.reorder("id-5", "id-3", "before");
+    expect(order()).toEqual(["id-5", "id-3", "id-4"]);
+    service.reorder("id-5", "id-4", "after");
+    expect(order()).toEqual(["id-3", "id-4", "id-5"]);
     expect(service.list().filter((d) => d.kind === "chapter").map((d) => d.position)).toEqual([1, 2, 3]);
   });
 
   it("ignores a target of another kind or itself, and reports a missing document", () => {
     service.seedDefaults();
-    service.reorder("id-2", "id-1", "after");
-    service.reorder("id-2", "id-2", "before");
-    expect(order()).toEqual(["id-2"]);
-    expect(codeOf(() => service.reorder("nope", "id-2", "after"))).toBe("document.not-found");
+    service.reorder("id-3", "id-1", "after");
+    service.reorder("id-3", "id-3", "before");
+    expect(order()).toEqual(["id-3"]);
+    expect(codeOf(() => service.reorder("nope", "id-3", "after"))).toBe("document.not-found");
   });
 });

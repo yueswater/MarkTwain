@@ -12,6 +12,9 @@ export function assignPaths(documents: BuildDocument[], ext: "typ" | "tex" = "ty
       case "abstract":
         paths.set(doc.id, `contents/front/abstract.${ext}`);
         break;
+      case "abstractEn":
+        paths.set(doc.id, `contents/front/abstract-en.${ext}`);
+        break;
       case "acknowledgement":
         paths.set(doc.id, `contents/front/acknowledgement.${ext}`);
         break;
@@ -31,7 +34,7 @@ export function assignPaths(documents: BuildDocument[], ext: "typ" | "tex" = "ty
 
 /**
  * Generates main.typ from the documents that exist.
- * Order follows the template: acknowledgement, abstract, notation, chapters, references, appendices.
+ * Order follows the template: acknowledgement, abstract in Chinese and in English, notation, chapters, references, appendices.
  */
 export function renderMain(
   documents: BuildDocument[],
@@ -42,8 +45,10 @@ export function renderMain(
 ): string {
   const include = (kind: BuildDocument["kind"]) =>
     documents.filter((d) => d.kind === kind).map((d) => `#include "${paths.get(d.id)}"`);
-  const chapters = include("chapter");
-  const appendices = include("appendix");
+  // A chapter or an appendix starts on a page of its own, also when it begins with text and not with a heading, or it would run on after the abstract
+  const newPage = (files: string[]) => files.flatMap((file) => ["#pagebreak(weak: true)", file]);
+  const chapters = newPage(include("chapter"));
+  const appendices = newPage(include("appendix"));
   const lines = [
     '#import "helper/mod.typ": *',
     "",
@@ -54,6 +59,7 @@ export function renderMain(
     "",
     ...include("acknowledgement"),
     ...include("abstract"),
+    ...include("abstractEn"),
     ...include("denotation"),
     "",
     '#set heading(numbering: "1.1")',
@@ -71,7 +77,10 @@ export function renderMain(
 export function renderMainLatex(documents: BuildDocument[], paths: Map<string, string>, hasBibliography: boolean, watermark = false): string {
   const include = (kind: BuildDocument["kind"]) =>
     documents.filter((d) => d.kind === kind).map((d) => `\\input{${(paths.get(d.id) ?? "").replace(/\.tex$/, "")}}`);
-  const appendices = include("appendix");
+  // A chapter or an appendix starts on a page of its own, also when it begins with text and not with a heading
+  const newPage = (files: string[]) => files.flatMap((file) => ["\\clearpage", file]);
+  const appendices = newPage(include("appendix"));
+  const chapters = newPage(include("chapter"));
   const lines = [
     // The template reads this switch, latexmk -usepretex would set it too but then replaces the tw_xelatex of the latexmkrc and citeproc never runs
     ...(watermark ? ["\\def\\twwatermark{1}"] : []),
@@ -84,9 +93,10 @@ export function renderMainLatex(documents: BuildDocument[], paths: Map<string, s
     "",
     ...include("acknowledgement"),
     ...include("abstract"),
+    ...include("abstractEn"),
     ...include("denotation"),
     "",
-    ...include("chapter"),
+    ...chapters,
     ...(hasBibliography ? ["", "\\references"] : []),
     ...(appendices.length > 0 ? ["", "\\appendix", ...appendices] : []),
     "",

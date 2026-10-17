@@ -26,7 +26,8 @@ test("the preview follows the caret of the editor, keeps its page after a rebuil
   await expect.poll(async () => (await viewerState(page))?.page ?? 0, { timeout: 15_000 }).toBeGreaterThan(3);
   // At the top of the editor the preview is at the first page of the chapter, the pages before it hold the title and the contents
   await page.mouse.wheel(0, -20000);
-  await expect.poll(async () => (await viewerState(page))?.page ?? 99, { timeout: 15_000 }).toBeLessThanOrEqual(6);
+  // The pages before the chapter hold the cover, the title, the two abstracts and the contents
+  await expect.poll(async () => (await viewerState(page))?.page ?? 99, { timeout: 15_000 }).toBeLessThanOrEqual(8);
 
   // A caret far down the editor brings the preview to the page of that paragraph
   const paragraphs = page.locator(".ProseMirror > p");

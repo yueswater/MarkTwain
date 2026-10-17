@@ -100,3 +100,15 @@ describe("revertChange", () => {
     expect(tr.doc.textContent).toBe("");
   });
 });
+
+describe("computeChanges, blank blocks", () => {
+  it("shows no removed block for a blank one, a new project starts with one that is replaced by the first text", () => {
+    expect(computeChanges(["\n"], ["你好\n"]).filter((mark) => mark.type === "removed")).toEqual([]);
+    expect(computeChanges(["\n"], ["你好\n"])).toEqual([{ type: "added", index: 0 }]);
+  });
+
+  it("still shows a block with text that is removed or replaced", () => {
+    expect(computeChanges(["甲\n"], []).map((mark) => mark.type)).toEqual(["removed"]);
+    expect(computeChanges(["甲\n"], ["乙\n"]).map((mark) => mark.type)).toEqual(["modified"]);
+  });
+});

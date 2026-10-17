@@ -1,6 +1,6 @@
 export type BuildDocument = {
   id: string;
-  kind: "abstract" | "acknowledgement" | "denotation" | "chapter" | "appendix";
+  kind: "abstract" | "abstractEn" | "acknowledgement" | "denotation" | "chapter" | "appendix";
   text: string;
 };
 
