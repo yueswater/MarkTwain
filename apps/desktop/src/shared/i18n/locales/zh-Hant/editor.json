@@ -142,7 +142,7 @@
     "alignLeft": "靠左",
     "alignCenter": "置中",
     "alignRight": "靠右",
-    "caption": "表格標題與附註",
+    "caption": "表名與附註",
     "merge": "合併儲存格",
     "split": "分割儲存格",
     "styleThreeLine": "切換為全框線",
@@ -162,7 +162,7 @@
     "insertHint": "標題可不填寫；沒有標題的表格不會有編號。",
     "rows": "列數",
     "columns": "欄數",
-    "captionPlaceholder": "表格標題，選填",
+    "captionPlaceholder": "表名，選填",
     "insert": "插入",
     "position": "第 {{row}} 列（共 {{rows}} 列），第 {{column}} 欄（共 {{columns}} 欄）",
     "columnWidth": "欄寬",
@@ -176,7 +176,7 @@
     "notesLabel": "註："
   },
   "caption": {
-    "tableTitle": "表格標題",
+    "tableTitle": "表名",
     "codeTitle": "程式碼標題",
     "captionLabel": "標題",
     "captionHint": "可以使用簡單格式，例如粗體、斜體、$公式$。留空表示沒有標題。",
@@ -187,11 +187,11 @@
   "figure": {
     "insertTitle": "插入圖片",
     "editTitle": "編輯圖片",
-    "caption": "圖說",
-    "captionHint": "可以使用簡單格式，例如粗體、斜體、$公式$。沒有圖說的圖不會有編號。",
+    "caption": "圖名",
+    "captionHint": "可以使用簡單格式，例如粗體、斜體、$公式$。沒有圖名的圖不會有編號。",
     "width": "寬度",
     "widthAuto": "原始大小",
-    "captionPlaceholder": "圖說，選填",
+    "captionPlaceholder": "圖名，選填",
     "dragWidth": "寬度 {{value}}%"
   },
   "bubble": {
@@ -209,7 +209,7 @@
   },
   "figureMenu": {
     "label": "圖片工具",
-    "edit": "編輯圖說",
+    "edit": "編輯圖名",
     "crop": "裁切",
     "width": "寬度 {{value}}",
     "remove": "移除圖片"
@@ -294,11 +294,11 @@
       },
       "figure": {
         "name": "圖",
-        "description": "附圖說的圖片，從電腦選取檔案。"
+        "description": "含圖名的圖片，從電腦選取檔案。"
       },
       "table": {
         "name": "表格",
-        "description": "由列與欄組成，可加上表題與附註。"
+        "description": "由列與欄組成，可加上表名與附註。"
       },
       "codeBlock": {
         "name": "程式碼區塊",
@@ -375,7 +375,7 @@
       "quote": "此為一段引用的文字。",
       "inlineBefore": "變數",
       "inlineAfter": "代表一個數值。",
-      "figure": "圖 1  圖說範例",
+      "figure": "圖 1  圖名範例",
       "tableHead": {
         "0": "項目",
         "1": "數值"

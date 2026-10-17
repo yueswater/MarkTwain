@@ -46,7 +46,7 @@
     "page": "頁面",
     "text": "文字",
     "numbering": "編號",
-    "captions": "圖說與表格標題",
+    "captions": "圖名與表名",
     "headings": "標題",
     "pageNumber": "頁碼",
     "crossRef": "交叉引用",
@@ -233,7 +233,7 @@
     },
     "thesisCaptions": {
       "title": "圖表與引用",
-      "description": "圖說與表格標題，以及交叉引用使用的文字。"
+      "description": "圖名與表名，以及交叉引用使用的文字。"
     },
     "thesisPageNumber": {
       "title": "頁碼與{{toc}}",
