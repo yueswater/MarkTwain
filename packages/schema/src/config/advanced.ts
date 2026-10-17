@@ -221,3 +221,20 @@ export function inheritedValues(defaultText: string, schoolText: string | null):
   }
   return out;
 }
+
+/** The names that the school gives to the lists at the front of the thesis, they are fixed by its rules. */
+export type SchoolTerms = { toc: string; lof: string; lot: string };
+
+const DEFAULT_TERMS: SchoolTerms = { toc: "目次", lof: "圖次", lot: "表次" };
+
+/** The title that the school preset or the template gives each list, with the spreading mark and the blanks taken out. */
+export function schoolTerms(defaultText: string, schoolText: string | null): SchoolTerms {
+  const layers = [defaultText, schoolText ?? ""].map((text) => toPlain(parseDocument(text).toJSON()));
+  const merged = mergeConfigs(...layers);
+  const read = (key: keyof SchoolTerms): string => {
+    const value = getPath(merged, `titles.${key}`);
+    const plain = typeof value === "string" ? value.replace(/[~\s]/g, "") : "";
+    return plain === "" ? DEFAULT_TERMS[key] : plain;
+  };
+  return { toc: read("toc"), lof: read("lof"), lot: read("lot") };
+}

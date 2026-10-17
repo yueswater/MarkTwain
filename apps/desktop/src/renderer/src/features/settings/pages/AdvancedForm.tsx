@@ -71,6 +71,8 @@ function display(value: AdvancedValue | undefined): string {
 export function AdvancedForm({ groups, state, error, onSave }: Props) {
   const { t } = useTranslation("settings");
   const save = onSave;
+  // The rules of the school name the list at the front of the thesis, 目次 or 目錄
+  const toc = state?.terms.toc ?? "目次";
 
   if (error && !state) {
     return (
@@ -230,7 +232,7 @@ export function AdvancedForm({ groups, state, error, onSave }: Props) {
       )}
       {groups.map((group) => (
         <Fragment key={group}>
-          <SettingsHeading>{t(`group.${group}`)}</SettingsHeading>
+          <SettingsHeading>{t(`group.${group}`, { toc })}</SettingsHeading>
           {group === "headings" && (
             <HeadingsPreview
               sizes={(Array.isArray(effective("layout.heading.size")) ? effective("layout.heading.size") : [18, 16, 14, 12]) as number[]}
@@ -238,10 +240,10 @@ export function AdvancedForm({ groups, state, error, onSave }: Props) {
               lineHeight={effectiveNumber("layout.heading.line-height", 1.2)}
             />
           )}
-          {group === "outline" && <OutlinePreview depth={effectiveNumber("outline.depth", 3)} />}
+          {group === "outline" && <OutlinePreview depth={effectiveNumber("outline.depth", 3)} toc={toc} />}
           {ADVANCED_FIELDS.filter((field) => field.group === group && !field.path.startsWith("layout.margin.")).map((field) => {
-            const label = t(`field.${field.path}`);
-            const hint = t(`hint.${field.path}`, { defaultValue: "" });
+            const label = t(`field.${field.path}`, { toc });
+            const hint = t(`hint.${field.path}`, { defaultValue: "", toc });
             const current = values[field.path];
             const row = (
               <SettingsRow

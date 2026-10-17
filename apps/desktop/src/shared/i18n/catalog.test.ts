@@ -13,8 +13,11 @@ function flatten(tree: Tree, prefix = ""): Record<string, string> {
   return out;
 }
 
+/** The Chinese name of a list at the front of the thesis follows the rules of the school, the English name does not, so only the Chinese text has this placeholder. */
+const SCHOOL_TERMS = new Set(["toc"]);
+
 function placeholders(text: string): string[] {
-  return [...text.matchAll(/\{\{\s*(\w+)\s*\}\}/g)].map((m) => m[1] ?? "").sort();
+  return [...text.matchAll(/\{\{\s*(\w+)\s*\}\}/g)].map((m) => m[1] ?? "").filter((name) => !SCHOOL_TERMS.has(name)).sort();
 }
 
 const zh = resources["zh-Hant"] as Record<string, Tree>;

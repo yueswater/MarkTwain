@@ -40,6 +40,8 @@ export { SCHOOLS, isKnownSchool, type School } from "./config/schools";
 export {
   ADVANCED_FIELDS,
   advancedField,
+  schoolTerms,
+  type SchoolTerms,
   getPath,
   inheritedValues,
   isValidAdvanced,
