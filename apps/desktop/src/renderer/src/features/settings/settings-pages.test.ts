@@ -41,3 +41,22 @@ describe("searchSettings", () => {
     expect(searchSettings("FONT - SIZE", label).length).toBeGreaterThan(0);
   });
 });
+
+describe("searchSettings, the words of a page", () => {
+  const label = (entry: { key: string }) => entry.key;
+  const words = (entry: { page: string }) => (entry.page === "thesisCaptions" ? "圖名,表名,圖說" : entry.page === "thesisPageNumber" ? "目次,目錄" : "");
+
+  it("finds a page by a word that is not in its name", () => {
+    const found = searchSettings("圖說", label, words);
+    expect(found.map((result) => result.entry.id)).toEqual(["page-thesisCaptions"]);
+    expect(searchSettings("目錄", label, words).map((result) => result.entry.page)).toEqual(["thesisPageNumber"]);
+  });
+
+  it("does not list every setting of the page for such a word", () => {
+    expect(searchSettings("表名", label, words)).toHaveLength(1);
+  });
+
+  it("finds a page by its own name", () => {
+    expect(searchSettings("page.thesisPage.title", label).map((result) => result.entry.id)).toContain("page-thesisPage");
+  });
+});

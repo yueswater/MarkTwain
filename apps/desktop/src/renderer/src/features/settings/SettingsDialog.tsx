@@ -46,7 +46,7 @@ type Props = {
 export function SettingsDialog({ open, onOpenChange, hasProject, initialPage, onThesisSaved }: Props) {
   const { t } = useTranslation("settings");
   const { t: tConfig } = useTranslation("config");
-  const [pageId, setPageId] = useState<SettingsPageId>(() => initialPage ?? lastPage() ?? "editorAppearance");
+  const [pageId, setPageId] = useState<SettingsPageId>(() => initialPage ?? lastPage() ?? (hasProject ? "thesisInfo" : "editorAppearance"));
   const [query, setQuery] = useState("");
   const [highlight, setHighlight] = useState<string | null>(null);
   const advanced = useAdvancedState(open && hasProject, onThesisSaved);
@@ -54,10 +54,12 @@ export function SettingsDialog({ open, onOpenChange, hasProject, initialPage, on
   // The rules of the school name the list at the front of the thesis, 目次 or 目錄
   const toc = advanced.state?.terms.toc ?? "目次";
 
-  // Opening the window with a requested page goes there
+  // Opening the window with a requested page goes there, and without a page that was visited the thesis comes first when a project is open
   useEffect(() => {
-    if (open && initialPage) setPageId(initialPage);
-  }, [open, initialPage]);
+    if (!open) return;
+    if (initialPage) setPageId(initialPage);
+    else if (lastPage() === null) setPageId(hasProject ? "thesisInfo" : "editorAppearance");
+  }, [open, initialPage, hasProject]);
 
   function choose(id: SettingsPageId, row?: string): void {
     setPageId(id);
@@ -88,7 +90,11 @@ export function SettingsDialog({ open, onOpenChange, hasProject, initialPage, on
   }, [highlight, pageId]);
 
   const results = useMemo(
-    () => searchSettings(query, (entry) => (entry.ns === "config" ? tConfig(entry.key) : t(entry.key, { toc }))),
+    () => searchSettings(
+        query,
+        (entry) => (entry.ns === "config" ? tConfig(entry.key) : t(entry.key, { toc })),
+        (entry) => t(`search.words.${entry.page}`, { toc, defaultValue: "" }),
+      ),
     [query, t, tConfig, toc],
   );
 

@@ -88,7 +88,9 @@ export function HistoryDialog({ branch, headId, load, busy, error, onRestore, on
                     </span>
                   ))}
                 </div>
-                <p className="text-xs text-muted-foreground">{relativeTime(entry.createdAt, Date.now(), i18n.language)}</p>
+                <p className="text-xs text-muted-foreground" title={new Date(entry.createdAt).toLocaleString(i18n.language)}>
+                  {relativeTime(entry.createdAt, Date.now(), i18n.language)}
+                </p>
                 {asking === entry.id && (
                   <div className="mt-2 grid gap-2 rounded-md bg-muted/50 p-2">
                     <p className="text-sm">{t("history.restoreBody", { label: labelOf(entry) })}</p>

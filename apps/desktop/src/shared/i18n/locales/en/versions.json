@@ -79,7 +79,8 @@
     "legendRemoved": "Removed",
     "legendModified": "Changed inside the paragraph",
     "titlePair": "What differs: {{label}}",
-    "descriptionPair": "The older version is on the left of the arrow, and what changed from it to the newer one is shown."
+    "descriptionPair": "The older version is on the left of the arrow, and what changed from it to the newer one is shown.",
+    "configFile": "Thesis settings"
   },
   "merge": {
     "title": "Merge “{{name}}” into the main line",

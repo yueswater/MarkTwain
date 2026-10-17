@@ -1,3 +1,4 @@
+import { fileLabel } from "./file-label";
 import { useTranslation } from "react-i18next";
 import type { DocumentKind } from "../../../../shared/enums/document-kind.enum";
 import type { ChangeItemView } from "../../../../shared/ipc";
@@ -14,7 +15,7 @@ type Props = {
 export function ChangeItemRow({ item, checked, onChange }: Props) {
   const { t } = useTranslation("versions");
   const { t: tp } = useTranslation();
-  const name = item.type === "file" ? item.path : documentTitle(tp, { kind: item.kind as DocumentKind, title: item.title, position: 1 });
+  const name = item.type === "file" ? fileLabel(item.path, t("compare.configFile")) : documentTitle(tp, { kind: item.kind as DocumentKind, title: item.title, position: 1 });
   return (
     <li data-change-item={item.id} data-checked={checked} className="grid gap-1.5 border p-2">
       <label className="flex items-center gap-2 text-sm font-medium">

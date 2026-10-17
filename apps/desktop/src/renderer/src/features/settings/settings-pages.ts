@@ -104,8 +104,9 @@ const EDITOR_ENTRIES: readonly [SettingsPageId, string][] = [
 const INFO_FIELDS = ["title", "titleEn", "author", "authorEn", "id", "advisor", "advisorEn", "date", "oralDate", "keywords", "keywordsEn"] as const;
 const SCHOOL_FIELDS = ["school", "collegePick", "institutePick", "degree", "language", "citationStyle"] as const;
 
-/** Every setting that can be found by search, with the page it is on. */
+/** Every setting that can be found by search, with the page it is on. A page can be found by its name and by other words for what is on it. */
 export const SETTING_ENTRIES: readonly SettingEntry[] = [
+  ...SETTINGS_PAGES.map((page): SettingEntry => ({ id: `page-${page.id}`, page: page.id, ns: "settings", key: `page.${page.id}.title` })),
   { id: "setting-profile-ask", page: "editorProfile", ns: "settings", key: "profile.ask" },
   ...EDITOR_ENTRIES.map(([page, key]): SettingEntry => ({ id: `setting-editor-${key}`, page, ns: "settings", key: `editor.${key}` })),
   ...SCHOOL_FIELDS.map((key): SettingEntry => ({ id: key === "collegePick" ? "config-college" : key === "institutePick" ? "config-institute" : `config-${key === "citationStyle" ? "citation" : key}`, page: "thesisSchool", ns: "config", key: `field.${key}` })),
@@ -116,13 +117,18 @@ export const SETTING_ENTRIES: readonly SettingEntry[] = [
   }),
 ];
 
-/** Settings whose label contains the query, ignoring case and spaces. */
-export function searchSettings(query: string, labelOf: (entry: SettingEntry) => string): { entry: SettingEntry; label: string }[] {
+/** Settings whose label contains the query, ignoring case and spaces. The words of a page, such as 目錄 for the page of the page numbers, find the page. */
+export function searchSettings(
+  query: string,
+  labelOf: (entry: SettingEntry) => string,
+  keywordsOf: (entry: SettingEntry) => string = () => "",
+): { entry: SettingEntry; label: string }[] {
   const needle = query.replace(/\s+/g, "").toLowerCase();
   if (needle === "") return [];
+  const contains = (text: string) => text.replace(/\s+/g, "").toLowerCase().includes(needle);
   return SETTING_ENTRIES.flatMap((entry) => {
     const label = labelOf(entry);
-    return label.replace(/\s+/g, "").toLowerCase().includes(needle) ? [{ entry, label }] : [];
+    const isPage = entry.id.startsWith("page-");
+    return contains(label) || (isPage && contains(keywordsOf(entry))) ? [{ entry, label }] : [];
   });
 }
-
