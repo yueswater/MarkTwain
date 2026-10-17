@@ -90,3 +90,7 @@ macOS is only added when the workflow is started by hand with `include-macos`.
 ## License
 
 [MIT](LICENSE). The fonts and other material that ship with the app are listed in [THIRD_PARTY.md](THIRD_PARTY.md).
+
+## Trademarks
+
+Typst, LaTeX and Microsoft Word are names of other people's products. MarkTwain is not made, endorsed or sponsored by Typst, the LaTeX Project or Microsoft. The Typst logo and the Word icon are shown unchanged on the squares where the output of a project is chosen, only to say which tool each square stands for, and they belong to their owners. See [THIRD_PARTY.md](THIRD_PARTY.md).

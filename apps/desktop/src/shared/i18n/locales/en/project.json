@@ -72,20 +72,21 @@
     "checking": "Checking this computer…",
     "typst": {
       "name": "Typst",
-      "note": "Recommended. Built in, nothing to install, and the preview is quick."
+      "tagline": "Fast and simple"
     },
     "latex": {
       "name": "LaTeX",
-      "note": "Only if your advisor or department already has a LaTeX template. It uses the TeX Live of this computer, and builds are slower than Typst.",
       "missing": {
         "tex": "No TeX Live was found on this computer. Install TeX Live or TinyTeX first, then start again.",
         "citation-style-language": "The TeX Live of this computer lacks the package citation-style-language, install it with tlmgr, then start again.",
         "template": "The LaTeX template is missing from this copy of MarkTwain. Reinstall MarkTwain."
-      }
+      },
+      "tagline": "Rigorous, standard in academia"
     },
     "word": {
       "name": "Word",
-      "note": "Not available yet, it comes in a later version. For now you can export a PDF for your advisor."
+      "note": "Not available yet, it comes in a later version. For now you can export a PDF for your advisor.",
+      "tagline": "Familiar, easy to share"
     },
     "warning": "The output cannot be changed after the project is created.",
     "cancel": "Cancel",

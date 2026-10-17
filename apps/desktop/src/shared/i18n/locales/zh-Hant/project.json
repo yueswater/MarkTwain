@@ -72,20 +72,21 @@
     "checking": "正在檢查此電腦…",
     "typst": {
       "name": "Typst",
-      "note": "建議選擇。已內建，無須安裝，預覽速度快。"
+      "tagline": "快速、簡單"
     },
     "latex": {
       "name": "LaTeX",
-      "note": "僅在指導教授或系所已提供 LaTeX 範本時選擇。使用此電腦上的 TeX Live，編譯速度較 Typst 慢。",
       "missing": {
         "tex": "此電腦未安裝 TeX Live。請先安裝 TeX Live 或 TinyTeX，再重新開始。",
         "citation-style-language": "此電腦的 TeX Live 缺少 citation-style-language 套件。請以 tlmgr 安裝後再重新開始。",
         "template": "此 MarkTwain 缺少 LaTeX 範本。請重新安裝 MarkTwain。"
-      }
+      },
+      "tagline": "嚴謹、學界通用"
     },
     "word": {
       "name": "Word",
-      "note": "目前尚未支援，後續版本將提供。現階段可先輸出 PDF 供指導教授檢閱。"
+      "note": "目前尚未支援，後續版本將提供。現階段可先輸出 PDF 供指導教授檢閱。",
+      "tagline": "熟悉、易分享"
     },
     "warning": "專案建立後無法更換排版方式。",
     "cancel": "取消",

@@ -65,7 +65,7 @@ export function EngineDialog({ open, onCancel, onConfirm }: Props) {
               key={option.id}
               title={option.hint}
               className={cn(
-                "relative flex aspect-square cursor-pointer items-center justify-center rounded-xl border-2 bg-background transition-colors",
+                "relative flex aspect-square cursor-pointer flex-col items-center justify-center gap-4 rounded-xl border-2 bg-background px-2 text-center transition-colors",
                 engine === option.id ? "border-foreground" : "border-border hover:bg-muted/50",
                 option.disabled && "cursor-not-allowed opacity-40 hover:bg-background",
               )}
@@ -80,7 +80,10 @@ export function EngineDialog({ open, onCancel, onConfirm }: Props) {
                 disabled={option.disabled}
                 onChange={() => setEngine(option.id)}
               />
-              <EngineLogo engine={option.id} />
+              <span className="flex h-14 items-center">
+                <EngineLogo engine={option.id} />
+              </span>
+              <span className="text-xs text-muted-foreground">{t(`engine.${option.id}.tagline`)}</span>
             </label>
           ))}
         </div>
@@ -107,7 +110,7 @@ export function EngineDialog({ open, onCancel, onConfirm }: Props) {
 
 /** The name of each tool as it is usually written, so a person knows it at a glance. */
 function EngineLogo({ engine }: { engine: OutputEngine }) {
-  if (engine === "typst") return <TypstLogo className="pointer-events-none h-10 w-auto" style={{ color: "#239dad" }} />;
+  if (engine === "typst") return <TypstLogo className="pointer-events-none h-7 w-auto" style={{ color: "#239dad" }} />;
   if (engine === "latex") {
     return (
       <span aria-hidden="true" className="pointer-events-none text-3xl font-medium" style={{ fontFamily: "'Latin Modern Roman', 'Computer Modern', Georgia, serif" }}>
