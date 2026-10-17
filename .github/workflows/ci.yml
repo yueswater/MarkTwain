@@ -61,7 +61,7 @@ jobs:
 
   package:
     name: package (${{ matrix.os }})
-    needs: check
+    # Runs next to check, not after it, so a pull request waits for the slower of the two and not for both
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
