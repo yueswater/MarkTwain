@@ -66,7 +66,7 @@ test("hovering a reference or a footnote opens a card with what it points to", a
   await createProject(page);
   await page.evaluate(async () => {
     const list = await window.marktwain.invoke("document:list");
-    if (!list.ok) return;
+    if (!list.ok) throw new Error("an IPC call that the test needs failed");
     const chapter = list.data.find((d) => d.kind === "chapter")!;
     const long = "word ".repeat(80);
     await window.marktwain.invoke("document:save", {

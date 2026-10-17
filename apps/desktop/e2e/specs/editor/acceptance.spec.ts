@@ -17,7 +17,7 @@ test("a document that uses every node survives closing and reopening", async ({ 
   // Write the sample covering all syntax into the first chapter
   const id = await page.evaluate(async (text) => {
     const list = await window.marktwain.invoke("document:list");
-    if (!list.ok) return null;
+    if (!list.ok) throw new Error("an IPC call that the test needs failed");
     const chapter = list.data.find((d) => d.kind === "chapter");
     if (!chapter) return null;
     await window.marktwain.invoke("document:save", { id: chapter.id, text });
@@ -74,7 +74,7 @@ test("cross-reference numbers update when a figure is removed", async ({ launch 
   await expect(page.locator(".ProseMirror")).toBeVisible();
   await page.evaluate(async () => {
     const list = await window.marktwain.invoke("document:list");
-    if (!list.ok) return;
+    if (!list.ok) throw new Error("an IPC call that the test needs failed");
     const chapter = list.data.find((d) => d.kind === "chapter")!;
     await window.marktwain.invoke("document:save", {
       id: chapter.id,

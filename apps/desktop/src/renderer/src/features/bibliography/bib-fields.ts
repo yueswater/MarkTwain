@@ -23,3 +23,8 @@ export function fieldsFor(type: string, existing: Readonly<Record<string, string
 export function requiredNames(type: string): Set<string> {
   return new Set((REQUIRED_FIELDS[type] ?? []).map((group) => group[0]!));
 }
+
+/** A title for the list: the braces that keep the capitals of BibTeX are taken out, the text of the entry is not changed. */
+export function plainTitle(title: string): string {
+  return title.replace(/\\([{}])|[{}]/g, (_, escaped: string | undefined) => escaped ?? "");
+}

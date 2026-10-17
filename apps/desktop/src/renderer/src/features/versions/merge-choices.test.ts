@@ -2,9 +2,9 @@ import { describe, expect, it } from "@jest/globals";
 import type { ConflictView } from "../../../../shared/ipc";
 import { choicesFor, countResolved, isResolved, startingText } from "./merge-choices";
 
-const blocks: ConflictView = { id: "d#0", type: "blocks", docId: "d", title: "One", kind: "chapter", base: ["b"], ours: ["O"], theirs: ["T"] };
-const field: ConflictView = { id: "d:title", type: "field", docId: "d", title: "One", kind: "chapter", field: "title", base: "x", ours: "y", theirs: "z" };
-const doc: ConflictView = { id: "d:document", type: "document", docId: "d", title: "One", kind: "chapter", deletedBy: "ours" };
+const blocks: ConflictView = { id: "d#0", type: "blocks", docId: "d", title: "One", kind: "chapter", position: 1, base: ["b"], ours: ["O"], theirs: ["T"] };
+const field: ConflictView = { id: "d:title", type: "field", docId: "d", title: "One", kind: "chapter", position: 1, field: "title", base: "x", ours: "y", theirs: "z" };
+const doc: ConflictView = { id: "d:document", type: "document", docId: "d", title: "One", kind: "chapter", position: 1, deletedBy: "ours" };
 
 describe("merge choices", () => {
   it("offers what fits each kind of conflict", () => {

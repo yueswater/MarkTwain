@@ -105,7 +105,7 @@ test("the preview returns to its place after a rebuild and after being closed, a
   // A thesis of several pages
   await page.evaluate(async () => {
     const list = await window.marktwain.invoke("document:list");
-    if (!list.ok) return;
+    if (!list.ok) throw new Error("an IPC call that the test needs failed");
     const chapter = list.data.find((d) => d.kind === "chapter")!;
     const paragraphs = Array.from({ length: 60 }, (_, i) => `Paragraph ${i + 1}. ${"text ".repeat(60)}`).join("\n\n");
     await window.marktwain.invoke("document:save", { id: chapter.id, text: `# Long\n\n${paragraphs}\n` });
@@ -132,7 +132,7 @@ test("the preview returns to its place after a rebuild and after being closed, a
   const built = (await viewerState(page))?.id;
   await page.evaluate(async () => {
     const list = await window.marktwain.invoke("document:list");
-    if (!list.ok) return;
+    if (!list.ok) throw new Error("an IPC call that the test needs failed");
     const chapter = list.data.find((d) => d.kind === "chapter")!;
     const doc = await window.marktwain.invoke("document:get", { id: chapter.id });
     if (doc.ok) await window.marktwain.invoke("document:save", { id: chapter.id, text: `${doc.data.text}\nOne more paragraph.\n` });

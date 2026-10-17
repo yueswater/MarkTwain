@@ -9,7 +9,8 @@
     "locale": {
       "zh-Hant": "繁體中文",
       "en": "English"
-    }
+    },
+    "switchTo": "Language: switch to {{language}}"
   },
   "action": {
     "close": "Close",

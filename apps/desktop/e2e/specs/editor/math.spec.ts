@@ -66,7 +66,7 @@ test("a display formula has no number until it is named from the box next to it"
   const markdown = () =>
     page.evaluate(async () => {
       const list = await window.marktwain.invoke("document:list");
-      if (!list.ok) return "";
+      if (!list.ok) throw new Error("an IPC call that the test needs failed");
       const chapter = list.data.find((d) => d.kind === "chapter");
       const doc = chapter && (await window.marktwain.invoke("document:get", { id: chapter.id }));
       return doc && doc.ok ? doc.data.text : "";

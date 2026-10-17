@@ -10,7 +10,7 @@ test("pushing the wheel against the bottom or the top of a chapter opens the nex
   await page.evaluate(async (texts) => {
     await window.marktwain.invoke("document:create", { kind: "chapter" });
     const list = await window.marktwain.invoke("document:list");
-    if (!list.ok) return;
+    if (!list.ok) throw new Error("an IPC call that the test needs failed");
     const chapters = list.data.filter((d) => d.kind === "chapter");
     await window.marktwain.invoke("document:save", { id: chapters[0]!.id, text: texts[0]! });
     await window.marktwain.invoke("document:save", { id: chapters[1]!.id, text: texts[1]! });

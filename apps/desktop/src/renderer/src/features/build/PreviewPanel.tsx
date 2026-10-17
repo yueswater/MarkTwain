@@ -105,6 +105,16 @@ export function PreviewPanel({ build, saveTick, placeKey, engine, onFillIn, onCl
     // Only the switch matters, run is stable
   }, [watermark]);
 
+  /** The watermark is drawn only when the school has one or the project has an image, otherwise the switch and the final copy change nothing. */
+  async function hasWatermark(): Promise<boolean> {
+    try {
+      const info = await api.invoke(IpcChannel.WatermarkGet);
+      return info.mode === "custom" ? info.custom !== null : info.mode === "school" ? info.school !== null : false;
+    } catch {
+      return true;
+    }
+  }
+
   function toggleWatch(): void {
     setWatch((value) => {
       try {
@@ -132,7 +142,9 @@ export function PreviewPanel({ build, saveTick, placeKey, engine, onFillIn, onCl
   async function exportTo(channel: typeof IpcChannel.ExportPdf | typeof IpcChannel.ExportFinalPdf | typeof IpcChannel.ExportProject): Promise<void> {
     try {
       const result = await api.invoke(channel);
-      setExportNote(result ? { ok: true, text: t("exported", { path: result.path }) } : null);
+      // A final copy without a watermark image is told so, since the word final promises a watermark
+      const note = result && channel === IpcChannel.ExportFinalPdf && !(await hasWatermark()) ? ` ${t("noWatermark")}` : "";
+      setExportNote(result ? { ok: true, text: `${t("exported", { path: result.path })}${note}` } : null);
       // The export was made, so a failure that the preview still shows is out of date
       if (result && outcome && !outcome.ok) void run();
     } catch (e) {
@@ -185,7 +197,11 @@ export function PreviewPanel({ build, saveTick, placeKey, engine, onFillIn, onCl
             size="sm"
             aria-pressed={watermark}
             title={t("watermarkHint")}
-            onClick={() => setWatermark((value) => !value)}
+            onClick={() => {
+              // Turning it on says so when there is nothing to draw
+              if (!watermark) void hasWatermark().then((has) => !has && setExportNote({ ok: false, text: t("noWatermark") }));
+              setWatermark((value) => !value);
+            }}
           >
             <StampIcon aria-hidden="true" />
             {t("watermark")}

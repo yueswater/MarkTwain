@@ -80,5 +80,7 @@
     "hint": "Changes are saved automatically. Comments and the order of entries are kept.",
     "saving": "Saving",
     "saved": "Saved"
-  }
+  },
+  "importedSkippedNames": "These keys were already there and keep their old entry: {{keys}}.",
+  "importedErrorNames": "These could not be read: {{keys}}."
 }

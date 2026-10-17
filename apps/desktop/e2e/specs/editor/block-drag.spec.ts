@@ -8,7 +8,7 @@ test("a block is dragged by the grip at its left to another place, into a callou
   await createProject(page);
   await page.evaluate(async () => {
     const list = await window.marktwain.invoke("document:list");
-    if (!list.ok) return;
+    if (!list.ok) throw new Error("an IPC call that the test needs failed");
     const chapter = list.data.find((d) => d.kind === "chapter")!;
     await window.marktwain.invoke("document:save", {
       id: chapter.id,

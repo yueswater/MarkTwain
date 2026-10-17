@@ -8,14 +8,14 @@ test("the borders menu draws, removes and thickens the lines of a table, one ste
   const read = () =>
     page.evaluate(async () => {
       const list = await window.marktwain.invoke("document:list");
-      if (!list.ok) return "";
+      if (!list.ok) throw new Error("an IPC call that the test needs failed");
       const chapter = list.data.find((d) => d.kind === "chapter")!;
       const doc = await window.marktwain.invoke("document:get", { id: chapter.id });
       return doc.ok ? doc.data.text : "";
     });
   await page.evaluate(async () => {
     const list = await window.marktwain.invoke("document:list");
-    if (!list.ok) return;
+    if (!list.ok) throw new Error("an IPC call that the test needs failed");
     const chapter = list.data.find((d) => d.kind === "chapter")!;
     await window.marktwain.invoke("document:save", {
       id: chapter.id,

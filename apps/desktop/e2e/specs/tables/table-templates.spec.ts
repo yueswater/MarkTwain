@@ -39,7 +39,7 @@ test("a table is made from a template chosen by field, with its size, and it is 
   const read = () =>
     page.evaluate(async () => {
       const list = await window.marktwain.invoke("document:list");
-      if (!list.ok) return "";
+      if (!list.ok) throw new Error("an IPC call that the test needs failed");
       const chapter = list.data.find((d) => d.kind === "chapter")!;
       const doc = await window.marktwain.invoke("document:get", { id: chapter.id });
       return doc.ok ? doc.data.text : "";

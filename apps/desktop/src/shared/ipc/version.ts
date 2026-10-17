@@ -42,6 +42,8 @@ export type DocumentDiffView = {
   docId: string;
   title: string;
   kind: string;
+  /** The number that makes a chapter without a title Chapter 2 */
+  position: number;
   status: "added" | "removed" | "changed";
   fields: { field: "kind" | "title" | "position"; from: string | number | null; to: string | number | null }[];
   changes: ChangeView[];
@@ -49,9 +51,9 @@ export type DocumentDiffView = {
 
 /** One thing that a version can take or leave, with the text to show it. A run of blocks is the blocks that changed together. */
 export type ChangeItemView =
-  | { id: string; type: "document"; docId: string; title: string; kind: string; status: "added" | "removed"; blocks: string[] }
-  | { id: string; type: "fields"; docId: string; title: string; kind: string; fields: { field: "kind" | "title" | "position"; from: string | number; to: string | number }[] }
-  | { id: string; type: "hunk"; docId: string; title: string; kind: string; changes: Exclude<ChangeView, { type: "same" }>[] }
+  | { id: string; type: "document"; docId: string; title: string; kind: string; position: number; status: "added" | "removed"; blocks: string[] }
+  | { id: string; type: "fields"; docId: string; title: string; kind: string; position: number; fields: { field: "kind" | "title" | "position"; from: string | number; to: string | number }[] }
+  | { id: string; type: "hunk"; docId: string; title: string; kind: string; position: number; changes: Exclude<ChangeView, { type: "same" }>[] }
   | { id: string; type: "file"; path: string; status: "added" | "removed" | "changed" };
 
 export type CompareView = {
@@ -61,10 +63,10 @@ export type CompareView = {
 
 /** A conflict of a merge with the text that each side has, to be shown side by side. */
 export type ConflictView =
-  | { id: string; type: "blocks"; docId: string; title: string; kind: string; base: string[]; ours: string[]; theirs: string[] }
-  | { id: string; type: "field"; docId: string; title: string; kind: string; field: "kind" | "title" | "position"; base: string | number | null; ours: string | number; theirs: string | number }
+  | { id: string; type: "blocks"; docId: string; title: string; kind: string; position: number; base: string[]; ours: string[]; theirs: string[] }
+  | { id: string; type: "field"; docId: string; title: string; kind: string; position: number; field: "kind" | "title" | "position"; base: string | number | null; ours: string | number; theirs: string | number }
   | { id: string; type: "file"; path: string; base: boolean; ours: boolean; theirs: boolean }
-  | { id: string; type: "document"; docId: string; title: string; kind: string; deletedBy: "ours" | "theirs" };
+  | { id: string; type: "document"; docId: string; title: string; kind: string; position: number; deletedBy: "ours" | "theirs" };
 
 /** The choice for a conflict. Blocks take the main line, the change that comes in, the base, both, or a text of your own. */
 export type ChoiceInput = "ours" | "theirs" | "base" | "both" | "keep" | "delete" | { text: string };
