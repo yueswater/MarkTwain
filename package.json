@@ -1,6 +1,6 @@
 {
   "name": "marktwain",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "private": true,
   "packageManager": "pnpm@12.6.0",
   "description": "離線桌面論文編輯器：TipTap Markdown，輸出 Typst 與 LaTeX，內建本機版本控制",
