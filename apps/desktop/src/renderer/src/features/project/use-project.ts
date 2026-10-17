@@ -5,6 +5,7 @@ import { IpcChannel } from "../../../../shared/enums/ipc-channel.enum";
 import type { OutputEngine, ProjectInfo, RecentProject } from "../../../../shared/ipc";
 import { api } from "../../shared/api";
 import { errorMessage } from "../../shared/error-message";
+import type { PickRequest } from "../picker/FilePicker";
 import { projectNameFromPath } from "./sidebar/document-title";
 
 /** The open project and every action that changes it, errors become text in the current language. */
@@ -18,6 +19,22 @@ export function useProject() {
   // True while the engine of a new project is asked, it cannot be changed once the project exists
   const [choosingEngine, setChoosingEngine] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // The picker that is open, with the way to answer the one who asked
+  const [picking, setPicking] = useState<(PickRequest & { resolve: (path: string | null) => void }) | null>(null);
+
+  /** The path of a project: the one that the test hook gives, or the one that the person chooses in the picker of the app. */
+  const choosePath = useCallback(async (request: PickRequest): Promise<string | null> => {
+    const forced = await api.invoke(IpcChannel.DialogForcedProjectPath);
+    if (forced) return forced;
+    return new Promise((resolve) => setPicking({ ...request, resolve }));
+  }, []);
+
+  const answerPicker = useCallback((path: string | null) => {
+    setPicking((current) => {
+      current?.resolve(path);
+      return null;
+    });
+  }, []);
 
   const finishCreation = useCallback(() => setJustCreated(false), []);
   const beginCreate = useCallback(() => setChoosingEngine(true), []);
@@ -58,7 +75,7 @@ export function useProject() {
   const createProject = (suggestedName: string, engine: OutputEngine) =>
     run(async () => {
       setChoosingEngine(false);
-      const path = await api.invoke(IpcChannel.DialogChooseNewProject, { suggestedName });
+      const path = await choosePath({ mode: "save", suggestedName });
       if (!path) return;
       setProject(await api.invoke(IpcChannel.ProjectCreate, { path, name: projectNameFromPath(path), engine }));
       setJustCreated(true);
@@ -77,7 +94,7 @@ export function useProject() {
 
   const openProject = () =>
     run(async () => {
-      const path = await api.invoke(IpcChannel.DialogChooseOpenProject);
+      const path = await choosePath({ mode: "open" });
       if (!path) return;
       setProject(await api.invoke(IpcChannel.ProjectOpen, { path }));
     });
@@ -130,6 +147,8 @@ export function useProject() {
     error,
     justCreated,
     finishCreation,
+    picking,
+    answerPicker,
     choosingEngine,
     beginCreate,
     cancelCreate,

@@ -54,6 +54,11 @@
       "conflicts": "尚有 {{count}} 處衝突未選擇。",
       "nothing-to-merge": "沒有可合併的內容。",
       "message-empty": "請填寫此版本的修改說明。"
+    },
+    "files": {
+      "invalid-name": "資料夾名稱不可為空，也不可包含 \\ / : * ? \" < > | 等字元。",
+      "folder-exists": "此位置已有同名的資料夾或檔案。",
+      "folder-failed": "無法建立資料夾，請確認此位置可寫入。"
     }
   }
 }

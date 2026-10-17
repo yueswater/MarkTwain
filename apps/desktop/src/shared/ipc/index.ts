@@ -4,6 +4,7 @@ import type { ExportContract } from "./export";
 import type { ConfigContract } from "./config";
 import type { DialogContract } from "./dialog";
 import type { DocumentContract } from "./document";
+import type { FilesContract } from "./files";
 import type { MenuCommand } from "./menu";
 import type { AssetContract } from "./asset";
 import type { BibliographyContract } from "./bibliography";
@@ -26,6 +27,7 @@ export type { IpcErrorPayload, IpcResult } from "./result";
 export type { LocaleView } from "./settings";
 export type { DocumentData, DocumentSummary } from "./document";
 export type { OutputEngine, ProjectInfo } from "./project";
+export type { FileEntry, FileListing, FilePlace } from "./files";
 export type { RecentProject } from "./recent";
 export type { SearchHit } from "./search";
 export type { WatermarkInfo, WatermarkMode, WatermarkPicture } from "./watermark";
@@ -41,7 +43,7 @@ export type { BranchInfo, ChangeItemView, ChangeView, ChoiceInput, CompareView, 
 export type { LabelIndex, LabelPreview, LabelPreviewContent, LabelReference, LabelTarget, UnlabeledRemote } from "./label";
 
 /** Contracts of all features are merged here, add & XxxContract when adding a feature. */
-export type IpcContract = AppContract & SettingsContract & ProjectContract & DocumentContract & DialogContract & LabelContract & AssetContract & ConfigContract & BuildContract & ExportContract & RecentContract & PrefsContract & SearchContract & BibliographyContract & WatermarkContract & ProfileContract & FontContract & TableTemplateContract & VersionContract & ToolchainContract;
+export type IpcContract = AppContract & SettingsContract & ProjectContract & DocumentContract & DialogContract & FilesContract & LabelContract & AssetContract & ConfigContract & BuildContract & ExportContract & RecentContract & PrefsContract & SearchContract & BibliographyContract & WatermarkContract & ProfileContract & FontContract & TableTemplateContract & VersionContract & ToolchainContract;
 
 export type IpcChannelName = keyof IpcContract;
 export type IpcRequest<C extends IpcChannelName> = IpcContract[C]["req"];

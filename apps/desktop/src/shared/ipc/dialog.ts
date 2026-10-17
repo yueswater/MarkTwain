@@ -1,8 +1,6 @@
 import { IpcChannel } from "../enums/ipc-channel.enum";
 
 export type DialogContract = {
-  /** Chooses where a new project is stored, null when the user cancels */
-  [IpcChannel.DialogChooseNewProject]: { req: { suggestedName: string }; res: string | null };
-  /** Chooses a project file to open, null when the user cancels */
-  [IpcChannel.DialogChooseOpenProject]: { req: void; res: string | null };
+  /** The path that the test hook gives for a project, null in real use. The person chooses it in the picker of the app. */
+  [IpcChannel.DialogForcedProjectPath]: { req: void; res: string | null };
 };

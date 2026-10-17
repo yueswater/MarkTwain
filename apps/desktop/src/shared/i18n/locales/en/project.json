@@ -87,8 +87,33 @@
       "name": "Word",
       "note": "Not available yet, it comes in a later version. For now you can export a PDF for your advisor."
     },
-    "warning": "This cannot be changed after the project is created, because the files of the two ways are different. To use the other one, start a new project.",
+    "warning": "The output cannot be changed after the project is created.",
     "cancel": "Cancel",
     "confirm": "Create project"
+  },
+  "picker": {
+    "saveTitle": "Choose where to keep the project",
+    "openTitle": "Open a project",
+    "places": {
+      "label": "Places",
+      "home": "Home",
+      "desktop": "Desktop",
+      "documents": "Documents",
+      "downloads": "Downloads"
+    },
+    "up": "Up one folder",
+    "path": "Current place",
+    "list": "Folders and projects",
+    "newFolder": "New folder",
+    "folderName": "Folder name",
+    "createFolder": "Create",
+    "nameLabel": "Project name",
+    "invalidName": "A project name cannot be empty or contain \\ / : * ? \" < > | characters.",
+    "exists": "A project with this name already exists here.",
+    "empty": "This folder is empty.",
+    "unreadable": "This folder cannot be read.",
+    "create": "Create",
+    "open": "Open",
+    "cancel": "Cancel"
   }
 }

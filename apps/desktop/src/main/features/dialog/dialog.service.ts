@@ -1,6 +1,5 @@
-import { basename, extname } from "node:path";
 import type { TFunction } from "i18next";
-import { IMAGE_EXTENSIONS, PROJECT_EXTENSION, WATERMARK_EXTENSIONS } from "../../config/app.config";
+import { IMAGE_EXTENSIONS, WATERMARK_EXTENSIONS } from "../../config/app.config";
 
 /** Smallest abstraction over the Electron dialog, for testing. */
 export type DialogPort = {
@@ -28,21 +27,9 @@ export class DialogService {
     private readonly forcedExportPath: () => string | undefined = () => undefined,
   ) {}
 
-  private filters(t: TFunction) {
-    return [{ name: t("filter.project"), extensions: [PROJECT_EXTENSION] }];
-  }
-
-  async chooseNewProject(suggestedName: string): Promise<string | null> {
-    const forced = this.forcedPath();
-    if (forced) return forced;
-    const t = this.translator();
-    const chosen = await this.port.showSave({
-      title: t("newProject.title"),
-      buttonLabel: t("newProject.button"),
-      defaultPath: `${suggestedName}.${PROJECT_EXTENSION}`,
-      filters: this.filters(t),
-    });
-    return chosen === null ? null : withExtension(chosen);
+  /** The path of the test hook, null in real use, where the person chooses it in the picker of the app. */
+  forcedProjectPath(): string | null {
+    return this.forcedPath() ?? null;
   }
 
   async chooseImage(): Promise<string | null> {
@@ -85,20 +72,4 @@ export class DialogService {
     const t = this.translator();
     return this.port.showFolder({ title: t("exportFolder.title"), buttonLabel: t("exportFolder.button") });
   }
-
-  async chooseOpenProject(): Promise<string | null> {
-    const forced = this.forcedPath();
-    if (forced) return forced;
-    const t = this.translator();
-    return this.port.showOpen({
-      title: t("openProject.title"),
-      buttonLabel: t("openProject.button"),
-      filters: this.filters(t),
-    });
-  }
-}
-
-/** Adds the extension when the user left it out, some platforms do not add it in the save dialog. */
-export function withExtension(path: string): string {
-  return extname(basename(path)) === "" ? `${path}.${PROJECT_EXTENSION}` : path;
 }

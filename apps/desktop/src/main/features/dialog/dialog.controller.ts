@@ -44,9 +44,6 @@ export function registerDialogController(): DialogService {
     () => process.env[TEST_EXPORT_PATH_ENV] || undefined,
   );
 
-  handle(IpcChannel.DialogChooseNewProject, ({ suggestedName }) =>
-    service.chooseNewProject(suggestedName),
-  );
-  handle(IpcChannel.DialogChooseOpenProject, () => service.chooseOpenProject());
+  handle(IpcChannel.DialogForcedProjectPath, () => service.forcedProjectPath());
   return service;
 }

@@ -54,6 +54,11 @@
       "conflicts": "{{count}} conflicts have no choice yet.",
       "nothing-to-merge": "There is nothing to merge.",
       "message-empty": "Say what you changed. A version needs a description."
+    },
+    "files": {
+      "invalid-name": "A folder name cannot be empty or contain \\ / : * ? \" < > | characters.",
+      "folder-exists": "A folder or a file with this name already exists here.",
+      "folder-failed": "The folder could not be made. Check that this place can be written to."
     }
   }
 }

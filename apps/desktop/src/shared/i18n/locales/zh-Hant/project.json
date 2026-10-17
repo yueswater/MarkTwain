@@ -87,8 +87,33 @@
       "name": "Word",
       "note": "目前尚未支援，後續版本將提供。現階段可先輸出 PDF 供指導教授檢閱。"
     },
-    "warning": "專案建立後無法更換排版方式，因為兩者的檔案格式不同。如需使用另一種，請另行建立新專案。",
+    "warning": "專案建立後無法更換排版方式。",
     "cancel": "取消",
     "confirm": "建立專案"
+  },
+  "picker": {
+    "saveTitle": "選擇專案的存放位置",
+    "openTitle": "開啟專案",
+    "places": {
+      "label": "位置",
+      "home": "個人資料夾",
+      "desktop": "桌面",
+      "documents": "文件",
+      "downloads": "下載"
+    },
+    "up": "上一層",
+    "path": "目前位置",
+    "list": "資料夾與專案檔",
+    "newFolder": "新增資料夾",
+    "folderName": "資料夾名稱",
+    "createFolder": "建立",
+    "nameLabel": "專案名稱",
+    "invalidName": "專案名稱不可為空，也不可包含 \\ / : * ? \" < > | 等字元。",
+    "exists": "此位置已有同名的專案檔。",
+    "empty": "此資料夾是空的。",
+    "unreadable": "無法讀取此資料夾。",
+    "create": "建立",
+    "open": "開啟",
+    "cancel": "取消"
   }
 }
