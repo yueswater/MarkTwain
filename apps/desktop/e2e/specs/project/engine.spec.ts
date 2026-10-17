@@ -78,7 +78,7 @@ test.describe("with a TeX Live", () => {
     await page.getByRole("button", { name: "Preview" }).click();
     // The preview shows the PDF of a LaTeX build, which has no plain page count in its bytes
     await expect.poll(async () => (await viewerState(page))?.total ?? 0, { timeout: 120_000 }).toBeGreaterThan(1);
-    await expect(page.getByTestId("preview-pages")).not.toContainText("The build failed");
+    await expect(page.getByTestId("preview-pages")).not.toContainText("could not be made");
     await page.getByRole("button", { name: "Export" }).click();
     // The folder of a project is for Typst only, the PDF is the same for both
     await expect(page.getByRole("menuitem", { name: "Export Typst project…" })).toHaveCount(0);

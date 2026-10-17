@@ -7,7 +7,7 @@ set -euo pipefail
 PACKAGES="latex-bin latex xetex luatex latexmk lua-tinyyaml lualibs luaotfload citation-style-language
   amsfonts amsmath bigintcalc bitset booktabs caption chngcntr cjk ctex enumitem eso-pic etoolbox fancyhdr fontspec
   geometry gettitlestring graphics graphics-cfg graphics-def hycolor hyperref iftex infwarerr intcalc kvdefinekeys
-  kvoptions kvsetkeys l3backend l3kernel l3packages lipsum listings ltxcmds makecell metalogo multirow pdfescape
+  kvoptions kvsetkeys l3kernel l3packages l3experimental accsupp lipsum listings ltxcmds makecell metalogo multirow pdfescape
   pdflscape pdftexcmds pgf refcount rerunfilecheck stringenc titlesec tools ulem uniquecounter url xcolor xecjk
   zhlipsum zhnumber psnfss lm lm-math unicode-math xetexconfig"
 

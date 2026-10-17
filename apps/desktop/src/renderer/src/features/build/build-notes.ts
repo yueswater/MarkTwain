@@ -63,3 +63,20 @@ export function showNotes(errors: readonly BuildDiagnostic[], items: readonly Wa
 export function configFieldName(key: string): string {
   return key.replace(/-([a-z])/g, (_, letter: string) => letter.toUpperCase());
 }
+
+export type FriendlyKind = "picture" | "duplicate" | "reference" | "command" | "brackets" | "missingFile" | "capacity" | "other";
+
+/**
+ * What an error of the build means for the person who writes, from the words of Typst and of TeX.
+ * The raw message stays, it is the detail for someone who knows the tool and for a bug report.
+ */
+export function friendlyKind(message: string): FriendlyKind {
+  if (/failed to decode image|unable to load picture|cannot determine size of graphic|unknown graphics extension|image format/i.test(message)) return "picture";
+  if (/label .* occurs multiple times|multiply[- ]defined/i.test(message)) return "duplicate";
+  if (/label .* does not exist|cannot reference|reference .* undefined/i.test(message)) return "reference";
+  if (/undefined control sequence|unknown variable|unknown (math )?(symbol|command)/i.test(message)) return "command";
+  if (/missing [$}{] inserted|extra [}{]|unclosed delimiter|unexpected closing|runaway argument|file ended while scanning/i.test(message)) return "brackets";
+  if (/file not found|file .* not found|no such file|failed to load file/i.test(message)) return "missingFile";
+  if (/capacity exceeded|emergency stop/i.test(message)) return "capacity";
+  return "other";
+}

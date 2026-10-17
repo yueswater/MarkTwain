@@ -1,6 +1,6 @@
 import { describe, expect, it } from "@jest/globals";
 import type { BuildDiagnostic } from "../../../../shared/ipc";
-import { configFieldName, showNotes, warningItems } from "./build-notes";
+import { configFieldName, friendlyKind, showNotes, warningItems } from "./build-notes";
 
 const diag = (over: Partial<BuildDiagnostic>): BuildDiagnostic => ({
   severity: "warning",
@@ -101,5 +101,23 @@ describe("configFieldName", () => {
     expect(configFieldName("oral-date")).toBe("oralDate");
     expect(configFieldName("id")).toBe("id");
     expect(configFieldName("keywords-en")).toBe("keywordsEn");
+  });
+});
+
+describe("friendlyKind", () => {
+  it.each([
+    ["failed to decode image (PngDecoding)", "picture"],
+    ["Unable to load picture or PDF file 'a.png'", "picture"],
+    ["label `<fig:a>` occurs multiple times in the document", "duplicate"],
+    ["label `<fig:a>` does not exist in the document", "reference"],
+    ["Undefined control sequence. \\foo", "command"],
+    ["unknown variable: foo", "command"],
+    ["Missing $ inserted.", "brackets"],
+    ["unclosed delimiter", "brackets"],
+    ["File `x.sty' not found.", "missingFile"],
+    ["TeX capacity exceeded, sorry [input stack size=10000]", "capacity"],
+    ["something else", "other"],
+  ])("reads %s as %s", (message, kind) => {
+    expect(friendlyKind(message)).toBe(kind);
   });
 });
