@@ -7,6 +7,7 @@ import { IpcChannel } from "../../../../../shared/enums/ipc-channel.enum";
 import type { LatexStatus, OutputEngine } from "../../../../../shared/ipc/index";
 import { api } from "../../../shared/api";
 import { TypstLogo } from "./TypstLogo";
+import { WordLogo } from "./WordLogo";
 
 type Props = {
   open: boolean;
@@ -79,7 +80,7 @@ export function EngineDialog({ open, onCancel, onConfirm }: Props) {
                 disabled={option.disabled}
                 onChange={() => setEngine(option.id)}
               />
-              <EngineLogo engine={option.id} name={t(`engine.${option.id}.name`)} />
+              <EngineLogo engine={option.id} />
             </label>
           ))}
         </div>
@@ -105,7 +106,7 @@ export function EngineDialog({ open, onCancel, onConfirm }: Props) {
 }
 
 /** The name of each tool as it is usually written, so a person knows it at a glance. */
-function EngineLogo({ engine, name }: { engine: OutputEngine; name: string }) {
+function EngineLogo({ engine }: { engine: OutputEngine }) {
   if (engine === "typst") return <TypstLogo className="pointer-events-none h-10 w-auto" style={{ color: "#239dad" }} />;
   if (engine === "latex") {
     return (
@@ -117,9 +118,5 @@ function EngineLogo({ engine, name }: { engine: OutputEngine; name: string }) {
       </span>
     );
   }
-  return (
-    <span aria-hidden="true" className="pointer-events-none flex size-14 items-center justify-center rounded-xl text-3xl font-bold text-white" style={{ background: "#185abd" }}>
-      {name.charAt(0)}
-    </span>
-  );
+  return <WordLogo className="pointer-events-none h-14 w-auto" />;
 }
