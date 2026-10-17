@@ -90,3 +90,7 @@ gh run download <run-id> -n app-win-unpacked
 ## 授權
 
 [MIT](LICENSE)。隨 App 發佈的字型與其他素材列在 [THIRD_PARTY.md](THIRD_PARTY.md)。
+
+## 商標
+
+Typst、LaTeX 與 Microsoft Word 是他人產品的名稱。MarkTwain 並非由 Typst、LaTeX Project 或微軟製作、背書或贊助。在選擇專案輸出方式的方格中，Typst 標誌與 Word 圖示均原樣顯示，僅用來說明各方格代表哪一種工具，其權利歸各自的所有者。詳見 [THIRD_PARTY.md](THIRD_PARTY.md)。

@@ -16,7 +16,7 @@ test("a new project asks for the thesis, can be skipped, and the next one starts
   await expect(dialog.getByLabel("Student ID")).toHaveCount(0);
   await dialog.getByLabel("Author (Chinese)").fill("宋品岳");
   await dialog.getByLabel("Advisor (Chinese)").fill("潘老師");
-  await dialog.getByRole("button", { name: "More" }).click();
+  await dialog.getByRole("button", { name: "More details" }).click();
   await dialog.getByLabel("Student ID").fill("112351049");
   await dialog.getByLabel("Defense date").fill("2026-12-01");
   await dialog.getByRole("button", { name: "Done" }).click();
@@ -114,7 +114,7 @@ for (const how of ["Escape", "Skip", "Close"] as const) {
     await dialog.getByLabel("Title (Chinese)").fill("深度學習於醫療影像之研究");
     await dialog.getByLabel("Author (Chinese)").fill("王小明");
     await dialog.getByLabel("Advisor (Chinese)").fill("李大華");
-    await dialog.getByRole("button", { name: "More" }).click();
+    await dialog.getByRole("button", { name: "More details" }).click();
     await dialog.getByLabel("Defense date").fill("2026-06-15");
     if (how === "Escape") await page.keyboard.press("Escape");
     else await dialog.getByRole("button", { name: how }).click();

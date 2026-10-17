@@ -1,4 +1,4 @@
-import type { AdvancedValue, AdvancedValues, ConfigFields, ConfigIssue } from "@marktwain/schema";
+import type { AdvancedValue, AdvancedValues, ConfigFields, ConfigIssue, SchoolTerms } from "@marktwain/schema";
 import { IpcChannel } from "../enums/ipc-channel.enum";
 
 export type ConfigState = { fields: ConfigFields; issues: ConfigIssue[] };
@@ -8,6 +8,8 @@ export type AdvancedState = {
   values: AdvancedValues;
   /** What a field is without an override, from the template and the school preset */
   inherited: AdvancedValues;
+  /** The names of the lists at the front of the thesis in the rules of the school */
+  terms: SchoolTerms;
 };
 
 export type ConfigContract = {

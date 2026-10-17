@@ -47,7 +47,7 @@ export const ADVANCED_FIELDS: readonly AdvancedField[] = [
   { path: "layout.font-latin", group: "text", kind: "list" },
   { path: "layout.font-cjk", group: "text", kind: "list" },
   { path: "layout.font-size", group: "text", kind: "number", min: 6, max: 24, unit: "pt" },
-  { path: "layout.line-height", group: "text", kind: "number", min: 1, max: 3 },
+  { path: "layout.line-height", group: "text", kind: "number", min: 1, max: 3, unit: "times" },
   { path: "layout.par-spacing", group: "text", kind: "number", min: 0, max: 5, unit: "em" },
   { path: "layout.first-line-indent", group: "text", kind: "number", min: 0, max: 5, unit: "em" },
   { path: "layout.first-line-indent-all", group: "text", kind: "bool" },
@@ -64,7 +64,7 @@ export const ADVANCED_FIELDS: readonly AdvancedField[] = [
 
   { path: "layout.heading.size", group: "headings", kind: "numbers4", min: 6, max: 40, unit: "pt" },
   { path: "layout.heading.align", group: "headings", kind: "select4", options: ALIGN },
-  { path: "layout.heading.line-height", group: "headings", kind: "number", min: 1, max: 3 },
+  { path: "layout.heading.line-height", group: "headings", kind: "number", min: 1, max: 3, unit: "times" },
 
   { path: "page-number.position", group: "pageNumber", kind: "select", options: SIDE },
   { path: "page-number.align", group: "pageNumber", kind: "select", options: ALIGN },
@@ -220,4 +220,21 @@ export function inheritedValues(defaultText: string, schoolText: string | null):
     else if (field.kind === "list" && typeof value === "string") out[field.path] = [value];
   }
   return out;
+}
+
+/** The names that the school gives to the lists at the front of the thesis, they are fixed by its rules. */
+export type SchoolTerms = { toc: string; lof: string; lot: string };
+
+const DEFAULT_TERMS: SchoolTerms = { toc: "目次", lof: "圖次", lot: "表次" };
+
+/** The title that the school preset or the template gives each list, with the spreading mark and the blanks taken out. */
+export function schoolTerms(defaultText: string, schoolText: string | null): SchoolTerms {
+  const layers = [defaultText, schoolText ?? ""].map((text) => toPlain(parseDocument(text).toJSON()));
+  const merged = mergeConfigs(...layers);
+  const read = (key: keyof SchoolTerms): string => {
+    const value = getPath(merged, `titles.${key}`);
+    const plain = typeof value === "string" ? value.replace(/[~\s]/g, "") : "";
+    return plain === "" ? DEFAULT_TERMS[key] : plain;
+  };
+  return { toc: read("toc"), lof: read("lof"), lot: read("lot") };
 }

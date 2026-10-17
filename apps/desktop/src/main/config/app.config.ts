@@ -43,6 +43,8 @@ export const TEX_TEMPLATE_DIR_ENV = "MARKTWAIN_TEX_TEMPLATE_DIR";
 export const PREVIEW_SCHEME = "marktwain-preview";
 
 export const TEST_DIALOG_PATH_ENV = "MARKTWAIN_TEST_DIALOG_PATH";
+/** The folder that the picker of the app opens on, for the tests of the picker */
+export const TEST_PICKER_START_ENV = "MARKTWAIN_TEST_PICKER_START";
 
 /** Test hook: when set, export dialogs are skipped and this path is used. */
 export const TEST_EXPORT_PATH_ENV = "MARKTWAIN_TEST_EXPORT_PATH";

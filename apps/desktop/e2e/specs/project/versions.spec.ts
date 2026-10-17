@@ -26,13 +26,13 @@ test("a version is saved, a change is started and opened again, the history rest
 
   // A change needs a name, and a name that is used is refused
   await menu();
-  await page.getByRole("menuitem", { name: "Start a new change…" }).click();
-  await expect(page.getByRole("dialog").getByRole("button", { name: "Start a new change" })).toBeDisabled();
+  await page.getByRole("menuitem", { name: "Try a change in a copy…" }).click();
+  await expect(page.getByRole("dialog").getByRole("button", { name: "Try a change in a copy" })).toBeDisabled();
   await page.getByLabel("Name of the change").fill("main");
-  await page.getByRole("dialog").getByRole("button", { name: "Start a new change" }).click();
+  await page.getByRole("dialog").getByRole("button", { name: "Try a change in a copy" }).click();
   await expect(page.getByRole("alert")).toContainText("exists already");
   await page.getByLabel("Name of the change").fill("rewrite");
-  await page.getByRole("dialog").getByRole("button", { name: "Start a new change" }).click();
+  await page.getByRole("dialog").getByRole("button", { name: "Try a change in a copy" }).click();
   await expect(page.getByRole("dialog")).toBeHidden();
   await expect(bar).toContainText("rewrite");
 

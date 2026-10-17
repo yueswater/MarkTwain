@@ -60,12 +60,13 @@ export function EditorAppearanceSettings() {
       <SettingsRow
         id="setting-editor-fontSize"
         label={t("editor.fontSize")}
-        hint={t("editor.fontSizeHint")}
-        control={<NumberField label={t("editor.fontSize")} value={prefs.fontSize} min={PREF_LIMITS.fontSize[0]} max={PREF_LIMITS.fontSize[1]} unit="px" onCommit={(v) => v !== null && setPrefs({ fontSize: v })} />}
+        unit="px"
+        control={<NumberField label={t("editor.fontSize")} value={prefs.fontSize} min={PREF_LIMITS.fontSize[0]} max={PREF_LIMITS.fontSize[1]} onCommit={(v) => v !== null && setPrefs({ fontSize: v })} />}
       />
       <SettingsRow
         id="setting-editor-lineHeight"
         label={t("editor.lineHeight")}
+        unit="times"
         control={<NumberField label={t("editor.lineHeight")} value={prefs.lineHeight} min={PREF_LIMITS.lineHeight[0]} max={PREF_LIMITS.lineHeight[1]} step={0.05} onCommit={(v) => v !== null && setPrefs({ lineHeight: v })} />}
       />
       <SettingsRow
@@ -137,12 +138,12 @@ export function EditorWritingSettings() {
       <SettingsRow
         id="setting-editor-codeFontSize"
         label={t("editor.codeFontSize")}
+        unit="px"
         control={
           <LevelPicker
             label={t("editor.codeFontSize")}
             levels={CODE_SIZE_LEVELS}
             value={prefs.codeFontSize}
-            unit="px"
             name={(id) => t(`sizeLevels.${id}`)}
             onChange={(codeFontSize) => setPrefs({ codeFontSize })}
             sample={() => (

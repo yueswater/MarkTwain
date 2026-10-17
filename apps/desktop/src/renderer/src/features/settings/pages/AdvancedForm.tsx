@@ -71,6 +71,8 @@ function display(value: AdvancedValue | undefined): string {
 export function AdvancedForm({ groups, state, error, onSave }: Props) {
   const { t } = useTranslation("settings");
   const save = onSave;
+  // The rules of the school name the list at the front of the thesis, 目次 or 目錄
+  const toc = state?.terms.toc ?? "目次";
 
   if (error && !state) {
     return (
@@ -122,7 +124,6 @@ export function AdvancedForm({ groups, state, error, onSave }: Props) {
             placeholder={display(fallback) || undefined}
             min={field.min}
             max={field.max}
-            unit={field.unit ? t(`units.${field.unit}`) : undefined}
             onCommit={set}
           />
         );
@@ -230,7 +231,7 @@ export function AdvancedForm({ groups, state, error, onSave }: Props) {
       )}
       {groups.map((group) => (
         <Fragment key={group}>
-          <SettingsHeading>{t(`group.${group}`)}</SettingsHeading>
+          <SettingsHeading>{t(`group.${group}`, { toc })}</SettingsHeading>
           {group === "headings" && (
             <HeadingsPreview
               sizes={(Array.isArray(effective("layout.heading.size")) ? effective("layout.heading.size") : [18, 16, 14, 12]) as number[]}
@@ -238,10 +239,10 @@ export function AdvancedForm({ groups, state, error, onSave }: Props) {
               lineHeight={effectiveNumber("layout.heading.line-height", 1.2)}
             />
           )}
-          {group === "outline" && <OutlinePreview depth={effectiveNumber("outline.depth", 3)} />}
+          {group === "outline" && <OutlinePreview depth={effectiveNumber("outline.depth", 3)} toc={toc} />}
           {ADVANCED_FIELDS.filter((field) => field.group === group && !field.path.startsWith("layout.margin.")).map((field) => {
-            const label = t(`field.${field.path}`);
-            const hint = t(`hint.${field.path}`, { defaultValue: "" });
+            const label = t(`field.${field.path}`, { toc });
+            const hint = t(`hint.${field.path}`, { defaultValue: "", toc });
             const current = values[field.path];
             const row = (
               <SettingsRow
@@ -252,21 +253,15 @@ export function AdvancedForm({ groups, state, error, onSave }: Props) {
                 below={
                   field.path === "bibliography.title" ? <TitlePreview title={effectiveText("bibliography.title", "")} /> : field.path === "bibliography.full" ? <UncitedPreview listAll={effective("bibliography.full") === true} /> : undefined
                 }
-                control={
-                  <span className="flex items-center gap-1.5">
-                    {control(field, current, inherited[field.path], label)}
-                    <Button
-                      variant="ghost"
-                      size="icon-xs"
-                      aria-label={`${t("reset")}: ${label}`}
-                      title={t("reset")}
-                      className={current === undefined ? "invisible" : undefined}
-                      onClick={() => void save(field.path, null)}
-                    >
+                unit={field.unit}
+                reset={
+                  current === undefined ? undefined : (
+                    <Button variant="ghost" size="icon-xs" aria-label={`${t("reset")}: ${label}`} title={t("reset")} onClick={() => void save(field.path, null)}>
                       <RotateCcwIcon aria-hidden="true" />
                     </Button>
-                  </span>
+                  )
                 }
+                control={control(field, current, inherited[field.path], label)}
               />
             );
             // The drawing of the page comes right after the paper size, its fields are the four margins
@@ -280,6 +275,7 @@ export function AdvancedForm({ groups, state, error, onSave }: Props) {
             return (
               <Fragment key={field.path}>
                 {row}
+                <p className="pt-3 text-xs text-muted-foreground">{t("diagram.marginUnit")}</p>
                 <PageDiagram
                   paper={effectiveText("layout.paper", "a4")}
                   margins={margins}

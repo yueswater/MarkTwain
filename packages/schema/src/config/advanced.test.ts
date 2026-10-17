@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
-import { ADVANCED_FIELDS, advancedField, getPath, isValidAdvanced, mergeConfigs, readAdvanced, writeAdvanced } from "./advanced";
+import { ADVANCED_FIELDS, advancedField, getPath, isValidAdvanced, mergeConfigs, readAdvanced, schoolTerms, writeAdvanced } from "./advanced";
 
 const TEXT = [
   "# kept comment",
@@ -99,5 +99,27 @@ describe("inheritedValues", () => {
     const missing = ADVANCED_FIELDS.filter((f) => !(f.path in values) && !f.path.startsWith("statements.name.") && !f.path.startsWith("lists.")).map((f) => f.path);
     // The watermark image has no default, the template leaves it empty and a school fills it in
     expect(missing).toEqual(["layout.par-spacing", "layout.first-line-indent", "watermark.image"]);
+  });
+});
+
+describe("schoolTerms", () => {
+  const template = "titles:\n  toc: \"目~次\"\n  lof: \"圖~次\"\n  lot: \"表~次\"\n";
+
+  it("takes the names of the template when the school says nothing", () => {
+    expect(schoolTerms(template, null)).toEqual({ toc: "目次", lof: "圖次", lot: "表次" });
+    expect(schoolTerms(template, "layout:\n  font-size: 12\n")).toEqual({ toc: "目次", lof: "圖次", lot: "表次" });
+  });
+
+  it("takes the names of the school, without the mark that spreads the characters", () => {
+    const school = "titles:\n  toc: \"目~錄\"\n  lof: \"圖~目~錄\"\n  lot: \"表~目~錄\"\n";
+    expect(schoolTerms(template, school)).toEqual({ toc: "目錄", lof: "圖目錄", lot: "表目錄" });
+  });
+
+  it("changes only the name that the school sets", () => {
+    expect(schoolTerms(template, "titles:\n  toc: \"目~錄\"\n")).toEqual({ toc: "目錄", lof: "圖次", lot: "表次" });
+  });
+
+  it("falls back to the usual names without any text", () => {
+    expect(schoolTerms("", null)).toEqual({ toc: "目次", lof: "圖次", lot: "表次" });
   });
 });

@@ -75,7 +75,7 @@ describe("advanced settings", () => {
   it("shows overrides next to what the template and the school give", () => {
     const service = withTemplate();
     service.set({ ...defaultFields(), title: "t", school: "ntu" });
-    expect(service.advanced()).toEqual({ values: {}, inherited: { "layout.font-size": 12, "layout.margin.top": 2, "placement.figure": "auto", "placement.table": "here" } });
+    expect(service.advanced()).toEqual({ values: {}, inherited: { "layout.font-size": 12, "layout.margin.top": 2, "placement.figure": "auto", "placement.table": "here" }, terms: { toc: "目次", lof: "圖次", lot: "表次" } });
   });
 
   it("sets overrides, removes them with null and keeps the basic fields", () => {

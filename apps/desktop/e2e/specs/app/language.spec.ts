@@ -3,7 +3,7 @@ import { expect, test } from "../../support/test";
 test("switching the language takes effect at once and is remembered", async ({ launch }) => {
   const first = await launch({ name: "語言", lang: "zh-TW" });
   const page = await first.app.firstWindow();
-  await expect(page.locator("main")).toContainText("離線撰寫你的論文。");
+  await expect(page.locator("main")).toContainText("離線撰寫論文。");
 
   await page.getByTestId("language-toggle").click();
   await expect(page.locator("main")).toContainText("Write your thesis, offline.");

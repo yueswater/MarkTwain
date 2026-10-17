@@ -43,7 +43,7 @@ export function PageDiagram({
       onMouseLeave={() => setHover(null)}
       onFocus={() => setHover(side)}
       onBlur={() => setHover(null)}
-      className={cn("inline-flex rounded-md", hover === side && "ring-2 ring-ring")}
+      className="inline-flex rounded-md"
     >
       <ClickNumber
         label={label(side)}
@@ -51,7 +51,6 @@ export function PageDiagram({
         fallback={margins[side]}
         min={0}
         max={10}
-        unit="cm"
         onCommit={(value) => onCommit(side, value)}
       />
     </span>
@@ -159,10 +158,10 @@ export function HeadingsPreview({ sizes, aligns, lineHeight }: { sizes: number[]
 }
 
 /** A small table of contents where the lines inside the chosen depth are drawn in full. */
-export function OutlinePreview({ depth }: { depth: number }) {
+export function OutlinePreview({ depth, toc }: { depth: number; toc: string }) {
   const { t } = useTranslation("settings");
   return (
-    <figure aria-label={t("diagram.outline")} className="my-2 rounded-md border bg-white p-3 text-xs text-black" data-testid="outline-preview">
+    <figure aria-label={t("diagram.outline", { toc })} className="my-2 rounded-md border bg-white p-3 text-xs text-black" data-testid="outline-preview">
       {outlineLines(depth).map((line) => (
         <p
           key={line.level}

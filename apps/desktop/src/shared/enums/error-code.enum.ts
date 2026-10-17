@@ -38,6 +38,9 @@ export const ErrorCode = {
   VersionMainHasDraft: "version.main-has-draft",
   VersionConflicts: "version.conflicts",
   VersionNothingToMerge: "version.nothing-to-merge",
+  FilesInvalidName: "files.invalid-name",
+  FilesFolderExists: "files.folder-exists",
+  FilesFolderFailed: "files.folder-failed",
 } as const;
 
 export type ErrorCode = (typeof ErrorCode)[keyof typeof ErrorCode];

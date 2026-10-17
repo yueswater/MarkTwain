@@ -2,6 +2,7 @@ import {
   ConfigParseError,
   defaultFields,
   inheritedValues,
+  schoolTerms,
   readAdvanced,
   readConfig,
   validateConfig,
@@ -39,7 +40,7 @@ export class ConfigService {
     const school = readConfig(text).school;
     const defaults = this.templateFile("schools/default.yml") ?? "";
     const preset = school ? this.templateFile(`schools/${school}.yml`) : null;
-    return { values: readAdvanced(text), inherited: inheritedValues(defaults, preset) };
+    return { values: readAdvanced(text), inherited: inheritedValues(defaults, preset), terms: schoolTerms(defaults, preset) };
   }
 
   /** A path with a value is set, a path with null goes back to the inherited value. */

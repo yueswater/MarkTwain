@@ -27,6 +27,7 @@ import { BuildService } from "./features/build/build.service";
 import { registerConfigController } from "./features/config/config.controller";
 import { ConfigService } from "./features/config/config.service";
 import { registerDialogController } from "./features/dialog/dialog.controller";
+import { registerFilesController } from "./features/files/files.controller";
 import { registerDocumentController } from "./features/document/document.controller";
 import { DocumentService } from "./features/document/document.service";
 import { registerLabelController } from "./features/label/label.controller";
@@ -109,6 +110,7 @@ if (first) bootstrap([
   () => {
     dialogs = registerDialogController();
   },
+  () => registerFilesController(),
   () => registerAssetController(assets, dialogs),
   () => handleAssetProtocol((path) => assets.read(path)),
   () => registerProjectController(projects, recent),

@@ -12,7 +12,6 @@
     "sans": "Sans serif",
     "serif": "Serif",
     "fontSize": "Text size",
-    "fontSizeHint": "In pixels.",
     "lineHeight": "Line spacing",
     "contentWidth": "Width of the text",
     "narrow": "Narrow",
@@ -296,7 +295,8 @@
       "B": "Subsection number"
     },
     "example": "Example:",
-    "badPattern": "{{problem}} is not a placeholder that can be used. Use {C}, {S} and {B}."
+    "badPattern": "{{problem}} is not a placeholder that can be used. Use {C}, {S} and {B}.",
+    "marginUnit": "Margins are in cm (centimeters)"
   },
   "watermark": {
     "title": "Watermark",
@@ -459,5 +459,14 @@
     "keep": "Keep it",
     "sampleCjk": "論文的字體 永字八法 0123456789",
     "sampleLatin": "The quick brown fox jumps over the lazy dog"
+  },
+  "unitHint": "Unit: {{unit}}",
+  "unitNames": {
+    "pt": "pt (points)",
+    "cm": "cm (centimeters)",
+    "em": "em (character widths)",
+    "px": "px (pixels)",
+    "percent": "%",
+    "times": "times (a multiple of the text size)"
   }
 }

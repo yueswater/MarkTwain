@@ -22,8 +22,8 @@
     "button": "匯出"
   },
   "exportFolder": {
-    "title": "選擇匯出專案的位置",
-    "button": "匯出到這裡"
+    "title": "選擇專案的匯出位置",
+    "button": "匯出至此"
   },
   "openWatermark": {
     "title": "選擇浮水印",

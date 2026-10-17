@@ -51,6 +51,8 @@ export function SettingsDialog({ open, onOpenChange, hasProject, initialPage, on
   const [highlight, setHighlight] = useState<string | null>(null);
   const advanced = useAdvancedState(open && hasProject, onThesisSaved);
   const page = pageOf(pageId);
+  // The rules of the school name the list at the front of the thesis, 目次 or 目錄
+  const toc = advanced.state?.terms.toc ?? "目次";
 
   // Opening the window with a requested page goes there
   useEffect(() => {
@@ -86,8 +88,8 @@ export function SettingsDialog({ open, onOpenChange, hasProject, initialPage, on
   }, [highlight, pageId]);
 
   const results = useMemo(
-    () => searchSettings(query, (entry) => (entry.ns === "config" ? tConfig(entry.key) : t(entry.key))),
-    [query, t, tConfig],
+    () => searchSettings(query, (entry) => (entry.ns === "config" ? tConfig(entry.key) : t(entry.key, { toc }))),
+    [query, t, tConfig, toc],
   );
 
   // A page shows a dot when the thesis overrides something of it
@@ -100,7 +102,7 @@ export function SettingsDialog({ open, onOpenChange, hasProject, initialPage, on
     );
   }, [advanced.state]);
 
-  const title = t(`page.${page.id}.title`);
+  const title = t(`page.${page.id}.title`, { toc });
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -131,7 +133,7 @@ export function SettingsDialog({ open, onOpenChange, hasProject, initialPage, on
                     className="flex w-full flex-col rounded-md px-2 py-1.5 text-left text-sm hover:bg-muted"
                   >
                     <span>{label}</span>
-                    <span className="text-xs text-muted-foreground">{t(`page.${entry.page}.title`)}</span>
+                    <span className="text-xs text-muted-foreground">{t(`page.${entry.page}.title`, { toc })}</span>
                   </button>
                 </li>
               ))}
@@ -149,7 +151,7 @@ export function SettingsDialog({ open, onOpenChange, hasProject, initialPage, on
                     className={cn("flex h-8 w-full items-center gap-2 rounded-md px-2 text-left text-sm hover:bg-muted", id === pageId && "bg-muted font-medium")}
                   >
                     <Icon className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-                    <span className="min-w-0 flex-1 truncate">{t(`page.${id}.title`)}</span>
+                    <span className="min-w-0 flex-1 truncate">{t(`page.${id}.title`, { toc })}</span>
                     {changed.has(id) && <span className="size-1.5 shrink-0 rounded-full bg-foreground/60" role="img" aria-label={t("changedDot")} />}
                   </button>
                 ))}
@@ -159,7 +161,7 @@ export function SettingsDialog({ open, onOpenChange, hasProject, initialPage, on
         </nav>
         <section className="min-w-0 flex-1 overflow-y-auto p-6" aria-label={title}>
           <h2 className="text-lg font-semibold tracking-tight">{title}</h2>
-          <p className="mt-1 mb-4 text-sm text-muted-foreground">{t(`page.${page.id}.description`)}</p>
+          <p className="mt-1 mb-4 text-sm text-muted-foreground">{t(`page.${page.id}.description`, { toc })}</p>
           {page.needsProject && !hasProject ? (
             <p className="text-sm text-muted-foreground">{t("noProject")}</p>
           ) : (

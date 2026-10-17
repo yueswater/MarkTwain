@@ -1,6 +1,6 @@
 {
   "welcome": {
-    "heading": "離線撰寫你的論文。",
+    "heading": "離線撰寫論文。",
     "description": "建立新專案，或開啟既有的 .marktwain 檔案。",
     "new": "新增專案",
     "open": "開啟專案",
@@ -13,7 +13,7 @@
     "documents": "文件",
     "close": "關閉專案",
     "add": "新增文件",
-    "empty": "選擇一份文件開始撰寫。",
+    "empty": "請選擇文件以開始撰寫。",
     "collapse": "收合側邊欄",
     "expand": "展開側邊欄"
   },
@@ -42,53 +42,79 @@
     "renameTitle": "重新命名文件",
     "titleLabel": "標題",
     "titleHint": "留空則使用預設標題。",
-    "deleteTitle": "要刪除這份文件嗎？",
+    "deleteTitle": "是否刪除此文件？",
     "deleteBody": "「{{title}}」與其內容會被永久刪除，無法復原。",
-    "dragSameKind": "只能在同一種文件之間調整順序。"
+    "dragSameKind": "僅能在同類文件之間調整順序。"
   },
   "search": {
     "title": "搜尋整個專案",
-    "description": "在專案的每一份文件裡尋找文字。",
+    "description": "在專案的所有文件中尋找文字。",
     "placeholder": "在所有文件中搜尋",
-    "none": "沒有找到。",
+    "none": "找不到符合的內容。",
     "count": "找到 {{count}} 處",
-    "truncated": "只顯示前面的結果，縮小範圍可以看到其他的。",
+    "truncated": "僅顯示前段結果，縮小搜尋範圍可查看其餘結果。",
     "caseSensitive": "區分大小寫",
     "open": "搜尋整個專案"
   },
   "newProject": {
-    "title": "關於你的論文",
-    "description": "這些資料會用在封面與題名頁。可以先跳過，之後都能在設定裡修改。",
-    "filled": "已從你先前的專案帶入。",
-    "more": "更多",
-    "problem": "有些回答無法使用，請檢查標示的欄位。",
+    "title": "論文基本資料",
+    "description": "此資料將用於封面與題名頁，可先略過，之後皆可在設定中修改。",
+    "filled": "已沿用先前專案的資料。",
+    "more": "更多資料，英文題目與關鍵字",
+    "problem": "部分欄位內容無法使用，請檢查標示的欄位。",
     "dontAsk": "不要再詢問",
-    "skip": "跳過",
+    "skip": "略過",
     "confirm": "完成"
   },
   "engine": {
-    "title": "論文要用哪一種排版方式？",
-    "description": "一個專案只用一種方式排版。大多數人選 Typst 就可以了。",
-    "checking": "正在檢查這台電腦…",
+    "title": "論文要採用哪一種排版方式？",
+    "description": "每個專案僅能使用一種排版方式。多數情況建議選擇 Typst。",
+    "checking": "正在檢查此電腦…",
     "typst": {
       "name": "Typst",
-      "note": "建議選這個。已內建，不用安裝，預覽很快。"
+      "tagline": "快速、簡單"
     },
     "latex": {
       "name": "LaTeX",
-      "note": "只有指導教授或系上已經有 LaTeX 範本時才選。使用這台電腦上的 TeX Live，編譯比 Typst 慢。",
       "missing": {
-        "tex": "這台電腦找不到 TeX Live。請先安裝 TeX Live 或 TinyTeX，再重新開始。",
-        "citation-style-language": "這台電腦的 TeX Live 缺少 citation-style-language 套件，請用 tlmgr 安裝後再重新開始。",
-        "template": "這份 MarkTwain 缺少 LaTeX 範本。請重新安裝 MarkTwain。"
-      }
+        "tex": "此電腦未安裝 TeX Live。請先安裝 TeX Live 或 TinyTeX，再重新開始。",
+        "citation-style-language": "此電腦的 TeX Live 缺少 citation-style-language 套件。請以 tlmgr 安裝後再重新開始。",
+        "template": "此 MarkTwain 缺少 LaTeX 範本。請重新安裝 MarkTwain。"
+      },
+      "tagline": "嚴謹、學界通用"
     },
     "word": {
       "name": "Word",
-      "note": "目前還不能用，之後的版本會提供。現在可以先輸出 PDF 給指導教授。"
+      "note": "目前尚未支援，後續版本將提供。現階段可先輸出 PDF 供指導教授檢閱。",
+      "tagline": "熟悉、易分享"
     },
-    "warning": "建立專案之後就不能更換，因為兩種方式的檔案格式不同。要用另一種，請另外建立新專案。",
+    "warning": "專案建立後無法更換排版方式。",
     "cancel": "取消",
     "confirm": "建立專案"
+  },
+  "picker": {
+    "saveTitle": "選擇專案的存放位置",
+    "openTitle": "開啟專案",
+    "places": {
+      "label": "位置",
+      "home": "個人資料夾",
+      "desktop": "桌面",
+      "documents": "文件",
+      "downloads": "下載"
+    },
+    "up": "上一層",
+    "path": "目前位置",
+    "list": "資料夾與專案檔",
+    "newFolder": "新增資料夾",
+    "folderName": "資料夾名稱",
+    "createFolder": "建立",
+    "nameLabel": "專案名稱",
+    "invalidName": "專案名稱不可為空，也不可包含 \\ / : * ? \" < > | 等字元。",
+    "exists": "此位置已有同名的專案檔。",
+    "empty": "此資料夾是空的。",
+    "unreadable": "無法讀取此資料夾。",
+    "create": "建立",
+    "open": "開啟",
+    "cancel": "取消"
   }
 }

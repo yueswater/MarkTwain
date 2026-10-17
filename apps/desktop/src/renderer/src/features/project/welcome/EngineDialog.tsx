@@ -6,6 +6,8 @@ import { cn } from "@/lib/utils";
 import { IpcChannel } from "../../../../../shared/enums/ipc-channel.enum";
 import type { LatexStatus, OutputEngine } from "../../../../../shared/ipc/index";
 import { api } from "../../../shared/api";
+import { TypstLogo } from "./TypstLogo";
+import { WordLogo } from "./WordLogo";
 
 type Props = {
   open: boolean;
@@ -42,50 +44,55 @@ export function EngineDialog({ open, onCancel, onConfirm }: Props) {
   }, [open]);
 
   const reason = latexReason(latex);
-  const options: { id: OutputEngine; disabled: boolean; note: string }[] = [
-    { id: "typst", disabled: false, note: t("engine.typst.note") },
-    {
-      id: "latex",
-      disabled: latex === null || !latex.available,
-      note: latex === null ? t("engine.checking") : reason ? t(`engine.latex.missing.${reason}`) : t("engine.latex.note"),
-    },
-    { id: "word", disabled: true, note: t("engine.word.note") },
+  const options: { id: OutputEngine; disabled: boolean; hint?: string }[] = [
+    { id: "typst", disabled: false },
+    { id: "latex", disabled: latex === null || !latex.available, hint: latex === null ? t("engine.checking") : reason ? t(`engine.latex.missing.${reason}`) : undefined },
+    { id: "word", disabled: true, hint: t("engine.word.note") },
   ];
+  // Only a reason that the person can do something about is written out, the rest is in the tooltip of the square
+  const problem = options.find((option) => option.id === "latex")?.hint;
 
   return (
     <Dialog open={open} onOpenChange={(next) => !next && onCancel()}>
       <DialogContent className="sm:max-w-lg" data-testid="engine-dialog">
         <DialogHeader>
           <DialogTitle>{t("engine.title")}</DialogTitle>
-          <DialogDescription>{t("engine.description")}</DialogDescription>
+          <DialogDescription className="sr-only">{t("engine.description")}</DialogDescription>
         </DialogHeader>
-        <div role="radiogroup" aria-label={t("engine.title")} className="grid gap-2">
+        <div role="radiogroup" aria-label={t("engine.title")} className="grid grid-cols-3 gap-3">
           {options.map((option) => (
             <label
               key={option.id}
+              title={option.hint}
               className={cn(
-                "flex cursor-pointer items-start gap-3 rounded-lg border p-3 text-sm",
-                engine === option.id && "border-foreground",
-                option.disabled && "cursor-not-allowed opacity-60",
+                "relative flex aspect-square cursor-pointer flex-col items-center justify-center gap-4 rounded-xl border-2 bg-background px-2 text-center transition-colors",
+                engine === option.id ? "border-foreground" : "border-border hover:bg-muted/50",
+                option.disabled && "cursor-not-allowed opacity-40 hover:bg-background",
               )}
             >
               <input
                 type="radio"
                 name="engine"
                 value={option.id}
-                className="mt-1"
+                className="absolute inset-0 size-full cursor-[inherit] opacity-0"
+                aria-label={t(`engine.${option.id}.name`)}
                 checked={engine === option.id}
                 disabled={option.disabled}
                 onChange={() => setEngine(option.id)}
               />
-              <span className="grid gap-0.5">
-                <span className="font-medium">{t(`engine.${option.id}.name`)}</span>
-                <span className="text-xs text-muted-foreground">{option.note}</span>
+              <span className="flex h-14 items-center">
+                <EngineLogo engine={option.id} />
               </span>
+              <span className="text-xs text-muted-foreground">{t(`engine.${option.id}.tagline`)}</span>
             </label>
           ))}
         </div>
-        <p role="note" className="rounded-lg border bg-muted/40 p-3 text-sm">
+        {problem && (
+          <p role="status" className="text-xs text-muted-foreground">
+            {problem}
+          </p>
+        )}
+        <p role="note" className="text-xs text-muted-foreground">
           {t("engine.warning")}
         </p>
         <DialogFooter>
@@ -99,4 +106,20 @@ export function EngineDialog({ open, onCancel, onConfirm }: Props) {
       </DialogContent>
     </Dialog>
   );
+}
+
+/** The name of each tool as it is usually written, so a person knows it at a glance. */
+function EngineLogo({ engine }: { engine: OutputEngine }) {
+  if (engine === "typst") return <TypstLogo className="pointer-events-none h-7 w-auto" style={{ color: "#239dad" }} />;
+  if (engine === "latex") {
+    return (
+      <span aria-hidden="true" className="pointer-events-none text-3xl font-medium" style={{ fontFamily: "'Latin Modern Roman', 'Computer Modern', Georgia, serif" }}>
+        L<span className="relative -top-[0.32em] -ml-[0.36em] text-[0.7em]">A</span>
+        <span className="-ml-[0.15em]">T</span>
+        <span className="relative top-[0.22em] -ml-[0.1em]">E</span>
+        <span className="-ml-[0.1em]">X</span>
+      </span>
+    );
+  }
+  return <WordLogo className="pointer-events-none h-14 w-auto" />;
 }

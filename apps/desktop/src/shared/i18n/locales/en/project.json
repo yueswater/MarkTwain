@@ -60,7 +60,7 @@
     "title": "About your thesis",
     "description": "This fills the cover and the title page. You can skip it and change everything later in the settings.",
     "filled": "Filled in from your earlier project.",
-    "more": "More",
+    "more": "More details, English title and keywords",
     "problem": "Some of the answers cannot be used, check the fields that are marked.",
     "dontAsk": "Do not ask again",
     "skip": "Skip",
@@ -72,23 +72,49 @@
     "checking": "Checking this computer…",
     "typst": {
       "name": "Typst",
-      "note": "Recommended. Built in, nothing to install, and the preview is quick."
+      "tagline": "Fast and simple"
     },
     "latex": {
       "name": "LaTeX",
-      "note": "Only if your advisor or department already has a LaTeX template. It uses the TeX Live of this computer, and builds are slower than Typst.",
       "missing": {
         "tex": "No TeX Live was found on this computer. Install TeX Live or TinyTeX first, then start again.",
         "citation-style-language": "The TeX Live of this computer lacks the package citation-style-language, install it with tlmgr, then start again.",
         "template": "The LaTeX template is missing from this copy of MarkTwain. Reinstall MarkTwain."
-      }
+      },
+      "tagline": "Rigorous, standard in academia"
     },
     "word": {
       "name": "Word",
-      "note": "Not available yet, it comes in a later version. For now you can export a PDF for your advisor."
+      "note": "Not available yet, it comes in a later version. For now you can export a PDF for your advisor.",
+      "tagline": "Familiar, easy to share"
     },
-    "warning": "This cannot be changed after the project is created, because the files of the two ways are different. To use the other one, start a new project.",
+    "warning": "The output cannot be changed after the project is created.",
     "cancel": "Cancel",
     "confirm": "Create project"
+  },
+  "picker": {
+    "saveTitle": "Choose where to keep the project",
+    "openTitle": "Open a project",
+    "places": {
+      "label": "Places",
+      "home": "Home",
+      "desktop": "Desktop",
+      "documents": "Documents",
+      "downloads": "Downloads"
+    },
+    "up": "Up one folder",
+    "path": "Current place",
+    "list": "Folders and projects",
+    "newFolder": "New folder",
+    "folderName": "Folder name",
+    "createFolder": "Create",
+    "nameLabel": "Project name",
+    "invalidName": "A project name cannot be empty or contain \\ / : * ? \" < > | characters.",
+    "exists": "A project with this name already exists here.",
+    "empty": "This folder is empty.",
+    "unreadable": "This folder cannot be read.",
+    "create": "Create",
+    "open": "Open",
+    "cancel": "Cancel"
   }
 }

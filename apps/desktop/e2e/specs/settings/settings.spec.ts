@@ -260,3 +260,30 @@ test("the heading menu lists the chapter title, names the other levels, and the 
   await page.keyboard.type("/");
   await expect(page.getByTestId("slash-menu").getByRole("option", { name: /^Part/ })).toBeVisible();
 });
+
+test("the name of the list at the front follows the rules of the school, 目次 or 目錄", async ({ launch }) => {
+  const { app } = await launch({ name: "目次", lang: "zh-TW" });
+  const page = await app.firstWindow();
+  await createProject(page, "zh-TW");
+  await page.keyboard.press("ControlOrMeta+,");
+  const dialog = page.getByRole("dialog", { name: "設定" });
+  const nav = dialog.getByRole("navigation");
+  // Without a school the template says 目次
+  await expect(nav.getByRole("button", { name: "頁碼與目次" })).toBeVisible();
+
+  // The rules of National Yang Ming Chiao Tung University say 目錄
+  await dialog.getByRole("button", { name: "學校與格式", exact: true }).click();
+  await dialog.getByRole("combobox", { name: "學校格式" }).click();
+  await page.getByRole("option", { name: "國立陽明交通大學" }).click();
+  await expect(nav.getByRole("button", { name: "頁碼與目錄" })).toBeVisible();
+
+  // The page itself and the search use the same word
+  await nav.getByRole("button", { name: "頁碼與目錄" }).click();
+  await expect(dialog.getByText("目錄深度")).toBeVisible();
+
+  // The rules of National Chengchi University say 目次
+  await dialog.getByRole("button", { name: "學校與格式", exact: true }).click();
+  await dialog.getByRole("combobox", { name: "學校格式" }).click();
+  await page.getByRole("option", { name: "國立政治大學" }).click();
+  await expect(nav.getByRole("button", { name: "頁碼與目次" })).toBeVisible();
+});

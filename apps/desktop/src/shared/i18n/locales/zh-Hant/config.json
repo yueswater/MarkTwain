@@ -2,7 +2,7 @@
   "keywordRemove": "移除 #{{tag}}",
   "keywordPlaceholder": "輸入關鍵字，按 Enter 加入",
   "title": "專案設定",
-  "description": "這些資料會用在封面與題名頁。變更會自動儲存。",
+  "description": "此資料將用於封面與題名頁。變更會自動儲存。",
   "save": {
     "dirty": "尚未儲存",
     "saving": "儲存中…",
@@ -47,21 +47,21 @@
     "institutePick": "系所"
   },
   "hint": {
-    "keywords": "按 Enter 或逗號加入，每個關鍵字會變成一個 # 標籤。",
+    "keywords": "按 Enter 或逗號加入，每個關鍵字會成為一個 # 標籤。",
     "school": "依學校公開的規定整理，僅供參考，繳交前請再對照學校與系所最新的規定。留空則使用預設格式。"
   },
   "noSchool": "不套用學校格式（預設格式）",
   "issue": {
-    "required": "這個欄位必填。",
+    "required": "此欄位為必填。",
     "date-format": "請使用 YYYY-MM-DD 格式。",
     "unknown-school": "沒有這所學校。"
   },
   "open": "設定",
-  "followPreset": "跟隨學校預設",
+  "followPreset": "依學校預設",
   "custom": "其他，自行輸入",
   "chooseCollege": "選擇學院",
   "chooseDepartment": "選擇系所",
-  "chooseSchoolFirst": "先選擇學校，就能從清單挑學院與系所。",
+  "chooseSchoolFirst": "請先選擇學校，即可從清單選取學院與系所。",
   "customZh": "中文名稱",
   "customEn": "英文名稱",
   "degreeName": {
