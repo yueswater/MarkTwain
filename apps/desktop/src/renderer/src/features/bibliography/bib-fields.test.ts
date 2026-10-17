@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
-import { fieldsFor, requiredNames } from "./bib-fields";
+import { fieldsFor, plainTitle, requiredNames } from "./bib-fields";
 
 describe("fieldsFor", () => {
   it("lists the fields of a type and keeps unusual ones the entry has", () => {
@@ -19,5 +19,13 @@ describe("requiredNames", () => {
   it("marks the first name of each group", () => {
     expect([...requiredNames("book")].sort()).toEqual(["author", "publisher", "title", "year"]);
     expect([...requiredNames("software")]).toEqual([]);
+  });
+});
+
+describe("plainTitle", () => {
+  it("takes out the braces that keep capitals and keeps an escaped brace", () => {
+    expect(plainTitle("{BERT}: Pre-training of {D}eep Transformers")).toBe("BERT: Pre-training of Deep Transformers");
+    expect(plainTitle("A \\{set\\} of things")).toBe("A {set} of things");
+    expect(plainTitle("no braces")).toBe("no braces");
   });
 });

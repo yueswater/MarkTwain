@@ -220,7 +220,7 @@ export class VersionService {
     return items.map((item): ChangeItemView => {
       if (item.type === "file") return item;
       const document = entry(item.docId);
-      const about = { title: document?.title ?? "", kind: document?.kind ?? "" };
+      const about = { title: document?.title ?? "", kind: document?.kind ?? "", position: document?.position ?? 1 };
       if (item.type === "fields") return { ...item, ...about };
       if (item.type === "document") {
         const blocks = item.status === "added" ? hashed.content.documents[item.docId]?.blocks : head.documents[item.docId]?.blocks;
@@ -422,7 +422,7 @@ export class VersionService {
           else if (change.type === "removed") changes.push({ type: "removed", before: text(change.hash) });
           else changes.push({ type: "modified", before: text(change.from), after: text(change.to) });
         }
-        return { docId: document.docId, title: entry?.title ?? "", kind: entry?.kind ?? "", status: document.status as "added" | "removed" | "changed", fields: document.fields, changes };
+        return { docId: document.docId, title: entry?.title ?? "", kind: entry?.kind ?? "", position: entry?.position ?? 1, status: document.status as "added" | "removed" | "changed", fields: document.fields, changes };
       }),
       files: diff.files,
     };
@@ -462,11 +462,12 @@ export class VersionService {
     const text = (hashes: Hash[]) => hashes.map((hash) => texts.get(hash) ?? "");
     const titleOf = (docId: string) => (theirs.documents[docId] ?? ours.documents[docId])?.title ?? "";
     const kindOf = (docId: string) => (theirs.documents[docId] ?? ours.documents[docId])?.kind ?? "";
+    const positionOf = (docId: string) => (theirs.documents[docId] ?? ours.documents[docId])?.position ?? 1;
     return conflicts.map((conflict): ConflictView => {
-      if (conflict.type === "blocks") return { id: conflict.id, type: "blocks", docId: conflict.docId, title: titleOf(conflict.docId), kind: kindOf(conflict.docId), base: text(conflict.base), ours: text(conflict.ours), theirs: text(conflict.theirs) };
-      if (conflict.type === "field") return { ...conflict, title: titleOf(conflict.docId), kind: kindOf(conflict.docId) };
+      if (conflict.type === "blocks") return { id: conflict.id, type: "blocks", docId: conflict.docId, title: titleOf(conflict.docId), kind: kindOf(conflict.docId), position: positionOf(conflict.docId), base: text(conflict.base), ours: text(conflict.ours), theirs: text(conflict.theirs) };
+      if (conflict.type === "field") return { ...conflict, title: titleOf(conflict.docId), kind: kindOf(conflict.docId), position: positionOf(conflict.docId) };
       if (conflict.type === "file") return { id: conflict.id, type: "file", path: conflict.path, base: conflict.base !== null, ours: conflict.ours !== null, theirs: conflict.theirs !== null };
-      return { ...conflict, title: titleOf(conflict.docId), kind: kindOf(conflict.docId) };
+      return { ...conflict, title: titleOf(conflict.docId), kind: kindOf(conflict.docId), position: positionOf(conflict.docId) };
     });
   }
 

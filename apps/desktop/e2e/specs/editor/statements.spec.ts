@@ -31,7 +31,7 @@ test("definitions, lemmas and theorems are inserted, numbered, referenced and co
   await expect(page.getByRole("status")).toHaveText("Saved");
   await page.evaluate(async () => {
     const list = await window.marktwain.invoke("document:list");
-    if (!list.ok) return;
+    if (!list.ok) throw new Error("an IPC call that the test needs failed");
     const chapter = list.data.find((d) => d.kind === "chapter")!;
     await window.marktwain.invoke("document:save", {
       id: chapter.id,
@@ -101,7 +101,7 @@ test("definitions, lemmas and theorems are inserted, numbered, referenced and co
   // The chosen colors live in the editor, the saved text and the PDF have none
   const text = await page.evaluate(async () => {
     const list = await window.marktwain.invoke("document:list");
-    if (!list.ok) return "";
+    if (!list.ok) throw new Error("an IPC call that the test needs failed");
     const chapter = list.data.find((d) => d.kind === "chapter")!;
     const doc = await window.marktwain.invoke("document:get", { id: chapter.id });
     return doc.ok ? doc.data.text : "";

@@ -321,6 +321,16 @@ describe("history, restoring and comparing", () => {
   });
 });
 
+describe("the number of a chapter in a view", () => {
+  it("is the position of the document, so a chapter without a title is not always Chapter 1", () => {
+    write("# One\n\nalpha\n");
+    const before = versions.save("before").headId;
+    write("# One\n\nalpha changed\n");
+    const after = versions.save("after").headId;
+    expect(versions.compare(before, after).documents[0]?.position).toBe(1);
+  });
+});
+
 describe("merging into the main line", () => {
   const start = () => {
     write("# One\n\nalpha\n\nbeta\n\ngamma\n");

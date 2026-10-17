@@ -45,7 +45,7 @@ export function Whole({ type, text }: { type: "added" | "removed"; text: string 
 function DocumentChanges({ document }: { document: DocumentDiffView }) {
   const { t } = useTranslation("versions");
   const { t: tp } = useTranslation();
-  const title = documentTitle(tp, { kind: document.kind as DocumentKind, title: document.title, position: 1 });
+  const title = documentTitle(tp, { kind: document.kind as DocumentKind, title: document.title, position: document.position });
   return (
     <section className="grid gap-2" data-document={document.docId}>
       <h3 className="flex items-center gap-2 text-sm font-semibold">

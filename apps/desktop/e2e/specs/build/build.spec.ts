@@ -166,3 +166,13 @@ test("exporting while the cover is empty asks first, lists what is empty, and le
   await expect(page.getByRole("dialog", { name: "Settings" }).getByRole("heading", { name: "Information" })).toBeVisible();
   await expect(page.getByRole("status").filter({ hasText: "Exported to" })).toHaveCount(0);
 });
+
+
+test("the watermark switch says so when there is no watermark image to draw", async ({ launch }) => {
+  const { app } = await launch({ name: "無浮水印" });
+  const page = await app.firstWindow();
+  await createProject(page);
+  await page.getByRole("button", { name: "Preview" }).click();
+  await page.getByRole("button", { name: "Watermark", exact: true }).click();
+  await expect(page.getByRole("alert").filter({ hasText: "no watermark image" })).toBeVisible();
+});

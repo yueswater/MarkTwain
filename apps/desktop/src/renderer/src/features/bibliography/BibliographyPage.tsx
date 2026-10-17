@@ -28,7 +28,17 @@ export function BibliographyPage({ documents, onOpenDocument }: Props) {
     if (!file) return;
     const outcome = await importFile(file.name, await file.text());
     if (outcome) {
-      setMessage(t("imported", { added: outcome.added, skipped: outcome.skipped.length, errors: outcome.errors.length }));
+      // The counts, then the keys that were left out, so the person knows which ones to look at
+      const names = (keys: string[]) => (keys.length > 5 ? `${keys.slice(0, 5).join(", ")}…` : keys.join(", "));
+      setMessage(
+        [
+          t("imported", { added: outcome.added, skipped: outcome.skipped.length, errors: outcome.errors.length }),
+          outcome.skipped.length > 0 ? t("importedSkippedNames", { keys: names(outcome.skipped) }) : "",
+          outcome.errors.length > 0 ? t("importedErrorNames", { keys: names(outcome.errors) }) : "",
+        ]
+          .filter(Boolean)
+          .join(" "),
+      );
     }
   }
 

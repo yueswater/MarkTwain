@@ -7,7 +7,7 @@ test("the handle at the corner of a table selects every cell and drags the table
   await createProject(page);
   await page.evaluate(async () => {
     const list = await window.marktwain.invoke("document:list");
-    if (!list.ok) return;
+    if (!list.ok) throw new Error("an IPC call that the test needs failed");
     const chapter = list.data.find((d) => d.kind === "chapter")!;
     await window.marktwain.invoke("document:save", {
       id: chapter.id,
@@ -55,7 +55,7 @@ test("a table that is selected as a whole is given another template and keeps it
   await createProject(page);
   await page.evaluate(async () => {
     const list = await window.marktwain.invoke("document:list");
-    if (!list.ok) return;
+    if (!list.ok) throw new Error("an IPC call that the test needs failed");
     const chapter = list.data.find((d) => d.kind === "chapter")!;
     await window.marktwain.invoke("document:save", {
       id: chapter.id,
@@ -84,7 +84,7 @@ test("a table that is selected as a whole is given another template and keeps it
     .poll(() =>
       page.evaluate(async () => {
         const list = await window.marktwain.invoke("document:list");
-        if (!list.ok) return "";
+        if (!list.ok) throw new Error("an IPC call that the test needs failed");
         const chapter = list.data.find((d) => d.kind === "chapter")!;
         const doc = await window.marktwain.invoke("document:get", { id: chapter.id });
         return doc.ok ? doc.data.text : "";
