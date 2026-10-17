@@ -47,6 +47,17 @@ jobs:
       - name: Install a TeX Live for the LaTeX output
         shell: bash
         run: bash tools/ci/install-texlive.sh
+      - name: TEMP debug xeCJKfntef
+        if: runner.os == 'Linux'
+        shell: bash
+        continue-on-error: true
+        run: |
+          mkdir -p /tmp/dbg && cd /tmp/dbg
+          printf '\\documentclass{article}\n\\usepackage{xeCJKfntef}\n\\begin{document}x\\end{document}\n' > t.tex
+          cat t.tex
+          xelatex -interaction=nonstopmode t.tex </dev/null || true
+          cat t.log | head -80
+          kpsewhich ulem.sty xeCJKfntef.sty
       - name: Fetch the pinned templates
         run: pnpm templates:fetch typ
         env:
