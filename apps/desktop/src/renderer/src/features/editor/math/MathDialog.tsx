@@ -1,16 +1,11 @@
-import katex from "katex";
+import CodeMirror, { EditorView, Prec, keymap } from "@uiw/react-codemirror";
+import { latex as latexLanguage } from "codemirror-lang-latex";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { latexErrorNear, placeBox, renderLatex, type MathTarget } from "./math-format";
 
-export type MathTarget = {
-  kind: "inline" | "block";
-  latex: string;
-  /** Position when editing an existing formula, null when inserting */
-  pos: number | null;
-  /** Where the formula is or where it will go, in window coordinates, so the box can sit next to it */
-  anchor?: { top: number; bottom: number; left: number; right: number };
-};
+export type { MathTarget } from "./math-format";
 
 type Props = {
   target: MathTarget;
@@ -19,47 +14,6 @@ type Props = {
   onClose: () => void;
   onRestoreFocus: () => void;
 };
-
-/** Renders with KaTeX, returns null on a syntax error. */
-export function renderLatex(latex: string, displayMode: boolean): string | null {
-  try {
-    return katex.renderToString(latex, { displayMode, throwOnError: true, output: "htmlAndMathml" });
-  } catch {
-    return null;
-  }
-}
-
-/**
- * Where KaTeX stopped on a formula that it cannot read, as the few letters around the place, null when the formula is fine.
- * The message of KaTeX is in English and for a person who knows TeX, the place is what helps.
- */
-export function latexErrorNear(latex: string): string | null {
-  try {
-    katex.renderToString(latex, { displayMode: false, throwOnError: true });
-    return null;
-  } catch (error) {
-    const position = typeof (error as { position?: unknown }).position === "number" ? (error as { position: number }).position : latex.length;
-    const start = Math.max(0, position - 8);
-    const near = latex.slice(start, Math.min(latex.length, position + 12)).trim();
-    return near === "" ? latex.slice(-12) : near;
-  }
-}
-
-const GAP = 8;
-const MARGIN = 8;
-
-/** Where the box goes: under the anchor, above it when there is no room below, and inside the window sideways. */
-export function placeBox(
-  anchor: NonNullable<MathTarget["anchor"]>,
-  size: { width: number; height: number },
-  view: { width: number; height: number },
-): { top: number; left: number } {
-  const below = anchor.bottom + GAP;
-  const fitsBelow = below + size.height <= view.height - MARGIN;
-  const top = fitsBelow ? below : Math.max(MARGIN, anchor.top - GAP - size.height);
-  const left = Math.min(Math.max(anchor.left, MARGIN), Math.max(MARGIN, view.width - size.width - MARGIN));
-  return { top, left };
-}
 
 /**
  * A small box at the formula, where its LaTeX is typed and drawn as it is typed.
@@ -84,11 +38,39 @@ export function MathDialog({ target, onSubmit, onRemove, onClose, onRestoreFocus
     setPlace(placeBox(anchor, { width: element.offsetWidth, height: element.offsetHeight }, { width: window.innerWidth, height: window.innerHeight }));
   }, [target.anchor, html, block]);
 
+  // The keys read the latest state through a ref, so the extensions are made once and the document is not reset
+  const latest = useRef({ valid, done: () => {} });
+  const extensions = useMemo(
+    () => [
+      latexLanguage({ enableLinting: false, autoCloseBrackets: true, autoCloseTags: false }),
+      EditorView.contentAttributes.of({ "aria-label": t("math.latex"), spellcheck: "false" }),
+      EditorView.lineWrapping,
+      Prec.highest(
+        keymap.of([
+          {
+            key: "Enter",
+            run: (view) => {
+              // Enter that ends a composition of a Chinese input method is not a confirmation
+              if (view.composing) return false;
+              if (latest.current.valid) latest.current.done();
+              return true;
+            },
+          },
+          // A display formula keeps several lines with Shift and Enter
+          { key: "Shift-Enter", run: () => !block },
+        ]),
+      ),
+    ],
+    [block, t],
+  );
+
   function done(): void {
     if (valid) onSubmit(trimmed);
     onClose();
     onRestoreFocus();
   }
+
+  latest.current = { valid, done };
 
   // Leaving the box keeps a formula that can be drawn and drops one that cannot
   useEffect(() => {
@@ -150,24 +132,19 @@ export function MathDialog({ target, onSubmit, onRemove, onClose, onRestoreFocus
         )}
       </div>
       <div className="flex items-end gap-2">
-        <textarea
-          aria-label={t("math.latex")}
-          value={latex}
-          autoFocus
-          rows={block ? 3 : 1}
-          spellCheck={false}
-          placeholder={block ? "\\int_0^T f(t)\\,\\mathrm{d}t" : "E = mc^2"}
-          className="min-h-9 flex-1 resize-none rounded-md border border-input bg-background px-2 py-1.5 font-mono text-sm outline-none transition-colors focus-visible:border-foreground"
-          onChange={(event) => setLatex(event.target.value)}
-          onKeyDown={(event) => {
-            // Enter that ends a composition of a Chinese input method is not a confirmation
-            if (event.key !== "Enter" || event.nativeEvent.isComposing || event.keyCode === 229) return;
-            // A display formula keeps several lines with Shift and Enter
-            if (block && event.shiftKey) return;
-            event.preventDefault();
-            if (valid) done();
-          }}
-        />
+        <div className="min-w-0 flex-1 overflow-hidden rounded-md border border-input bg-background transition-colors focus-within:border-foreground [&_.cm-editor]:bg-transparent [&_.cm-editor]:text-sm [&_.cm-editor.cm-focused]:!outline-none [&_.cm-scroller]:font-mono [&_.cm-content]:px-1 [&_.cm-content]:py-1.5">
+          <CodeMirror
+            value={latex}
+            autoFocus
+            onChange={setLatex}
+            extensions={extensions}
+            theme="light"
+            minHeight={block ? "4.5rem" : "2.25rem"}
+            maxHeight="12rem"
+            placeholder={block ? "\\int_0^T f(t)\\,\\mathrm{d}t" : "E = mc^2"}
+            basicSetup={{ lineNumbers: false, foldGutter: false, highlightActiveLine: false, highlightActiveLineGutter: false }}
+          />
+        </div>
         <Button type="button" size="sm" disabled={!valid} onClick={done}>
           {t("math.done")}
         </Button>

@@ -7,7 +7,7 @@ import { IpcChannel } from "../../../../../shared/enums/ipc-channel.enum";
 import type { LabelIndex, LabelPreview } from "../../../../../shared/ipc/index";
 import { api } from "../../../shared/api";
 import { documentTitle } from "../../project/sidebar/document-title";
-import { renderLatex, placeBox } from "../math/MathDialog";
+import { renderLatex, placeBox } from "../math/math-format";
 import { entryCard, footnoteExcerpt } from "./reference-card";
 import { useBibliography } from "../../bibliography/bibliography-context";
 import { describeRef } from "./ref-display";

@@ -63,6 +63,8 @@
   "dependencies": {
     "@embedpdf/react-pdf-viewer": "2.15.1",
     "@embedpdf/snippet": "2.15.1",
-    "@tiptap/suggestion": "3.31.4"
+    "@tiptap/suggestion": "3.31.4",
+    "@uiw/react-codemirror": "^4.25.12",
+    "codemirror-lang-latex": "^0.4.2"
   }
 }
