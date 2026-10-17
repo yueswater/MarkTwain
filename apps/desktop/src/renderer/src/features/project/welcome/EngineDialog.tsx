@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { IpcChannel } from "../../../../../shared/enums/ipc-channel.enum";
 import type { LatexStatus, OutputEngine } from "../../../../../shared/ipc/index";
 import { api } from "../../../shared/api";
+import { TypstLogo } from "./TypstLogo";
 
 type Props = {
   open: boolean;
@@ -105,13 +106,7 @@ export function EngineDialog({ open, onCancel, onConfirm }: Props) {
 
 /** The name of each tool as it is usually written, so a person knows it at a glance. */
 function EngineLogo({ engine, name }: { engine: OutputEngine; name: string }) {
-  if (engine === "typst") {
-    return (
-      <span aria-hidden="true" className="pointer-events-none text-3xl font-bold tracking-tight lowercase" style={{ color: "#239dad" }}>
-        {name}
-      </span>
-    );
-  }
+  if (engine === "typst") return <TypstLogo className="pointer-events-none h-10 w-auto" style={{ color: "#239dad" }} />;
   if (engine === "latex") {
     return (
       <span aria-hidden="true" className="pointer-events-none text-3xl font-medium" style={{ fontFamily: "'Latin Modern Roman', 'Computer Modern', Georgia, serif" }}>
