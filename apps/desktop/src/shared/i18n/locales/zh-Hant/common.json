@@ -16,5 +16,8 @@
     "cancel": "取消",
     "save": "儲存",
     "delete": "刪除"
+  },
+  "a11y": {
+    "skipToText": "跳到內文"
   }
 }

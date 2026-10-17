@@ -34,6 +34,13 @@ export function createMainWindow(): BrowserWindow {
     return { action: "deny" };
   });
 
+  // A window that is not shown does not run an animation to its end, so a menu would stay half open for a test. A test run has no opening and closing animation.
+  if (headless) {
+    win.webContents.on("did-finish-load", () => {
+      void win.webContents.insertCSS("*, *::before, *::after { animation-duration: 0s !important; animation-delay: 0s !important; }");
+    });
+  }
+
   const devUrl = process.env[RENDERER_URL_ENV];
   if (devUrl) {
     void win.loadURL(devUrl);

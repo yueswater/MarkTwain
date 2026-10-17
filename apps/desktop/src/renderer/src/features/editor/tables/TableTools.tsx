@@ -82,7 +82,7 @@ export function TableTools({ editor, onEditCaption, onChangeTemplate }: Props) {
     <div
       role="toolbar"
       aria-label={t("table.label")}
-      className="flex shrink-0 items-center gap-0.5 overflow-x-auto border-b bg-muted/30 px-3 py-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      className="flex shrink-0 flex-wrap items-center gap-x-0.5 gap-y-1 border-b bg-muted/30 px-3 py-1"
     >
       {button(t("table.addRow"), RowsIcon, () => editor.chain().focus().addRowAfter().run())}
       {button(t("table.addColumn"), ColumnsIcon, () => editor.chain().focus().addColumnAfter().run())}
