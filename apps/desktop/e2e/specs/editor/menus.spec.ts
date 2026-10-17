@@ -99,7 +99,7 @@ test("a chapter title, and the Chinese and the English abstract, are made from t
   await expect(editor.locator("h1")).toHaveText("研究動機");
 
   // The abstract, a part for each language from the slash menu
-  await sidebar.getByRole("button", { name: "Abstract", exact: true }).click();
+  await sidebar.getByRole("button", { name: "Abstract in Chinese", exact: true }).click();
   await editor.click();
   await page.keyboard.type("/");
   await page.keyboard.type("Chinese");

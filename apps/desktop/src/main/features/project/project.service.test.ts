@@ -48,7 +48,7 @@ describe("create", () => {
     const info = service().create(file, "我的論文");
     expect(info.name).toBe("我的論文");
     expect(info.path).toBe(file);
-    expect(info.documents.map((d) => d.kind)).toEqual(["abstract", "chapter"]);
+    expect(info.documents.map((d) => d.kind)).toEqual(["abstract", "abstractEn", "chapter"]);
     expect(existsSync(file)).toBe(true);
     expect(service().current()?.name).toBe("我的論文");
   });

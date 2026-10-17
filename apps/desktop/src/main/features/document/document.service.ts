@@ -35,11 +35,11 @@ export class DocumentService {
     return new DocumentRepository(this.session.db);
   }
 
-  /** Default documents of a new project, the abstract and the first chapter. */
+  /** Default documents of a new project, the abstract in Chinese and in English, and the first chapter. */
   seedDefaults(): void {
     const repository = this.repository();
     const updatedAt = this.now().getTime();
-    for (const kind of [DocumentKind.Abstract, DocumentKind.Chapter]) {
+    for (const kind of [DocumentKind.Abstract, DocumentKind.AbstractEn, DocumentKind.Chapter]) {
       repository.insert({
         id: this.newId(),
         kind,

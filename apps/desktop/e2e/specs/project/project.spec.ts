@@ -42,7 +42,7 @@ test("a project survives being created, saved, closed, and reopened", async ({ l
 
   expect(result).toEqual({
     step: "done",
-    kinds: ["abstract", "chapter"],
+    kinds: ["abstract", "abstractEn", "chapter"],
     text: "# 緒論\n\n內文",
     currentAfterClose: null,
     missingCode: "project.not-found",

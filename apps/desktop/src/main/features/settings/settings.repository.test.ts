@@ -47,3 +47,17 @@ describe("SettingsRepository.write", () => {
     expect(repo.read()).toEqual({ ...DEFAULT_SETTINGS, locale: "zh-Hant" });
   });
 });
+
+describe("SettingsRepository.read, the marks of the changes", () => {
+  it("turns them off in a file from before the version, where they were on from the start", () => {
+    const file = join(dir, "settings.json");
+    writeFileSync(file, JSON.stringify({ editor: { showChanges: true } }));
+    expect(new SettingsRepository(file).read().editor.showChanges).toBe(false);
+  });
+
+  it("keeps a choice that was made after that", () => {
+    const file = join(dir, "settings.json");
+    writeFileSync(file, JSON.stringify({ version: 2, editor: { showChanges: true } }));
+    expect(new SettingsRepository(file).read().editor.showChanges).toBe(true);
+  });
+});

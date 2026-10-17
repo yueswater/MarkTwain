@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
-import { assignPaths, renderMain } from "./layout";
+import { assignPaths, renderMain, renderMainLatex } from "./layout";
 import { isHarmless, locate, parseDiagnostics, type LineMap } from "./diagnostics";
 import type { BuildDocument } from "./types";
 
@@ -89,5 +89,31 @@ describe("parseDiagnostics", () => {
   it("returns null for lines before the first block or in unknown files", () => {
     expect(locate(map, "contents/chapter01.typ", 1)).toBeNull();
     expect(locate(map, "main.typ", 5)).toBeNull();
+  });
+});
+
+describe("the abstract in English and the new pages", () => {
+  const documents = [
+    { id: "a", kind: "abstract" as const, text: "" },
+    { id: "e", kind: "abstractEn" as const, text: "" },
+    { id: "c", kind: "chapter" as const, text: "你好" },
+    { id: "p", kind: "appendix" as const, text: "" },
+  ];
+
+  it("gives the English abstract a file of its own, after the Chinese one", () => {
+    const paths = assignPaths(documents);
+    expect(paths.get("e")).toBe("contents/front/abstract-en.typ");
+    const main = renderMain(documents, paths, false).split("\n");
+    expect(main.indexOf('#include "contents/front/abstract-en.typ"')).toBeGreaterThan(main.indexOf('#include "contents/front/abstract.typ"'));
+    const latex = renderMainLatex(documents, assignPaths(documents, "tex"), false).split("\n");
+    expect(latex.indexOf("\\input{contents/front/abstract-en}")).toBeGreaterThan(latex.indexOf("\\input{contents/front/abstract}"));
+  });
+
+  it("starts a chapter and an appendix on a new page", () => {
+    const main = renderMain(documents, assignPaths(documents), false).split("\n");
+    expect(main[main.indexOf('#include "contents/chapter01.typ"') - 1]).toBe("#pagebreak(weak: true)");
+    expect(main[main.indexOf('#include "contents/back/appendix01.typ"') - 1]).toBe("#pagebreak(weak: true)");
+    const latex = renderMainLatex(documents, assignPaths(documents, "tex"), false).split("\n");
+    expect(latex[latex.indexOf("\\input{contents/chapter01}") - 1]).toBe("\\clearpage");
   });
 });

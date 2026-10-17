@@ -19,7 +19,7 @@ test("typing in the editor is saved as Markdown and survives a reopen", async ({
 
   // Switch to the abstract and back, the content is kept because switching saves first
   const sidebar = page.getByRole("complementary", { name: "文件" });
-  await sidebar.getByRole("button", { name: "摘要", exact: true }).click();
+  await sidebar.getByRole("button", { name: "中文摘要", exact: true }).click();
   await expect(page.locator(".ProseMirror h1")).toHaveCount(0);
   await sidebar.getByRole("button", { name: "第 1 章", exact: true }).click();
   await expect(page.locator(".ProseMirror h1")).toHaveText("緒論");

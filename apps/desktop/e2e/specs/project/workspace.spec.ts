@@ -11,7 +11,7 @@ test("create a project, manage documents, close and reopen it", async ({ launch 
   const item = (name: string) => sidebar.getByRole("button", { name, exact: true });
 
   await createProject(page, "zh-TW");
-  await expect(item("摘要")).toBeVisible();
+  await expect(item("中文摘要")).toBeVisible();
   await expect(item("第 1 章")).toBeVisible();
   await expect(page.locator("header")).toContainText("我的論文");
   expect(existsSync(file)).toBe(true);
@@ -32,7 +32,8 @@ test("create a project, manage documents, close and reopen it", async ({ launch 
 
   // Only one abstract is allowed so the menu item is disabled
   await sidebar.getByRole("button", { name: "新增文件" }).click();
-  await expect(page.getByRole("menuitem", { name: "摘要", exact: true })).toBeDisabled();
+  await expect(page.getByRole("menuitem", { name: "中文摘要", exact: true })).toBeDisabled();
+  await expect(page.getByRole("menuitem", { name: "英文摘要", exact: true })).toBeDisabled();
   await page.keyboard.press("Escape");
 
   // Rename chapter 2
@@ -58,5 +59,5 @@ test("create a project, manage documents, close and reopen it", async ({ launch 
   await expect(page.getByRole("button", { name: "開啟專案" })).toBeVisible();
   await page.getByRole("button", { name: "開啟專案" }).click();
   await expect(item("研究方法")).toBeVisible();
-  await expect(item("摘要")).toBeVisible();
+  await expect(item("中文摘要")).toBeVisible();
 });

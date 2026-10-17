@@ -1,7 +1,7 @@
 import type { Block, IrDocument } from "../ir/types";
 import { renderBlock, renderBlocks, type BlockContext } from "./blocks";
 
-export type LatexKind = "abstract" | "acknowledgement" | "denotation" | "chapter" | "appendix";
+export type LatexKind = "abstract" | "abstractEn" | "acknowledgement" | "denotation" | "chapter" | "appendix";
 
 export type LatexFile = {
   /** File content */
@@ -37,7 +37,13 @@ export function renderLatexFile(doc: IrDocument, options: LatexOptions): LatexFi
   // The template has an environment for each of these, it writes the title of the section and what follows the text
   const wrapper = options.kind === "acknowledgement" ? "acknowledgement" : options.kind === "denotation" ? "denotation" : null;
 
-  if (options.kind === "abstract") {
+  if (options.kind === "abstractEn") {
+    // The whole document is the English abstract
+    const inner = renderBlocks(doc.blocks, options);
+    const first = lines.length + 2;
+    push("\\begin{abstracten}", ...inner, "\\end{abstracten}", "");
+    doc.blocks.forEach((_, i) => blockLines.push(i === 0 ? first : null));
+  } else if (options.kind === "abstract") {
     // Divs .abstract-zh and .abstract-en each become one abstract, without divs the whole document is the Chinese abstract
     const hasDivs = doc.blocks.some((b) => b.type === "div" && abstractEnvironment(b.classes));
     if (hasDivs) {

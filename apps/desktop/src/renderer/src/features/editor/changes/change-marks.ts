@@ -19,8 +19,9 @@ export function computeChanges(before: readonly string[], after: readonly string
   for (const change of diffBlocks(before, after)) {
     if (change.type === "same") index += 1;
     else if (change.type === "added") marks.push({ type: "added", index: index++ });
-    else if (change.type === "modified") marks.push({ type: "modified", index: index++, before: change.from });
-    else marks.push({ type: "removed", at: index, before: change.hash });
+    // A blank block that is replaced by text is new text, and a blank block that is gone is nothing worth showing, a new project starts with one
+    else if (change.type === "modified") marks.push(change.from.trim() === "" ? { type: "added", index: index++ } : { type: "modified", index: index++, before: change.from });
+    else if (change.hash.trim() !== "") marks.push({ type: "removed", at: index, before: change.hash });
   }
   return marks;
 }

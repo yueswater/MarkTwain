@@ -28,8 +28,8 @@ describe("LabelService.resolve", () => {
   });
 
   it("定理區塊每種類各自編號，後面的文件從前面的數量接續", () => {
-    documents.seedDefaults(); // id-2 is chapter 1
-    documents.save("id-2", "# 一\n\n::: {.lemma #lem:a}\nx\n:::\n\n::: {.lemma}\ny\n:::\n\n::: {.proof}\nz\n:::\n");
+    documents.seedDefaults(); // id-3 is chapter 1
+    documents.save("id-3", "# 一\n\n::: {.lemma #lem:a}\nx\n:::\n\n::: {.lemma}\ny\n:::\n\n::: {.proof}\nz\n:::\n");
     const second = documents.create("chapter");
     documents.save(second.id, "# 二\n\n::: {.lemma #lem:c}\nx\n:::\n\n::: {.definition #def:d}\nx\n:::\n");
 
@@ -40,8 +40,8 @@ describe("LabelService.resolve", () => {
   });
 
   it("圖整篇連續編號，沒標籤的也佔編號；章標題顯示標題文字", () => {
-    documents.seedDefaults(); // id-2 is chapter 1
-    documents.save("id-2", "# 緒論 {#cha:intro}\n\n![一](a.png){#fig:a}\n\n![二](b.png)\n\n![三](c.png){#fig:c}\n");
+    documents.seedDefaults(); // id-3 is chapter 1
+    documents.save("id-3", "# 緒論 {#cha:intro}\n\n![一](a.png){#fig:a}\n\n![二](b.png)\n\n![三](c.png){#fig:c}\n");
     const second = documents.create("chapter");
     documents.save(second.id, "# 方法\n\n![四](d.png){#fig:d}\n");
 
@@ -58,7 +58,7 @@ describe("LabelService.resolve", () => {
 
   it("公式編號依專案設定決定要不要隨章節重新開始", () => {
     documents.seedDefaults();
-    documents.save("id-2", "# 章\n\n$$\nx\n$$ {#eq:a}\n\n$$\ny\n$$ {#eq:b}\n");
+    documents.save("id-3", "# 章\n\n$$\nx\n$$ {#eq:a}\n\n$$\ny\n$$ {#eq:b}\n");
     const perChapter = new LabelService(documents, () => ({ equationNumbering: "all", numberPerChapter: true }));
     const wholeThesis = new LabelService(documents, () => ({ equationNumbering: "all", numberPerChapter: false }));
     expect(perChapter.resolve().numbers["eq:b"]).toBe("1.2");
@@ -67,16 +67,16 @@ describe("LabelService.resolve", () => {
 
   it("取得標籤指向的內容，在哪份文件的哪一個區塊", () => {
     documents.seedDefaults();
-    documents.save("id-2", "# 章\n\n![說明](a.png){#fig:a}\n\n文字。\n");
+    documents.save("id-3", "# 章\n\n![說明](a.png){#fig:a}\n\n文字。\n");
     const preview = labels.preview("fig:a");
-    expect(preview).toMatchObject({ label: "fig:a", documentId: "id-2", block: 1, content: { type: "figure", src: "a.png", caption: "說明" } });
+    expect(preview).toMatchObject({ label: "fig:a", documentId: "id-3", block: 1, content: { type: "figure", src: "a.png", caption: "說明" } });
     expect(preview?.document.kind).toBe("chapter");
     expect(labels.preview("fig:none")).toBeNull();
   });
 
   it("找出失效的引用與重複的標籤", () => {
     documents.seedDefaults();
-    documents.save("id-2", "![一](a.png){#fig:a}\n\n![二](b.png){#fig:a}\n\n見 @fig:a 與 @fig:gone。\n");
+    documents.save("id-3", "![一](a.png){#fig:a}\n\n![二](b.png){#fig:a}\n\n見 @fig:a 與 @fig:gone。\n");
     const index = labels.resolve();
     expect(index.broken).toEqual(["fig:gone"]);
     expect(index.used).toContain("fig:gone");
@@ -86,13 +86,13 @@ describe("LabelService.resolve", () => {
 
 describe("LabelService.references", () => {
   it("lists the blocks that refer to a label, document by document", () => {
-    documents.seedDefaults(); // id-2 is chapter 1
-    documents.save("id-2", "# 一\n\n$$\nx\n$$ {#eq:a}\n\n見 @eq:a 與 @eq:a。\n\n沒有引用。\n");
+    documents.seedDefaults(); // id-3 is chapter 1
+    documents.save("id-3", "# 一\n\n$$\nx\n$$ {#eq:a}\n\n見 @eq:a 與 @eq:a。\n\n沒有引用。\n");
     const second = documents.create("chapter");
     documents.save(second.id, "# 二\n\n再次見 @eq:a。\n\n見 @eq:b。\n");
 
     const found = labels.references("eq:a");
-    expect(found.map((r) => [r.documentId, r.block])).toEqual([["id-2", 2], [second.id, 1]]);
+    expect(found.map((r) => [r.documentId, r.block])).toEqual([["id-3", 2], [second.id, 1]]);
     expect(found[0]?.excerpt).toContain("見");
     expect(labels.references("eq:none")).toEqual([]);
   });
