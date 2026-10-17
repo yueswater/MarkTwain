@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
-import { latexErrorNear, placeBox, renderLatex } from "./MathDialog";
+import { latexErrorNear, placeBox, renderLatex } from "./math-format";
 
 describe("renderLatex", () => {
   it("合法的公式回傳 HTML，含 KaTeX 的標記", () => {

@@ -128,7 +128,7 @@ test("what is typed right after the formula box closes is not lost", async ({ la
   // The key and the look at the focus are one step, so no frame passes between them for the focus to come back
   const focused = await page.evaluate(
     `new Promise(function (resolve) {
-      var box = document.querySelector('[data-testid="math-box"] textarea');
+      var box = document.querySelector('[data-testid="math-box"] .cm-content');
       box.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true }));
       var active = document.activeElement;
       resolve(!!active && active.classList.contains("ProseMirror"));
@@ -138,4 +138,29 @@ test("what is typed right after the formula box closes is not lost", async ({ la
   await page.keyboard.type(" 為一連續函數。");
   await expect(editor).toContainText("為一連續函數。");
   await expect(editor.locator(".katex")).toHaveCount(1);
+});
+
+test("the formula box is a code editor, brackets close, Shift and Enter adds a line, Enter confirms", async ({ launch }) => {
+  const { app } = await launch({ name: "公式編輯器" });
+  const page = await app.firstWindow();
+  await createProject(page);
+  const editor = page.locator(".ProseMirror");
+  await editor.click();
+  await page.getByRole("button", { name: "Display formula" }).click();
+  const input = page.getByRole("dialog").getByLabel("LaTeX");
+  await input.click();
+  // A bracket that is opened is closed, and typing the closing one goes over it
+  await page.keyboard.type("\\frac{a}{b");
+  await expect(input).toHaveText("\\frac{a}{b}");
+  await page.keyboard.type("}");
+  await expect(input).toHaveText("\\frac{a}{b}");
+  await page.keyboard.press("Shift+Enter");
+  await page.keyboard.type("c=d");
+  await expect(input.locator(".cm-line")).toHaveCount(2);
+  // The LaTeX has its own colours, and the box shows no frame of the browser on focus
+  expect(await input.locator(".cm-line span").count()).toBeGreaterThan(0);
+  await expect(page.getByRole("dialog").locator(".cm-editor")).toHaveCSS("outline-style", "none");
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("dialog")).toBeHidden();
+  await expect(editor.locator("[data-type='block-math']")).toHaveAttribute("data-latex", "\\frac{a}{b}\nc=d");
 });
