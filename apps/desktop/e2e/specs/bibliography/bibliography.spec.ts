@@ -130,7 +130,7 @@ test("without a bibliography a citation stays plain text and the build still wor
   await createProject(page);
   const outcome = await page.evaluate(async () => {
     const list = await window.marktwain.invoke("document:list");
-    if (!list.ok) return null;
+    if (!list.ok) throw new Error("an IPC call that the test needs failed");
     const chapter = list.data.find((d) => d.kind === "chapter")!;
     await window.marktwain.invoke("document:save", { id: chapter.id, text: "# Intro\n\nAs shown by [@nobody].\n" });
     const result = await window.marktwain.invoke("build:typst");

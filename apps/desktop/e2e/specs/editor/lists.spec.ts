@@ -8,7 +8,7 @@ test("the markers of list levels are chosen in the settings and shown in the edi
   const text = "# Intro\n\n1. First\n   1. Inner\n      - Dot\n2. Second\n\n- Plain\n  - Deeper\n";
   await page.evaluate(async (t) => {
     const list = await window.marktwain.invoke("document:list");
-    if (!list.ok) return;
+    if (!list.ok) throw new Error("an IPC call that the test needs failed");
     const chapter = list.data.find((d) => d.kind === "chapter")!;
     await window.marktwain.invoke("document:save", { id: chapter.id, text: t });
   }, text);
@@ -45,7 +45,7 @@ test("the markers of list levels are chosen in the settings and shown in the edi
   // The document itself is the same Markdown
   const saved = await page.evaluate(async () => {
     const list = await window.marktwain.invoke("document:list");
-    if (!list.ok) return "";
+    if (!list.ok) throw new Error("an IPC call that the test needs failed");
     const chapter = list.data.find((d) => d.kind === "chapter")!;
     const doc = await window.marktwain.invoke("document:get", { id: chapter.id });
     return doc.ok ? doc.data.text : "";

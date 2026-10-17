@@ -38,7 +38,7 @@ export async function openRecent(page: Page, lang: Lang = "en-US"): Promise<void
 export async function seedChapter(page: Page, text: string): Promise<void> {
   await page.evaluate(async (markdown) => {
     const list = await window.marktwain.invoke("document:list");
-    if (!list.ok) return;
+    if (!list.ok) throw new Error("an IPC call that the test needs failed");
     const chapter = list.data.find((d) => d.kind === "chapter")!;
     await window.marktwain.invoke("document:save", { id: chapter.id, text: markdown });
   }, text);
@@ -48,7 +48,7 @@ export async function seedChapter(page: Page, text: string): Promise<void> {
 export function readChapter(page: Page): Promise<string> {
   return page.evaluate(async () => {
     const list = await window.marktwain.invoke("document:list");
-    if (!list.ok) return "";
+    if (!list.ok) throw new Error("an IPC call that the test needs failed");
     const chapter = list.data.find((d) => d.kind === "chapter");
     const doc = chapter && (await window.marktwain.invoke("document:get", { id: chapter.id }));
     return doc && doc.ok ? doc.data.text : "";

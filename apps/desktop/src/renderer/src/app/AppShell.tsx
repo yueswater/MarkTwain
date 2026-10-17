@@ -70,8 +70,8 @@ export function AppShell({
             variant="ghost"
             size="icon-sm"
             data-testid="language-toggle"
-            aria-label={`${t("settings.language")}: ${t(`settings.locale.${i18n.language}`)}`}
-            title={`${t("settings.language")}: ${t(`settings.locale.${i18n.language}`)} → ${t(`settings.locale.${next}`)}`}
+            aria-label={t("settings.switchTo", { language: t(`settings.locale.${next}`) })}
+            title={t("settings.switchTo", { language: t(`settings.locale.${next}`) })}
             onClick={() => onLocaleChange(next)}
           >
             <LanguagesIcon aria-hidden="true" />

@@ -8,14 +8,14 @@ test("a figure and a table are given a placement with icons, and it is written i
   const read = () =>
     page.evaluate(async () => {
       const list = await window.marktwain.invoke("document:list");
-      if (!list.ok) return "";
+      if (!list.ok) throw new Error("an IPC call that the test needs failed");
       const chapter = list.data.find((d) => d.kind === "chapter")!;
       const doc = await window.marktwain.invoke("document:get", { id: chapter.id });
       return doc.ok ? doc.data.text : "";
     });
   await page.evaluate(async () => {
     const list = await window.marktwain.invoke("document:list");
-    if (!list.ok) return;
+    if (!list.ok) throw new Error("an IPC call that the test needs failed");
     const chapter = list.data.find((d) => d.kind === "chapter")!;
     await window.marktwain.invoke("document:save", {
       id: chapter.id,

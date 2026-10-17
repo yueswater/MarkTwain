@@ -9,7 +9,7 @@ test("the preview follows the caret of the editor, keeps its page after a rebuil
   await createProject(page);
   await page.evaluate(async () => {
     const list = await window.marktwain.invoke("document:list");
-    if (!list.ok) return;
+    if (!list.ok) throw new Error("an IPC call that the test needs failed");
     const chapter = list.data.find((d) => d.kind === "chapter")!;
     const paragraphs = Array.from({ length: 60 }, (_, i) => `Paragraph number ${i + 1}. ${"filling text ".repeat(40)}`).join("\n\n");
     await window.marktwain.invoke("document:save", { id: chapter.id, text: `# Long\n\n${paragraphs}\n` });

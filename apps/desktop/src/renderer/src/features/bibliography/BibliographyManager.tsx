@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { cn } from "@/lib/utils";
 import type { BibEntryInput, BibItem, DocumentSummary } from "../../../../shared/ipc";
 import { documentTitle } from "../project/sidebar/document-title";
-import { fieldsFor, requiredNames } from "./bib-fields";
+import { fieldsFor, requiredNames, plainTitle } from "./bib-fields";
 import { useBibliography } from "./bibliography-context";
 
 type Draft = { originalKey: string | null; entry: BibEntryInput };
@@ -135,7 +135,7 @@ export function BibliographyManager({ documents, onOpenDocument, startKey, onSta
                     )}
                     <span className="ml-auto shrink-0 text-xs text-muted-foreground">{count > 0 ? count : t("uncited")}</span>
                   </span>
-                  <span className="truncate text-xs text-muted-foreground">{item.fields.title || item.key}</span>
+                  <span className="truncate text-xs text-muted-foreground">{plainTitle(item.fields.title || item.key)}</span>
                 </button>
               </li>
             );

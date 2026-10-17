@@ -7,7 +7,7 @@ test("find in the document highlights and steps through matches, and the project
   await createProject(page);
   await page.evaluate(async () => {
     const list = await window.marktwain.invoke("document:list");
-    if (!list.ok) return;
+    if (!list.ok) throw new Error("an IPC call that the test needs failed");
     const abstract = list.data.find((d) => d.kind === "abstract")!;
     const chapter = list.data.find((d) => d.kind === "chapter")!;
     await window.marktwain.invoke("document:save", { id: abstract.id, text: "Abstract about the gradient method.\n" });

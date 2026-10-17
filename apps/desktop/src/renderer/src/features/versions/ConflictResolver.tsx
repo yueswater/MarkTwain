@@ -37,7 +37,7 @@ function Option({ id, name, value, checked, label, onSelect }: { id: string; nam
 export function ConflictResolver({ conflicts, choices, onChoose }: Props) {
   const { t } = useTranslation("versions");
   const { t: tp } = useTranslation();
-  const titleOf = (conflict: { kind: string; title: string }) => documentTitle(tp, { kind: conflict.kind as DocumentKind, title: conflict.title, position: 1 });
+  const titleOf = (conflict: { kind: string; title: string; position: number }) => documentTitle(tp, { kind: conflict.kind as DocumentKind, title: conflict.title, position: conflict.position });
 
   return (
     <ol className="grid gap-4" aria-label={t("merge.title", { name: "" })}>
