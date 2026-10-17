@@ -12,7 +12,6 @@
     "sans": "黑體",
     "serif": "明體",
     "fontSize": "文字大小",
-    "fontSizeHint": "單位為像素。",
     "lineHeight": "行距",
     "contentWidth": "文字欄寬度",
     "narrow": "窄",
@@ -459,5 +458,13 @@
     "keep": "保留",
     "sampleCjk": "論文的字型 永字八法 0123456789",
     "sampleLatin": "The quick brown fox jumps over the lazy dog"
+  },
+  "unitHint": "單位為 {{unit}}",
+  "unitNames": {
+    "pt": "pt（點）",
+    "cm": "cm（公分）",
+    "em": "em（字寬）",
+    "px": "px（像素）",
+    "percent": "%"
   }
 }

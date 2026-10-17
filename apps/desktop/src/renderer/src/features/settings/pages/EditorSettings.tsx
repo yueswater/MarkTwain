@@ -60,8 +60,8 @@ export function EditorAppearanceSettings() {
       <SettingsRow
         id="setting-editor-fontSize"
         label={t("editor.fontSize")}
-        hint={t("editor.fontSizeHint")}
-        control={<NumberField label={t("editor.fontSize")} value={prefs.fontSize} min={PREF_LIMITS.fontSize[0]} max={PREF_LIMITS.fontSize[1]} unit="px" onCommit={(v) => v !== null && setPrefs({ fontSize: v })} />}
+        unit="px"
+        control={<NumberField label={t("editor.fontSize")} value={prefs.fontSize} min={PREF_LIMITS.fontSize[0]} max={PREF_LIMITS.fontSize[1]} onCommit={(v) => v !== null && setPrefs({ fontSize: v })} />}
       />
       <SettingsRow
         id="setting-editor-lineHeight"

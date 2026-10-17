@@ -124,7 +124,6 @@ export function AdvancedForm({ groups, state, error, onSave }: Props) {
             placeholder={display(fallback) || undefined}
             min={field.min}
             max={field.max}
-            unit={field.unit ? t(`units.${field.unit}`) : undefined}
             onCommit={set}
           />
         );
@@ -254,21 +253,15 @@ export function AdvancedForm({ groups, state, error, onSave }: Props) {
                 below={
                   field.path === "bibliography.title" ? <TitlePreview title={effectiveText("bibliography.title", "")} /> : field.path === "bibliography.full" ? <UncitedPreview listAll={effective("bibliography.full") === true} /> : undefined
                 }
-                control={
-                  <span className="flex items-center gap-1.5">
-                    {control(field, current, inherited[field.path], label)}
-                    <Button
-                      variant="ghost"
-                      size="icon-xs"
-                      aria-label={`${t("reset")}: ${label}`}
-                      title={t("reset")}
-                      className={current === undefined ? "invisible" : undefined}
-                      onClick={() => void save(field.path, null)}
-                    >
+                unit={field.kind === "number" ? field.unit : undefined}
+                reset={
+                  current === undefined ? undefined : (
+                    <Button variant="ghost" size="icon-xs" aria-label={`${t("reset")}: ${label}`} title={t("reset")} onClick={() => void save(field.path, null)}>
                       <RotateCcwIcon aria-hidden="true" />
                     </Button>
-                  </span>
+                  )
                 }
+                control={control(field, current, inherited[field.path], label)}
               />
             );
             // The drawing of the page comes right after the paper size, its fields are the four margins

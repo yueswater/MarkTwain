@@ -12,7 +12,6 @@
     "sans": "Sans serif",
     "serif": "Serif",
     "fontSize": "Text size",
-    "fontSizeHint": "In pixels.",
     "lineHeight": "Line spacing",
     "contentWidth": "Width of the text",
     "narrow": "Narrow",
@@ -459,5 +458,13 @@
     "keep": "Keep it",
     "sampleCjk": "論文的字體 永字八法 0123456789",
     "sampleLatin": "The quick brown fox jumps over the lazy dog"
+  },
+  "unitHint": "Unit: {{unit}}",
+  "unitNames": {
+    "pt": "pt (points)",
+    "cm": "cm (centimeters)",
+    "em": "em (character widths)",
+    "px": "px (pixels)",
+    "percent": "%"
   }
 }

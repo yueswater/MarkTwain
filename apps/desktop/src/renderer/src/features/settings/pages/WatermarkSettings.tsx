@@ -115,15 +115,17 @@ export function WatermarkSettings({ state, onSave }: Props) {
       <SettingsRow
         id="setting-watermark.width"
         label={t("field.watermark.width")}
+        unit="%"
         control={
-          <NumberField label={t("field.watermark.width")} value={overridden("watermark.width") ? info.width : null} placeholder={String(info.width)} min={10} max={100} unit="%" onCommit={(v) => void onSave("watermark.width", v)} />
+          <NumberField label={t("field.watermark.width")} value={overridden("watermark.width") ? info.width : null} placeholder={String(info.width)} min={10} max={100} onCommit={(v) => void onSave("watermark.width", v)} />
         }
       />
       <SettingsRow
         id="setting-watermark.opacity"
         label={t("field.watermark.opacity")}
+        unit="%"
         control={
-          <NumberField label={t("field.watermark.opacity")} value={overridden("watermark.opacity") ? info.opacity : null} placeholder={String(info.opacity)} min={5} max={100} unit="%" onCommit={(v) => void onSave("watermark.opacity", v)} />
+          <NumberField label={t("field.watermark.opacity")} value={overridden("watermark.opacity") ? info.opacity : null} placeholder={String(info.opacity)} min={5} max={100} onCommit={(v) => void onSave("watermark.opacity", v)} />
         }
       />
         </div>

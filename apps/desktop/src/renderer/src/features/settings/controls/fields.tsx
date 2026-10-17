@@ -1,15 +1,33 @@
 import { useEffect, useState, type ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
+type SettingsRowProps = {
+  label: string;
+  hint?: string;
+  /** The unit of the value, written under the name as 單位為 pt */
+  unit?: string;
+  /** A button that goes back to the default, it stands right after the name */
+  reset?: ReactNode;
+  control: ReactNode;
+  id?: string;
+  below?: ReactNode;
+};
+
 /** A label with its hint on the left and the control on the right, like the settings of AnvilNote. */
-export function SettingsRow({ label, hint, control, id, below }: { label: string; hint?: string; control: ReactNode; id?: string; below?: ReactNode }) {
+export function SettingsRow({ label, hint, unit, reset, control, id, below }: SettingsRowProps) {
+  const { t } = useTranslation("settings");
   return (
     <div id={id} className="border-b py-3 first:pt-0 last:border-b-0">
       <div className="flex items-center justify-between gap-6">
         <div className="min-w-0 space-y-0.5">
-          <p className="text-sm font-medium">{label}</p>
+          <div className="flex items-center gap-1">
+            <p className="text-sm font-medium">{label}</p>
+            {reset}
+          </div>
           {hint ? <p className="text-xs text-muted-foreground">{hint}</p> : null}
+          {unit ? <p className="text-xs text-muted-foreground">{t("unitHint", { unit: t(`unitNames.${unit === "%" ? "percent" : unit}`, { defaultValue: unit }) })}</p> : null}
         </div>
         <div className="shrink-0">{control}</div>
       </div>
@@ -30,14 +48,13 @@ type NumberFieldProps = {
   min?: number;
   max?: number;
   step?: number;
-  unit?: string;
   className?: string;
   /** Called with a valid number, or null when the field was emptied */
   onCommit: (value: number | null) => void;
 };
 
 /** A number input that takes the value when you leave it or press Enter and refuses what is out of range. */
-export function NumberField({ label, value, placeholder, min, max, step, unit, className, onCommit }: NumberFieldProps) {
+export function NumberField({ label, value, placeholder, min, max, step, className, onCommit }: NumberFieldProps) {
   const [text, setText] = useState(value === null ? "" : String(value));
   const [invalid, setInvalid] = useState(false);
   useEffect(() => {
@@ -62,8 +79,7 @@ export function NumberField({ label, value, placeholder, min, max, step, unit, c
   }
 
   return (
-    <span className="inline-flex items-center gap-1.5">
-      <Input
+    <Input
         aria-label={label}
         inputMode="decimal"
         value={text}
@@ -75,7 +91,5 @@ export function NumberField({ label, value, placeholder, min, max, step, unit, c
         onBlur={commit}
         onKeyDown={(event) => event.key === "Enter" && event.currentTarget.blur()}
       />
-      {unit ? <span className="text-xs text-muted-foreground">{unit}</span> : null}
-    </span>
   );
 }
