@@ -89,9 +89,11 @@ test("a build error points back to the block that caused it", async ({ launch })
   await page.getByRole("button", { name: "Open project" }).click();
   await page.getByRole("button", { name: "Preview" }).click();
 
-  const log = page.getByRole("log");
-  await expect(log.getByRole("heading", { name: "Errors" })).toBeVisible({ timeout: 90_000 });
-  await log.getByRole("button", { name: "Go to the source" }).first().click();
+  // The errors stand where the pages would be, in plain words first and the words of the tool as detail
+  const failure = page.getByTestId("preview-pages").getByRole("alert");
+  await expect(failure).toContainText("The PDF could not be made.", { timeout: 90_000 });
+  await expect(failure).toContainText("Detail:");
+  await failure.getByRole("button", { name: "Go to the source" }).first().click();
   // The failing block is the figure, which becomes the selected node
   await expect(page.locator(".ProseMirror figure.is-selected")).toBeAttached();
 });
