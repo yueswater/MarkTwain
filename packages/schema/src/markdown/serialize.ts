@@ -78,7 +78,10 @@ function keyToken(key: string, forceBraces: boolean): string {
 function neighbors(parent: Node, index: number): { previousWord: boolean; nextConflicts: boolean } {
   const previous = index > 0 ? parent.child(index - 1) : null;
   const next = index + 1 < parent.childCount ? parent.child(index + 1) : null;
-  const previousWord = Boolean(previous?.isText && /\w$/.test(previous.text ?? ""));
+  // A reference or a narrative citation just before is written as @key, which ends in a word character too
+  const endsInWord =
+    previous?.type.name === NodeName.CrossRef || (previous?.type.name === NodeName.Citation && previous.attrs.form === "prose");
+  const previousWord = endsInWord || Boolean(previous?.isText && /\w$/.test(previous.text ?? ""));
   const nextConflicts = Boolean(next?.isText && /^[\w.:\-/+]/.test(next.text ?? ""));
   return { previousWord, nextConflicts };
 }
