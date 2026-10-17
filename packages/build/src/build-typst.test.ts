@@ -103,6 +103,23 @@ maybe("buildTypst with the real template", () => {
     }
   }, 120_000);
 
+  it("puts a chapter that has no heading on a page of its own, and not on the page of the abstract", async () => {
+    const pagesOf = async (documents: BuildInput["documents"]): Promise<number> => {
+      const work = mkdtempSync(join(tmpdir(), "marktwain 新頁 "));
+      try {
+        const result = await buildTypst(input(work, { format: "png", documents }));
+        if (!result.ok) throw new Error(result.diagnostics.map((d) => d.message).join("\n"));
+        return result.pages.length;
+      } finally {
+        rmSync(work, { recursive: true, force: true });
+      }
+    };
+    const abstract = { id: "a1", kind: "abstract" as const, text: "" };
+    const withoutChapter = await pagesOf([abstract]);
+    const withChapter = await pagesOf([abstract, { id: "c1", kind: "chapter" as const, text: "你好" }]);
+    expect(withChapter).toBe(withoutChapter + 1);
+  }, 240_000);
+
   it("builds a PDF from every kind of document", async () => {
     const work = mkdtempSync(join(tmpdir(), "marktwain 建置 "));
     try {

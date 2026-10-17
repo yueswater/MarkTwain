@@ -19,14 +19,16 @@
   },
   "kind": {
     "title": {
-      "abstract": "摘要",
+      "abstract": "中文摘要",
+      "abstractEn": "英文摘要",
       "acknowledgement": "誌謝",
       "denotation": "符號說明",
       "chapter": "第 {{n}} 章",
       "appendix": "附錄 {{n}}"
     },
     "name": {
-      "abstract": "摘要",
+      "abstract": "中文摘要",
+      "abstractEn": "英文摘要",
       "acknowledgement": "誌謝",
       "denotation": "符號說明",
       "chapter": "章",

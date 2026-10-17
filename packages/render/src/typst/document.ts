@@ -1,7 +1,7 @@
 import type { Block, IrDocument } from "../ir/types";
 import { renderBlock, renderBlocks, type BlockContext } from "./blocks";
 
-export type TypstKind = "abstract" | "acknowledgement" | "denotation" | "chapter" | "appendix";
+export type TypstKind = "abstract" | "abstractEn" | "acknowledgement" | "denotation" | "chapter" | "appendix";
 
 export type TypstFile = {
   /** File content */
@@ -57,7 +57,13 @@ export function renderTypstFile(doc: IrDocument, options: TypstOptions): TypstFi
     push("");
   };
 
-  if (options.kind === "abstract") {
+  if (options.kind === "abstractEn") {
+    // The whole document is the English abstract
+    const inner = renderBlocks(doc.blocks, options);
+    const first = lines.length + 2;
+    push("#abstract-en(keywords: cfg.keywords-en)[", ...inner, "]", "");
+    doc.blocks.forEach((_, i) => blockLines.push(i === 0 ? first : null));
+  } else if (options.kind === "abstract") {
     // Abstract, divs .abstract-zh and .abstract-en each become one abstract, without divs the whole document is the Chinese abstract
     const hasDivs = doc.blocks.some((b) => b.type === "div" && abstractFunction(b.classes));
     if (hasDivs) {
