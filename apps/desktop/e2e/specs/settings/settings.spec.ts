@@ -16,6 +16,7 @@ test("editor preferences apply at once and survive a restart, thesis format is k
   await page.keyboard.press("ControlOrMeta+,");
   const dialog = page.getByRole("dialog", { name: "Settings" });
   await expect(dialog).toBeVisible();
+  await dialog.getByRole("button", { name: "Appearance", exact: true }).click();
   await dialog.getByLabel("Text size", { exact: true }).fill("20");
   await dialog.getByLabel("Text size", { exact: true }).press("Enter");
   await expect(editor).toHaveCSS("font-size", "20px");
@@ -286,4 +287,21 @@ test("the name of the list at the front follows the rules of the school, 目次 
   await dialog.getByRole("combobox", { name: "學校格式" }).click();
   await page.getByRole("option", { name: "國立政治大學" }).click();
   await expect(nav.getByRole("button", { name: "頁碼與目次" })).toBeVisible();
+});
+
+test("the settings open on the thesis in a project, and a word that is on a page finds the page", async ({ launch }) => {
+  const { app } = await launch({ name: "搜尋" });
+  const page = await app.firstWindow();
+  await createProject(page);
+  await page.keyboard.press("ControlOrMeta+,");
+  const dialog = page.getByRole("dialog", { name: "Settings" });
+  // With a project the thesis is what a person comes for
+  await expect(dialog.getByRole("heading", { name: "Information" })).toBeVisible();
+
+  // Words that are not in the name of a page, such as the list of figures, lead to it
+  await dialog.getByLabel("Search settings").first().fill("list of figures");
+  const result = dialog.getByRole("list", { name: "Search results" }).getByRole("button", { name: /Page numbers and outline/ });
+  await expect(result).toBeVisible();
+  await result.click();
+  await expect(dialog.getByRole("heading", { name: "Page numbers and outline" })).toBeVisible();
 });

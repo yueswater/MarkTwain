@@ -264,7 +264,24 @@
     "label": "搜尋設定",
     "placeholder": "搜尋設定",
     "results": "搜尋結果",
-    "none": "沒有符合的設定。"
+    "none": "沒有符合的設定。",
+    "words": {
+      "editorAppearance": "字型,字體,字級,文字大小,行距,欄寬,外觀",
+      "editorWriting": "行號,拼字,貼上,自動儲存,差異,標題名稱",
+      "editorPreview": "預覽,重新產生",
+      "editorProfile": "個人資料,作者,指導教授,新專案",
+      "editorStatements": "定理,定義,引理,提示框",
+      "editorShortcuts": "快速鍵,快捷鍵,按鍵,鍵盤",
+      "thesisSchool": "學校,格式,規定,浮水印,範本,引用格式,學位,學院,系所,語言",
+      "thesisInfo": "封面,題名頁,題目,作者,指導教授,學號,關鍵字,口試,日期",
+      "thesisPage": "紙張,邊界,頁邊,頁面,A4",
+      "thesisText": "字型,字體,字級,行距,段落,縮排,對齊,內文",
+      "thesisHeadings": "標題,章,節,編號,腳註,註腳,公式編號",
+      "thesisCaptions": "圖名,表名,圖說,表格標題,圖表,說明,位置,交叉引用,定理",
+      "thesisLists": "清單,項目符號,編號,符號",
+      "thesisPageNumber": "頁碼,頁首,頁尾,目次,目錄,圖次,表次,{{toc}}",
+      "thesisBibliography": "參考文獻,書目,文獻,引用,標題"
+    }
   },
   "changedDot": "此頁有與學校格式不同的設定",
   "diagram": {

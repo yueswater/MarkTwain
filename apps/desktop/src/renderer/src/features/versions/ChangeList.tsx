@@ -1,3 +1,4 @@
+import { fileLabel } from "./file-label";
 import { useTranslation } from "react-i18next";
 import type { CompareView, DocumentDiffView } from "../../../../shared/ipc";
 import { charDiff } from "../../lib/char-diff";
@@ -85,7 +86,7 @@ export function ChangeList({ view }: { view: CompareView }) {
           <ul className="text-sm">
             {view.files.map((file) => (
               <li key={file.path} className="flex gap-2">
-                <span className="truncate">{file.path}</span>
+                <span className="truncate">{fileLabel(file.path, t("compare.configFile"))}</span>
                 <span className="text-muted-foreground">{t(`compare.file.${file.status}`)}</span>
               </li>
             ))}

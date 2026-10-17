@@ -79,7 +79,8 @@
     "legendRemoved": "刪除",
     "legendModified": "段落內有修改",
     "titlePair": "差異：{{label}}",
-    "descriptionPair": "箭頭左側為較舊的版本，下方顯示自該版本至較新版本之間的修改。"
+    "descriptionPair": "箭頭左側為較舊的版本，下方顯示自該版本至較新版本之間的修改。",
+    "configFile": "論文設定"
   },
   "merge": {
     "title": "將「{{name}}」合併回主線",

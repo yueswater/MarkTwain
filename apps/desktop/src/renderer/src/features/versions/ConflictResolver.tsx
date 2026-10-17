@@ -1,3 +1,4 @@
+import { fileLabel } from "./file-label";
 import { useTranslation } from "react-i18next";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -80,7 +81,7 @@ export function ConflictResolver({ conflicts, choices, onChoose }: Props) {
             )}
             {conflict.type === "file" && (
               <>
-                <p className="text-sm font-medium">{t("conflict.file", { path: conflict.path })}</p>
+                <p className="text-sm font-medium">{t("conflict.file", { path: fileLabel(conflict.path, t("compare.configFile")) })}</p>
                 <div className="flex flex-wrap gap-x-5 gap-y-2">
                   {radio("ours", `${t("conflict.ours")}${conflict.ours ? "" : ` ${t("conflict.deleted")}`}`, choice === "ours", "ours")}
                   {radio("theirs", `${t("conflict.theirs")}${conflict.theirs ? "" : ` ${t("conflict.deleted")}`}`, choice === "theirs", "theirs")}

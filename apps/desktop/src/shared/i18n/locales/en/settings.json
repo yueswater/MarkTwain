@@ -264,7 +264,24 @@
     "label": "Search settings",
     "placeholder": "Search settings",
     "results": "Search results",
-    "none": "No setting matches."
+    "none": "No setting matches.",
+    "words": {
+      "editorAppearance": "font,text size,line height,width,appearance",
+      "editorWriting": "line numbers,spellcheck,paste,autosave,changes,heading names",
+      "editorPreview": "preview,rebuild",
+      "editorProfile": "profile,author,advisor,new project",
+      "editorStatements": "theorem,definition,lemma,callout",
+      "editorShortcuts": "shortcuts,keys,keyboard",
+      "thesisSchool": "school,format,rules,watermark,template,citation style,degree,college,department,language",
+      "thesisInfo": "cover,title page,title,author,advisor,student id,keywords,oral defense,date",
+      "thesisPage": "paper,margins,page,A4",
+      "thesisText": "font,text size,line height,paragraph,indent,justify",
+      "thesisHeadings": "headings,chapter,section,numbering,footnote,equation numbering",
+      "thesisCaptions": "captions,figure,table,figure caption,table caption,placement,cross-reference,theorem",
+      "thesisLists": "lists,bullets,numbering,markers",
+      "thesisPageNumber": "page numbers,header,footer,contents,table of contents,list of figures,list of tables",
+      "thesisBibliography": "bibliography,references,citations,title"
+    }
   },
   "changedDot": "This page has settings that differ from the school format",
   "diagram": {
