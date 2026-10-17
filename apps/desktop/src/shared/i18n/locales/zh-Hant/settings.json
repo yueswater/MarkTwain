@@ -52,7 +52,7 @@
     "pageNumber": "頁碼",
     "crossRef": "交叉引用",
     "bibliography": "參考文獻",
-    "outline": "目錄",
+    "outline": "目次",
     "watermark": "浮水印",
     "statements": "定理區塊名稱",
     "placement": "位置",
@@ -113,7 +113,7 @@
       "subsection": "小節的引用格式"
     },
     "outline": {
-      "depth": "目錄深度"
+      "depth": "目次深度"
     },
     "bibliography": {
       "title": "參考文獻標題",
@@ -237,8 +237,8 @@
       "description": "圖說與表格標題，以及交叉引用使用的文字。"
     },
     "thesisPageNumber": {
-      "title": "頁碼與目錄",
-      "description": "前置部分與正文的頁碼，以及目錄。"
+      "title": "頁碼與目次",
+      "description": "前置部分與正文的頁碼，以及目次。"
     },
     "thesisBibliography": {
       "title": "參考文獻",
@@ -278,7 +278,7 @@
       "3": "小節標題",
       "4": "小小節標題"
     },
-    "outline": "目錄",
+    "outline": "目次",
     "outlineLine": {
       "1": "章",
       "2": "節",
