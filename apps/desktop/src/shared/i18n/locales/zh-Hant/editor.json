@@ -33,6 +33,7 @@
     "footnote": "腳註",
     "citation": "文獻引用",
     "crossRef": "交叉引用",
+    "link": "超連結",
     "definitionList": "定義清單",
     "addDefinition": "新增詞條",
     "image": "插入圖片",
@@ -64,6 +65,21 @@
     "editTitle": "編輯腳註",
     "text": "腳註內容",
     "hint": "可使用簡單格式，例如 <c>**粗體**</c> 或 <c>$x^2$</c>。"
+  },
+  "link": {
+    "insertTitle": "插入超連結",
+    "editTitle": "編輯超連結",
+    "text": "文字",
+    "textPlaceholder": "顯示的文字，可留空",
+    "url": "網址",
+    "urlHint": "例如 <c>https://example.com</c>，省略開頭時會補上 <c>https://</c>。",
+    "invalid": "網址不正確，請使用 <c>http</c>、<c>https</c> 或 <c>mailto</c> 開頭的網址。"
+  },
+  "linkMenu": {
+    "label": "連結工具",
+    "open": "開啟連結",
+    "edit": "編輯連結",
+    "remove": "移除連結"
   },
   "citation": {
     "insertTitle": "插入文獻引用",

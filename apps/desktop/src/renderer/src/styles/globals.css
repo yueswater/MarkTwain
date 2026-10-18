@@ -183,7 +183,24 @@
 .ProseMirror .code-block:hover .code-lang, .ProseMirror .code-lang:focus-within, .ProseMirror .code-lang[data-open="true"] { opacity: 1; pointer-events: auto; }
 .ProseMirror[data-typing="true"] .code-block:hover .code-lang:not(:focus-within):not([data-open="true"]) { opacity: 0; pointer-events: none; }
 .ProseMirror hr { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
-.ProseMirror a { text-decoration: underline; text-underline-offset: 2px; color: var(--editor-link, inherit); }
+/* A link is underlined, and on hover its color fills it from left to right with square corners, the text takes the color that reads on it */
+.ProseMirror a {
+  --link-fill: var(--editor-link, var(--foreground));
+  color: var(--editor-link, inherit);
+  text-decoration: underline;
+  text-decoration-color: var(--link-fill);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+  border-radius: 0;
+  background-image: linear-gradient(var(--link-fill), var(--link-fill));
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: 0% 100%;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  transition: background-size 0.25s ease, color 0.25s ease;
+}
+.ProseMirror a:hover { background-size: 100% 100%; color: var(--editor-link-contrast, var(--background)); }
 /* A color theme sets these, without one the headings and links keep the color of the text */
 .ProseMirror h1, .ProseMirror h2, .ProseMirror h3, .ProseMirror h4 { color: var(--editor-heading, inherit); }
 html[data-color-theme] .ProseMirror ::selection { background: var(--editor-selection); }

@@ -33,6 +33,7 @@
     "footnote": "Footnote",
     "citation": "Citation",
     "crossRef": "Cross-reference",
+    "link": "Link",
     "definitionList": "Definition list",
     "addDefinition": "Add term",
     "image": "Insert image",
@@ -64,6 +65,21 @@
     "editTitle": "Edit footnote",
     "text": "Footnote text",
     "hint": "Inline Markdown is allowed, for example <c>**bold**</c> or <c>$x^2$</c>."
+  },
+  "link": {
+    "insertTitle": "Insert link",
+    "editTitle": "Edit link",
+    "text": "Text",
+    "textPlaceholder": "The words to show, may be empty",
+    "url": "Address",
+    "urlHint": "For example <c>https://example.com</c>, <c>https://</c> is added when it is left out.",
+    "invalid": "This is not a usable address, use one that starts with <c>http</c>, <c>https</c> or <c>mailto</c>."
+  },
+  "linkMenu": {
+    "label": "Link tools",
+    "open": "Open link",
+    "edit": "Edit link",
+    "remove": "Remove link"
   },
   "citation": {
     "insertTitle": "Insert citation",

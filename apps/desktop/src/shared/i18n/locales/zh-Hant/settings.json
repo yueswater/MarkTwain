@@ -430,6 +430,7 @@
       "footnote": "腳註",
       "citation": "文獻引用",
       "crossRef": "交叉引用",
+      "link": "超連結",
       "equationName": "公式名稱",
       "peekReference": "預覽引用的內容",
       "undo": "復原",

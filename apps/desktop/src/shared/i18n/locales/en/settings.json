@@ -430,6 +430,7 @@
       "footnote": "Footnote",
       "citation": "Citation",
       "crossRef": "Cross-reference",
+      "link": "Link",
       "equationName": "Name of the formula",
       "peekReference": "Peek at what a reference points to",
       "undo": "Undo",

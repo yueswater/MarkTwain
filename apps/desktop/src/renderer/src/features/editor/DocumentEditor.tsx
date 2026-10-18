@@ -141,7 +141,7 @@ function EditorSurface({ doc, scrollTo, onSaved, registerFlush, onOpenTarget, on
   const savedBlocksRef = useLatest(saved);
   const editorRef = useRef<ReturnType<typeof useEditor>>(null);
   // What the slash menu asks the view to do, the same functions the toolbar uses
-  const slashRef = useRef<SlashHandlers>({ insertMath: () => undefined, insertAtom: () => undefined, insertImage: () => undefined, insertTable: () => undefined, insertLandscape: () => undefined });
+  const slashRef = useRef<SlashHandlers>({ insertMath: () => undefined, insertAtom: () => undefined, insertImage: () => undefined, insertTable: () => undefined, insertLandscape: () => undefined, editLink: () => undefined });
   const scroller = useRef<HTMLDivElement>(null);
   const editorFrame = useRef<HTMLDivElement>(null);
   const gutterHolder = useRef<HTMLDivElement>(null);
@@ -310,6 +310,7 @@ function EditorSurface({ doc, scrollTo, onSaved, registerFlush, onOpenTarget, on
     insertImage: actions.insertImage,
     insertTable: actions.insertTable,
     insertLandscape: () => insertLandscape(editor),
+    editLink: actions.editLink,
   };
 
   return (
@@ -318,6 +319,7 @@ function EditorSurface({ doc, scrollTo, onSaved, registerFlush, onOpenTarget, on
         editor={editor}
         onInsertMath={actions.insertMath}
         onInsertAtom={actions.insertAtom}
+        onEditLink={actions.editLink}
         onInsertTable={actions.insertTable}
         onChangeTemplate={actions.changeTemplate}
         onInsertImage={actions.insertImage}
@@ -326,6 +328,7 @@ function EditorSurface({ doc, scrollTo, onSaved, registerFlush, onOpenTarget, on
       <EditorBubbleMenu
         editor={editor}
         quiet={quietBubble}
+        onEditLink={actions.editLink}
         onInsertMath={() => actions.insertMath("inline")}
         onEditFigure={(pos, attrs) =>
           targets.setFigure({ pos, src: String(attrs.src), caption: String(attrs.caption ?? ""), width: (attrs.width as string | null) ?? null, placement: (attrs.placement as Placement | null) ?? null })

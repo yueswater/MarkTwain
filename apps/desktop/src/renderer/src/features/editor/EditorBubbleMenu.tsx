@@ -4,6 +4,8 @@ import { CellSelection } from "@tiptap/pm/tables";
 import { useEditorState } from "@tiptap/react";
 import { BubbleMenu } from "@tiptap/react/menus";
 import {
+  ExternalLinkIcon,
+  UnlinkIcon,
   AlignCenterIcon,
   AlignLeftIcon,
   AlignRightIcon,
@@ -72,6 +74,7 @@ type Props = {
   editor: Editor;
   /** True while the selection is not the one of the person, so the tools for text do not cover it */
   quiet?: boolean;
+  onEditLink: () => void;
   onInsertMath: () => void;
   onEditFigure: (pos: number, attrs: Record<string, unknown>) => void;
   onCropFigure: (pos: number, src: string) => void;
@@ -81,7 +84,14 @@ type Props = {
  * Floating tools next to the selection. Selected text offers the marks,
  * and selected table cells suggest merging and offer alignment.
  */
-export function EditorBubbleMenu({ editor, quiet = false, onInsertMath, onEditFigure, onCropFigure }: Props) {
+/** The address of the link that holds the caret, null when the caret is not in a link or text is selected. Read from the editor itself, so that the menu is never a step behind. */
+function linkAddress(editor: Editor): string | null {
+  const { selection } = editor.state;
+  if (!selection.empty || selection instanceof CellSelection || !editor.isActive("link")) return null;
+  return String(editor.getAttributes("link").href ?? "");
+}
+
+export function EditorBubbleMenu({ editor, quiet = false, onEditLink, onInsertMath, onEditFigure, onCropFigure }: Props) {
   const { t } = useTranslation("editor");
   const state = useEditorState({
     editor,
@@ -92,6 +102,8 @@ export function EditorBubbleMenu({ editor, quiet = false, onInsertMath, onEditFi
         figure: figure ? { pos: figure.from, attrs: figure.node.attrs as Record<string, unknown> } : null,
         cells: selection instanceof CellSelection,
         text: !(selection instanceof CellSelection) && !selection.empty && selection.$from.parent.isTextblock && !e.isActive("codeBlock"),
+        // The caret is in a link and no text is selected, so the tools of the link and not those of the text are shown
+        link: linkAddress(e),
         canMerge: e.can().mergeCells(),
         canSplit: e.can().splitCell(),
         bold: e.isActive("bold"),
@@ -115,6 +127,21 @@ export function EditorBubbleMenu({ editor, quiet = false, onInsertMath, onEditFi
         <Item icon={CodeIcon} label={t("toolbar.code")} active={state.code} onClick={run(() => editor.chain().toggleCode().run())} />
         {divider}
         <Item icon={VariableIcon} label={t("toolbar.inlineMath")} onClick={onInsertMath} />
+        <Item icon={ExternalLinkIcon} label={t("toolbar.link")} onClick={onEditLink} />
+      </BubbleMenu>
+
+      <BubbleMenu editor={editor} className={MENU_CLASS} shouldShow={({ editor: live }) => linkAddress(live) !== null} aria-label={t("linkMenu.label")}>
+        {state.link !== null && (
+          <>
+            <span className="max-w-56 truncate px-1.5 font-mono text-xs text-muted-foreground select-text" title={state.link}>
+              {state.link}
+            </span>
+            {divider}
+            <Item icon={ExternalLinkIcon} label={t("linkMenu.open")} onClick={() => window.open(state.link!, "_blank")} />
+            <Item icon={PencilIcon} label={t("linkMenu.edit")} onClick={onEditLink} />
+            <Item icon={UnlinkIcon} label={t("linkMenu.remove")} destructive onClick={run(() => editor.chain().extendMarkRange("link").unsetLink().run())} />
+          </>
+        )}
       </BubbleMenu>
 
       <BubbleMenu editor={editor} className={MENU_CLASS} shouldShow={() => state.figure !== null} aria-label={t("figureMenu.label")}>
