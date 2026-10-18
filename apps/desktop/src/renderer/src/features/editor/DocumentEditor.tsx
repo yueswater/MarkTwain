@@ -208,7 +208,11 @@ function EditorSurface({ doc, scrollTo, onSaved, registerFlush, onOpenTarget, on
   useEffect(() => {
     if (!editor || editor.isDestroyed || !isDefaultText(doc.kind, doc.text)) return;
     const heading = editor.state.doc.firstChild;
-    if (heading?.type.name === "heading") editor.chain().focus().setTextSelection({ from: 1, to: heading.nodeSize - 1 }).run();
+    if (heading?.type.name !== "heading") return;
+    const chain = editor.chain().setTextSelection({ from: 1, to: heading.nodeSize - 1 });
+    // The editor is also made again behind a window that is open, such as the settings, and must not take the focus from it
+    if (document.querySelector('[role="dialog"], [role="menu"], [role="listbox"]')) chain.run();
+    else chain.focus().run();
     // Once for each document, the text that was read is the one that decides
   }, [editor, doc.id]);
 

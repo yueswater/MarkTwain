@@ -17,5 +17,8 @@
     "cancel": "Cancel",
     "save": "Save",
     "delete": "Delete"
+  },
+  "a11y": {
+    "skipToText": "Skip to the text"
   }
 }

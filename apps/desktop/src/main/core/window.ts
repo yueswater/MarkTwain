@@ -1,6 +1,6 @@
 import { app, BrowserWindow, shell } from "electron";
 import { join } from "node:path";
-import { HEADLESS_ENV, MIN_WINDOW_SIZE, RENDERER_URL_ENV, WINDOW_SIZE } from "../config/app.config";
+import { HEADLESS_ENV, MIN_WINDOW_SIZE, RENDERER_URL_ENV, TEST_NO_ANIMATION_ENV, WINDOW_SIZE } from "../config/app.config";
 
 /** Window icon for Windows and Linux, macOS uses the app icon. Packaged as resources/icon.png. */
 function windowIconPath(): string {
@@ -33,6 +33,13 @@ export function createMainWindow(): BrowserWindow {
     if (/^(https?|mailto):/i.test(url)) void shell.openExternal(url);
     return { action: "deny" };
   });
+
+  // A window that is not shown does not run an animation to its end, so a menu would stay half open for a test, and in a shown window a test would wait for each one. A test run has no opening and closing animation.
+  if (headless || process.env[TEST_NO_ANIMATION_ENV] === "1") {
+    win.webContents.on("did-finish-load", () => {
+      void win.webContents.insertCSS("*, *::before, *::after { animation-duration: 0s !important; animation-delay: 0s !important; }");
+    });
+  }
 
   const devUrl = process.env[RENDERER_URL_ENV];
   if (devUrl) {

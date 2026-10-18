@@ -55,7 +55,7 @@ export function LineGutter({ editor, container, layoutKey }: Props) {
         <span
           key={index}
           data-line={index + 1}
-          className="absolute w-12 text-right font-mono text-[11px] text-muted-foreground/70 tabular-nums"
+          className="absolute w-12 text-right font-mono text-[11px] text-muted-foreground tabular-nums"
           style={{ top: line.top, height: line.height, lineHeight: `${Math.min(line.height, 28)}px`, left: Math.max(right - 48, 0) }}
         >
           {index + 1}

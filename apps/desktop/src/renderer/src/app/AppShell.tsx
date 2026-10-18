@@ -37,6 +37,16 @@ export function AppShell({
 
   return (
     <div className="flex h-screen flex-col bg-background">
+      {/* The first stop of the Tab key, it saves the 40 stops of the toolbars and the sidebar for a person who comes for the text */}
+      {projectName !== null && (
+        <button
+          type="button"
+          className="sr-only rounded-md border bg-background px-3 py-1.5 text-sm focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50"
+          onClick={() => document.querySelector<HTMLElement>(".ProseMirror")?.focus()}
+        >
+          {t("a11y.skipToText", { ns: "common" })}
+        </button>
+      )}
       <header className="flex h-12 shrink-0 items-center gap-2 border-b px-4">
         <img src={logo} alt="" className="size-7" />
         <h1 className="text-sm font-semibold tracking-tight">{t("app.name")}</h1>

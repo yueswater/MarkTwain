@@ -4,7 +4,10 @@ import { closeProject, createProject } from "../../support/project";
 
 /** Opens the settings window on a page of the thesis section. */
 async function openThesisSettings(page: import("@playwright/test").Page, name = "基本資料"): Promise<void> {
-  const dialog = page.getByRole("dialog");
+  // The dialog about the thesis of a new project can still be closing, so only the dialog of the settings counts
+  const dialog = page.getByRole("dialog", { name: "設定" });
+  // A list that was just chosen from is still closing and hides the dialog from the roles for a moment
+  await expect(page.getByRole("listbox")).toHaveCount(0);
   if (!(await dialog.isVisible())) await page.getByRole("button", { name: "設定", exact: true }).click();
   await dialog.getByRole("button", { name, exact: true }).click();
 }

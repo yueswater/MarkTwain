@@ -66,3 +66,18 @@ test("shortcuts of thesis actions work in the editor, the buttons show their key
   await page.keyboard.press("Escape");
   await expect(sheet).toBeHidden();
 });
+
+test("the first stop of the Tab key leads to the text", async ({ launch }) => {
+  const { app } = await launch({ name: "跳到內文" });
+  const page = await app.firstWindow();
+  await createProject(page);
+  // The button is the first thing in the shell, it shows only while it has the focus, and Enter takes the focus to the text
+  await expect(page.getByRole("complementary", { name: "Documents" })).toBeVisible();
+  const first = await page.evaluate(() => document.querySelector("#root > div > button")?.textContent ?? "");
+  expect(first).toBe("Skip to the text");
+  const skip = page.getByRole("button", { name: "Skip to the text" });
+  await skip.focus();
+  await expect(skip).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(page.locator(".ProseMirror")).toBeFocused();
+});

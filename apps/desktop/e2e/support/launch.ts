@@ -53,6 +53,7 @@ export async function launchApp(options: LaunchOptions = {}): Promise<Session> {
     env: {
       ...process.env,
       ...(headed ? {} : { MARKTWAIN_HEADLESS: "1" }),
+      MARKTWAIN_TEST_NO_ANIMATION: "1",
       // A new chapter starts empty in the tests, the tests of the default heading set this to an empty text
       MARKTWAIN_TEST_NO_DEFAULT_HEADING: "1",
       MARKTWAIN_TEST_DIALOG_PATH: file,

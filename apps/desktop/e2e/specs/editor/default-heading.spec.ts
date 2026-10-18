@@ -45,7 +45,10 @@ test("the heading that nobody touched follows the language of the thesis, the on
   await dialog.getByRole("button", { name: "School and format", exact: true }).click();
   await dialog.getByRole("combobox", { name: "Language of the thesis" }).click();
   await page.getByRole("option", { name: "English" }).click();
+  // The list that was chosen from is still closing, and an Escape that comes in the meantime does not reach the window
+  await expect(page.getByRole("listbox")).toHaveCount(0);
   await page.keyboard.press("Escape");
+  await expect(dialog).toBeHidden();
 
   await sidebar.getByRole("button", { name: "Chapter 1", exact: true }).click();
   await expect(editor.locator("h1")).toHaveText("Introduction");
@@ -64,7 +67,10 @@ test("a chapter that is open follows a new language of the thesis at once, and w
   await dialog.getByRole("button", { name: "School and format", exact: true }).click();
   await dialog.getByRole("combobox", { name: "Language of the thesis" }).click();
   await page.getByRole("option", { name: "English" }).click();
+  // The list that was chosen from is still closing, and an Escape that comes in the meantime does not reach the window
+  await expect(page.getByRole("listbox")).toHaveCount(0);
   await page.keyboard.press("Escape");
+  await expect(dialog).toBeHidden();
   // The editor was open on the old heading, it is made again from what the language changed
   await expect(editor.locator("h1")).toHaveText("Introduction");
   await page.waitForTimeout(1500);
