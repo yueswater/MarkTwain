@@ -125,7 +125,7 @@ test("the PDF and the whole Typst project can be exported", async ({ launch }) =
   await page.getByRole("button", { name: "Preview" }).click();
   // The PDF is built at export time, no preview is needed first
   await page.getByRole("button", { name: "Export" }).click();
-  await page.getByRole("menuitem", { name: "Export draft PDF…" }).click();
+  await page.getByRole("menuitem", { name: "Export draft PDF..." }).click();
   // A new project has an empty cover, which is asked about first
   await page.getByTestId("export-check").getByRole("button", { name: "Export anyway" }).click();
   await expect(page.getByRole("status").filter({ hasText: "Exported to" })).toBeVisible();
@@ -137,7 +137,7 @@ test("the PDF and the whole Typst project can be exported", async ({ launch }) =
   await expect(page2.getByRole("complementary", { name: "Documents" })).toBeVisible();
   await page2.getByRole("button", { name: "Preview" }).click();
   await page2.getByRole("button", { name: "Export" }).click();
-  await page2.getByRole("menuitem", { name: "Export Typst project…" }).click();
+  await page2.getByRole("menuitem", { name: "Export Typst project..." }).click();
   await expect(page2.getByRole("status").filter({ hasText: "Exported to" })).toBeVisible();
   const project = join(parent, "論文-typst");
   expect(readFileSync(join(project, "contents/chapter01.typ"), "utf8")).toContain("= 緒論");

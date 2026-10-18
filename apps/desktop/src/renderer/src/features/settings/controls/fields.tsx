@@ -2,6 +2,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { Rich } from "../../../shared/rich";
 
 type SettingsRowProps = {
   label: string;
@@ -26,7 +27,7 @@ export function SettingsRow({ label, hint, unit, reset, control, id, below }: Se
             <p className="text-sm font-medium">{label}</p>
             {reset}
           </div>
-          {hint ? <p className="text-xs text-muted-foreground">{hint}</p> : null}
+          {hint ? <p className="text-xs text-muted-foreground"><Rich text={hint} /></p> : null}
           {unit ? <p className="text-xs text-muted-foreground">{t("unitHint", { unit: t(`unitNames.${unit === "%" ? "percent" : unit}`, { defaultValue: unit }) })}</p> : null}
         </div>
         <div className="shrink-0">{control}</div>

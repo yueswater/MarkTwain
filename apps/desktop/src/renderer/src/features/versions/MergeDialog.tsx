@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import type { ChoiceInput, MergePreview } from "../../../../shared/ipc";
 import { ConflictResolver } from "./ConflictResolver";
 import { countResolved } from "./merge-choices";
+import { Rich } from "../../shared/rich";
 
 type Props = {
   /** The branch that is merged into the main line, the one that is open */
@@ -54,7 +55,7 @@ export function MergeDialog({ source, dirty, busy, error, preview, onMerge, onSa
         </DialogHeader>
         {error && (
           <p role="alert" className="text-sm text-destructive">
-            {error}
+            <Rich text={error} />
           </p>
         )}
         {conflicts.length > 0 && (

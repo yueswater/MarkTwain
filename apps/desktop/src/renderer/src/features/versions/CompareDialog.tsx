@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import type { CompareView } from "../../../../shared/ipc";
 import { ChangeList } from "./ChangeList";
+import { Rich } from "../../shared/rich";
 
 type Props = {
   /** The name of the version, in the language of the person */
@@ -31,7 +32,7 @@ export function CompareDialog({ label, pair = false, load, error, onClose }: Pro
         </DialogHeader>
         {error && (
           <p role="alert" className="text-sm text-destructive">
-            {error}
+            <Rich text={error} />
           </p>
         )}
         <div className="max-h-[65vh] overflow-y-auto pr-1" data-testid="compare-changes">

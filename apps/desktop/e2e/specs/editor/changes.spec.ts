@@ -10,7 +10,7 @@ test("what was added, changed and taken away since the saved version is marked i
   const bar = page.getByTestId("branch-bar");
   const save = async (message: string) => {
     await bar.click();
-    await page.getByRole("menuitem", { name: "Save a version…" }).click();
+    await page.getByRole("menuitem", { name: "Save a version..." }).click();
     await page.getByLabel("What did you change?").fill(message);
     await page.getByRole("dialog").getByRole("button", { name: "Save" }).click();
     await expect(page.getByRole("dialog")).toBeHidden();
@@ -106,13 +106,13 @@ test("what was added, changed and taken away since the saved version is marked i
 
   // A version needs a description, as a commit needs a message
   await bar.click();
-  await page.getByRole("menuitem", { name: "Save a version…" }).click();
+  await page.getByRole("menuitem", { name: "Save a version..." }).click();
   await expect(page.getByRole("dialog").getByRole("button", { name: "Save" })).toBeDisabled();
   await page.keyboard.press("Escape");
 
   // What was typed can be thrown away, and the editor is as the version has it, with no marks
   await bar.click();
-  await page.getByRole("menuitem", { name: "Go back to the last saved version…" }).click();
+  await page.getByRole("menuitem", { name: "Go back to the last saved version..." }).click();
   // The dialog says how much is lost
   await expect(page.getByRole("dialog")).toContainText(/\d+ changes that you made since are lost/);
   await page.getByRole("dialog").getByRole("button", { name: "Discard" }).click();
@@ -120,5 +120,5 @@ test("what was added, changed and taken away since the saved version is marked i
   await expect(editor).toContainText("Second paragraph");
   await expect(editor.locator(".change-ghost")).toHaveCount(0);
   await bar.click();
-  await expect(page.getByRole("menuitem", { name: "Go back to the last saved version…" })).toHaveCount(0);
+  await expect(page.getByRole("menuitem", { name: "Go back to the last saved version..." })).toHaveCount(0);
 });

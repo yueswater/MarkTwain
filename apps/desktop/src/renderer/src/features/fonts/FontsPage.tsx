@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import type { FontAddResult, FontSource } from "../../../../shared/ipc";
 import { FontPreview } from "./FontPreview";
 import { useFonts } from "./use-fonts";
+import { Rich } from "../../shared/rich";
 
 const SOURCES: readonly (FontSource | "all")[] = ["all", "project", "template", "system"];
 const SIZE_WARNING = 100 * 1024 * 1024;
@@ -144,7 +145,7 @@ export function FontsPage() {
 
         {blocked && (
           <div role="alert" className="grid gap-2 rounded-md border px-3 py-2 text-sm">
-            <p>{t("fonts.inUse", { name: blocked.family, where: blocked.usedIn.map((path) => t(`field.${path}`)).join("、") })}</p>
+            <p><Rich text={t("fonts.inUse", { name: blocked.family, where: blocked.usedIn.map((path) => t(`field.${path}`)).join("、") })} /></p>
             <div className="flex gap-2">
               <Button
                 type="button"

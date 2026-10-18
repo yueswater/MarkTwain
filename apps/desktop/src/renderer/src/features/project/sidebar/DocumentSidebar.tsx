@@ -36,6 +36,7 @@ import type { DocumentSummary } from "../../../../../shared/ipc/index";
 import { DeleteDialog } from "./DeleteDialog";
 import { documentTitle } from "./document-title";
 import { RenameDialog } from "./RenameDialog";
+import { plain } from "../../../shared/rich";
 
 type Props = {
   documents: DocumentSummary[];
@@ -244,7 +245,7 @@ export function DocumentSidebar({
                 variant="ghost"
                 size="icon-xs"
                 data-no-drag
-                aria-label={t("document.actions", { title })}
+                aria-label={plain(t("document.actions", { title }))}
                 className="absolute top-1 right-1 opacity-0 group-hover/item:opacity-100 focus-visible:opacity-100 data-[state=open]:opacity-100"
               >
                 <MoreHorizontalIcon aria-hidden="true" />

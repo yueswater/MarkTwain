@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Rich } from "../../shared/rich";
 
 type Props = {
   busy: boolean;
@@ -38,7 +39,7 @@ export function NewBranchDialog({ busy, error, onSubmit, onClose }: Props) {
           </div>
           {error && (
             <p role="alert" className="text-sm text-destructive">
-              {error}
+              <Rich text={error} />
             </p>
           )}
           <DialogFooter>

@@ -8,6 +8,7 @@ import type { LatexStatus, OutputEngine } from "../../../../../shared/ipc/index"
 import { api } from "../../../shared/api";
 import { TypstLogo } from "./TypstLogo";
 import { WordLogo } from "./WordLogo";
+import { plain, Rich } from "../../../shared/rich";
 
 type Props = {
   open: boolean;
@@ -63,7 +64,7 @@ export function EngineDialog({ open, onCancel, onConfirm }: Props) {
           {options.map((option) => (
             <label
               key={option.id}
-              title={option.hint}
+              title={option.hint === undefined ? undefined : plain(option.hint)}
               className={cn(
                 "relative flex aspect-square cursor-pointer flex-col items-center justify-center gap-4 rounded-xl border-2 bg-background px-2 text-center transition-colors",
                 engine === option.id ? "border-foreground" : "border-border hover:bg-muted/50",
@@ -89,7 +90,7 @@ export function EngineDialog({ open, onCancel, onConfirm }: Props) {
         </div>
         {problem && (
           <p role="status" className="text-xs text-muted-foreground">
-            {problem}
+            <Rich text={problem} />
           </p>
         )}
         <p role="note" className="text-xs text-muted-foreground">

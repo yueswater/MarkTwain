@@ -13,7 +13,7 @@ test("the changes of a version are shown in green and red, and a merge with a co
   const menu = () => bar.click();
   const save = async (message: string) => {
     await menu();
-    await page.getByRole("menuitem", { name: "Save a version…" }).click();
+    await page.getByRole("menuitem", { name: "Save a version..." }).click();
     await page.getByLabel("What did you change?").fill(message);
     await page.getByRole("dialog").getByRole("button", { name: "Save" }).click();
     await expect(page.getByRole("dialog")).toBeHidden();
@@ -28,7 +28,7 @@ test("the changes of a version are shown in green and red, and a merge with a co
   await expect(editor).toContainText("beta");
   await save("Base");
   await menu();
-  await page.getByRole("menuitem", { name: "Try a change in a copy…" }).click();
+  await page.getByRole("menuitem", { name: "Try a change in a copy..." }).click();
   await page.getByLabel("Name of the change").fill("work");
   await page.getByRole("dialog").getByRole("button", { name: "Try a change in a copy" }).click();
   await expect(bar).toContainText("work");
@@ -39,7 +39,7 @@ test("the changes of a version are shown in green and red, and a merge with a co
 
   // What the version changed: green for what was added, red for what was taken away
   await menu();
-  await page.getByRole("menuitem", { name: "Version history…" }).click();
+  await page.getByRole("menuitem", { name: "Version history..." }).click();
   await page.getByRole("listitem").filter({ hasText: "Edited in the change" }).getByRole("button", { name: "What changed" }).click();
   const changes = page.getByTestId("compare-changes");
   await expect(changes.locator('[data-change="added"]')).toContainText("delta");
@@ -64,7 +64,7 @@ test("the changes of a version are shown in green and red, and a merge with a co
 
   // The merge shows the two sides and the base, and waits for a choice
   await menu();
-  await page.getByRole("menuitem", { name: "Merge into the main line…" }).click();
+  await page.getByRole("menuitem", { name: "Merge into the main line..." }).click();
   const dialog = page.getByRole("dialog");
   const merge = dialog.getByRole("button", { name: "Merge", exact: true });
   const conflict = dialog.locator("[data-conflict]").first();

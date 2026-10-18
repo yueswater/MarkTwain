@@ -18,7 +18,7 @@ test("the native menu follows the interface language and drives the app", async 
 
   // Chinese menu, macOS also has a first menu named after the app
   expect((await labels()).filter(Boolean)).toEqual(expect.arrayContaining(["檔案", "編輯", "檢視", "視窗", "說明"]));
-  expect(await fileMenuItems()).toEqual(expect.arrayContaining(["新增專案…", "開啟專案…", "關閉專案"]));
+  expect(await fileMenuItems()).toEqual(expect.arrayContaining(["新增專案...", "開啟專案...", "關閉專案"]));
 
   // File, New Project triggers the new project flow in the renderer, which asks for the output first
   await app.evaluate(({ Menu }) => {
@@ -41,6 +41,6 @@ test("the native menu follows the interface language and drives the app", async 
 
   // The menu follows a language switch
   await page.getByTestId("language-toggle").click();
-  await expect.poll(fileMenuItems).toEqual(expect.arrayContaining(["New Project…", "Open Project…", "Close Project"]));
+  await expect.poll(fileMenuItems).toEqual(expect.arrayContaining(["New Project...", "Open Project...", "Close Project"]));
   expect((await labels()).filter(Boolean)).toEqual(expect.arrayContaining(["File", "Edit", "View", "Window", "Help"]));
 });

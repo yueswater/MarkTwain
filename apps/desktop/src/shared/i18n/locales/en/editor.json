@@ -1,13 +1,13 @@
 {
   "save": {
     "dirty": "Unsaved changes",
-    "saving": "Saving…",
+    "saving": "Saving...",
     "saved": "Saved",
     "error": "Could not save",
     "errorLong": "Could not save. Your text is still here and saving is tried again, check that the file can be written to.",
     "cannotClose": "Your text could not be saved, so the project stays open. Check that the file and its folder can be written to. If you close it again now, the text that was not saved is lost."
   },
-  "placeholder": "Start writing…",
+  "placeholder": "Start writing...",
   "toolbar": {
     "label": "Formatting",
     "undo": "Undo",
@@ -55,21 +55,21 @@
     "inlineTitle": "Inline formula",
     "blockTitle": "Display formula",
     "done": "Done ↵",
-    "hintInline": "A formula inside the line. Enter confirms, Esc cancels.",
-    "hintBlock": "A formula on its own line. Enter confirms, Shift+Enter adds a line, Esc cancels.",
+    "hintInline": "A formula inside the line. <c>Enter</c> confirms, <c>Esc</c> cancels.",
+    "hintBlock": "A formula on its own line. <c>Enter</c> confirms, <c>Shift+Enter</c> adds a line, <c>Esc</c> cancels.",
     "near": "Near: {{near}}"
   },
   "footnote": {
     "insertTitle": "Insert footnote",
     "editTitle": "Edit footnote",
     "text": "Footnote text",
-    "hint": "Inline Markdown is allowed, for example **bold** or $x^2$."
+    "hint": "Inline Markdown is allowed, for example <c>**bold**</c> or <c>$x^2$</c>."
   },
   "citation": {
     "insertTitle": "Insert citation",
     "editTitle": "Edit citation",
     "keys": "Other keys",
-    "keysHint": "Keys that are not in the bibliography yet. Separate several with commas, for example wang2020, lee2019.",
+    "keysHint": "Keys that are not in the bibliography yet. Separate several with commas, for example <c>wang2020, lee2019</c>.",
     "form": "Style",
     "pick": "Choose from the bibliography",
     "filter": "Search by author, title or key",
@@ -153,8 +153,8 @@
     "rowHeight": "Row height",
     "rowHeightTitle": "Row height",
     "rowHeightLabel": "Height",
-    "rowHeightHint": "A length such as 30pt, 1cm or 2em. Leave empty for automatic height.",
-    "rowHeightInvalid": "Use a number with a unit such as pt, cm, mm, in or em.",
+    "rowHeightHint": "A length such as <c>30pt</c>, <c>1cm</c> or <c>2em</c>. Leave empty for automatic height.",
+    "rowHeightInvalid": "Use a number with a unit such as <c>pt</c>, <c>cm</c>, <c>mm</c>, <c>in</c> or <c>em</c>.",
     "alignColumnLeft": "Align column left",
     "alignColumnCenter": "Align column center",
     "alignColumnRight": "Align column right",
@@ -394,7 +394,7 @@
     "footnote": "Footnote",
     "broken": "This reference points to nothing.",
     "goTo": "Go to",
-    "moreRows": "…more rows",
+    "moreRows": "...more rows",
     "citationMissing": "This entry is not in the bibliography."
   },
   "statement": {
@@ -488,8 +488,8 @@
   },
   "blockHandle": "Drag to move this block",
   "flip": {
-    "next": "Keep scrolling down to open “{{title}}”",
-    "previous": "Keep scrolling up to go back to “{{title}}”"
+    "next": "Keep scrolling down to open <b>{{title}}</b>",
+    "previous": "Keep scrolling up to go back to <b>{{title}}</b>"
   },
   "landscape": {
     "head": "Landscape page, what is here is printed on a page turned sideways",

@@ -10,6 +10,7 @@ import {
 } from "@marktwain/schema";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { TagInput } from "@/components/ui/tag-input";
@@ -26,6 +27,7 @@ import { api } from "../../../shared/api";
 import { errorMessage } from "../../../shared/error-message";
 import { Autosaver, type SaveStatus } from "../../../shared/autosaver";
 import { OptionPicker } from "./OptionPicker";
+import { Rich } from "../../../shared/rich";
 
 const NO_SCHOOL = "none";
 
@@ -88,7 +90,7 @@ export function ConfigForm({ onSaved, onLanguageChanged, embedded = false, part 
   if (error) {
     return (
       <p role="alert" className="p-8 text-sm text-destructive select-text">
-        {error}
+        <Rich text={error} />
       </p>
     );
   }
@@ -117,14 +119,17 @@ export function ConfigForm({ onSaved, onLanguageChanged, embedded = false, part 
         hint={extra?.hint}
         error={showIssue ? t(`issue.${issue.code}`) : undefined}
       >
-        <Input
-          id={`config-${field}`}
-          type={extra?.type}
-          value={fields[field]}
-          placeholder={extra?.placeholder}
-          aria-invalid={showIssue ? true : undefined}
-          onChange={(event) => update({ [field]: event.target.value })}
-        />
+        {extra?.type === "date" ? (
+          <DatePicker id={`config-${field}`} value={fields[field]} aria-invalid={showIssue ? true : undefined} onChange={(value) => update({ [field]: value })} />
+        ) : (
+          <Input
+            id={`config-${field}`}
+            value={fields[field]}
+            placeholder={extra?.placeholder}
+            aria-invalid={showIssue ? true : undefined}
+            onChange={(event) => update({ [field]: event.target.value })}
+          />
+        )}
       </Field>
     );
   };
@@ -319,10 +324,10 @@ export function Field({
     <div className="grid gap-1.5">
       <Label htmlFor={id}>{label}</Label>
       {children}
-      {hint && !error && <p className="text-xs text-muted-foreground">{hint}</p>}
+      {hint && !error && <p className="text-xs text-muted-foreground"><Rich text={hint} /></p>}
       {error && (
         <p role="alert" className="text-xs text-destructive">
-          {error}
+          <Rich text={error} />
         </p>
       )}
     </div>

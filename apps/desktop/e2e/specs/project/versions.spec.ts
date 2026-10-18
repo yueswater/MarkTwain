@@ -18,7 +18,7 @@ test("a version is saved, a change is started and opened again, the history rest
   await page.keyboard.type("First draft");
   await expect(bar).toHaveAttribute("data-dirty", "true");
   await menu();
-  await page.getByRole("menuitem", { name: "Save a version…" }).click();
+  await page.getByRole("menuitem", { name: "Save a version..." }).click();
   await page.getByLabel("What did you change?").fill("The first draft");
   await page.getByRole("dialog").getByRole("button", { name: "Save" }).click();
   await expect(page.getByRole("dialog")).toBeHidden();
@@ -26,7 +26,7 @@ test("a version is saved, a change is started and opened again, the history rest
 
   // A change needs a name, and a name that is used is refused
   await menu();
-  await page.getByRole("menuitem", { name: "Try a change in a copy…" }).click();
+  await page.getByRole("menuitem", { name: "Try a change in a copy..." }).click();
   await expect(page.getByRole("dialog").getByRole("button", { name: "Try a change in a copy" })).toBeDisabled();
   await page.getByLabel("Name of the change").fill("main");
   await page.getByRole("dialog").getByRole("button", { name: "Try a change in a copy" }).click();
@@ -41,7 +41,7 @@ test("a version is saved, a change is started and opened again, the history rest
   await page.keyboard.press("ControlOrMeta+End");
   await page.keyboard.type(" and a rewrite");
   await menu();
-  await page.getByRole("menuitem", { name: "Save a version…" }).click();
+  await page.getByRole("menuitem", { name: "Save a version..." }).click();
   await page.getByLabel("What did you change?").fill("Rewrote it");
   await page.getByRole("dialog").getByRole("button", { name: "Save" }).click();
   await expect(bar).toHaveAttribute("data-dirty", "false");
@@ -60,7 +60,7 @@ test("a version is saved, a change is started and opened again, the history rest
 
   // The history lists the versions, a restore adds a new one
   await menu();
-  await page.getByRole("menuitem", { name: "Version history…" }).click();
+  await page.getByRole("menuitem", { name: "Version history..." }).click();
   const history = page.getByRole("dialog");
   await expect(history.getByRole("listitem")).toHaveCount(3);
   await expect(history.getByRole("listitem").first()).toContainText("Rewrote it");
@@ -77,9 +77,9 @@ test("a version is saved, a change is started and opened again, the history rest
 
   // Discarding the change that is open goes back to the main line, and the main line cannot be discarded
   await menu();
-  await page.getByRole("menuitem", { name: "Discard this change…" }).click();
+  await page.getByRole("menuitem", { name: "Discard this change..." }).click();
   await page.getByRole("dialog").getByRole("button", { name: "Discard" }).click();
   await expect(bar).toContainText("Main line");
   await menu();
-  await expect(page.getByRole("menuitem", { name: "Discard this change…" })).toHaveCount(0);
+  await expect(page.getByRole("menuitem", { name: "Discard this change..." })).toHaveCount(0);
 });

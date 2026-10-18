@@ -1,13 +1,13 @@
 {
   "save": {
     "dirty": "尚未儲存",
-    "saving": "儲存中…",
+    "saving": "儲存中...",
     "saved": "已儲存",
     "error": "無法儲存",
-    "errorLong": "無法儲存。內容仍保留在編輯器中，系統將自動重試，請確認檔案可寫入。",
-    "cannotClose": "內容尚未寫入檔案，因此未關閉專案。請確認檔案與所在資料夾可寫入。若現在再次關閉，未儲存的內容將會遺失。"
+    "errorLong": "無法儲存。內容仍在編輯器中，將自動重試，請確認檔案可寫入。",
+    "cannotClose": "內容尚未寫入檔案，未關閉專案。請確認檔案可寫入；再次關閉將遺失未儲存的內容。"
   },
-  "placeholder": "開始撰寫…",
+  "placeholder": "開始撰寫...",
   "toolbar": {
     "label": "格式",
     "undo": "復原",
@@ -55,26 +55,26 @@
     "inlineTitle": "行內公式",
     "blockTitle": "獨立公式",
     "done": "完成 ↵",
-    "hintInline": "嵌在文字行中的公式。Enter 完成，Esc 取消。",
-    "hintBlock": "單獨成行的公式。Enter 完成，Shift+Enter 換行，Esc 取消。",
+    "hintInline": "嵌在文字行中的公式。<c>Enter</c> 完成，<c>Esc</c> 取消。",
+    "hintBlock": "單獨成行的公式。<c>Enter</c> 完成，<c>Shift+Enter</c> 換行，<c>Esc</c> 取消。",
     "near": "錯誤位置附近：{{near}}"
   },
   "footnote": {
     "insertTitle": "插入腳註",
     "editTitle": "編輯腳註",
     "text": "腳註內容",
-    "hint": "可以使用簡單格式，例如 **粗體** 或 $x^2$。"
+    "hint": "可使用簡單格式，例如 <c>**粗體**</c> 或 <c>$x^2$</c>。"
   },
   "citation": {
     "insertTitle": "插入文獻引用",
     "editTitle": "編輯文獻引用",
     "keys": "其他引用代碼",
-    "keysHint": "尚未收錄於參考文獻的代碼，多個以逗號分隔，例如 wang2020, lee2019。",
+    "keysHint": "尚未收錄的代碼，以逗號分隔，例如 <c>wang2020, lee2019</c>。",
     "form": "樣式",
     "pick": "從參考文獻選擇",
     "filter": "依作者、題名或代碼搜尋",
     "noMatch": "沒有符合的文獻。",
-    "noBibliography": "參考文獻目前是空的。請至側邊欄的「參考文獻」新增，或在下方直接輸入代碼。沒有對應文獻的引用在 PDF 中會以純文字顯示。",
+    "noBibliography": "參考文獻為空。請至側邊欄新增，或直接輸入代碼。無對應文獻的引用會以純文字顯示。",
     "forms": {
       "paren": "（作者，年份）",
       "prose": "作者（年份）",
@@ -88,7 +88,7 @@
     "target": "目標",
     "labeled": "已命名",
     "unlabeled": "尚未命名，會自動命名",
-    "none": "目前沒有可引用的目標。請先加入已命名的標題、圖、表或公式。",
+    "none": "沒有可引用的目標，請先加入已命名的標題、圖、表或公式。",
     "kind": {
       "cha": "章",
       "sec": "節",
@@ -134,7 +134,7 @@
     "deleteColumn": "刪除欄",
     "toggleHeader": "切換標題列",
     "replaceTitle": "更換表格範本",
-    "replaceHint": "表格內容將換成範本的樣式，表號、說明、附註、位置與大小維持不變。若換錯，可按復原。",
+    "replaceHint": "套用範本樣式，表號、說明、附註、位置與大小不變。換錯可按復原。",
     "replace": "套用",
     "changeTemplate": "更換範本",
     "handle": "選取整個表格，拖曳可移動",
@@ -153,8 +153,8 @@
     "rowHeight": "列高",
     "rowHeightTitle": "列高",
     "rowHeightLabel": "高度",
-    "rowHeightHint": "長度，例如 30pt、1cm 或 2em。留空表示自動高度。",
-    "rowHeightInvalid": "請輸入數字加單位，例如 pt、cm、mm、in 或 em。",
+    "rowHeightHint": "長度，例如 <c>30pt</c>、<c>1cm</c> 或 <c>2em</c>。留空表示自動高度。",
+    "rowHeightInvalid": "請輸入數字加單位，例如 <c>pt</c>、<c>cm</c>、<c>mm</c>、<c>in</c> 或 <c>em</c>。",
     "alignColumnLeft": "整欄靠左",
     "alignColumnCenter": "整欄置中",
     "alignColumnRight": "整欄靠右",
@@ -179,7 +179,7 @@
     "tableTitle": "表名",
     "codeTitle": "程式碼標題",
     "captionLabel": "標題",
-    "captionHint": "可以使用簡單格式，例如粗體、斜體、$公式$。留空表示沒有標題。",
+    "captionHint": "可使用簡單格式，例如粗體、斜體、<c>$公式$</c>。留空表示沒有標題。",
     "notes": "附註",
     "notesHint": "顯示在表格下方，例如資料來源。",
     "save": "儲存"
@@ -188,7 +188,7 @@
     "insertTitle": "插入圖片",
     "editTitle": "編輯圖片",
     "caption": "圖名",
-    "captionHint": "可以使用簡單格式，例如粗體、斜體、$公式$。沒有圖名的圖不會有編號。",
+    "captionHint": "可使用簡單格式，例如粗體、斜體、<c>$公式$</c>。沒有圖名的圖不會有編號。",
     "width": "寬度",
     "widthAuto": "原始大小",
     "captionPlaceholder": "圖名，選填",
@@ -394,14 +394,14 @@
     "footnote": "腳註",
     "broken": "此引用找不到目標。",
     "goTo": "前往",
-    "moreRows": "…還有更多列",
+    "moreRows": "...還有更多列",
     "citationMissing": "找不到此文獻。"
   },
   "statement": {
     "editTitle": "編輯區塊",
     "kind": "種類",
     "titleLabel": "標題（選填）",
-    "titleHint": "顯示於編號之後，例如「定義 1（範數）」。",
+    "titleHint": "顯示於編號之後，例如<b>定義 1（範數）</b>。",
     "save": "儲存",
     "unwrap": "移除區塊外框",
     "kinds": {
@@ -425,7 +425,7 @@
     },
     "near": {
       "name": "靠近文字",
-      "hint": "盡量靠近引用它的文字。Typst 不支援此選項，輸出時視同自動。"
+      "hint": "盡量靠近引用處。Typst 不支援，視同自動。"
     },
     "top": {
       "name": "頁面頂端",
@@ -437,7 +437,7 @@
     },
     "page": {
       "name": "獨立一頁",
-      "hint": "放在獨立的頁面。Typst 不支援此選項，輸出時放在頁面頂端。"
+      "hint": "獨立一頁。Typst 不支援，放在頁面頂端。"
     },
     "here": {
       "name": "固定在此",
@@ -488,8 +488,8 @@
   },
   "blockHandle": "拖曳以移動此區塊",
   "flip": {
-    "next": "繼續向下捲動，前往「{{title}}」",
-    "previous": "繼續向上捲動，回到「{{title}}」"
+    "next": "繼續向下捲動，前往<b>{{title}}</b>",
+    "previous": "繼續向上捲動，回到<b>{{title}}</b>"
   },
   "landscape": {
     "head": "橫向頁面，此處的內容會印在橫向頁面上",
@@ -499,8 +499,8 @@
     "revert": "還原這處"
   },
   "abstract": {
-    "headZh": "中文摘要，印在「摘要」標題下，關鍵字取自論文設定的中文關鍵字",
-    "headEn": "英文摘要，印在「Abstract」標題下，關鍵字取自論文設定的英文關鍵字",
+    "headZh": "中文摘要，印在<b>摘要</b>標題下，關鍵字取自論文設定",
+    "headEn": "英文摘要，印在 <b>Abstract</b> 標題下，關鍵字取自論文設定",
     "remove": "移除此區段，保留其中的內容"
   }
 }

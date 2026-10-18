@@ -18,6 +18,7 @@ import { SettingsDialog } from "../features/settings/SettingsDialog";
 import type { SettingsPageId } from "../features/settings/settings-pages";
 import { ShortcutsDialog } from "../features/shortcuts/ShortcutsDialog";
 import { AppShell } from "./AppShell";
+import { Rich } from "../shared/rich";
 
 export function App() {
   const { t, i18n } = useTranslation();
@@ -125,7 +126,7 @@ export function App() {
     >
       {error && (
         <p role="alert" className="border-b bg-destructive/5 px-4 py-2 text-sm text-destructive select-text">
-          {error}
+          <Rich text={error} />
         </p>
       )}
       {/* The page never scrolls, each panel scrolls inside this frame */}

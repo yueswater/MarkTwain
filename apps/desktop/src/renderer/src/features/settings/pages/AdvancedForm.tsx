@@ -21,6 +21,7 @@ import { FontSelect } from "../controls/FontSelect";
 import { NumberField, SettingsHeading, SettingsRow } from "../controls/fields";
 import { CaptionPicker, HeadingsPreview, OutlinePreview, PageDiagram, PatternInput, TitlePreview, UncitedPreview, WithExample } from "../controls/SettingsIllustrations";
 import { perChapterExample, type Margins } from "../settings-previews";
+import { Rich } from "../../../shared/rich";
 
 const FOLLOW = "__follow__";
 
@@ -77,7 +78,7 @@ export function AdvancedForm({ groups, state, error, onSave }: Props) {
   if (error && !state) {
     return (
       <p role="alert" className="text-sm text-destructive select-text">
-        {error}
+        <Rich text={error} />
       </p>
     );
   }
@@ -226,7 +227,7 @@ export function AdvancedForm({ groups, state, error, onSave }: Props) {
       <p className="mb-4 text-xs text-muted-foreground">{t("advancedHint")}</p>
       {error && (
         <p role="alert" className="mb-2 text-sm text-destructive select-text">
-          {error}
+          <Rich text={error} />
         </p>
       )}
       {groups.map((group) => (

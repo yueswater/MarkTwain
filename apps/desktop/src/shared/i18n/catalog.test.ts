@@ -43,5 +43,15 @@ describe("message catalog", () => {
         expect(placeholders(zhFlat[key] ?? "")).toEqual(placeholders(enFlat[key] ?? ""));
       }
     });
+
+    it(`${ns}：沒有引號，粗體與等寬字用成對的標記`, () => {
+      for (const flat of [zhFlat, enFlat]) {
+        for (const [key, text] of Object.entries(flat)) {
+          expect({ key, quoted: /[「」『』“”]/.test(text) }).toEqual({ key, quoted: false });
+          // What is left after the paired tags go must hold no tag, or one of them was left open
+          expect({ key, open: /<\/?[bc]>/.test(text.replace(/<(b|c)>(.*?)<\/\1>/g, "$2")) }).toEqual({ key, open: false });
+        }
+      }
+    });
   }
 });

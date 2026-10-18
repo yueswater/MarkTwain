@@ -5,7 +5,7 @@
   "description": "此資料將用於封面與題名頁。變更會自動儲存。",
   "save": {
     "dirty": "尚未儲存",
-    "saving": "儲存中…",
+    "saving": "儲存中...",
     "saved": "已儲存",
     "error": "無法儲存"
   },
@@ -47,8 +47,8 @@
     "institutePick": "系所"
   },
   "hint": {
-    "keywords": "按 Enter 或逗號加入，每個關鍵字會成為一個 # 標籤。",
-    "school": "依學校公開的規定整理，僅供參考，繳交前請再對照學校與系所最新的規定。留空則使用預設格式。"
+    "keywords": "按 <c>Enter</c> 或逗號加入。",
+    "school": "依學校公開規定整理，僅供參考，繳交前請再核對。留空則使用預設格式。"
   },
   "noSchool": "不套用學校格式（預設格式）",
   "issue": {
@@ -61,7 +61,7 @@
   "custom": "其他，自行輸入",
   "chooseCollege": "選擇學院",
   "chooseDepartment": "選擇系所",
-  "chooseSchoolFirst": "請先選擇學校，即可從清單選取學院與系所。",
+  "chooseSchoolFirst": "選擇學校後，可從清單選取學院與系所。",
   "customZh": "中文名稱",
   "customEn": "英文名稱",
   "degreeName": {
@@ -73,11 +73,11 @@
     "english": "英文"
   },
   "style": {
-    "apa": "APA，心理、教育、社會科學",
-    "harvard-cite-them-right": "Harvard，商管、社會科學",
-    "chicago-author-date": "Chicago，歷史、人文",
-    "mla": "MLA，文學、語言、藝術",
-    "ieee": "IEEE，資工、電機、工程",
-    "vancouver": "Vancouver，醫學、護理"
+    "apa": "APA‧心理、教育、社會科學",
+    "harvard-cite-them-right": "Harvard‧商管、社會科學",
+    "chicago-author-date": "Chicago‧歷史、人文",
+    "mla": "MLA‧文學、語言、藝術",
+    "ieee": "IEEE‧資工、電機、工程",
+    "vancouver": "Vancouver‧醫學、護理"
   }
 }

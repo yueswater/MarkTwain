@@ -55,7 +55,7 @@ export function buildRefOptions(
   for (const item of unlabeled) {
     const kind = refKindOf(item.kind);
     if (!kind) continue;
-    const body = item.text || "…";
+    const body = item.text || "...";
     const short = kind === "formula" ? shortenMath(body) : shortenText(body);
     out.push({
       value: `u:${item.pos}:${item.kind}`,
@@ -69,7 +69,7 @@ export function buildRefOptions(
   for (const item of remote) {
     const kind = refKindOf(item.kind);
     if (!kind) continue;
-    const body = item.text || "…";
+    const body = item.text || "...";
     const short = kind === "formula" ? shortenMath(body) : shortenText(body);
     out.push({
       value: `r:${item.documentId}:${item.block}:${item.kind}`,

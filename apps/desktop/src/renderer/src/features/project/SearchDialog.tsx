@@ -10,6 +10,7 @@ import type { DocumentSummary, SearchHit } from "../../../../shared/ipc";
 import { api } from "../../shared/api";
 import { errorMessage } from "../../shared/error-message";
 import { documentTitle } from "./sidebar/document-title";
+import { Rich } from "../../shared/rich";
 
 type Props = {
   open: boolean;
@@ -91,7 +92,7 @@ export function SearchDialog({ open, onOpenChange, documents, beforeSearch, onOp
         </div>
         {error && (
           <p role="alert" className="text-sm text-destructive">
-            {error}
+            <Rich text={error} />
           </p>
         )}
         <div className="min-h-0 flex-1 overflow-y-auto" aria-live="polite">

@@ -31,6 +31,7 @@ import type { CitationInfo } from "./references/ref-display";
 import { SlashCommand } from "./slash/slash-command";
 import type { SlashHandlers } from "./slash/slash-items";
 import type { TableLayoutSettings } from "./tables/use-table-layout";
+import { plain } from "../../shared/rich";
 
 /**
  * What the extensions of the editor read while it runs. The editor is made once for a document, so each value is a function that gives the current one,
@@ -82,7 +83,7 @@ export function buildExtensions(ctx: EditorContext): Extensions {
     ChangeMarks.configure({ getBase: () => ctx.savedBlocks(), enabled: () => ctx.prefs().showChanges, revertLabel: () => t()("changes.revert") }),
     LandscapeMarks.configure({
       label: () => t()("landscape.head"),
-      abstractLabel: (kind) => t()(kind === "abstract-zh" ? "abstract.headZh" : "abstract.headEn"),
+      abstractLabel: (kind) => plain(t()(kind === "abstract-zh" ? "abstract.headZh" : "abstract.headEn")),
       abstractRemoveLabel: () => t()("abstract.remove"),
       removeLabel: () => t()("landscape.remove"),
       onRemove: (pos) => {

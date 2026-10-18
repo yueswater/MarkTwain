@@ -1,5 +1,5 @@
 import "@fontsource-variable/geist";
-import "@fontsource-variable/geist-mono";
+import "@fontsource-variable/jetbrains-mono";
 import "@fontsource-variable/noto-sans-tc";
 import "katex/dist/katex.min.css";
 import "./styles/globals.css";

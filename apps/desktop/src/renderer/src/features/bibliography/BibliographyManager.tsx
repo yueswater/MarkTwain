@@ -12,6 +12,7 @@ import type { BibEntryInput, BibItem, DocumentSummary } from "../../../../shared
 import { documentTitle } from "../project/sidebar/document-title";
 import { fieldsFor, requiredNames, plainTitle } from "./bib-fields";
 import { useBibliography } from "./bibliography-context";
+import { Rich } from "../../shared/rich";
 
 type Draft = { originalKey: string | null; entry: BibEntryInput };
 
@@ -198,7 +199,7 @@ export function BibliographyManager({ documents, onOpenDocument, startKey, onSta
                 />
               </div>
             </div>
-            <p className="-mt-2 text-xs text-muted-foreground">{t("form.keyHint")}</p>
+            <p className="-mt-2 text-xs text-muted-foreground"><Rich text={t("form.keyHint")} /></p>
 
             {fieldsFor(draft.entry.type, draft.entry.fields).map((name) => (
               <div key={name} className="grid gap-2">
@@ -218,13 +219,13 @@ export function BibliographyManager({ documents, onOpenDocument, startKey, onSta
                   spellCheck={false}
                   onChange={(event) => setField(name, event.target.value)}
                 />
-                {name === "author" && <p className="text-xs text-muted-foreground">{t("authorHint")}</p>}
+                {name === "author" && <p className="text-xs text-muted-foreground"><Rich text={t("authorHint")} /></p>}
               </div>
             ))}
 
             {error && (
               <p role="alert" className="text-sm text-destructive">
-                {error}
+                <Rich text={error} />
               </p>
             )}
 

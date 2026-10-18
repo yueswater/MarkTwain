@@ -10,6 +10,7 @@ import type { FileListing, FilePlace } from "../../../../shared/ipc";
 import { api } from "../../shared/api";
 import { errorMessage } from "../../shared/error-message";
 import { crumbsOf, isValidName, joinPath, withProjectExtension } from "./path-helpers";
+import { Rich } from "../../shared/rich";
 
 const EXTENSION = "marktwain";
 
@@ -195,14 +196,14 @@ export function FilePicker({ request, onAnswer }: Props) {
             </div>
             {nameProblem && (
               <p role="alert" className="text-xs text-destructive">
-                {nameProblem}
+                <Rich text={nameProblem} />
               </p>
             )}
           </div>
         )}
         {error && (
           <p role="alert" className="text-xs text-destructive select-text">
-            {error}
+            <Rich text={error} />
           </p>
         )}
         <DialogFooter>

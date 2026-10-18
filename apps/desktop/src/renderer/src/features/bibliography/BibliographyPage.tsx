@@ -7,6 +7,7 @@ import type { DocumentSummary } from "../../../../shared/ipc";
 import { BibliographyManager } from "./BibliographyManager";
 import { BibliographySource } from "./BibliographySource";
 import { useBibliography } from "./bibliography-context";
+import { Rich } from "../../shared/rich";
 
 type Props = {
   documents: DocumentSummary[];
@@ -29,7 +30,7 @@ export function BibliographyPage({ documents, onOpenDocument }: Props) {
     const outcome = await importFile(file.name, await file.text());
     if (outcome) {
       // The counts, then the keys that were left out, so the person knows which ones to look at
-      const names = (keys: string[]) => (keys.length > 5 ? `${keys.slice(0, 5).join(", ")}…` : keys.join(", "));
+      const names = (keys: string[]) => (keys.length > 5 ? `${keys.slice(0, 5).join(", ")}...` : keys.join(", "));
       setMessage(
         [
           t("imported", { added: outcome.added, skipped: outcome.skipped.length, errors: outcome.errors.length }),
@@ -104,7 +105,7 @@ export function BibliographyPage({ documents, onOpenDocument }: Props) {
             {problems.map((text) => (
               <li key={text} className="flex items-center gap-2">
                 <TriangleAlertIcon className="size-4 shrink-0" aria-hidden="true" />
-                {text}
+                <Rich text={text} />
               </li>
             ))}
             {view.unknown.length > 0 && (
@@ -121,7 +122,7 @@ export function BibliographyPage({ documents, onOpenDocument }: Props) {
                       setStartKey(key);
                     }}
                   >
-                    {t("problems.createFrom", { key })}
+                    <Rich text={t("problems.createFrom", { key })} />
                   </button>
                 ))}
               </li>

@@ -33,9 +33,9 @@
       "unreadable": "The image file could not be read."
     },
     "bibliography": {
-      "invalid-key": "The key \"{{key}}\" cannot be used. Use letters, digits and _ : . - / +, and do not start with a label prefix such as fig:.",
-      "duplicate-key": "Another entry already uses the key \"{{key}}\".",
-      "not-found": "The entry \"{{key}}\" could not be found."
+      "invalid-key": "The key <b>{{key}}</b> cannot be used. Use letters, digits and <c>_ : . - / +</c>, and do not start with a label prefix such as <c>fig:</c>.",
+      "duplicate-key": "Another entry already uses the key <b>{{key}}</b>.",
+      "not-found": "The entry <b>{{key}}</b> could not be found."
     },
     "document": {
       "not-found": "The document could not be found.",
@@ -44,7 +44,7 @@
     "table-template.unknown": "This table template does not exist.",
     "version": {
       "name-empty": "A name is needed.",
-      "name-taken": "A change with the name \"{{name}}\" exists already.",
+      "name-taken": "A change with the name <b>{{name}}</b> exists already.",
       "branch-not-found": "That change could not be found.",
       "snapshot-not-found": "That version could not be found.",
       "main-protected": "The main line cannot be discarded.",
@@ -56,7 +56,7 @@
       "message-empty": "Say what you changed. A version needs a description."
     },
     "files": {
-      "invalid-name": "A folder name cannot be empty or contain \\ / : * ? \" < > | characters.",
+      "invalid-name": "A folder name cannot be empty or contain <c>\\ / : * ? \" < > |</c> characters.",
       "folder-exists": "A folder or a file with this name already exists here.",
       "folder-failed": "The folder could not be made. Check that this place can be written to."
     }

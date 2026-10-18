@@ -5,6 +5,7 @@
 | Font | License | Source |
 |---|---|---|
 | Noto Sans TC | SIL Open Font License 1.1 | `@fontsource-variable/noto-sans-tc` (copyright The Noto Project Authors) |
+| JetBrains Mono | SIL Open Font License 1.1 | `@fontsource-variable/jetbrains-mono` (copyright The JetBrains Mono Project Authors) |
 
 The thesis fonts used by the bundled TW-Thesis templates are listed in the templates' own `THIRD_PARTY.md`.
 

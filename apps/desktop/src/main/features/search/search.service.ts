@@ -27,9 +27,9 @@ export class SearchService {
           hits.push({
             documentId: summary.id,
             block,
-            before: (at > CONTEXT ? "…" : "") + plain.slice(Math.max(0, at - CONTEXT), at),
+            before: (at > CONTEXT ? "..." : "") + plain.slice(Math.max(0, at - CONTEXT), at),
             match: plain.slice(at, at + query.length),
-            after: plain.slice(at + query.length, at + query.length + CONTEXT) + (at + query.length + CONTEXT < plain.length ? "…" : ""),
+            after: plain.slice(at + query.length, at + query.length + CONTEXT) + (at + query.length + CONTEXT < plain.length ? "..." : ""),
           });
         }
       }

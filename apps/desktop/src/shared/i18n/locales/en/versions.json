@@ -7,12 +7,12 @@
     "none": "No other change yet"
   },
   "action": {
-    "save": "Save a version…",
-    "start": "Try a change in a copy…",
-    "history": "Version history…",
-    "merge": "Merge into the main line…",
-    "discard": "Discard this change…",
-    "revert": "Go back to the last saved version…"
+    "save": "Save a version...",
+    "start": "Try a change in a copy...",
+    "history": "Version history...",
+    "merge": "Merge into the main line...",
+    "discard": "Discard this change...",
+    "revert": "Go back to the last saved version..."
   },
   "save": {
     "title": "Save a version",
@@ -27,33 +27,33 @@
     "placeholder": "Rewrite chapter 2"
   },
   "discard": {
-    "title": "Discard “{{name}}”?",
+    "title": "Discard <b>{{name}}</b>?",
     "description": "The change and everything you did in it will go. The main line is not touched. This cannot be undone.",
     "confirm": "Discard"
   },
   "history": {
     "title": "Version history",
-    "description": "The versions of “{{branch}}”, the newest first.",
+    "description": "The versions of <b>{{branch}}</b>, the newest first.",
     "empty": "No versions yet.",
     "initial": "Initial version",
     "untitled": "Version without a description",
     "merge": "Merge",
     "restore": "Restore",
     "restoreTitle": "Restore this version?",
-    "restoreBody": "The documents become what they were in “{{label}}”. That is saved as a new version, so nothing in the history is lost. What you wrote since the last version is saved first, as a version of its own, so you can come back to it.",
-    "restoreMessage": "Restored “{{label}}”",
+    "restoreBody": "The documents become what they were in <b>{{label}}</b>. That is saved as a new version, so nothing in the history is lost. What you wrote since the last version is saved first, as a version of its own, so you can come back to it.",
+    "restoreMessage": "Restored <b>{{label}}</b>",
     "current": "Current",
     "compare": "What changed",
     "pickHint": "Tick two versions to see what differs between them.",
     "compareTwo": "Compare the two",
-    "pick": "Pick “{{label}}” to compare",
+    "pick": "Pick <b>{{label}}</b> to compare",
     "keptMessage": "Before going back"
   },
   "error": {
     "title": "That did not work"
   },
   "compare": {
-    "title": "What changed in “{{label}}”",
+    "title": "What changed in <b>{{label}}</b>",
     "description": "Compared with the version before it.",
     "none": "Nothing differs.",
     "documentAdded": "Added",
@@ -83,19 +83,19 @@
     "configFile": "Thesis settings"
   },
   "merge": {
-    "title": "Merge “{{name}}” into the main line",
+    "title": "Merge <b>{{name}}</b> into the main line",
     "upToDate": "The main line already has everything that this change has.",
     "fastForward": "The main line has nothing that this change lacks, so it only moves up to this change.",
     "clean": "The main line and this change can be merged without a conflict.",
     "deleteAfter": "Discard this change after merging",
     "needSave": "Save a version first. A merge uses the versions of the change, and not what is typed now.",
-    "saveFirst": "Save a version…",
+    "saveFirst": "Save a version...",
     "submit": "Merge",
     "conflicts_one": "{{count}} conflict needs your choice. Nothing is written until it has one.",
     "conflicts_other": "{{count}} conflicts need your choice. Nothing is written until each one has a choice.",
     "progress": "{{done}} of {{total}} chosen",
-    "message": "Merged “{{name}}”",
-    "loading": "Looking at the two lines…"
+    "message": "Merged <b>{{name}}</b>",
+    "loading": "Looking at the two lines..."
   },
   "conflict": {
     "blocks": "Both sides changed the same part of {{title}}",

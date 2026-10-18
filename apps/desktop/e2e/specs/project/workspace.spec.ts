@@ -37,19 +37,19 @@ test("create a project, manage documents, close and reopen it", async ({ launch 
   await page.keyboard.press("Escape");
 
   // Rename chapter 2
-  await sidebar.getByRole("button", { name: "「第 2 章」的操作" }).click({ force: true });
+  await sidebar.getByRole("button", { name: "第 2 章的操作" }).click({ force: true });
   await page.getByRole("menuitem", { name: "重新命名" }).click();
   await page.getByLabel("標題").fill("研究方法");
   await page.getByRole("button", { name: "儲存" }).click();
   await expect(item("研究方法")).toBeVisible();
 
   // Move up, the renamed chapter becomes the first one and the old chapter 1 becomes chapter 2
-  await sidebar.getByRole("button", { name: "「研究方法」的操作" }).click({ force: true });
+  await sidebar.getByRole("button", { name: "研究方法的操作" }).click({ force: true });
   await page.getByRole("menuitem", { name: "上移" }).click();
   await expect(item("第 2 章")).toBeVisible();
 
   // Delete, needs confirmation
-  await sidebar.getByRole("button", { name: "「第 2 章」的操作" }).click({ force: true });
+  await sidebar.getByRole("button", { name: "第 2 章的操作" }).click({ force: true });
   await page.getByRole("menuitem", { name: "刪除" }).click();
   await page.getByRole("dialog").getByRole("button", { name: "刪除" }).click();
   await expect(item("第 2 章")).toHaveCount(0);

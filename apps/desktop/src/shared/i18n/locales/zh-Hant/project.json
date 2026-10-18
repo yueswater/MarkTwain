@@ -1,7 +1,7 @@
 {
   "welcome": {
     "heading": "離線撰寫論文。",
-    "description": "建立新專案，或開啟既有的 .marktwain 檔案。",
+    "description": "建立新專案，或開啟既有的 <c>.marktwain</c> 檔案。",
     "new": "新增專案",
     "open": "開啟專案",
     "defaultName": "我的論文",
@@ -36,7 +36,7 @@
     }
   },
   "document": {
-    "actions": "「{{title}}」的操作",
+    "actions": "<b>{{title}}</b>的操作",
     "rename": "重新命名",
     "moveUp": "上移",
     "moveDown": "下移",
@@ -45,7 +45,7 @@
     "titleLabel": "標題",
     "titleHint": "留空則使用預設標題。",
     "deleteTitle": "是否刪除此文件？",
-    "deleteBody": "「{{title}}」與其內容會被永久刪除，無法復原。",
+    "deleteBody": "<b>{{title}}</b>及其內容將永久刪除，無法復原。",
     "dragSameKind": "僅能在同類文件之間調整順序。"
   },
   "search": {
@@ -54,24 +54,24 @@
     "placeholder": "在所有文件中搜尋",
     "none": "找不到符合的內容。",
     "count": "找到 {{count}} 處",
-    "truncated": "僅顯示前段結果，縮小搜尋範圍可查看其餘結果。",
+    "truncated": "僅顯示部分結果，請縮小搜尋範圍。",
     "caseSensitive": "區分大小寫",
     "open": "搜尋整個專案"
   },
   "newProject": {
     "title": "論文基本資料",
-    "description": "此資料將用於封面與題名頁，可先略過，之後皆可在設定中修改。",
+    "description": "此資料用於封面與題名頁，可先略過，日後於設定修改。",
     "filled": "已沿用先前專案的資料。",
     "more": "更多資料，英文題目與關鍵字",
-    "problem": "部分欄位內容無法使用，請檢查標示的欄位。",
+    "problem": "部分欄位內容無效，請檢查標示的欄位。",
     "dontAsk": "不要再詢問",
     "skip": "略過",
     "confirm": "完成"
   },
   "engine": {
     "title": "論文要採用哪一種排版方式？",
-    "description": "每個專案僅能使用一種排版方式。多數情況建議選擇 Typst。",
-    "checking": "正在檢查此電腦…",
+    "description": "每個專案僅能使用一種排版方式，一般建議選擇 Typst。",
+    "checking": "正在檢查此電腦...",
     "typst": {
       "name": "Typst",
       "tagline": "快速、簡單"
@@ -79,15 +79,15 @@
     "latex": {
       "name": "LaTeX",
       "missing": {
-        "tex": "此電腦未安裝 TeX Live。請先安裝 TeX Live 或 TinyTeX，再重新開始。",
-        "citation-style-language": "此電腦的 TeX Live 缺少 citation-style-language 套件。請以 tlmgr 安裝後再重新開始。",
-        "template": "此 MarkTwain 缺少 LaTeX 範本。請重新安裝 MarkTwain。"
+        "tex": "此電腦未安裝 TeX Live 或 TinyTeX，請安裝後重試。",
+        "citation-style-language": "TeX Live 缺少 <c>citation-style-language</c> 套件，請以 <c>tlmgr</c> 安裝後重試。",
+        "template": "找不到 LaTeX 範本，請重新安裝 MarkTwain。"
       },
       "tagline": "嚴謹、學界通用"
     },
     "word": {
       "name": "Word",
-      "note": "目前尚未支援，後續版本將提供。現階段可先輸出 PDF 供指導教授檢閱。",
+      "note": "尚未支援。目前可先輸出 PDF 供指導教授檢閱。",
       "tagline": "熟悉、易分享"
     },
     "warning": "專案建立後無法更換排版方式。",
@@ -111,7 +111,7 @@
     "folderName": "資料夾名稱",
     "createFolder": "建立",
     "nameLabel": "專案名稱",
-    "invalidName": "專案名稱不可為空，也不可包含 \\ / : * ? \" < > | 等字元。",
+    "invalidName": "專案名稱不可為空，也不可包含 <c>\\ / : * ? \" < > |</c> 等字元。",
     "exists": "此位置已有同名的專案檔。",
     "empty": "此資料夾是空的。",
     "unreadable": "無法讀取此資料夾。",

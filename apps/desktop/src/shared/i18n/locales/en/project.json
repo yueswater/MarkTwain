@@ -1,7 +1,7 @@
 {
   "welcome": {
     "heading": "Write your thesis, offline.",
-    "description": "Create a new project, or open an existing .marktwain file.",
+    "description": "Create a new project, or open an existing <c>.marktwain</c> file.",
     "new": "New project",
     "open": "Open project",
     "defaultName": "My thesis",
@@ -45,7 +45,7 @@
     "titleLabel": "Title",
     "titleHint": "Leave empty to use the default title.",
     "deleteTitle": "Delete this document?",
-    "deleteBody": "“{{title}}” and its content will be permanently deleted. This cannot be undone.",
+    "deleteBody": "<b>{{title}}</b> and its content will be permanently deleted. This cannot be undone.",
     "dragSameKind": "Documents can only be moved among documents of the same kind."
   },
   "search": {
@@ -71,7 +71,7 @@
   "engine": {
     "title": "How should the thesis be typeset?",
     "description": "Each project is typeset in one way. Most people can pick Typst.",
-    "checking": "Checking this computer…",
+    "checking": "Checking this computer...",
     "typst": {
       "name": "Typst",
       "tagline": "Fast and simple"
@@ -80,7 +80,7 @@
       "name": "LaTeX",
       "missing": {
         "tex": "No TeX Live was found on this computer. Install TeX Live or TinyTeX first, then start again.",
-        "citation-style-language": "The TeX Live of this computer lacks the package citation-style-language, install it with tlmgr, then start again.",
+        "citation-style-language": "The TeX Live of this computer lacks the package <c>citation-style-language</c>, install it with <c>tlmgr</c>, then start again.",
         "template": "The LaTeX template is missing from this copy of MarkTwain. Reinstall MarkTwain."
       },
       "tagline": "Rigorous, standard in academia"
@@ -111,7 +111,7 @@
     "folderName": "Folder name",
     "createFolder": "Create",
     "nameLabel": "Project name",
-    "invalidName": "A project name cannot be empty or contain \\ / : * ? \" < > | characters.",
+    "invalidName": "A project name cannot be empty or contain <c>\\ / : * ? \" < > |</c> characters.",
     "exists": "A project with this name already exists here.",
     "empty": "This folder is empty.",
     "unreadable": "This folder cannot be read.",

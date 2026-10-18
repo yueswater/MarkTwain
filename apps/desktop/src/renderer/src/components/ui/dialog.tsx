@@ -4,6 +4,7 @@ import * as React from "react"
 import { Dialog as DialogPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/utils"
+import { rich } from "@/shared/rich"
 import { Button } from "@/components/ui/button"
 import { XIcon } from "lucide-react"
 import { useTranslation } from "react-i18next"
@@ -139,6 +140,7 @@ function DialogFooter({
 
 function DialogTitle({
   className,
+  children,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Title>) {
   return (
@@ -149,12 +151,15 @@ function DialogTitle({
         className
       )}
       {...props}
-    />
+    >
+      {typeof children === "string" ? rich(children) : children}
+    </DialogPrimitive.Title>
   )
 }
 
 function DialogDescription({
   className,
+  children,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Description>) {
   return (
@@ -165,7 +170,9 @@ function DialogDescription({
         className
       )}
       {...props}
-    />
+    >
+      {typeof children === "string" ? rich(children) : children}
+    </DialogPrimitive.Description>
   )
 }
 

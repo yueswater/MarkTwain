@@ -1,7 +1,7 @@
 {
   "preview": "Preview",
   "build": "Build PDF",
-  "building": "Building…",
+  "building": "Building...",
   "empty": "Build the PDF to see how the thesis looks.",
   "close": "Close preview",
   "failed": "The PDF could not be made.",
@@ -9,20 +9,20 @@
   "warnings": "Warnings",
   "goTo": "Go to the source",
   "previewTitle": "PDF preview",
-  "configMissing": "Not filled in the project settings: {{field}}",
-  "mathFailed": "This formula could not be converted and is shown as source text: {{latex}}",
+  "configMissing": "Not filled in the project settings: <b>{{field}}</b>",
+  "mathFailed": "This formula could not be converted and is shown as source text: <c>{{latex}}</c>",
   "noSource": "No source location",
-  "citationNoBibliography": "No bibliography yet, shown as plain text: {{keys}}",
+  "citationNoBibliography": "No bibliography yet, shown as plain text: <c>{{keys}}</c>",
   "export": "Export",
-  "exportPdf": "Export draft PDF…",
-  "exportProject": "Export Typst project…",
+  "exportPdf": "Export draft PDF...",
+  "exportProject": "Export Typst project...",
   "exported": "Exported to {{path}}",
   "watch": "Auto update",
   "watchHint": "Rebuild after every save",
   "page": "Page {{n}}",
   "pages": "{{count}} pages",
   "resize": "Resize the preview",
-  "fontMissing": "Font not found: {{font}}. Another font is used instead, check the font names in the thesis settings.",
+  "fontMissing": "Font not found: <b>{{font}}</b>. Another font is used instead, check the font names in the thesis settings.",
   "watermark": "Watermark",
   "watermarkHint": "Show the watermark of the thesis in the preview",
   "exportFinalPdf": "Export final PDF with watermark",
@@ -31,12 +31,12 @@
     "table-heights": "LaTeX output ignores the row heights of a table.",
     "table-vertical-align": "LaTeX output ignores the vertical alignment of a table cell."
   },
-  "unknownCitation": "Not in the bibliography, shown as plain text: {{keys}}",
+  "unknownCitation": "Not in the bibliography, shown as plain text: <c>{{keys}}</c>",
   "imageMissing": "A picture is missing, a grey box stands in its place.",
   "imageUnreadable": "A file that is not a picture was used as one, a grey box stands in its place.",
-  "brokenRef": "This reference points to something that is not in the thesis, its name is printed as it is: {{label}}",
-  "duplicateLabel": "This name is already used by another block, the first one keeps it and references go to that one: {{label}}",
-  "glyphMissing": "The font has no glyph for these characters, they print as empty boxes: {{chars}}",
+  "brokenRef": "This reference points to something that is not in the thesis, its name is printed as it is: <c>{{label}}</c>",
+  "duplicateLabel": "This name is already used by another block, the first one keeps it and references go to that one: <c>{{label}}</c>",
+  "glyphMissing": "The font has no glyph for these characters, they print as empty boxes: <c>{{chars}}</c>",
   "check": {
     "title": "Some parts of the cover are not filled in",
     "titleFinal": "This is the copy to hand in, and some parts of the cover are not filled in",
@@ -55,8 +55,8 @@
     "missingFile": "A file that the thesis needs was not found.",
     "capacity": "Something in the thesis is too tangled to be typeset. Look at the place that is named, or at a formula or a footnote in a heading.",
     "other": "Something here could not be turned into a PDF.",
-    "commandNamed": "A formula or a piece of text uses a command that is not known: {{command}}. Check that it is spelled correctly."
+    "commandNamed": "A formula or a piece of text uses a command that is not known: <c>{{command}}</c>. Check that it is spelled correctly."
   },
   "noWatermark": "This thesis has no watermark image, so none is drawn. Choose a school in the settings or use an image of your own.",
-  "defaultChapter": "“{{title}}” has no text yet and still has its default title, so the PDF has an empty chapter."
+  "defaultChapter": "<b>{{title}}</b> has no text yet and still has its default title, so the PDF has an empty chapter."
 }

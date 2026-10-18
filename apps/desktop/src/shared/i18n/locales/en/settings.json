@@ -147,12 +147,12 @@
   },
   "hint": {
     "page-number": {
-      "format": "Use {page} for the number, for example 第 {page} 頁. Empty hides it."
+      "format": "Use <c>{page}</c> for the number, for example <c>第 {page} 頁</c>. Empty hides it."
     },
     "cross-ref": {
-      "chapter": "Use {C} for the chapter number.",
-      "section": "Use {C} and {S}.",
-      "subsection": "Use {C}, {S} and {B}."
+      "chapter": "Use <c>{C}</c> for the chapter number.",
+      "section": "Use <c>{C}</c> and <c>{S}</c>.",
+      "subsection": "Use <c>{C}</c>, <c>{S}</c> and <c>{B}</c>."
     },
     "layout": {
       "font-latin": "Separate several fonts with commas, the first available one is used.",
@@ -312,7 +312,7 @@
       "B": "Subsection number"
     },
     "example": "Example:",
-    "badPattern": "{{problem}} is not a placeholder that can be used. Use {C}, {S} and {B}.",
+    "badPattern": "<c>{{problem}}</c> is not a placeholder that can be used. Use <c>{C}</c>, <c>{S}</c> and <c>{B}</c>.",
     "marginUnit": "Margins are in cm (centimeters)"
   },
   "watermark": {

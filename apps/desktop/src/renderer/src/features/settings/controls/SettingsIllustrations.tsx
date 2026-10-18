@@ -12,6 +12,7 @@ import {
   spreadTitle,
   type Margins,
 } from "../settings-previews";
+import { Rich } from "../../../shared/rich";
 
 type Side = keyof Margins;
 
@@ -182,7 +183,7 @@ export function TitlePreview({ title }: { title: string }) {
   const { t } = useTranslation("settings");
   return (
     <p className="mt-1 text-xs text-muted-foreground" data-testid="title-preview">
-      {t("diagram.printedAs")} <span className="rounded border bg-white px-2 py-0.5 text-black">{spreadTitle(title) || "…"}</span>
+      {t("diagram.printedAs")} <span className="rounded border bg-white px-2 py-0.5 text-black">{spreadTitle(title) || "..."}</span>
       <span className="ml-2">{t("diagram.tildeHint")}</span>
     </p>
   );
@@ -264,7 +265,7 @@ export function PatternInput({
           </>
         ) : (
           <span role="alert" className="text-destructive">
-            {t("diagram.badPattern", { problem: result.problem })}
+            <Rich text={t("diagram.badPattern", { problem: result.problem })} />
           </span>
         )}
       </span>
