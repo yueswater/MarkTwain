@@ -190,10 +190,10 @@ test("the school's watermark is shown, an image of your own can replace it, and 
 
   // The draft has no watermark, the final copy has, so it is larger
   const size = async (channel: "export:pdf" | "export:final-pdf") => {
-    const done = await page.evaluate(async (c) => {
-      const r = await window.marktwain.invoke(c as "export:pdf");
+    const done = await page.evaluate(async ([c, path]) => {
+      const r = await window.marktwain.invoke(c as "export:pdf", { path: path as string });
       return r.ok;
-    }, channel);
+    }, [channel, pdf]);
     expect(done).toBe(true);
     return statSync(pdf).size;
   };

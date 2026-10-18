@@ -23,6 +23,8 @@ import { PdfPreview } from "./PdfPreview";
 import type { BuildState } from "./use-build";
 import { Rich } from "../../shared/rich";
 import { toast } from "sonner";
+import { fileNameOf } from "../picker/path-helpers";
+import { usePicker } from "../picker/picker-context";
 
 type Props = {
   build: BuildState;
@@ -74,6 +76,7 @@ export function PreviewPanel({ build, saveTick, placeKey, engine, onFillIn, onCl
   const started = useRef(false);
   const { outcome, building, error, run } = build;
   const { prefs } = usePrefs();
+  const { choosePath } = usePicker();
   const { width, separator } = useResizableWidth("marktwain.preview.width", 520, 320, 0.7);
 
   const errors = outcome?.diagnostics.filter((d) => d.severity === "error") ?? [];
@@ -148,15 +151,20 @@ export function PreviewPanel({ build, saveTick, placeKey, engine, onFillIn, onCl
     }
   }
 
-  async function exportTo(channel: typeof IpcChannel.ExportPdf | typeof IpcChannel.ExportFinalPdf | typeof IpcChannel.ExportProject): Promise<void> {
+  async function exportTo(channel: typeof IpcChannel.ExportPdf | typeof IpcChannel.ExportFinalPdf | typeof IpcChannel.ExportProject | typeof IpcChannel.ExportMarkdown): Promise<void> {
     try {
-      const result = await api.invoke(channel);
-      // A final copy without a watermark image is told so, since the word final promises a watermark
-      // The export is told by a toast that goes by itself, a final copy without a watermark image stays in the panel, since the word final promises a watermark
-      if (result) toast.success(t("exported", { path: result.path }));
-      setExportNote(result && channel === IpcChannel.ExportFinalPdf && !(await hasWatermark()) ? { kind: "noWatermark" } : null);
+      // The place is chosen in the picker of the app first, and the file is made after, as the native dialog did
+      const names = await api.invoke(IpcChannel.ExportNames);
+      const pdf = channel === IpcChannel.ExportPdf || channel === IpcChannel.ExportFinalPdf;
+      const base = pdf ? names.pdf : channel === IpcChannel.ExportMarkdown ? names.markdown : names.project;
+      const path = await choosePath({ mode: "save", purpose: "export", suggestedName: base, extension: pdf ? "pdf" : "zip" });
+      if (!path) return;
+      const result = await api.invoke(channel, { path });
+      // The export is told by a toast of one line that goes by itself, a final copy without a watermark image stays in the panel, since the word final promises a watermark
+      toast.success(t("exported", { name: fileNameOf(result.path) }));
+      setExportNote(channel === IpcChannel.ExportFinalPdf && !(await hasWatermark()) ? { kind: "noWatermark" } : null);
       // The export was made, so a failure that the preview still shows is out of date
-      if (result && outcome && !outcome.ok) void run();
+      if (outcome && !outcome.ok) void run();
     } catch (e) {
       setExportNote({ kind: "error", error: e });
     }
@@ -232,6 +240,7 @@ export function PreviewPanel({ build, saveTick, placeKey, engine, onFillIn, onCl
               <DropdownMenuItem onSelect={() => void requestExport(IpcChannel.ExportPdf)}>{t("exportPdf")}</DropdownMenuItem>
               <DropdownMenuItem onSelect={() => void requestExport(IpcChannel.ExportFinalPdf)}>{t("exportFinalPdf")}</DropdownMenuItem>
               <DropdownMenuItem onSelect={() => void exportTo(IpcChannel.ExportProject)}>{t("exportProject")}</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => void exportTo(IpcChannel.ExportMarkdown)}>{t("exportMarkdown")}</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
           <Button variant="ghost" size="icon-sm" aria-label={t("close")} onClick={onClose}>

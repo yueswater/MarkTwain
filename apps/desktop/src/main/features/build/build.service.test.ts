@@ -161,6 +161,41 @@ describe("BuildService", () => {
       expect(service({ ok: true, pdf: new Uint8Array(), pages: [], diagnostics: [], mathFailures: [], anchors: [] }).projectArchiveName()).toBe("a_b_c-typst");
     });
 
+    it("packs the sources into a zip with a folder named after the title, and needs no template", async () => {
+      const seen: { documents: string[]; files: string[]; config: string }[] = [];
+      const packed: [string, string][] = [];
+      const s = new BuildService(
+        session, documents, config, () => ({ typst: "typst", templateDir: "/nonexistent/template" }), undefined, undefined, undefined,
+        undefined, undefined, undefined, undefined, undefined,
+        async (folder, zipPath, root) => {
+          packed.push([zipPath, root]);
+          expect(basename(folder)).toBe(root);
+        },
+        (input, destination) => {
+          seen.push({ documents: input.documents.map((d) => d.kind), files: input.files.map((f) => f.path), config: input.config });
+          expect(basename(destination)).toBe("我的論文-markdown");
+          return { files: [] };
+        },
+      );
+      expect(s.markdownArchiveName()).toBe("我的論文-markdown");
+      expect(await s.exportMarkdown("/x/m.zip")).toBe("/x/m.zip");
+      expect(packed).toEqual([["/x/m.zip", "我的論文-markdown"]]);
+      expect(seen[0]?.documents).toEqual(["abstract", "abstractEn", "chapter"]);
+      expect(seen[0]?.files).toEqual(["images/a.png"]);
+      expect(seen[0]?.config).toContain("title: 我的論文");
+    });
+
+    it("wraps the failure of the Markdown export in a coded error", async () => {
+      const s = new BuildService(
+        session, documents, config, () => ({ typst: "typst", templateDir }), undefined, undefined, undefined,
+        undefined, undefined, undefined, undefined, undefined, undefined,
+        () => {
+          throw new Error("not empty");
+        },
+      );
+      expect(await code(() => s.exportMarkdown("/x/m.zip"))).toBe("export.failed");
+    });
+
     it("wraps exporter failures in a coded error and leaves no folder behind", async () => {
       const s = new BuildService(session, documents, config, () => ({ typst: "typst", templateDir }), undefined, undefined, () => {
         throw new Error("not empty");

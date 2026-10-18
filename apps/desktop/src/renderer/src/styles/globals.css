@@ -372,3 +372,7 @@ input[type="checkbox"] { accent-color: var(--foreground); }
 @media (prefers-reduced-motion: reduce) {
   *, ::before, ::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
 }
+
+/* A toast is one line, a long name is cut with an ellipsis and not wrapped */
+[data-sonner-toast] [data-content] { min-width: 0; }
+[data-sonner-toast] [data-title] { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

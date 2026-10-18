@@ -2,7 +2,7 @@
 
 MarkTwain is developed against version milestones. Each version maps to a [GitHub Milestone](../../milestones), and the work items are tracked as issues.
 
-Current version: v0.5.2.
+Current version: v0.5.3.
 
 | Version | Theme | Status |
 |---|---|---|
@@ -18,7 +18,7 @@ Current version: v0.5.2.
 | [v0.5.0](#v050--latex-output) | LaTeX output | Released |
 | [v0.5.1](#v051--safety-and-polish) | Safety and polish | Released |
 | [v0.5.2](#v052--use-and-fix) | Use and fix | Released |
-| [v0.5.3](#v053--project-export) | Project export | Not started |
+| [v0.5.3](#v053--project-export) | Project export | Released |
 | [v0.6.0](#v060--word-output) | Word output, the body | Not started |
 | [v0.6.1](#v061--word-output-front-matter-and-schools) | Word output, the front matter and the schools | Not started |
 | [v0.6.2](#v062--word-output-citations-and-math-font) | Word output, citations and the math font | Not started |
@@ -195,11 +195,18 @@ The whole thesis leaves MarkTwain as one `.zip`.
 
 The zip holds a complete template project folder in the shape of `tw-thesis-typ` or `tw-thesis-tex`: the template itself, a `config.yml` generated from the project, `main.typ` or `main.tex`, every file under `contents/`, the bibliography files and the `.csl`, the fonts of the project, and the images. The user can unzip it and compile it with the template's own commands, without MarkTwain.
 
-- Export as Typst or as LaTeX. The Typst folder export exists since v0.3.x as a folder; this makes it a zip and adds LaTeX, which needs the renderer of v0.5.0. Issue #35
-- The zip is written in TypeScript (`fflate`), so it is the same on all three systems and uses no zip command
-- The Markdown sources and the images as a zip. Issue #131. Importing a `.md` stays in v0.9.0, issue #49
+- Export as Typst or as LaTeX. The Typst folder export exists since v0.3.x as a folder; this makes it a zip and adds LaTeX, which needs the renderer of v0.5.0. Issue #35. Writing the files of a LaTeX project needs no TeX Live
+- The zip is written in TypeScript (`yazl`, which writes a stream, so a large font does not fill the memory), so it is the same on all three systems and uses no zip command
+- The Markdown sources and the images as a zip, one `.md` file for each document with the images, the bibliography and the settings beside them. Issue #131. Importing a `.md` stays in v0.9.0, issue #49
+- An export is told by a toast that goes after three seconds, and the menu says Export draft, Export final, Export project zip and Export sources zip
 
-**Done when:** a fixed sample thesis is exported for both Typst and LaTeX, unzipped, and compiled with the template's own commands, and the PDF has the same page count and text as the one MarkTwain builds.
+Also in this version, from the use of v0.5.2:
+
+- Color themes: twenty from the community and one of MarkTwain, a theme file that a person can write or add (`.marktwain.colortheme`, YAML, three colors are enough), and a screenshot of each in the settings
+- Links: made with the key `Cmd/Ctrl+K` or a button, a click goes to the address, underlined and filled with color on hover, with the tools of the link under the caret
+- A date is typed or picked in a calendar of the app, JetBrains Mono for code and for what is typed in a form, a PDF viewer in the black and gray of the app, and shorter messages with names in bold
+
+**Done when:** a fixed sample thesis is exported for both Typst and LaTeX, unzipped, and compiled with the template's own commands, and the PDF has the same page count and text as the one MarkTwain builds. The test `export-parity.test.ts` holds this to the byte: the pages of Typst and the PDF of LaTeX are the same as those of the build.
 
 ## v0.6.0 · Word Output
 

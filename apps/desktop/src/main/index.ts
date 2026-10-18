@@ -139,5 +139,5 @@ if (first) bootstrap([
   () => registerColorThemeController(colorThemes, dialogs),
   () => registerBuildController(build),
   () => registerToolchainController(new ToolchainService(resolveBuildPaths)),
-  () => registerExportController(build, dialogs),
+  () => registerExportController(build),
 ]);

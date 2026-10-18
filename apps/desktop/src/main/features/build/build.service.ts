@@ -1,5 +1,5 @@
 import { isDefaultText } from "../../../shared/default-headings";
-import { buildLatex, buildTypst, exportLatexProject, exportTypstProject, zipFolder, type BuildInput, type BuildResult, type LatexBuildInput } from "@marktwain/build";
+import { buildLatex, buildTypst, exportLatexProject, exportMarkdownProject, exportTypstProject, zipFolder, type BuildInput, type BuildResult, type LatexBuildInput } from "@marktwain/build";
 import { existsSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
@@ -22,6 +22,7 @@ type LatexRunner = typeof buildLatex;
 type Exporter = typeof exportTypstProject;
 type LatexExporter = typeof exportLatexProject;
 type Zipper = typeof zipFolder;
+type MarkdownExporter = typeof exportMarkdownProject;
 
 /** Builds the thesis PDF and keeps the latest one for the preview. */
 export class BuildService {
@@ -45,6 +46,7 @@ export class BuildService {
     private readonly runLatex: LatexRunner = buildLatex,
     private readonly latexExporter: LatexExporter = exportLatexProject,
     private readonly zip: Zipper = zipFolder,
+    private readonly markdownExporter: MarkdownExporter = exportMarkdownProject,
   ) {}
 
   /** The PDF of the latest successful build, for the preview protocol. */
@@ -132,9 +134,37 @@ export class BuildService {
     writeFileSync(path, result.pdf);
   }
 
-  /** The name of the folder inside the zip and of the zip, the title and the engine, without the characters that a file name cannot have. */
+  /** The title without the characters that a file name cannot have. */
+  private safeTitle(): string {
+    return this.suggestedName().replace(/[\\/:*?"<>|]/g, "_");
+  }
+
+  /** The name of the folder inside the zip and of the zip, the title and the engine. */
   projectArchiveName(): string {
-    return `${this.suggestedName().replace(/[\\/:*?"<>|]/g, "_")}-${this.engine() === "latex" ? "latex" : "typst"}`;
+    return `${this.safeTitle()}-${this.engine() === "latex" ? "latex" : "typst"}`;
+  }
+
+  /** The name of the zip of the Markdown sources and of the folder in it. */
+  markdownArchiveName(): string {
+    return `${this.safeTitle()}-markdown`;
+  }
+
+  /** Writes the sources of the thesis, one Markdown file for each document with the images, the bibliography and the settings, into a zip and returns its path. It needs no template and no engine. */
+  async exportMarkdown(zipPath: string): Promise<string> {
+    const name = this.markdownArchiveName();
+    const work = mkdtempSync(join(this.workDir, "mt-export-"));
+    try {
+      const folder = join(work, name);
+      const { documents, files, bibliography, config } = this.common();
+      this.markdownExporter({ documents, files, bibliography, config }, folder);
+      await this.zip(folder, zipPath, name);
+    } catch (error) {
+      if (error instanceof AppError) throw error;
+      throw new AppError(ErrorCode.ExportFailed, { reason: error instanceof Error ? error.message : String(error) });
+    } finally {
+      rmSync(work, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
+    }
+    return zipPath;
   }
 
   /** Writes the standalone project of the engine of the project, template included, into a zip and returns its path. */
