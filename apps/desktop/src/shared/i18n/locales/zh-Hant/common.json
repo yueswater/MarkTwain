@@ -20,5 +20,14 @@
   },
   "a11y": {
     "skipToText": "跳到內文"
+  },
+  "date": {
+    "open": "選擇日期",
+    "previousYear": "上一年",
+    "previousMonth": "上個月",
+    "nextMonth": "下個月",
+    "nextYear": "下一年",
+    "today": "今天",
+    "clear": "清除"
   }
 }

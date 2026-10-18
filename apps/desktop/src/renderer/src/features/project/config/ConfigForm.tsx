@@ -10,6 +10,7 @@ import {
 } from "@marktwain/schema";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { TagInput } from "@/components/ui/tag-input";
@@ -118,14 +119,17 @@ export function ConfigForm({ onSaved, onLanguageChanged, embedded = false, part 
         hint={extra?.hint}
         error={showIssue ? t(`issue.${issue.code}`) : undefined}
       >
-        <Input
-          id={`config-${field}`}
-          type={extra?.type}
-          value={fields[field]}
-          placeholder={extra?.placeholder}
-          aria-invalid={showIssue ? true : undefined}
-          onChange={(event) => update({ [field]: event.target.value })}
-        />
+        {extra?.type === "date" ? (
+          <DatePicker id={`config-${field}`} value={fields[field]} aria-invalid={showIssue ? true : undefined} onChange={(value) => update({ [field]: value })} />
+        ) : (
+          <Input
+            id={`config-${field}`}
+            value={fields[field]}
+            placeholder={extra?.placeholder}
+            aria-invalid={showIssue ? true : undefined}
+            onChange={(event) => update({ [field]: event.target.value })}
+          />
+        )}
       </Field>
     );
   };

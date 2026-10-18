@@ -47,11 +47,25 @@ test("project settings are filled in, validated, saved and restored", async ({ l
   await page.getByRole("combobox", { name: "論文語言" }).click();
   await page.getByRole("option", { name: "英文" }).click();
 
-  // Dates are picked, so a badly written date cannot be typed
+  // A date is typed as YYYY-MM-DD or picked in the calendar of the app, not in the one of the system
   await openThesisSettings(page, "基本資料");
-  await expect(page.getByLabel("口試日期")).toHaveAttribute("type", "date");
-  await expect(page.getByLabel("出版日期")).toHaveAttribute("type", "date");
   await page.getByLabel("口試日期").fill("2026-06-15");
+  await page.getByLabel("出版日期").fill("2026-06-10");
+  await page.locator("#config-date + button").click();
+  const calendar = page.getByRole("grid", { name: "2026年6月" });
+  await expect(calendar).toBeVisible();
+  await expect(calendar.getByRole("button", { name: "2026年6月10日" })).toBeFocused();
+  await page.keyboard.press("ArrowRight");
+  await page.keyboard.press("Enter");
+  await expect(calendar).toBeHidden();
+  await expect(page.getByLabel("出版日期")).toHaveValue("2026-06-11");
+  await page.locator("#config-date + button").click();
+  await page.getByRole("button", { name: "下個月" }).click();
+  await page.getByRole("button", { name: "2026年7月2日" }).click();
+  await expect(page.getByLabel("出版日期")).toHaveValue("2026-07-02");
+  await page.locator("#config-date + button").click();
+  await page.getByRole("button", { name: "清除" }).click();
+  await expect(page.getByLabel("出版日期")).toHaveValue("");
   await expect(page.getByRole("alert")).toHaveCount(0);
   await expect(page.getByRole("status")).toHaveText("已儲存");
 

@@ -20,5 +20,14 @@
   },
   "a11y": {
     "skipToText": "Skip to the text"
+  },
+  "date": {
+    "open": "Choose a date",
+    "previousYear": "Previous year",
+    "previousMonth": "Previous month",
+    "nextMonth": "Next month",
+    "nextYear": "Next year",
+    "today": "Today",
+    "clear": "Clear"
   }
 }

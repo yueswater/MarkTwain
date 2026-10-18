@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { IpcChannel } from "../../../../../shared/enums/ipc-channel.enum";
@@ -140,7 +141,7 @@ export function NewProjectDialog({ onClose }: Props) {
                 <Input id="new-advisorEn" value={fields.advisorEn} autoComplete="off" onChange={(event) => update({ advisorEn: event.target.value })} />
               </Field>
               <Field id="new-oralDate" label={tConfig("field.oralDate")} error={issueFor("oralDate") ? tConfig(`issue.${issueFor("oralDate")!.code}`) : undefined}>
-                <Input id="new-oralDate" type="date" value={fields.oralDate} onChange={(event) => update({ oralDate: event.target.value })} />
+                <DatePicker id="new-oralDate" value={fields.oralDate} onChange={(value) => update({ oralDate: value })} />
               </Field>
             </div>
           )}
