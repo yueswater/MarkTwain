@@ -211,9 +211,11 @@ Also in this version, from the use of v0.5.2:
 
 The parts that make it a thesis.
 
-- Chinese and English abstracts, keywords, acknowledgements, notation list, appendices
-- Bibliography: import BibTeX, Hayagriva, CSL JSON, and CSL YAML; citation picker; custom `.csl` styles
-- School selection (15 schools) with a preview of its settings
+The abstracts, keywords, acknowledgements, notation list and appendices are documents since v0.3.x, and the bibliography manager with BibTeX, CSL JSON and Hayagriva import and the citation picker are in v0.3.2. What is left:
+
+- Several bibliography files in a project
+- Custom `.csl` styles and the `bibliography.style` menu
+- A preview of the settings of a school before it is applied, in the form of the template preview of AnvilNote: the list of schools on one side, the settings and a picture of the cover and of a body page on the other, applied only on confirm. Issue #182
 
 **Done when:** the PDF has a cover page, abstracts, a table of contents, and references, formatted according to the selected school.
 
@@ -237,7 +239,13 @@ An installer that works without a network.
 - Review of the Traditional Chinese and English interface and error messages
 - A guided tour of every feature, by topic, with steps that make the person do each thing once: the first start plays the basics after a screen for the language and the color theme, the other topics are in the help menu and the settings. It is the overlay and store of AnvilNote's tour, written for MarkTwain, and a test fails when a feature has no step. Issue #179. Its texts are the base of the user documentation, issue #38
 
-**Done when:** after a forced quit, the draft is restored on reopen, an exported `.md` imports back as it was, and a person who has never seen MarkTwain can write a heading and a formula, preview and export a draft by the steps of the tour alone.
+- Templates that update safely, in four steps:
+  - Migrations of the settings when `tw-thesis-typ` or `tw-thesis-tex` changes, with a fixed set of steps (`rename`, `move`, `remove`, `split`, `merge`, `default`, `map`), a removed field kept in the retired settings of the project, a dry run, a snapshot before and a rollback when the test build fails. Issue #183
+  - The version of each template shown in the settings, a choice of the version for each project, release notes that read offline, and a history of the moves of a project. Issue #184
+  - A check for a newer release when online, at most once a day and silent when it fails, a download that is checked and read before the bundled copy, and a setting that turns it off. Issue #185
+  - The order is migrations, then versions, then the check
+
+**Done when:** after a forced quit, the draft is restored on reopen, an exported `.md` imports back as it was, a project made with the previous template version upgrades with no value lost and a failed upgrade is restored, and a person who has never seen MarkTwain can write a heading and a formula, preview and export a draft by the steps of the tour alone.
 
 ## v1.0.0-beta.1 · Public Beta
 
