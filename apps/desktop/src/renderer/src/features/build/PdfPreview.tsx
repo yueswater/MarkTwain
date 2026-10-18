@@ -128,7 +128,14 @@ export function PdfPreview({ revision, placeKey, anchors, follow, onPick }: Prop
       fontFallback: null,
       fonts: { ui: null, signature: null },
       tabBar: "never",
-      theme: { preference: "light" },
+      // The viewer is blue by default, here every accent is the black and gray of the app
+      theme: {
+        preference: "light",
+        light: {
+          accent: { primary: "#171717", primaryHover: "#262626", primaryActive: "#404040", primaryLight: "#f4f4f5", primaryForeground: "#ffffff" },
+          interactive: { selected: "#f4f4f5", focus: "#171717", focusRing: "#d4d4d8" },
+        },
+      },
       i18n: { defaultLocale: i18n.language.startsWith("zh") ? "zh-TW" : "en" },
       // A thesis is read here, not edited: no annotations, forms, stamps or tools, and the links of the PDF are followed
       disabledCategories: ["annotation", "redaction", "form", "signature", "stamp", "insert", "history", "mode", "document-open", "document-protect", "document-print", "document-capture", "document-export", "document-close", "panel-comment", "panel-annotation-style"],
