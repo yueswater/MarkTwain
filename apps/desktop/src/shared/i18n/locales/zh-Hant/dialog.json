@@ -12,7 +12,8 @@
     "image": "圖片",
     "pdf": "PDF 文件",
     "watermark": "圖片與 PDF",
-    "zip": "ZIP 壓縮檔"
+    "zip": "ZIP 壓縮檔",
+    "theme": "色彩主題"
   },
   "openImage": {
     "title": "選擇圖片",
@@ -29,5 +30,9 @@
   "openWatermark": {
     "title": "選擇浮水印",
     "button": "使用"
+  },
+  "openTheme": {
+    "title": "選擇主題檔",
+    "button": "匯入"
   }
 }

@@ -1,0 +1,15 @@
+name: "Nord"
+author: "insanum"
+source: "https://github.com/insanum/obsidian_nord"
+mode: dark
+colors:
+  background: "#2e3440"
+  foreground: "#d8dee9"
+  primary: "#88c0d0"
+  surface: "#3b4252"
+  muted: "#434c5e"
+  muted-foreground: "#a3aebf"
+  border: "#4c566a"
+  destructive: "#bf616a"
+  heading: "#81a1c1"
+  link: "#88c0d0"

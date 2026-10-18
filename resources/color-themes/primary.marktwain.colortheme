@@ -1,0 +1,12 @@
+name: "Primary"
+author: "Primary Theme"
+source: "https://github.com/primary-theme/obsidian"
+mode: light
+colors:
+  background: "#ffffff"
+  foreground: "#1f2937"
+  primary: "#5b5bd6"
+  surface: "#f9fafb"
+  muted: "#f1f2f6"
+  muted-foreground: "#6b7280"
+  border: "#e3e5ec"

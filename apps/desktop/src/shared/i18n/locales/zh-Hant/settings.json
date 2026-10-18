@@ -203,6 +203,10 @@
       "title": "外觀",
       "description": "編輯區文字的呈現方式。"
     },
+    "editorTheme": {
+      "title": "色彩主題",
+      "description": "編輯器與介面的配色。論文輸出的 PDF 不受影響。"
+    },
     "editorWriting": {
       "title": "寫作",
       "description": "區塊編號、拼字檢查、貼上與儲存。"
@@ -280,7 +284,8 @@
       "thesisCaptions": "圖名,表名,圖說,表格標題,圖表,說明,位置,交叉引用,定理",
       "thesisLists": "清單,項目符號,編號,符號",
       "thesisPageNumber": "頁碼,頁首,頁尾,目次,目錄,圖次,表次,{{toc}}",
-      "thesisBibliography": "參考文獻,書目,文獻,引用,標題"
+      "thesisBibliography": "參考文獻,書目,文獻,引用,標題",
+      "editorTheme": "主題,配色,顏色,深色,淺色,暗色,夜間,外觀"
     }
   },
   "changedDot": "此頁有與學校格式不同的設定",
@@ -485,5 +490,16 @@
     "px": "px（像素）",
     "percent": "%",
     "times": "倍（文字大小的倍數）"
+  },
+  "theme": {
+    "default": "MarkTwain",
+    "light": "淺色",
+    "dark": "深色",
+    "mine": "我的主題",
+    "import": "匯入主題檔",
+    "remove": "移除 {{name}}",
+    "importHint": "選擇副檔名為 <c>.marktwain.colortheme</c> 的檔案。",
+    "formatTitle": "主題檔格式",
+    "formatHint": "主題檔是 YAML。只有 <c>background</c>、<c>foreground</c>、<c>primary</c> 三個顏色必填，其餘會自動配色，顏色寫成 <c>#RRGGBB</c>。"
   }
 }

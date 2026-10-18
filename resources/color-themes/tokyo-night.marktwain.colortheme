@@ -1,0 +1,15 @@
+name: "Tokyo Night"
+author: "tcmmichaelb139"
+source: "https://github.com/tcmmichaelb139/obsidian-tokyonight"
+mode: dark
+colors:
+  background: "#1a1b26"
+  foreground: "#c0caf5"
+  primary: "#7aa2f7"
+  surface: "#16161e"
+  muted: "#24283b"
+  muted-foreground: "#787c99"
+  border: "#3b4261"
+  destructive: "#f7768e"
+  heading: "#bb9af7"
+  link: "#7dcfff"

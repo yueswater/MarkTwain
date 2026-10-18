@@ -42,6 +42,13 @@
       "singleton": "此專案已有這類文件。"
     },
     "table-template.unknown": "找不到此表格範本。",
+    "theme": {
+      "not-yaml": "此檔案不是有效的主題檔，無法讀取。",
+      "missing": "主題檔缺少 <c>{{field}}</c>。",
+      "bad-value": "主題檔的 <c>{{field}}</c> 不正確，顏色請寫成 <c>#RRGGBB</c>。",
+      "too-large": "主題檔過大，無法使用。",
+      "not-found": "找不到此主題。"
+    },
     "version": {
       "name-empty": "請輸入名稱。",
       "name-taken": "已有名為<b>{{name}}</b>的修改。",

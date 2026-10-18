@@ -1,0 +1,13 @@
+name: "Typomagical"
+author: "hungsu"
+source: "https://github.com/hungsu/typomagical-obsidian"
+mode: light
+colors:
+  background: "#fbf7f0"
+  foreground: "#3b3228"
+  primary: "#b5532f"
+  surface: "#f3ede2"
+  muted: "#efe7d9"
+  muted-foreground: "#8a7d6b"
+  border: "#e2d8c6"
+  destructive: "#c0392b"

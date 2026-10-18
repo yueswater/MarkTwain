@@ -8,6 +8,7 @@ import {
   ListTreeIcon,
   LayoutIcon,
   ListOrderedIcon,
+  PaletteIcon,
   PenLineIcon,
   PencilRulerIcon,
   TypeIcon,
@@ -22,6 +23,7 @@ export type SettingsSectionId = "editor" | "thesis";
 
 export type SettingsPageId =
   | "editorAppearance"
+  | "editorTheme"
   | "editorWriting"
   | "editorShortcuts"
   | "editorStatements"
@@ -51,6 +53,7 @@ export const SETTINGS_SECTIONS: readonly SettingsSectionId[] = ["editor", "thesi
 
 export const SETTINGS_PAGES: readonly SettingsPage[] = [
   { id: "editorAppearance", section: "editor", icon: PenLineIcon, needsProject: false, groups: [] },
+  { id: "editorTheme", section: "editor", icon: PaletteIcon, needsProject: false, groups: [] },
   { id: "editorWriting", section: "editor", icon: PencilRulerIcon, needsProject: false, groups: [] },
   { id: "editorShortcuts", section: "editor", icon: KeyboardIcon, needsProject: false, groups: [] },
   { id: "editorStatements", section: "editor", icon: SquareSigmaIcon, needsProject: false, groups: [] },

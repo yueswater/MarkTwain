@@ -10,6 +10,8 @@ import { DatabaseSession } from "./core/database-session";
 import { registerWatermarkController } from "./features/watermark/watermark.controller";
 import { WatermarkService } from "./features/watermark/watermark.service";
 import { FontService } from "./features/font/font.service";
+import { ColorThemeService } from "./features/color-theme/color-theme.service";
+import { colorThemesFolder, registerColorThemeController, userColorThemesFolder } from "./features/color-theme/color-theme.controller";
 import { TableTemplateService } from "./features/table-template/table-template.service";
 import { registerTableTemplateController, tableTemplatesFolder } from "./features/table-template/table-template.controller";
 import { registerFontController } from "./features/font/font.controller";
@@ -91,6 +93,7 @@ const prefs = new PrefsService(settingsRepository);
 const profile = new ProfileService(settingsRepository);
 const watermarks = new WatermarkService(session, config, resolveBuildPaths);
 const tableTemplates = new TableTemplateService(tableTemplatesFolder);
+const colorThemes = new ColorThemeService(colorThemesFolder, userColorThemesFolder);
 const fonts = new FontService(session, config, resolveBuildPaths);
 const build = new BuildService(session, documents, config, resolveBuildPaths, undefined, undefined, undefined, bibliography, watermarks, fonts);
 const versions = new VersionService(session, projectWorkingCopy(documents, assets));
@@ -133,6 +136,7 @@ if (first) bootstrap([
   () => registerWatermarkController(watermarks, dialogs),
   () => registerFontController(fonts),
   () => registerTableTemplateController(tableTemplates),
+  () => registerColorThemeController(colorThemes, dialogs),
   () => registerBuildController(build),
   () => registerToolchainController(new ToolchainService(resolveBuildPaths)),
   () => registerExportController(build, dialogs),

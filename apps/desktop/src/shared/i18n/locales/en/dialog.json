@@ -12,7 +12,8 @@
     "image": "Images",
     "pdf": "PDF document",
     "watermark": "Images and PDF",
-    "zip": "ZIP archive"
+    "zip": "ZIP archive",
+    "theme": "Color theme"
   },
   "openImage": {
     "title": "Choose an image",
@@ -29,5 +30,9 @@
   "openWatermark": {
     "title": "Choose a watermark",
     "button": "Use"
+  },
+  "openTheme": {
+    "title": "Choose a theme file",
+    "button": "Import"
   }
 }

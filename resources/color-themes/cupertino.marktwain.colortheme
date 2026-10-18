@@ -1,0 +1,13 @@
+name: "Cupertino"
+author: "svnaxis"
+source: "https://github.com/svnaxis/obsidian-cupertino"
+mode: light
+colors:
+  background: "#ffffff"
+  foreground: "#1d1d1f"
+  primary: "#007aff"
+  surface: "#f5f5f7"
+  muted: "#f2f2f7"
+  muted-foreground: "#6e6e73"
+  border: "#d2d2d7"
+  destructive: "#ff3b30"

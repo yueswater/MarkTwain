@@ -1,0 +1,15 @@
+name: "Gruvbox"
+author: "insanum"
+source: "https://github.com/insanum/obsidian_gruvbox"
+mode: dark
+colors:
+  background: "#282828"
+  foreground: "#ebdbb2"
+  primary: "#fabd2f"
+  surface: "#32302f"
+  muted: "#3c3836"
+  muted-foreground: "#a89984"
+  border: "#504945"
+  destructive: "#fb4934"
+  heading: "#fe8019"
+  link: "#83a598"

@@ -53,6 +53,18 @@ export class DialogService {
     });
   }
 
+  /** The file of a color theme, the hook of the images also stands in for it, as for every other file that is opened. */
+  async chooseColorTheme(): Promise<string | null> {
+    const forced = this.forcedImagePath();
+    if (forced) return forced;
+    const t = this.translator();
+    return this.port.showOpen({
+      title: t("openTheme.title"),
+      buttonLabel: t("openTheme.button"),
+      filters: [{ name: t("filter.theme"), extensions: ["colortheme"] }],
+    });
+  }
+
   async choosePdfPath(suggestedName: string): Promise<string | null> {
     const forced = this.forcedExportPath();
     if (forced) return forced;

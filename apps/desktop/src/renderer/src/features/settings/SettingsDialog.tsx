@@ -12,6 +12,7 @@ import { AdvancedForm, useAdvancedState } from "./pages/AdvancedForm";
 import { ListSettings } from "./pages/ListSettings";
 import { ShortcutsView } from "../shortcuts/ShortcutsView";
 import { EditorAppearanceSettings, EditorPreviewSettings, EditorStatementSettings, EditorWritingSettings } from "./pages/EditorSettings";
+import { ThemeSettings } from "./pages/ThemeSettings";
 import {
   SETTINGS_PAGES,
   SETTINGS_SECTIONS,
@@ -186,6 +187,8 @@ function PageBody({ pageId, onThesisSaved, onDocumentsChanged, advanced }: { pag
   switch (pageId) {
     case "editorAppearance":
       return <EditorAppearanceSettings />;
+    case "editorTheme":
+      return <ThemeSettings />;
     case "editorWriting":
       return <EditorWritingSettings />;
     case "editorStatements":

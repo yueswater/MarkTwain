@@ -13,6 +13,11 @@ extraResources:
   # The library of table templates, one folder for each field of study
   - from: ../../resources/table-templates
     to: table-templates
+  # The color themes of the editor, the files are the format that a person can write too
+  - from: ../../resources/color-themes
+    to: color-themes
+    filter:
+      - "*.marktwain.colortheme"
   # The PDF viewer of the preview reads its engine from here, so it works offline
   - from: node_modules/@embedpdf/snippet/dist/pdfium.wasm
     to: pdfium.wasm

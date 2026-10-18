@@ -1,0 +1,14 @@
+name: "Terminal"
+author: "zcysxy"
+source: "https://github.com/zcysxy/Obsidian-Terminal-Theme"
+mode: dark
+colors:
+  background: "#0a0f0a"
+  foreground: "#7dff9b"
+  primary: "#3cff7e"
+  surface: "#0f160f"
+  muted: "#142014"
+  muted-foreground: "#4fbf6b"
+  border: "#1f3a1f"
+  destructive: "#ff5f56"
+  heading: "#b6ffc8"

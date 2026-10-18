@@ -1,0 +1,13 @@
+name: "GitHub"
+author: "krios2146"
+source: "https://github.com/krios2146/obsidian-theme-github"
+mode: light
+colors:
+  background: "#ffffff"
+  foreground: "#1f2328"
+  primary: "#0969da"
+  surface: "#f6f8fa"
+  muted: "#eff2f5"
+  muted-foreground: "#656d76"
+  border: "#d0d7de"
+  destructive: "#cf222e"

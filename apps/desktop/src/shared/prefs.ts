@@ -26,7 +26,12 @@ export type EditorPrefs = {
   statementStyle: "callout" | "colored";
   /** Accent color of each kind in the colored style, written as #RRGGBB, a kind that is not here keeps its default */
   statementColors: Record<string, string>;
+  /** The color theme of the app, the id of a theme file, or default for the black and white of the app. A theme that is gone is the default. */
+  colorTheme: string;
 };
+
+/** The look that the app had from the start, it is no file. */
+export const DEFAULT_COLOR_THEME = "default";
 
 export const DEFAULT_PREFS: EditorPrefs = {
   fontSize: 16,
@@ -44,6 +49,7 @@ export const DEFAULT_PREFS: EditorPrefs = {
   previewDelayMs: 700,
   statementStyle: "callout",
   statementColors: {},
+  colorTheme: DEFAULT_COLOR_THEME,
 };
 
 export const PREF_LIMITS = {
@@ -93,5 +99,6 @@ export function sanitizePrefs(input: unknown, base: EditorPrefs = DEFAULT_PREFS)
     previewDelayMs: Math.round(clamp(data.previewDelayMs ?? base.previewDelayMs, PREF_LIMITS.previewDelayMs, base.previewDelayMs)),
     statementStyle: pick(data.statementStyle ?? base.statementStyle, ["callout", "colored"], base.statementStyle),
     statementColors: colors(data.statementColors ?? base.statementColors, base.statementColors),
+    colorTheme: typeof data.colorTheme === "string" && /^[a-z0-9-]{1,60}$/.test(data.colorTheme) ? data.colorTheme : base.colorTheme,
   };
 }

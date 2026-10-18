@@ -1,0 +1,13 @@
+name: "Obsidianite"
+author: "Benny Guo"
+source: "https://github.com/bennyxguo/Obsidian-Obsidianite"
+mode: dark
+colors:
+  background: "#1b1b1f"
+  foreground: "#dadada"
+  primary: "#9b72f2"
+  surface: "#232328"
+  muted: "#2b2b32"
+  muted-foreground: "#9a9aa6"
+  border: "#35353e"
+  heading: "#b79bf7"
