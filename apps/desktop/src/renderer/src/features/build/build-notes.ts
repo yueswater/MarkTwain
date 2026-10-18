@@ -7,6 +7,7 @@ export type WarningItem =
   | { kind: "glyphMissing"; chars: string }
   | { kind: "brokenRef"; label: string; source: BuildDiagnostic["source"] }
   | { kind: "duplicateLabel"; label: string; source: BuildDiagnostic["source"] }
+  | { kind: "defaultChapter"; title: string; source: BuildDiagnostic["source"] }
   | { kind: "image"; reason: "missing" | "unreadable"; source: BuildDiagnostic["source"] }
   | { kind: "approximate"; feature: string }
   | { kind: "math"; latex: string }
@@ -29,6 +30,8 @@ export function warningItems(diagnostics: readonly BuildDiagnostic[], mathFailur
   // A reference to something that is not in the thesis prints its label, so it is listed with its block
   for (const d of warnings) if (d.code === "reference-broken") items.push({ kind: "brokenRef", label: d.message, source: d.source });
   for (const d of warnings) if (d.code === "label-duplicate") items.push({ kind: "duplicateLabel", label: d.message, source: d.source });
+  // A chapter that was made and never written in
+  for (const d of warnings) if (d.code === "default-chapter") items.push({ kind: "defaultChapter", title: d.message, source: d.source });
   // Every picture is listed with the block that holds it, so it can be found
   for (const d of warnings) {
     if (d.code === "image-missing" || d.code === "image-unreadable") items.push({ kind: "image", reason: d.code === "image-missing" ? "missing" : "unreadable", source: d.source });
@@ -43,7 +46,7 @@ export function warningItems(diagnostics: readonly BuildDiagnostic[], mathFailur
 
   const seen = new Set<string>();
   for (const d of warnings) {
-    if (d.code === "config-missing" || d.code === "citation-no-bibliography" || d.code === "citation-unknown" || d.code === "image-missing" || d.code === "image-unreadable" || d.code === "glyph-missing" || d.code === "reference-broken" || d.code === "label-duplicate" || d.code === "latex-approximate") continue;
+    if (d.code === "config-missing" || d.code === "citation-no-bibliography" || d.code === "citation-unknown" || d.code === "image-missing" || d.code === "image-unreadable" || d.code === "glyph-missing" || d.code === "reference-broken" || d.code === "label-duplicate" || d.code === "latex-approximate" || d.code === "default-chapter") continue;
     // A warning that repeats on every page is listed once
     if (seen.has(d.message)) continue;
     seen.add(d.message);

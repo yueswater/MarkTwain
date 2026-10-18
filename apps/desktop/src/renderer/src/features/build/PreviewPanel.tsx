@@ -318,6 +318,16 @@ export function PreviewPanel({ build, saveTick, placeKey, engine, onFillIn, onCl
                     ) : null}
                   </>
                 )}
+                {item.kind === "defaultChapter" && (
+                  <>
+                    {t("defaultChapter", { title: item.title })}
+                    {item.source ? (
+                      <Button variant="link" size="sm" className="h-auto px-1 py-0" onClick={() => onJump(item.source!.documentId, item.source!.block)}>
+                        {t("goTo")}
+                      </Button>
+                    ) : null}
+                  </>
+                )}
                 {item.kind === "duplicateLabel" && (
                   <>
                     {t("duplicateLabel", { label: item.label })}

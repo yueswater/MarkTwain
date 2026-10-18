@@ -1,3 +1,4 @@
+import { nodeAtSafe } from "../blocks/node-at";
 import type { Editor } from "@tiptap/core";
 import { useEffect, useRef, type RefObject } from "react";
 
@@ -60,7 +61,7 @@ export function usePreviewFollow({ editor, scroller, onTopBlock, scrollTo }: Opt
     editor.state.doc.forEach((_node, offset, index) => {
       if (index === scrollTo.block) pos = offset;
     });
-    const node = editor.state.doc.nodeAt(pos);
+    const node = nodeAtSafe(editor.state.doc, pos);
     // The editor does not scroll to the selection by itself, it would cut short the smooth scroll below when the block is out of view
     const chain = editor.chain().focus(undefined, { scrollIntoView: false });
     // Atom blocks such as figures have no text, so select the whole node

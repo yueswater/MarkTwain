@@ -32,7 +32,7 @@ const NO_SCHOOL = "none";
 type TextField = Exclude<keyof ConfigFields, "keywords" | "keywordsEn" | "school">;
 
 /** Project settings form that saves while typing, fields of config.yml. */
-export function ConfigForm({ onSaved, embedded = false, part = "all", afterSchool }: { onSaved?: () => void; embedded?: boolean; part?: "all" | "school" | "info"; afterSchool?: ReactNode }) {
+export function ConfigForm({ onSaved, onLanguageChanged, embedded = false, part = "all", afterSchool }: { onSaved?: () => void; onLanguageChanged?: () => void; embedded?: boolean; part?: "all" | "school" | "info"; afterSchool?: ReactNode }) {
   // The settings window shows the school part and the information part as two pages
   const showSchool = part !== "info";
   const showInfo = part !== "school";
@@ -43,6 +43,10 @@ export function ConfigForm({ onSaved, embedded = false, part = "all", afterSchoo
   const fieldsRef = useRef<ConfigFields | null>(null);
   const savedRef = useRef(onSaved);
   savedRef.current = onSaved;
+  // The language of the thesis that the project has, a change of it rewrites the headings that nobody touched, so the open chapters are read again
+  const languageRef = useRef<string | null>(null);
+  const languageChangedRef = useRef(onLanguageChanged);
+  languageChangedRef.current = onLanguageChanged;
   useEffect(() => {
     if (status === "saved") savedRef.current?.();
   }, [status]);
@@ -51,7 +55,10 @@ export function ConfigForm({ onSaved, embedded = false, part = "all", afterSchoo
     () =>
       new Autosaver(
         async (json) => {
-          const next = await api.invoke(IpcChannel.ConfigSet, { fields: JSON.parse(json) as ConfigFields });
+          const sent = JSON.parse(json) as ConfigFields;
+          const next = await api.invoke(IpcChannel.ConfigSet, { fields: sent });
+          if (languageRef.current !== null && sent.language !== languageRef.current) languageChangedRef.current?.();
+          languageRef.current = sent.language;
           // Only the validation result is updated, field values follow what the user is typing
           setState((current) => (current ? { ...current, issues: next.issues } : current));
         },
@@ -68,6 +75,7 @@ export function ConfigForm({ onSaved, embedded = false, part = "all", afterSchoo
       .then((loaded) => {
         if (cancelled) return;
         fieldsRef.current = loaded.fields;
+        languageRef.current = loaded.fields.language;
         setState(loaded);
       })
       .catch((e: unknown) => !cancelled && setError(errorMessage(i18n.t.bind(i18n), e)));

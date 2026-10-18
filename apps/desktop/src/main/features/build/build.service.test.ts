@@ -43,7 +43,7 @@ beforeEach(() => {
   let n = 0;
   documents = new DocumentService(session, () => `id-${++n}`, () => new Date(0));
   documents.seedDefaults();
-  documents.save("id-3", "# 緒論\n");
+  documents.save("id-3", "# 緒論\n\n內文\n");
   new AssetRepository(db).put("images/a.png", new Uint8Array([1]), 0);
   config = new ConfigService(session);
   templateDir = mkdtempSync(join(tmpdir(), "mt-template "));
@@ -59,12 +59,18 @@ const code = async (fn: () => Promise<unknown>) => {
 };
 
 describe("BuildService", () => {
+  it("warns about a chapter that nobody has written in, and about no other", async () => {
+    documents.create("chapter");
+    const outcome = await service({ ok: true, pdf: new TextEncoder().encode("<< /Type /Pages /Count 1 >>"), pages: [], diagnostics: [], mathFailures: [], anchors: [] }).build();
+    expect(outcome.diagnostics).toEqual([{ severity: "warning", code: "default-chapter", message: "新的一章", file: null, line: null, source: { documentId: "id-4", block: 0 } }]);
+  });
+
   it("passes documents, images and config to the builder and returns a preview URL", async () => {
     const outcome = await service({ ok: true, pdf: new TextEncoder().encode("<< /Type /Pages /Count 3 >>"), pages: [], diagnostics: [], mathFailures: ["x"], anchors: [{ id: "id-2:0", page: 2, y: 40 }] }).build();
     expect(outcome).toEqual({ ok: true, diagnostics: [], mathFailures: ["x"], pageCount: 3, revision: 1, anchors: [{ id: "id-2:0", page: 2, y: 40 }] });
     expect(seen[0]?.anchors).toBe(true);
     expect(seen[0]?.format).toBe("pdf");
-    expect(seen[0]?.documents.map((d) => [d.kind, d.text])).toEqual([["abstract", ""], ["abstractEn", ""], ["chapter", "# 緒論\n"]]);
+    expect(seen[0]?.documents.map((d) => [d.kind, d.text])).toEqual([["abstract", ""], ["abstractEn", ""], ["chapter", "# 緒論\n\n內文\n"]]);
     expect(seen[0]?.files.map((f) => f.path)).toEqual(["images/a.png"]);
     expect(seen[0]?.config).toContain("title: 我的論文");
   });

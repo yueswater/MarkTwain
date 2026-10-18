@@ -1,3 +1,4 @@
+import { nodeAtSafe } from "../blocks/node-at";
 import type { Editor } from "@tiptap/core";
 import { IpcChannel } from "../../../../../shared/enums/ipc-channel.enum";
 import type { LabelIndex } from "../../../../../shared/ipc";
@@ -58,7 +59,7 @@ export function EditorDialogs({ editor, targets, documentId, labels, onOpenTarge
         editor.state.doc,
         labels.targets.map((target) => target.label),
       );
-      const target = editor.state.doc.nodeAt(choice.pos);
+      const target = nodeAtSafe(editor.state.doc, choice.pos);
       if (target) {
         editor
           .chain()

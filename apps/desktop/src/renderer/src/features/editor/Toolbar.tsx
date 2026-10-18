@@ -1,3 +1,4 @@
+import { stepOutOfNode } from "./dialogs/editor-commands";
 import type { Editor } from "@tiptap/core";
 import { TextSelection } from "@tiptap/pm/state";
 import { useEditorState } from "@tiptap/react";
@@ -195,7 +196,7 @@ export function Toolbar({ editor, onInsertMath, onInsertAtom, onEditCaption, onC
       })}
       <span className="mx-1 h-5 w-px bg-border" aria-hidden="true" />
       <Select value={state.block} onValueChange={(value) => setBlock(editor, value as Block)}>
-        <SelectTrigger size="sm" aria-label={t("toolbar.block")} className="w-28">
+        <SelectTrigger size="sm" aria-label={t("toolbar.block")} className="w-36">
           <SelectValue />
         </SelectTrigger>
         <SelectContent onCloseAutoFocus={(event) => { event.preventDefault(); editor.commands.focus(); }}>
@@ -244,7 +245,10 @@ export function Toolbar({ editor, onInsertMath, onInsertAtom, onEditCaption, onC
       {button(
         t("toolbar.codeBlock"),
         FileCodeIcon,
-        () => editor.chain().focus().toggleCodeBlock().run(),
+        () => {
+          stepOutOfNode(editor);
+          editor.chain().focus().toggleCodeBlock().run();
+        },
         { active: state.codeBlock },
       )}
       {state.codeBlock && (

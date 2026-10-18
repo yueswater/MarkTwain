@@ -1,3 +1,4 @@
+import { nodeAtSafe } from "./blocks/node-at";
 import type { Editor, Extensions } from "@tiptap/core";
 import Placeholder from "@tiptap/extension-placeholder";
 import type { EditorProps } from "@tiptap/pm/view";
@@ -108,7 +109,8 @@ export function buildExtensions(ctx: EditorContext): Extensions {
       getStyle: () => ctx.prefs().statementStyle,
       colorOf: (kind) => ctx.prefs().statementColors[kind.id] ?? kind.accent,
       onEdit: (pos) => {
-        const node = ctx.editor()?.state.doc.nodeAt(pos);
+        const doc = ctx.editor()?.state.doc;
+        const node = doc ? nodeAtSafe(doc, pos) : null;
         const kind = node ? statementOf(node) : null;
         if (node && kind) ctx.targets().setStatement({ pos, kind: kind.id, title: String((node.attrs.props as { title?: string })?.title ?? "") });
       },

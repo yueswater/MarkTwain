@@ -1,3 +1,4 @@
+import { nodeAtSafe } from "../blocks/node-at";
 import type { Editor } from "@tiptap/core";
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
@@ -95,7 +96,7 @@ export function EquationLabelBubble({ editor, labels, onOpenTarget }: Props) {
     };
   }, [editor, cancelHide, scheduleHide]);
 
-  const node = editor && open ? editor.state.doc.nodeAt(open.pos) : null;
+  const node = editor && open ? nodeAtSafe(editor.state.doc, open.pos) : null;
   // The formula can be deleted or moved while the box is open
   useEffect(() => {
     if (open && editor && !editor.isDestroyed && node?.type.name !== "blockMath") setOpen(null);
@@ -166,7 +167,7 @@ function Box({ editor, pos, label, rect, labels, onOpenTarget, onEnter, onLeave,
   const number = label ? labels.numbers[label] : undefined;
 
   function write(next: string | null): void {
-    const node = editor.state.doc.nodeAt(pos);
+    const node = nodeAtSafe(editor.state.doc, pos);
     if (!node) return;
     editor.view.dispatch(editor.state.tr.setNodeMarkup(pos, undefined, { ...node.attrs, label: next }));
   }
