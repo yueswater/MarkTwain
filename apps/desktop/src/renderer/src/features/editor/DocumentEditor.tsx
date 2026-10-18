@@ -205,6 +205,7 @@ function EditorSurface({ doc, scrollTo, onSaved, registerFlush, onOpenTarget, on
   );
   editorRef.current = editor;
 
+  const [quietBubble, setQuietBubble] = useState(false);
   // A chapter that nobody has written in starts with its default heading selected, so the first typing replaces the title and does not land inside it
   useEffect(() => {
     if (!editor || editor.isDestroyed || !isDefaultText(doc.kind, doc.text)) return;
@@ -214,6 +215,16 @@ function EditorSurface({ doc, scrollTo, onSaved, registerFlush, onOpenTarget, on
     // The editor is also made again behind a window that is open, such as the settings, and must not take the focus from it
     if (document.querySelector('[role="dialog"], [role="menu"], [role="listbox"]')) chain.run();
     else chain.focus().run();
+    // The floating tools stay away from a selection that the person did not make, until the person clicks or types
+    setQuietBubble(true);
+    const dom = editor.view.dom;
+    const wake = () => setQuietBubble(false);
+    dom.addEventListener("mousedown", wake, { once: true });
+    dom.addEventListener("keydown", wake, { once: true });
+    return () => {
+      dom.removeEventListener("mousedown", wake);
+      dom.removeEventListener("keydown", wake);
+    };
     // Once for each document, the text that was read is the one that decides
   }, [editor, doc.id]);
 
@@ -314,6 +325,7 @@ function EditorSurface({ doc, scrollTo, onSaved, registerFlush, onOpenTarget, on
       />
       <EditorBubbleMenu
         editor={editor}
+        quiet={quietBubble}
         onInsertMath={() => actions.insertMath("inline")}
         onEditFigure={(pos, attrs) =>
           targets.setFigure({ pos, src: String(attrs.src), caption: String(attrs.caption ?? ""), width: (attrs.width as string | null) ?? null, placement: (attrs.placement as Placement | null) ?? null })

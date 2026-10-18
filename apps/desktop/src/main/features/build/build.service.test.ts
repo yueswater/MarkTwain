@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it } from "@jest/globals";
 import type { BuildInput, BuildResult } from "@marktwain/build";
-import { mkdtempSync, readFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { basename, join } from "node:path";
 import { DatabaseSession } from "../../core/database-session";
 import { AppError } from "../../core/errors";
 import { openDatabase } from "../../infra/db";
@@ -133,21 +133,39 @@ describe("BuildService", () => {
       expect(seen.at(-1)?.format).toBe("pdf");
     });
 
-    it("exports the project into a folder named after the title", () => {
-      const calls: string[] = [];
-      const s = new BuildService(session, documents, config, () => ({ typst: "typst", templateDir }), undefined, undefined, (_input, destination) => {
-        calls.push(destination);
-        return { diagnostics: [], mathFailures: [], anchors: [] };
-      });
-      expect(s.exportProject("/parent")).toBe(join("/parent", "我的論文-typst"));
-      expect(calls).toEqual([join("/parent", "我的論文-typst")]);
+    it("packs the project of Typst into a zip with a folder named after the title and the engine", async () => {
+      const seenFolders: string[] = [];
+      const packed: [string, string][] = [];
+      const s = new BuildService(
+        session, documents, config, () => ({ typst: "typst", templateDir }), undefined, undefined,
+        (_input, destination) => {
+          seenFolders.push(destination);
+          return { diagnostics: [], mathFailures: [], anchors: [] };
+        },
+        undefined, undefined, undefined, undefined, undefined,
+        async (folder, zipPath, root) => {
+          packed.push([zipPath, root]);
+          expect(basename(folder)).toBe(root);
+        },
+      );
+      expect(s.projectArchiveName()).toBe("我的論文-typst");
+      expect(await s.exportProject("/x/a.zip")).toBe("/x/a.zip");
+      expect(packed).toEqual([["/x/a.zip", "我的論文-typst"]]);
+      expect(basename(seenFolders[0] ?? "")).toBe("我的論文-typst");
+      // The folder that was packed is gone
+      expect(existsSync(seenFolders[0] ?? "")).toBe(false);
     });
 
-    it("wraps exporter failures in a coded error", async () => {
+    it("keeps the characters that a file name cannot have out of the name", () => {
+      config.set({ ...config.get().fields, title: "a/b:c" });
+      expect(service({ ok: true, pdf: new Uint8Array(), pages: [], diagnostics: [], mathFailures: [], anchors: [] }).projectArchiveName()).toBe("a_b_c-typst");
+    });
+
+    it("wraps exporter failures in a coded error and leaves no folder behind", async () => {
       const s = new BuildService(session, documents, config, () => ({ typst: "typst", templateDir }), undefined, undefined, () => {
         throw new Error("not empty");
       });
-      expect(await code(async () => s.exportProject("/parent"))).toBe("export.failed");
+      expect(await code(() => s.exportProject("/x/a.zip"))).toBe("export.failed");
     });
   });
 });
@@ -192,12 +210,36 @@ describe("BuildService with a project written for LaTeX", () => {
     expect(await code(() => latexService(undefined).s.build())).toBe("build.tex-missing");
   });
 
-  it("exports the PDF with the same builder and refuses the folder of a Typst project", async () => {
+  it("exports the PDF with the same builder", async () => {
     const { s, latexSeen } = latexService({ bin: "/tex/bin", templateDir });
     const out = join(mkdtempSync(join(tmpdir(), "mt-out ")), "a.pdf");
     await s.savePdf(out, true);
     expect(latexSeen[0]).toMatchObject({ watermark: true });
     expect([...readFileSync(out)]).toEqual([7]);
-    expect(() => s.exportProject(tmpdir())).toThrow(AppError);
+  });
+
+  it("packs the project of LaTeX with the exporter of LaTeX, and never needs the Typst one", async () => {
+    session.db.run("UPDATE project SET engine = 'latex'");
+    const exported: string[] = [];
+    const packed: string[] = [];
+    const s = new BuildService(
+      session, documents, config, () => ({ typst: "typst", templateDir, tex: { bin: null, templateDir } }),
+      undefined, undefined,
+      () => {
+        throw new Error("the Typst exporter must not run");
+      },
+      undefined, undefined, undefined, undefined,
+      (_input, destination) => {
+        exported.push(basename(destination));
+        return { diagnostics: [], mathFailures: [] };
+      },
+      async (_folder, zipPath, root) => {
+        packed.push(`${root}@${zipPath}`);
+      },
+    );
+    // Writing the files needs no TeX Live, so a computer without it still exports
+    expect(await s.exportProject("/x/a.zip")).toBe("/x/a.zip");
+    expect(exported).toEqual(["我的論文-latex"]);
+    expect(packed).toEqual(["我的論文-latex@/x/a.zip"]);
   });
 });

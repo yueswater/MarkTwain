@@ -13,6 +13,8 @@ test("a new chapter starts with a heading in the language of the thesis, and the
   // The first chapter has the title of an introduction, selected, so typing is the title that the person means
   await expect(editor.locator("h1")).toHaveText("緒論");
   await expect(editor).toBeFocused();
+  // The title is selected by the app and not by the person, so the tools for text do not cover it
+  await expect(page.getByLabel("Selection tools")).toHaveCount(0);
   await page.keyboard.type("研究動機");
   await expect(editor.locator("h1")).toHaveText("研究動機");
   await page.keyboard.press("Enter");

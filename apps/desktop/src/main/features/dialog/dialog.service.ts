@@ -14,7 +14,6 @@ export type DialogPort = {
     buttonLabel: string;
     filters: { name: string; extensions: string[] }[];
   }): Promise<string | null>;
-  showFolder(options: { title: string; buttonLabel: string }): Promise<string | null>;
 };
 
 export class DialogService {
@@ -66,10 +65,15 @@ export class DialogService {
     });
   }
 
-  async chooseExportFolder(): Promise<string | null> {
+  async chooseZipPath(suggestedName: string): Promise<string | null> {
     const forced = this.forcedExportPath();
     if (forced) return forced;
     const t = this.translator();
-    return this.port.showFolder({ title: t("exportFolder.title"), buttonLabel: t("exportFolder.button") });
+    return this.port.showSave({
+      title: t("saveZip.title"),
+      buttonLabel: t("saveZip.button"),
+      defaultPath: `${suggestedName}.zip`,
+      filters: [{ name: t("filter.zip"), extensions: ["zip"] }],
+    });
   }
 }

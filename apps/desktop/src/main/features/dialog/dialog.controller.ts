@@ -16,12 +16,6 @@ const port: DialogPort = {
       : await dialog.showSaveDialog(options);
     return result.canceled || !result.filePath ? null : result.filePath;
   },
-  async showFolder(options) {
-    const window = BrowserWindow.getFocusedWindow() ?? undefined;
-    const full = { ...options, properties: ["openDirectory" as const, "createDirectory" as const] };
-    const result = window ? await dialog.showOpenDialog(window, full) : await dialog.showOpenDialog(full);
-    return result.canceled ? null : (result.filePaths[0] ?? null);
-  },
   async showOpen(options) {
     const properties: ("openFile")[] = ["openFile"];
     const window = BrowserWindow.getFocusedWindow() ?? undefined;

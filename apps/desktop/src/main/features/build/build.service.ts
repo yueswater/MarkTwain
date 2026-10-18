@@ -1,6 +1,6 @@
 import { isDefaultText } from "../../../shared/default-headings";
-import { buildLatex, buildTypst, exportTypstProject, type BuildInput, type BuildResult, type LatexBuildInput } from "@marktwain/build";
-import { existsSync, writeFileSync } from "node:fs";
+import { buildLatex, buildTypst, exportLatexProject, exportTypstProject, zipFolder, type BuildInput, type BuildResult, type LatexBuildInput } from "@marktwain/build";
+import { existsSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { ErrorCode } from "../../../shared/enums/error-code.enum";
@@ -20,6 +20,8 @@ import { pageCountOf } from "./pdf-pages";
 type Runner = typeof buildTypst;
 type LatexRunner = typeof buildLatex;
 type Exporter = typeof exportTypstProject;
+type LatexExporter = typeof exportLatexProject;
+type Zipper = typeof zipFolder;
 
 /** Builds the thesis PDF and keeps the latest one for the preview. */
 export class BuildService {
@@ -41,6 +43,8 @@ export class BuildService {
     private readonly watermarks?: Pick<WatermarkService, "files">,
     private readonly fonts?: Pick<FontService, "files">,
     private readonly runLatex: LatexRunner = buildLatex,
+    private readonly latexExporter: LatexExporter = exportLatexProject,
+    private readonly zip: Zipper = zipFolder,
   ) {}
 
   /** The PDF of the latest successful build, for the preview protocol. */
@@ -96,6 +100,13 @@ export class BuildService {
     return { ...this.common(), templateDir, texBin: bin };
   }
 
+  /** What the export of a LaTeX project needs, only the template, since writing the files needs no TeX Live. */
+  private latexExportInput(): LatexBuildInput {
+    const templateDir = this.paths().tex?.templateDir;
+    if (!templateDir || !existsSync(templateDir)) throw new AppError(ErrorCode.BuildTemplateMissing);
+    return { ...this.common(), templateDir, texBin: null };
+  }
+
   /** Builds with the engine of the project, only Typst reads where the blocks landed on the pages. */
   private compile(format: "pdf", watermark: boolean, anchors: boolean): Promise<BuildResult> {
     if (this.engine() === "latex") return this.runLatex({ ...this.latexInput(), watermark });
@@ -121,18 +132,28 @@ export class BuildService {
     writeFileSync(path, result.pdf);
   }
 
-  /** Writes the standalone Typst project into a new folder inside parent and returns its path. */
-  exportProject(parent: string): string {
-    // The folder of a LaTeX project comes with the export of the whole project as a zip
-    if (this.engine() !== "typst") throw new AppError(ErrorCode.ExportFailed, { reason: "the project is not written for Typst" });
-    const destination = join(parent, `${this.suggestedName()}-typst`);
+  /** The name of the folder inside the zip and of the zip, the title and the engine, without the characters that a file name cannot have. */
+  projectArchiveName(): string {
+    return `${this.suggestedName().replace(/[\\/:*?"<>|]/g, "_")}-${this.engine() === "latex" ? "latex" : "typst"}`;
+  }
+
+  /** Writes the standalone project of the engine of the project, template included, into a zip and returns its path. */
+  async exportProject(zipPath: string): Promise<string> {
+    const name = this.projectArchiveName();
+    // The folder is made in the work folder and packed, so a failed export leaves nothing where the person chose
+    const work = mkdtempSync(join(this.workDir, "mt-export-"));
     try {
-      this.exporter(this.input(), destination);
+      const folder = join(work, name);
+      if (this.engine() === "latex") this.latexExporter(this.latexExportInput(), folder);
+      else this.exporter(this.input(), folder);
+      await this.zip(folder, zipPath, name);
     } catch (error) {
       if (error instanceof AppError) throw error;
       throw new AppError(ErrorCode.ExportFailed, { reason: error instanceof Error ? error.message : String(error) });
+    } finally {
+      rmSync(work, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
     }
-    return destination;
+    return zipPath;
   }
 
   /** A chapter or an appendix that nobody has written in still has the heading it was made with, and prints as an empty chapter with that title. */

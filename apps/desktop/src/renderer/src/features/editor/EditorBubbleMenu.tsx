@@ -70,6 +70,8 @@ const MENU_CLASS =
 
 type Props = {
   editor: Editor;
+  /** True while the selection is not the one of the person, so the tools for text do not cover it */
+  quiet?: boolean;
   onInsertMath: () => void;
   onEditFigure: (pos: number, attrs: Record<string, unknown>) => void;
   onCropFigure: (pos: number, src: string) => void;
@@ -79,7 +81,7 @@ type Props = {
  * Floating tools next to the selection. Selected text offers the marks,
  * and selected table cells suggest merging and offer alignment.
  */
-export function EditorBubbleMenu({ editor, onInsertMath, onEditFigure, onCropFigure }: Props) {
+export function EditorBubbleMenu({ editor, quiet = false, onInsertMath, onEditFigure, onCropFigure }: Props) {
   const { t } = useTranslation("editor");
   const state = useEditorState({
     editor,
@@ -106,7 +108,7 @@ export function EditorBubbleMenu({ editor, onInsertMath, onEditFigure, onCropFig
 
   return (
     <>
-      <BubbleMenu editor={editor} className={MENU_CLASS} shouldShow={() => state.text} aria-label={t("bubble.label")}>
+      <BubbleMenu editor={editor} className={MENU_CLASS} shouldShow={() => state.text && !quiet} aria-label={t("bubble.label")}>
         <Item icon={BoldIcon} label={t("toolbar.bold")} active={state.bold} onClick={run(() => editor.chain().toggleBold().run())} />
         <Item icon={ItalicIcon} label={t("toolbar.italic")} active={state.italic} onClick={run(() => editor.chain().toggleItalic().run())} />
         <Item icon={StrikethroughIcon} label={t("toolbar.strike")} active={state.strike} onClick={run(() => editor.chain().toggleStrike().run())} />

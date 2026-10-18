@@ -6,6 +6,7 @@ import { closeProject, createProject, seedChapter } from "../../support/project"
 import { DIST, REPO_ROOT } from "../../support/paths";
 import { findBundledTypst } from "../../support/find-app";
 import { viewerState } from "../../support/preview-viewer";
+import { zipEntries, zipText } from "../../support/zip";
 
 const TEX_TEMPLATE_DIR = join(REPO_ROOT, "resources/templates/tex");
 
@@ -64,7 +65,7 @@ test.describe("with a TeX Live", () => {
   test.skip(texBin === null || !existsSync(TEX_TEMPLATE_DIR), "needs a TeX Live and the fetched LaTeX template");
 
   // The template is the one that travels inside the packaged app, no variable points to it
-  test("a LaTeX project builds its PDF with LaTeX and has no Typst project to export", async ({ launch }) => {
+  test("a LaTeX project builds its PDF with LaTeX and exports its whole project as a zip", async ({ launch }) => {
     const first = await launch({
       name: "拉鐵",
       projectName: "論文.marktwain",
@@ -80,13 +81,30 @@ test.describe("with a TeX Live", () => {
     await expect.poll(async () => (await viewerState(page))?.total ?? 0, { timeout: 120_000 }).toBeGreaterThan(1);
     await expect(page.getByTestId("preview-pages")).not.toContainText("could not be made");
     await page.getByRole("button", { name: "Export" }).click();
-    // The folder of a project is for Typst only, the PDF is the same for both
-    await expect(page.getByRole("menuitem", { name: "Export Typst project..." })).toHaveCount(0);
-    await page.getByRole("menuitem", { name: "Export draft PDF..." }).click();
+    await page.getByRole("menuitem", { name: "Export draft" }).click();
     // A new project has an empty cover, which is asked about first
     await page.getByTestId("export-check").getByRole("button", { name: "Export anyway" }).click();
-    await expect(page.getByRole("status").filter({ hasText: "Exported to" })).toBeVisible({ timeout: 120_000 });
+    await expect(page.locator("[data-sonner-toast]").filter({ hasText: "Exported to" })).toBeVisible({ timeout: 120_000 });
     expect(readFileSync(join(first.dir, "輸出.pdf")).subarray(0, 5).toString()).toBe("%PDF-");
+
+    // The whole project goes into a zip with the template, the hook has one path for every export, so the zip takes the place of the PDF
+    await page.getByRole("button", { name: "Export" }).click();
+    await page.getByRole("menuitem", { name: "Export project zip" }).click();
+    // The toast of the PDF may still be there, so the file is what tells that the zip is written, its end comes last
+    const readable = () => {
+      try {
+        return zipEntries(join(first.dir, "輸出.pdf")).length > 0;
+      } catch {
+        return false;
+      }
+    };
+    await expect.poll(readable, { timeout: 120_000 }).toBe(true);
+    const names = zipEntries(join(first.dir, "輸出.pdf"));
+    expect(names).toContain("論文-latex/main.tex");
+    expect(names).toContain("論文-latex/scripts/gen.lua");
+    expect(names).toContain("論文-latex/tw-thesis.cls");
+    expect(names.every((name) => name.startsWith("論文-latex/"))).toBe(true);
+    expect(zipText(join(first.dir, "輸出.pdf"), "論文-latex/contents/chapter01.tex")).toContain("緒論");
 
     // The engine stays after the project is closed and opened again
     await closeProject(page);

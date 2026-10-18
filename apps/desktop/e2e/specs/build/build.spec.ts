@@ -1,9 +1,10 @@
 import { expect, test } from "../../support/test";
-import { existsSync, mkdirSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { execFileSync } from "node:child_process";
 import { findBundledTypst } from "../../support/find-app";
 import { viewerState } from "../../support/preview-viewer";
+import { zipEntries, zipText } from "../../support/zip";
 import { DIST, TEMPLATE_DIR } from "../../support/paths";
 import { brokenTemplate } from "../../support/broken-template";
 import { closeProject, createProject, seedChapter } from "../../support/project";
@@ -117,32 +118,37 @@ test("a reference to nothing and a name used twice are listed with their blocks,
 test("the PDF and the whole Typst project can be exported", async ({ launch }) => {
   const first = await launch({ name: "匯出", projectName: "論文.marktwain", env: (folder) => ({ MARKTWAIN_TEST_EXPORT_PATH: join(folder, "輸出.pdf") }) });
   const pdfPath = join(first.dir, "輸出.pdf");
-  const parent = join(first.dir, "匯出位置");
-  mkdirSync(parent);
+  const zipPath = join(first.dir, "專案.zip");
   const page = await first.app.firstWindow();
   await createProject(page);
   await seedChapter(page, "# 緒論\n\n內容。\n");
   await page.getByRole("button", { name: "Preview" }).click();
   // The PDF is built at export time, no preview is needed first
   await page.getByRole("button", { name: "Export" }).click();
-  await page.getByRole("menuitem", { name: "Export draft PDF..." }).click();
+  await page.getByRole("menuitem", { name: "Export draft" }).click();
   // A new project has an empty cover, which is asked about first
   await page.getByTestId("export-check").getByRole("button", { name: "Export anyway" }).click();
-  await expect(page.getByRole("status").filter({ hasText: "Exported to" })).toBeVisible();
+  await expect(page.locator("[data-sonner-toast]").filter({ hasText: "Exported to" })).toBeVisible();
   expect(readFileSync(pdfPath).subarray(0, 5).toString()).toBe("%PDF-");
+  // The toast goes by itself after three seconds
+  await expect(page.locator("[data-sonner-toast]")).toHaveCount(0, { timeout: 8000 });
 
-  const second = await first.restart({ env: { MARKTWAIN_TEST_EXPORT_PATH: parent } });
+  const second = await first.restart({ env: { MARKTWAIN_TEST_EXPORT_PATH: zipPath } });
   const page2 = await second.app.firstWindow();
   // The project of the first session reopens by itself
   await expect(page2.getByRole("complementary", { name: "Documents" })).toBeVisible();
   await page2.getByRole("button", { name: "Preview" }).click();
   await page2.getByRole("button", { name: "Export" }).click();
-  await page2.getByRole("menuitem", { name: "Export Typst project..." }).click();
-  await expect(page2.getByRole("status").filter({ hasText: "Exported to" })).toBeVisible();
-  const project = join(parent, "論文-typst");
-  expect(readFileSync(join(project, "contents/chapter01.typ"), "utf8")).toContain("= 緒論");
-  expect(existsSync(join(project, "lib"))).toBe(true);
-  expect(existsSync(join(project, "fonts"))).toBe(true);
+  await page2.getByRole("menuitem", { name: "Export project zip" }).click();
+  await expect(page2.locator("[data-sonner-toast]").filter({ hasText: "Exported to" })).toBeVisible();
+  // The zip unpacks into one folder with the whole project in it
+  const names = zipEntries(zipPath);
+  expect(names).toContain("論文-typst/main.typ");
+  expect(names).toContain("論文-typst/contents/chapter01.typ");
+  expect(names.some((name) => name.startsWith("論文-typst/lib/"))).toBe(true);
+  expect(names.some((name) => name.startsWith("論文-typst/fonts/"))).toBe(true);
+  expect(names.every((name) => name.startsWith("論文-typst/"))).toBe(true);
+  expect(zipText(zipPath, "論文-typst/contents/chapter01.typ")).toContain("= 緒論");
 });
 
 
@@ -152,7 +158,7 @@ test("exporting while the cover is empty asks first, lists what is empty, and le
   await createProject(page);
   await page.getByRole("button", { name: "Preview" }).click();
   await page.getByRole("button", { name: "Export" }).click();
-  await page.getByRole("menuitem", { name: "Export final PDF with watermark" }).click();
+  await page.getByRole("menuitem", { name: "Export final" }).click();
 
   // The copy to hand in is named, and every empty field is listed by its name in the settings
   const check = page.getByTestId("export-check");
@@ -164,7 +170,7 @@ test("exporting while the cover is empty asks first, lists what is empty, and le
   // Filling in goes to the information page of the settings, and nothing is exported
   await check.getByRole("button", { name: "Fill them in" }).click();
   await expect(page.getByRole("dialog", { name: "Settings" }).getByRole("heading", { name: "Information" })).toBeVisible();
-  await expect(page.getByRole("status").filter({ hasText: "Exported to" })).toHaveCount(0);
+  await expect(page.locator("[data-sonner-toast]").filter({ hasText: "Exported to" })).toHaveCount(0);
 });
 
 

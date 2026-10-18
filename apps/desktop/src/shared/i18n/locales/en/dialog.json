@@ -11,7 +11,8 @@
     "project": "MarkTwain project",
     "image": "Images",
     "pdf": "PDF document",
-    "watermark": "Images and PDF"
+    "watermark": "Images and PDF",
+    "zip": "ZIP archive"
   },
   "openImage": {
     "title": "Choose an image",
@@ -21,9 +22,9 @@
     "title": "Export PDF",
     "button": "Export"
   },
-  "exportFolder": {
-    "title": "Choose where to export the project",
-    "button": "Export here"
+  "saveZip": {
+    "title": "Export project",
+    "button": "Export"
   },
   "openWatermark": {
     "title": "Choose a watermark",

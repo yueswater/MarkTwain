@@ -17,6 +17,7 @@ import { useEffect, useRef, useState } from "react";
 import { SettingsDialog } from "../features/settings/SettingsDialog";
 import type { SettingsPageId } from "../features/settings/settings-pages";
 import { ShortcutsDialog } from "../features/shortcuts/ShortcutsDialog";
+import { Toaster } from "@/components/ui/sonner";
 import { AppShell } from "./AppShell";
 import { Rich } from "../shared/rich";
 
@@ -178,6 +179,7 @@ export function App() {
         onThesisSaved={bumpSaved}
         onDocumentsChanged={() => setGeneration((n) => n + 1)}
       />
+      <Toaster />
     </AppShell>
   );
 }

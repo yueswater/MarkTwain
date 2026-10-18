@@ -11,7 +11,8 @@
     "project": "MarkTwain 專案",
     "image": "圖片",
     "pdf": "PDF 文件",
-    "watermark": "圖片與 PDF"
+    "watermark": "圖片與 PDF",
+    "zip": "ZIP 壓縮檔"
   },
   "openImage": {
     "title": "選擇圖片",
@@ -21,9 +22,9 @@
     "title": "匯出 PDF",
     "button": "匯出"
   },
-  "exportFolder": {
-    "title": "選擇專案的匯出位置",
-    "button": "匯出至此"
+  "saveZip": {
+    "title": "匯出專案",
+    "button": "匯出"
   },
   "openWatermark": {
     "title": "選擇浮水印",

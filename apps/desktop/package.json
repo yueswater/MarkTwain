@@ -65,6 +65,7 @@
     "@fontsource-variable/jetbrains-mono": "^5.3.0",
     "@tiptap/suggestion": "3.31.4",
     "@uiw/react-codemirror": "^4.25.12",
-    "codemirror-lang-latex": "^0.4.2"
+    "codemirror-lang-latex": "^0.4.2",
+    "sonner": "^2.0.8"
   }
 }
