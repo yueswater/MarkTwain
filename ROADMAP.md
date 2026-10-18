@@ -224,6 +224,7 @@ v0.6.0 is the body:
 
 - `thesis-spec`. Issue #132
 - The docx package writer. Issue #133
+- The fonts of the thesis embedded in the `.docx`, Chinese and Latin, whole and not as a subset, with their names and a fallback written as well. A font whose `fsType` does not allow it is left out and the export says so. Issue #178
 - Blocks and inline text from the IR: headings with numbering, paragraphs, lists with the marker of each level, quotes, code, the blocks of a mathematical thesis, landscape pages. Issue #134
 - Tables with merged cells and the borders, and figures. Issue #135
 - Formulas as OMML, with equation numbers made of a row with a `SEQ` field. Issue #136
@@ -272,7 +273,7 @@ The Microsoft Open XML SDK is .NET only. We use it as a reference for element na
 Known limits of the Word output, for all of v0.6.x:
 
 - A float placement of a figure or table is not kept in Word. A figure is a paragraph of its own
-- Word does not embed fonts here, so a user without Times New Roman, a Kai font or XITS Math sees a substitute
+- The fonts of the thesis are embedded (issue #178), but Word for Windows and Word for Mac (365) are the ones that read them, LibreOffice not always, Word for the web and the phones are not promised. The names and a fallback stay for that reason. The font of formulas (Cambria Math) is not embedded, see #144
 - Citations differ slightly from the PDF because the engine is another one
 
 ## v0.6.1 · Word Output, Front Matter and Schools
@@ -289,7 +290,7 @@ The parts of the thesis before and after the body, and the covers of the schools
 
 - Citations and the reference list with CSL (`citeproc-js`), written as static text with links, not as Word sources. Issue #143
 - A `layout.font-math` setting for Typst, LaTeX and Word, which needs a pull request in each template repository. Issue #144
-- A checklist for a real Word, to be done by hand before each release, and the list of fonts a reader needs. The Word output uses the fonts of the thesis settings. Issue #145
+- A checklist for a real Word, to be done by hand before each release, on a computer that does not have the fonts installed, and a page that says which fonts are embedded and which program reads them. Issue #145
 
 **Done when:** citations match the PDF or the differences are listed, the math font setting works in the three outputs, and the checklist was done once in a real Word.
 
@@ -321,8 +322,9 @@ An installer that works without a network.
 - Draft autosave, kept separate from versions
 - Import a `.md` file into a document (the dialect of the project and plain Markdown), and the round trip of an exported file. Issue #49. Exporting the Markdown is in v0.5.3
 - Review of the Traditional Chinese and English interface and error messages
+- A guided tour of every feature, by topic, with steps that make the person do each thing once: the first start plays the basics after a screen for the language and the color theme, the other topics are in the help menu and the settings. It is the overlay and store of AnvilNote's tour, written for MarkTwain, and a test fails when a feature has no step. Issue #179. Its texts are the base of the user documentation, issue #38
 
-**Done when:** after a forced quit, the draft is restored on reopen, and an exported `.md` imports back as it was.
+**Done when:** after a forced quit, the draft is restored on reopen, an exported `.md` imports back as it was, and a person who has never seen MarkTwain can write a heading and a formula, preview and export a draft by the steps of the tour alone.
 
 ## v1.0.0-beta.1 · Public Beta
 
