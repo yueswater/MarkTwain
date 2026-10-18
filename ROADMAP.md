@@ -2,7 +2,7 @@
 
 MarkTwain is developed against version milestones. Each version maps to a [GitHub Milestone](../../milestones), and the work items are tracked as issues.
 
-Current version: v0.5.1.
+Current version: v0.5.2.
 
 | Version | Theme | Status |
 |---|---|---|
@@ -17,7 +17,8 @@ Current version: v0.5.1.
 | [v0.4.0](#v040--version-control) | Version control | Released |
 | [v0.5.0](#v050--latex-output) | LaTeX output | Released |
 | [v0.5.1](#v051--safety-and-polish) | Safety and polish | Released |
-| [v0.5.2](#v052--project-export) | Project export | Not started |
+| [v0.5.2](#v052--use-and-fix) | Use and fix | Released |
+| [v0.5.3](#v053--project-export) | Project export | Not started |
 | [v0.6.0](#v060--word-output) | Word output, the body | Not started |
 | [v0.6.1](#v061--word-output-front-matter-and-schools) | Word output, the front matter and the schools | Not started |
 | [v0.6.2](#v062--word-output-citations-and-math-font) | Word output, citations and the math font | Not started |
@@ -27,7 +28,7 @@ Current version: v0.5.1.
 | [v1.0.0-beta.1](#v100-beta1--public-beta) | Public beta | Not started |
 | [v1.0.0](#v100--release) | Release | Not started |
 
-v0.3.0 (Typst output) and v0.4.0 (version control) do not depend on each other and can be developed in parallel. v0.5.2 needs the LaTeX renderer of v0.5.0 for its LaTeX half.
+v0.3.0 (Typst output) and v0.4.0 (version control) do not depend on each other and can be developed in parallel. v0.5.3 needs the LaTeX renderer of v0.5.0 for its LaTeX half.
 
 ## v0.1.0 · Foundation
 
@@ -172,7 +173,23 @@ Fixes and rough edges found in a review of v0.5.0, no new output.
 
 **Done when:** the review items of the first three batches are closed and the four checks of CI are green on both systems with LaTeX included.
 
-## v0.5.2 · Project Export
+## v0.5.2 · Use and Fix
+
+What a walk through the whole flow, a Typst project and a LaTeX project made from nothing with every feature, found, and what the use of v0.5.1 asked for.
+
+- The abstract in Chinese and the abstract in English are two documents. A chapter or an appendix always starts on a page of its own, text without a heading no longer runs on after the abstract
+- A new chapter starts with a first level heading in the language of the thesis, with the title selected so the first typing is the title, and a new language rewrites a heading that nobody touched. The preview warns about a chapter that nobody has written in
+- What is inserted after a formula or a figure lands after it and does not take its place, and the typing keeps turning into headings after a chapter was replaced as a whole
+- The preview asks no server for anything
+- The engine of a new project is chosen on three squares with the logo of each tool, and a project is placed and opened with a picker of the app
+- The names that a school gives to the lists at the front (目次 or 目錄) follow the school in the settings, the words of the interface are the same everywhere, and the Chinese text is formal and plain
+- The settings: the unit under the name, the reset next to the name, search by the words of a page, the thesis first in a project
+- The dialogs and menus have their animation, the toolbars wrap, the first stop of the Tab key leads to the text, and a person who asks for less motion gets none
+- The marks of the changes are off from the start, and a blank block that is gone is no longer shown as removed
+
+**Done when:** the four checks of CI are green on both systems with LaTeX included, and a Typst project and a LaTeX project can be made from nothing, written, previewed, versioned and exported without an error.
+
+## v0.5.3 · Project Export
 
 The whole thesis leaves MarkTwain as one `.zip`.
 
@@ -295,7 +312,7 @@ An installer that works without a network.
 ## v0.9.0 · Polish
 
 - Draft autosave, kept separate from versions
-- Import a `.md` file into a document (the dialect of the project and plain Markdown), and the round trip of an exported file. Issue #49. Exporting the Markdown is in v0.5.2
+- Import a `.md` file into a document (the dialect of the project and plain Markdown), and the round trip of an exported file. Issue #49. Exporting the Markdown is in v0.5.3
 - Review of the Traditional Chinese and English interface and error messages
 
 **Done when:** after a forced quit, the draft is restored on reopen, and an exported `.md` imports back as it was.
