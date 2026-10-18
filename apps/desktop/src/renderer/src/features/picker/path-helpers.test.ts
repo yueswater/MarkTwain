@@ -1,5 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
-import { crumbsOf, isValidName, joinPath, withProjectExtension } from "./path-helpers";
+import { crumbsOf, fileNameOf, isValidName, joinPath, withProjectExtension } from "./path-helpers";
 
 describe("joinPath", () => {
   it("uses the separator of the path", () => {
@@ -41,5 +41,14 @@ describe("names", () => {
     expect(withProjectExtension("論文", "marktwain")).toBe("論文.marktwain");
     expect(withProjectExtension("論文.marktwain", "marktwain")).toBe("論文.marktwain");
     expect(withProjectExtension("論文.MARKTWAIN", "marktwain")).toBe("論文.MARKTWAIN");
+  });
+});
+
+describe("fileNameOf", () => {
+  it("is the last part of a path with either separator, and the path itself when there is no separator", () => {
+    expect(fileNameOf("/Users/a/論文-typst.zip")).toBe("論文-typst.zip");
+    expect(fileNameOf("C:\\Users\\a\\thesis.pdf")).toBe("thesis.pdf");
+    expect(fileNameOf("thesis.pdf")).toBe("thesis.pdf");
+    expect(fileNameOf("/Users/a/")).toBe("a");
   });
 });

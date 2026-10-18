@@ -10,22 +10,12 @@
   "filter": {
     "project": "MarkTwain 專案",
     "image": "圖片",
-    "pdf": "PDF 文件",
     "watermark": "圖片與 PDF",
-    "zip": "ZIP 壓縮檔",
     "theme": "色彩主題"
   },
   "openImage": {
     "title": "選擇圖片",
     "button": "插入"
-  },
-  "savePdf": {
-    "title": "匯出 PDF",
-    "button": "匯出"
-  },
-  "saveZip": {
-    "title": "匯出專案",
-    "button": "匯出"
   },
   "openWatermark": {
     "title": "選擇浮水印",

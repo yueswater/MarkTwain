@@ -3,12 +3,6 @@ import { IMAGE_EXTENSIONS, WATERMARK_EXTENSIONS } from "../../config/app.config"
 
 /** Smallest abstraction over the Electron dialog, for testing. */
 export type DialogPort = {
-  showSave(options: {
-    title: string;
-    buttonLabel: string;
-    defaultPath: string;
-    filters: { name: string; extensions: string[] }[];
-  }): Promise<string | null>;
   showOpen(options: {
     title: string;
     buttonLabel: string;
@@ -65,27 +59,8 @@ export class DialogService {
     });
   }
 
-  async choosePdfPath(suggestedName: string): Promise<string | null> {
-    const forced = this.forcedExportPath();
-    if (forced) return forced;
-    const t = this.translator();
-    return this.port.showSave({
-      title: t("savePdf.title"),
-      buttonLabel: t("savePdf.button"),
-      defaultPath: `${suggestedName}.pdf`,
-      filters: [{ name: t("filter.pdf"), extensions: ["pdf"] }],
-    });
-  }
-
-  async chooseZipPath(suggestedName: string): Promise<string | null> {
-    const forced = this.forcedExportPath();
-    if (forced) return forced;
-    const t = this.translator();
-    return this.port.showSave({
-      title: t("saveZip.title"),
-      buttonLabel: t("saveZip.button"),
-      defaultPath: `${suggestedName}.zip`,
-      filters: [{ name: t("filter.zip"), extensions: ["zip"] }],
-    });
+  /** The path of the test hook for an export, null in real use, where the person chooses it in the picker of the app. */
+  forcedExport(): string | null {
+    return this.forcedExportPath() ?? null;
   }
 }

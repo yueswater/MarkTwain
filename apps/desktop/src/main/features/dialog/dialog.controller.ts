@@ -9,13 +9,6 @@ import { SettingsRepository } from "../settings/settings.repository";
 import { DialogService, type DialogPort } from "./dialog.service";
 
 const port: DialogPort = {
-  async showSave(options) {
-    const window = BrowserWindow.getFocusedWindow() ?? undefined;
-    const result = window
-      ? await dialog.showSaveDialog(window, options)
-      : await dialog.showSaveDialog(options);
-    return result.canceled || !result.filePath ? null : result.filePath;
-  },
   async showOpen(options) {
     const properties: ("openFile")[] = ["openFile"];
     const window = BrowserWindow.getFocusedWindow() ?? undefined;
@@ -39,5 +32,6 @@ export function registerDialogController(): DialogService {
   );
 
   handle(IpcChannel.DialogForcedProjectPath, () => service.forcedProjectPath());
+  handle(IpcChannel.DialogForcedExportPath, () => service.forcedExport());
   return service;
 }

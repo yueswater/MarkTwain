@@ -4,7 +4,6 @@ import { IpcChannel } from "../../../shared/enums/ipc-channel.enum";
 import type { Locale } from "../../../shared/enums/locale.enum";
 import { useBuild } from "../features/build/use-build";
 import { useProject } from "../features/project/use-project";
-import { FilePicker } from "../features/picker/FilePicker";
 import { EngineDialog } from "../features/project/welcome/EngineDialog";
 import { NewProjectDialog } from "../features/project/welcome/NewProjectDialog";
 import { WelcomeScreen } from "../features/project/welcome/WelcomeScreen";
@@ -160,7 +159,6 @@ export function App() {
         )}
         </div>
       </div>
-      {state.picking && <FilePicker request={state.picking} onAnswer={state.answerPicker} />}
       <EngineDialog
         open={state.choosingEngine}
         onCancel={state.cancelCreate}

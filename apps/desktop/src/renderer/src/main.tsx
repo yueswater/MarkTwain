@@ -7,6 +7,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { IpcChannel } from "../../shared/enums/ipc-channel.enum";
 import { App } from "./app/App";
+import { PickerProvider } from "./features/picker/picker-context";
 import { ColorThemeProvider } from "./lib/color-themes";
 import { PrefsProvider } from "./lib/prefs";
 import { api } from "./shared/api";
@@ -19,7 +20,9 @@ async function bootstrap(): Promise<void> {
     <StrictMode>
       <PrefsProvider>
         <ColorThemeProvider>
-          <App />
+          <PickerProvider>
+            <App />
+          </PickerProvider>
         </ColorThemeProvider>
       </PrefsProvider>
     </StrictMode>,

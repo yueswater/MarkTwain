@@ -10,22 +10,12 @@
   "filter": {
     "project": "MarkTwain project",
     "image": "Images",
-    "pdf": "PDF document",
     "watermark": "Images and PDF",
-    "zip": "ZIP archive",
     "theme": "Color theme"
   },
   "openImage": {
     "title": "Choose an image",
     "button": "Insert"
-  },
-  "savePdf": {
-    "title": "Export PDF",
-    "button": "Export"
-  },
-  "saveZip": {
-    "title": "Export project",
-    "button": "Export"
   },
   "openWatermark": {
     "title": "Choose a watermark",

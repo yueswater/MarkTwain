@@ -128,7 +128,7 @@ test("the PDF and the whole Typst project can be exported", async ({ launch }) =
   await page.getByRole("menuitem", { name: "Export draft" }).click();
   // A new project has an empty cover, which is asked about first
   await page.getByTestId("export-check").getByRole("button", { name: "Export anyway" }).click();
-  await expect(page.locator("[data-sonner-toast]").filter({ hasText: "Exported to" })).toBeVisible();
+  await expect(page.locator("[data-sonner-toast]").filter({ hasText: "Exported" })).toBeVisible();
   expect(readFileSync(pdfPath).subarray(0, 5).toString()).toBe("%PDF-");
   // The toast goes by itself after three seconds
   await expect(page.locator("[data-sonner-toast]")).toHaveCount(0, { timeout: 8000 });
@@ -140,7 +140,7 @@ test("the PDF and the whole Typst project can be exported", async ({ launch }) =
   await page2.getByRole("button", { name: "Preview" }).click();
   await page2.getByRole("button", { name: "Export" }).click();
   await page2.getByRole("menuitem", { name: "Export project zip" }).click();
-  await expect(page2.locator("[data-sonner-toast]").filter({ hasText: "Exported to" })).toBeVisible();
+  await expect(page2.locator("[data-sonner-toast]").filter({ hasText: "Exported" })).toBeVisible();
   // The zip unpacks into one folder with the whole project in it
   const names = zipEntries(zipPath);
   expect(names).toContain("論文-typst/main.typ");
@@ -161,7 +161,7 @@ test("the sources of the thesis go into a zip of Markdown files, without a build
   await page.getByRole("button", { name: "Preview" }).click();
   await page.getByRole("button", { name: "Export" }).click();
   await page.getByRole("menuitem", { name: "Export sources zip" }).click();
-  await expect(page.locator("[data-sonner-toast]").filter({ hasText: "Exported to" })).toBeVisible();
+  await expect(page.locator("[data-sonner-toast]").filter({ hasText: "Exported" })).toBeVisible();
   // One folder with a file for each document, the settings and no engine files
   const names = zipEntries(zipPath);
   expect(names.every((name) => name.startsWith("論文-markdown/"))).toBe(true);
@@ -190,7 +190,7 @@ test("exporting while the cover is empty asks first, lists what is empty, and le
   // Filling in goes to the information page of the settings, and nothing is exported
   await check.getByRole("button", { name: "Fill them in" }).click();
   await expect(page.getByRole("dialog", { name: "Settings" }).getByRole("heading", { name: "Information" })).toBeVisible();
-  await expect(page.locator("[data-sonner-toast]").filter({ hasText: "Exported to" })).toHaveCount(0);
+  await expect(page.locator("[data-sonner-toast]").filter({ hasText: "Exported" })).toHaveCount(0);
 });
 
 

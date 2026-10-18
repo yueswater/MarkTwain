@@ -84,7 +84,7 @@ test.describe("with a TeX Live", () => {
     await page.getByRole("menuitem", { name: "Export draft" }).click();
     // A new project has an empty cover, which is asked about first
     await page.getByTestId("export-check").getByRole("button", { name: "Export anyway" }).click();
-    await expect(page.locator("[data-sonner-toast]").filter({ hasText: "Exported to" })).toBeVisible({ timeout: 120_000 });
+    await expect(page.locator("[data-sonner-toast]").filter({ hasText: "Exported" })).toBeVisible({ timeout: 120_000 });
     expect(readFileSync(join(first.dir, "輸出.pdf")).subarray(0, 5).toString()).toBe("%PDF-");
 
     // The whole project goes into a zip with the template, the hook has one path for every export, so the zip takes the place of the PDF

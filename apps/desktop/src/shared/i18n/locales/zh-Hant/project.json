@@ -117,6 +117,11 @@
     "unreadable": "無法讀取此資料夾。",
     "create": "建立",
     "open": "開啟",
-    "cancel": "取消"
+    "cancel": "取消",
+    "exportTitle": "選擇匯出位置",
+    "fileLabel": "檔名",
+    "invalidFileName": "檔名不可為空，也不可包含 <c>\\ / : * ? \" < > |</c> 等字元。",
+    "replaces": "此位置已有同名檔案，匯出後會取代。",
+    "export": "匯出"
   }
 }

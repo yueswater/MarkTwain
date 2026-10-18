@@ -42,3 +42,9 @@ export function withProjectExtension(name: string, extension: string): string {
   const clean = name.trim();
   return clean.toLowerCase().endsWith(`.${extension}`) ? clean : `${clean}.${extension}`;
 }
+
+/** The name of the file at the end of a path, whichever separator the path has. */
+export function fileNameOf(path: string): string {
+  const parts = path.split(/[\\/]/).filter(Boolean);
+  return parts[parts.length - 1] ?? path;
+}

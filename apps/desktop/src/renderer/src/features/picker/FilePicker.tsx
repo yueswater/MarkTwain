@@ -12,9 +12,8 @@ import { errorMessage } from "../../shared/error-message";
 import { crumbsOf, isValidName, joinPath, withProjectExtension } from "./path-helpers";
 import { Rich } from "../../shared/rich";
 
-const EXTENSION = "marktwain";
-
-export type PickRequest = { mode: "save"; suggestedName: string } | { mode: "open" };
+/** What the picker is asked for: a project to open, or a file to write, which is a new project or an export and has the extension of its kind. */
+export type PickRequest = { mode: "open" } | { mode: "save"; purpose: "project" | "export"; suggestedName: string; extension: string };
 
 type Props = {
   request: PickRequest;
@@ -25,13 +24,16 @@ type Props = {
 const PLACE_ICONS = { home: HouseIcon, desktop: MonitorIcon, documents: FileTextIcon, downloads: DownloadIcon, drive: HardDriveIcon } as const;
 
 /**
- * The picker of MarkTwain for the place of a new project and for a project to open. It shows the folders and the project files
+ * The picker of MarkTwain for the place of a new project, a project to open and the files of an export. It shows the folders and the project files
  * only, so there is nothing to sort through, and a new folder can be made on the way.
  */
 export function FilePicker({ request, onAnswer }: Props) {
   const { t } = useTranslation("project");
   const { t: tRoot } = useTranslation();
   const saving = request.mode === "save";
+  // Only the files of the kind that is asked for are listed, a new project is never put over an old one, a file of an export may replace one
+  const extension = request.mode === "save" ? request.extension : "marktwain";
+  const exporting = request.mode === "save" && request.purpose === "export";
   const [listing, setListing] = useState<FileListing | null>(null);
   const [name, setName] = useState(request.mode === "save" ? request.suggestedName : "");
   const [selected, setSelected] = useState<string | null>(null);
@@ -42,14 +44,14 @@ export function FilePicker({ request, onAnswer }: Props) {
     async (path: string | null) => {
       try {
         setError(null);
-        setListing(await api.invoke(IpcChannel.FilesList, { path, extension: EXTENSION }));
+        setListing(await api.invoke(IpcChannel.FilesList, { path, extension }));
         setSelected(null);
         setFolderName(null);
       } catch (e) {
         setError(errorMessage(tRoot, e));
       }
     },
-    [tRoot],
+    [tRoot, extension],
   );
 
   useEffect(() => {
@@ -57,10 +59,11 @@ export function FilePicker({ request, onAnswer }: Props) {
     // Opens once on the place that the app chooses
   }, [load]);
 
-  const fileName = withProjectExtension(name, EXTENSION);
+  const fileName = withProjectExtension(name, extension);
   const taken = useMemo(() => listing?.entries.some((entry) => entry.kind === "file" && entry.name.toLowerCase() === fileName.toLowerCase()) ?? false, [listing, fileName]);
-  const nameProblem = saving && name !== "" ? (!isValidName(name) ? t("picker.invalidName") : taken ? t("picker.exists") : null) : null;
-  const canConfirm = listing !== null && (saving ? isValidName(name) && !taken : selected !== null);
+  const nameProblem = saving && name !== "" ? (!isValidName(name) ? t(exporting ? "picker.invalidFileName" : "picker.invalidName") : taken && !exporting ? t("picker.exists") : null) : null;
+  const replaces = exporting && taken && isValidName(name);
+  const canConfirm = listing !== null && (saving ? isValidName(name) && (exporting || !taken) : selected !== null);
 
   function confirm(): void {
     if (!listing || !canConfirm) return;
@@ -77,14 +80,15 @@ export function FilePicker({ request, onAnswer }: Props) {
     }
   }
 
+  const title = exporting ? t("picker.exportTitle") : saving ? t("picker.saveTitle") : t("picker.openTitle");
   const placeName = (place: FilePlace) => (place.id === "drive" ? place.path : t(`picker.places.${place.id}`));
 
   return (
     <Dialog open onOpenChange={(next) => !next && onAnswer(null)}>
       <DialogContent className="flex h-[min(80vh,560px)] flex-col gap-3 sm:max-w-3xl" data-testid="file-picker">
         <DialogHeader>
-          <DialogTitle>{saving ? t("picker.saveTitle") : t("picker.openTitle")}</DialogTitle>
-          <DialogDescription className="sr-only">{saving ? t("picker.saveTitle") : t("picker.openTitle")}</DialogDescription>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription className="sr-only">{title}</DialogDescription>
         </DialogHeader>
 
         <div className="flex min-h-0 flex-1 gap-3">
@@ -182,7 +186,7 @@ export function FilePicker({ request, onAnswer }: Props) {
           <div className="grid gap-1">
             <div className="flex items-center gap-2">
               <label htmlFor="picker-name" className="shrink-0 text-sm font-medium">
-                {t("picker.nameLabel")}
+                {t(exporting ? "picker.fileLabel" : "picker.nameLabel")}
               </label>
               <Input
                 id="picker-name"
@@ -192,13 +196,14 @@ export function FilePicker({ request, onAnswer }: Props) {
                 onChange={(event) => setName(event.target.value)}
                 onKeyDown={(event) => event.key === "Enter" && confirm()}
               />
-              <span className="shrink-0 text-sm text-muted-foreground">.{EXTENSION}</span>
+              <span className="shrink-0 text-sm text-muted-foreground">.{extension}</span>
             </div>
             {nameProblem && (
               <p role="alert" className="text-xs text-destructive">
                 <Rich text={nameProblem} />
               </p>
             )}
+            {replaces && <p className="text-xs text-muted-foreground">{t("picker.replaces")}</p>}
           </div>
         )}
         {error && (
@@ -211,7 +216,7 @@ export function FilePicker({ request, onAnswer }: Props) {
             {t("picker.cancel")}
           </Button>
           <Button type="button" disabled={!canConfirm} onClick={confirm}>
-            {saving ? t("picker.create") : t("picker.open")}
+            {exporting ? t("picker.export") : saving ? t("picker.create") : t("picker.open")}
           </Button>
         </DialogFooter>
       </DialogContent>
