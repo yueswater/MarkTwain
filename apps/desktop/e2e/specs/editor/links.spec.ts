@@ -14,19 +14,10 @@ test("a link is made from the selected text, opens its address on a click, and i
   const opened = () => app.evaluate(() => (globalThis as unknown as { __opened: string[] }).__opened);
   const editor = page.locator(".ProseMirror");
   await editor.click();
-  await page.keyboard.type("see docs here");
+  await page.keyboard.type("docs");
 
-  // The words are selected and the key of the link asks for its address, the selection is the text of the link
-  await page.evaluate(() => {
-    const text = document.querySelector(".ProseMirror p")!.firstChild as Text;
-    const range = document.createRange();
-    range.setStart(text, 4);
-    range.setEnd(text, 8);
-    const selection = window.getSelection()!;
-    selection.removeAllRanges();
-    selection.addRange(range);
-  });
-  await expect.poll(() => page.evaluate(() => window.getSelection()?.toString())).toBe("docs");
+  // The word is selected with one key, the key of the link asks for its address, and the selection is the text of the link
+  await page.keyboard.press("Shift+Home");
   // The editor has taken the selection when the tools for text show
   await expect(page.getByLabel("Selection tools")).toBeVisible();
   await page.keyboard.press("ControlOrMeta+k");
@@ -38,7 +29,9 @@ test("a link is made from the selected text, opens its address on a click, and i
   const link = editor.locator("a");
   await expect(link).toHaveText("docs");
   await expect(link).toHaveAttribute("href", "https://example.com/docs");
-  expect(await savedChapter(page)).toContain("see [docs](https://example.com/docs) here");
+  // What is typed after the link is not part of it
+  await page.keyboard.type(" here");
+  expect(await savedChapter(page)).toBe("[docs](https://example.com/docs) here\n");
 
   // A link is underlined and on hover its color fills it, with square corners
   const style = () => link.evaluate((el) => {
@@ -64,13 +57,13 @@ test("a link is made from the selected text, opens its address on a click, and i
   await edit.getByLabel("Address").fill("https://example.org");
   await edit.getByRole("button", { name: "Update" }).click();
   await expect(link).toHaveText("the docs");
-  expect(await savedChapter(page)).toContain("see [the docs](https://example.org) here");
+  expect(await savedChapter(page)).toBe("[the docs](https://example.org) here\n");
 
   // The link goes and its words stay
   await link.click();
   await page.getByLabel("Link tools").getByRole("button", { name: "Remove link" }).click();
   await expect(editor.locator("a")).toHaveCount(0);
-  expect(await savedChapter(page)).toBe("see the docs here\n");
+  expect(await savedChapter(page)).toBe("the docs here\n");
 });
 
 test("an address that could run something is refused, and a link can be made without selected text", async ({ launch }) => {
