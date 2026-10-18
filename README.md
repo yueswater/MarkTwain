@@ -22,7 +22,7 @@ MarkTwain is an editor for the [TW-Thesis](https://github.com/TW-Thesis) templat
 
 > **Disclaimer**: The format presets come from the TW-Thesis templates and are for reference only. Always follow your school's official thesis regulations and your department's requirements.
 
-> **Status**: under development. v0.5.3 writes and builds PDFs with the Typst template or the LaTeX template, which a project picks when it is created, and keeps versions of the thesis. LaTeX needs a TeX Live on your computer for now. Installers and Word output come in later releases (see [ROADMAP.md](ROADMAP.md)), so for now you run MarkTwain from source.
+> **Status**: under development. v0.5.3 writes and builds PDFs with the Typst template or the LaTeX template, which a project picks when it is created, and keeps versions of the thesis. LaTeX needs a TeX Live on your computer for now. Installers come in a later release (see [ROADMAP.md](ROADMAP.md)), so for now you run MarkTwain from source.
 
 ## What it does
 
@@ -37,8 +37,6 @@ MarkTwain is an editor for the [TW-Thesis](https://github.com/TW-Thesis) templat
 - **Your files.** A project is one `.marktwain` file, a SQLite database whose source of truth is Markdown. You can export it as a zip of a Typst or LaTeX project that compiles without MarkTwain, or as a zip of the Markdown sources and the images.
 
 The interface is in Traditional Chinese and English.
-
-Still to come: Word output (v0.6.x).
 
 ## Run from source
 
@@ -93,4 +91,4 @@ macOS is only added when the workflow is started by hand with `include-macos`.
 
 ## Trademarks
 
-Typst, LaTeX and Microsoft Word are names of other people's products. MarkTwain is not made, endorsed or sponsored by Typst, the LaTeX Project or Microsoft. The Typst logo and the Word icon are shown unchanged on the squares where the output of a project is chosen, only to say which tool each square stands for, and they belong to their owners. See [THIRD_PARTY.md](THIRD_PARTY.md).
+Typst and LaTeX are names of other people's products. MarkTwain is not made, endorsed or sponsored by Typst or the LaTeX Project. The Typst logo is shown unchanged on the squares where the output of a project is chosen, only to say which tool each square stands for, and they belong to their owners. See [THIRD_PARTY.md](THIRD_PARTY.md).

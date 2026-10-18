@@ -45,7 +45,6 @@ test("a new project asks for its output first, and says that it cannot be change
   await expect(dialog).toBeVisible();
   await expect(dialog.getByRole("note")).toContainText("cannot be changed after the project is created");
   await expect(dialog.getByRole("radio", { name: /Typst/ })).toBeChecked();
-  await expect(dialog.getByRole("radio", { name: /Word/ })).toBeDisabled();
   await expect(dialog.getByRole("radio", { name: /LaTeX/ })).toBeDisabled();
   await expect(dialog).toContainText("No TeX Live was found");
 

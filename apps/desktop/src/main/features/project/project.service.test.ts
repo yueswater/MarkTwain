@@ -155,7 +155,6 @@ describe("engine", () => {
   });
 
   it("refuses an engine that is not available and leaves no file", () => {
-    expect(codeOf(() => service().create(file, "w", "word"))).toBe("project.engine-unavailable");
     expect(codeOf(() => service().create(file, "w", "nope" as never))).toBe("project.engine-unavailable");
     expect(existsSync(file)).toBe(false);
   });

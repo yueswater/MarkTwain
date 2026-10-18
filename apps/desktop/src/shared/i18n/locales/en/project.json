@@ -85,11 +85,6 @@
       },
       "tagline": "Rigorous, standard in academia"
     },
-    "word": {
-      "name": "Word",
-      "note": "Not available yet, it comes in a later version. For now you can export a PDF for your advisor.",
-      "tagline": "Familiar, easy to share"
-    },
     "warning": "The output cannot be changed after the project is created.",
     "cancel": "Cancel",
     "confirm": "Create project"

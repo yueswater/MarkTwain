@@ -85,11 +85,6 @@
       },
       "tagline": "嚴謹、學界通用"
     },
-    "word": {
-      "name": "Word",
-      "note": "尚未支援。目前可先輸出 PDF 供指導教授檢閱。",
-      "tagline": "熟悉、易分享"
-    },
     "warning": "專案建立後無法更換排版方式。",
     "cancel": "取消",
     "confirm": "建立專案"

@@ -7,7 +7,6 @@ import { IpcChannel } from "../../../../../shared/enums/ipc-channel.enum";
 import type { LatexStatus, OutputEngine } from "../../../../../shared/ipc/index";
 import { api } from "../../../shared/api";
 import { TypstLogo } from "./TypstLogo";
-import { WordLogo } from "./WordLogo";
 import { plain, Rich } from "../../../shared/rich";
 
 type Props = {
@@ -48,7 +47,6 @@ export function EngineDialog({ open, onCancel, onConfirm }: Props) {
   const options: { id: OutputEngine; disabled: boolean; hint?: string }[] = [
     { id: "typst", disabled: false },
     { id: "latex", disabled: latex === null || !latex.available, hint: latex === null ? t("engine.checking") : reason ? t(`engine.latex.missing.${reason}`) : undefined },
-    { id: "word", disabled: true, hint: t("engine.word.note") },
   ];
   // Only a reason that the person can do something about is written out, the rest is in the tooltip of the square
   const problem = options.find((option) => option.id === "latex")?.hint;
@@ -60,7 +58,7 @@ export function EngineDialog({ open, onCancel, onConfirm }: Props) {
           <DialogTitle>{t("engine.title")}</DialogTitle>
           <DialogDescription className="sr-only">{t("engine.description")}</DialogDescription>
         </DialogHeader>
-        <div role="radiogroup" aria-label={t("engine.title")} className="grid grid-cols-3 gap-3">
+        <div role="radiogroup" aria-label={t("engine.title")} className="grid grid-cols-2 gap-3">
           {options.map((option) => (
             <label
               key={option.id}
@@ -112,15 +110,12 @@ export function EngineDialog({ open, onCancel, onConfirm }: Props) {
 /** The name of each tool as it is usually written, so a person knows it at a glance. */
 function EngineLogo({ engine }: { engine: OutputEngine }) {
   if (engine === "typst") return <TypstLogo className="pointer-events-none h-7 w-auto" style={{ color: "#239dad" }} />;
-  if (engine === "latex") {
-    return (
-      <span aria-hidden="true" className="pointer-events-none text-3xl font-medium" style={{ fontFamily: "'Latin Modern Roman', 'Computer Modern', Georgia, serif" }}>
-        L<span className="relative -top-[0.32em] -ml-[0.36em] text-[0.7em]">A</span>
-        <span className="-ml-[0.15em]">T</span>
-        <span className="relative top-[0.22em] -ml-[0.1em]">E</span>
-        <span className="-ml-[0.1em]">X</span>
-      </span>
-    );
-  }
-  return <WordLogo className="pointer-events-none h-14 w-auto" />;
+  return (
+    <span aria-hidden="true" className="pointer-events-none text-3xl font-medium" style={{ fontFamily: "'Latin Modern Roman', 'Computer Modern', Georgia, serif" }}>
+      L<span className="relative -top-[0.32em] -ml-[0.36em] text-[0.7em]">A</span>
+      <span className="-ml-[0.15em]">T</span>
+      <span className="relative top-[0.22em] -ml-[0.1em]">E</span>
+      <span className="-ml-[0.1em]">X</span>
+    </span>
+  );
 }

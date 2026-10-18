@@ -19,9 +19,6 @@ Current version: v0.5.3.
 | [v0.5.1](#v051--safety-and-polish) | Safety and polish | Released |
 | [v0.5.2](#v052--use-and-fix) | Use and fix | Released |
 | [v0.5.3](#v053--project-export) | Project export | Released |
-| [v0.6.0](#v060--word-output) | Word output, the body | Not started |
-| [v0.6.1](#v061--word-output-front-matter-and-schools) | Word output, the front matter and the schools | Not started |
-| [v0.6.2](#v062--word-output-citations-and-math-font) | Word output, citations and the math font | Not started |
 | [v0.7.0](#v070--thesis-features) | Thesis features | Not started |
 | [v0.8.0](#v080--offline-packaging) | Offline packaging | Not started |
 | [v0.9.0](#v090--polish) | Polish | Not started |
@@ -29,6 +26,8 @@ Current version: v0.5.3.
 | [v1.0.0](#v100--release) | Release | Not started |
 
 v0.3.0 (Typst output) and v0.4.0 (version control) do not depend on each other and can be developed in parallel. v0.5.3 needs the LaTeX renderer of v0.5.0 for its LaTeX half.
+
+Word output is not planned. The versions v0.6.0 to v0.6.2 are dropped, and the numbers are not reused.
 
 ## v0.1.0 · Foundation
 
@@ -154,7 +153,7 @@ The same content, rendered as LaTeX.
 - LaTeX renderer (shares the IR with Typst)
 - Finding a TeX Live (`xelatex`, `texlua`, `latexmk`, `citation-style-language`) through an environment variable or the PATH, as Typst is found in development. The installed app will carry its own, see v0.8.0
 - Runs the template's `gen.lua` and latexmk, and parses the TeX log
-- A project picks its output when it is created, Typst or LaTeX, and Word from v0.6.0. The choice cannot be changed afterwards, and the screen that asks for it says so. A computer with no TeX Live cannot pick LaTeX, and the screen says why
+- A project picks its output when it is created, Typst or LaTeX. The choice cannot be changed afterwards, and the screen that asks for it says so. A computer with no TeX Live cannot pick LaTeX, and the screen says why
 
 **Done when:** the same sample thesis builds a LaTeX PDF with the TeX Live of the developer, from a LaTeX project. Without a TeX Live, LaTeX cannot be picked for a new project and Typst is unaffected.
 
@@ -207,92 +206,6 @@ Also in this version, from the use of v0.5.2:
 - A date is typed or picked in a calendar of the app, JetBrains Mono for code and for what is typed in a form, a PDF viewer in the black and gray of the app, and shorter messages with names in bold
 
 **Done when:** a fixed sample thesis is exported for both Typst and LaTeX, unzipped, and compiled with the template's own commands, and the PDF has the same page count and text as the one MarkTwain builds. The test `export-parity.test.ts` holds this to the byte: the pages of Typst and the PDF of LaTeX are the same as those of the build.
-
-## v0.6.0 · Word Output
-
-The same content and rules, written as a real `.docx`. This is split over three versions: v0.6.0 is the body, v0.6.1 the front matter and the schools, v0.6.2 citations and the math font.
-
-The promise: Typst, LaTeX and Word get the same content and the same rules. The rules are paper size, margins, fonts, font sizes, line spacing, indents, heading format, chapter, figure, table and equation numbering, page number format, and headers and footers. Line breaks and page breaks are not promised to be identical. A PDF stores final glyph positions. A `.docx` stores content and rules, and Word computes the line and page breaks when the file is opened, on the reader's machine. So the pages end up close but can differ by a line or a page. The difference is measured and reported, not hidden. Issue #147.
-
-A fixed-layout Word mode, with hard line and page breaks copied from Typst, is not planned. It would make the file impossible to edit.
-
-The file has real Word structure, not just a look: heading styles, `SEQ` captions, `REF` cross-references with the result already filled in, `TOC` fields with the entries already filled in, footnotes in `footnotes.xml`, formulas as real Word equations (OMML) that can be edited, and sections with roman then arabic page numbers.
-
-Method: a new `docx` renderer in `packages/render` takes the same IR as Typst and LaTeX and writes the XML of the package directly (OOXML parts and a zip). A new pure package `thesis-spec` merges `schools/default.yml`, the school preset and the project `config.yml` into one typed object. A parity test checks it against what Typst resolves, for each of the 15 schools. It runs without Typst or TeX Live, so it adds nothing to the installer.
-
-v0.6.0 is the body:
-
-- `thesis-spec`. Issue #132
-- The docx package writer. Issue #133
-- The fonts of the thesis embedded in the `.docx`, Chinese and Latin, whole and not as a subset, with their names and a fallback written as well. A font whose `fsType` does not allow it is left out and the export says so. Issue #178
-- Blocks and inline text from the IR: headings with numbering, paragraphs, lists with the marker of each level, quotes, code, the blocks of a mathematical thesis, landscape pages. Issue #134
-- Tables with merged cells and the borders, and figures. Issue #135
-- Formulas as OMML, with equation numbers made of a row with a `SEQ` field. Issue #136
-- Captions, bookmarks, cross-references, footnotes. Issue #137
-- The export entry and `build-docx`. Issue #138
-- Validation in CI with the Open XML SDK validator and a LibreOffice conversion to PDF. Issue #139
-- A comparison of the Typst, LaTeX and Word outputs: content and spec checks that block CI, and a pagination report that never blocks. Issue #147
-
-**Done when:** a sample thesis exports to a `.docx` that passes the validator and opens in LibreOffice with the same numbers for figures, tables, formulas and blocks as the PDF, and the content and spec checks of issue #147 pass for the three outputs.
-
-### How the Word file looks good
-
-Five layers, from the most basic to the last check:
-
-1. **Styles first.** A fixed set of named Word styles is generated from `thesis-spec`. There is no manual formatting on single paragraphs, so a user who changes a style changes the whole thesis.
-2. **A small fixed base.** Compatibility mode 15, `docDefaults`, default language `zh-TW`, the footnote text, footnote reference and hyperlink styles, and `docGrid` off.
-3. **Chinese typesetting details.**
-   - The font is set per kind of text: `ascii`, `eastAsia` and `hAnsi` are each explicit, and `eastAsia` gets one font name only.
-   - The first-line indent is 2 characters.
-   - Line spacing is "at least", not "exactly", so formulas are not clipped.
-   - The spacing between CJK and Latin text and the punctuation compression are tuned toward what Typst does.
-   - The `w14` ligature and kerning settings are set to match Typst.
-4. **Layout hygiene through styles.** `keepNext`, widow and orphan control, the page break before a chapter in the Heading 1 style, repeated table header rows, `cantSplit` rows, and an equation number placed with a center tab plus a right tab.
-5. **Checks.**
-   - Structure validation in CI with the OOXML validator. Issue #139
-   - LibreOffice converts the file to PDF, then to images, as a visual regression with Typst and Word side by side. Issue #139
-   - A manual check in a real Word before each release, with a checklist. Issue #145
-
-### OOXML scope
-
-We write the XML directly, with a small writer and `fflate` for the zip. The parts used are:
-
-- Wordprocessing: document, styles, numbering, settings, footnotes, headers and footers, fields, tables, sections
-- Packaging: zip parts, content types, relationships
-- Math (OMML)
-- Drawing.Wordprocessing and Drawing.Pictures, for inline images
-- ExtendedProperties and CustomProperties, for `docProps`
-- The Office 2010 Word (`w14`) extensions, for ligatures and number forms
-
-Maybe later: Bibliography (native sources), SVG with a PNG fallback, and CoverPageProps.
-
-Not used: Excel, PowerPoint, SmartArt, VML, comments, text-box layout.
-
-The Microsoft Open XML SDK is .NET only. We use it as a reference for element names and their order, and its validator runs in CI. We do not import it.
-
-Known limits of the Word output, for all of v0.6.x:
-
-- A float placement of a figure or table is not kept in Word. A figure is a paragraph of its own
-- The fonts of the thesis are embedded (issue #178), but Word for Windows and Word for Mac (365) are the ones that read them, LibreOffice not always, Word for the web and the phones are not promised. The names and a fallback stay for that reason. The font of formulas (Cambria Math) is not embedded, see #144
-- Citations differ slightly from the PDF because the engine is another one
-
-## v0.6.1 · Word Output, Front Matter and Schools
-
-The parts of the thesis before and after the body, and the covers of the schools.
-
-- Cover, verification page, Chinese and English abstracts, acknowledgements, notation list, appendices, roman and arabic page numbers. Issue #140
-- Contents, list of figures and list of tables as fields. Issue #141
-- The cover data of the 15 schools, compared with the Typst cover. Issue #142
-
-**Done when:** all of the front matter is there in the order of the template, and all 15 school covers match.
-
-## v0.6.2 · Word Output, Citations and Math Font
-
-- Citations and the reference list with CSL (`citeproc-js`), written as static text with links, not as Word sources. Issue #143
-- A `layout.font-math` setting for Typst, LaTeX and Word, which needs a pull request in each template repository. Issue #144
-- A checklist for a real Word, to be done by hand before each release, on a computer that does not have the fonts installed, and a page that says which fonts are embedded and which program reads them. Issue #145
-
-**Done when:** citations match the PDF or the differences are listed, the math font setting works in the three outputs, and the checklist was done once in a real Word.
 
 ## v0.7.0 · Thesis Features
 

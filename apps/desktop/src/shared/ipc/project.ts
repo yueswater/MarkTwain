@@ -2,7 +2,7 @@ import { IpcChannel } from "../enums/ipc-channel.enum";
 import type { DocumentSummary } from "./document";
 
 /** What a project is written for, chosen when it is created and never changed. Word is not available yet. */
-export type OutputEngine = "typst" | "latex" | "word";
+export type OutputEngine = "typst" | "latex";
 
 export type ProjectInfo = {
   name: string;
