@@ -22,7 +22,7 @@ MarkTwain 是 [TW-Thesis](https://github.com/TW-Thesis) 模板的編輯器。你
 
 > **免責聲明**：格式設定來自 TW-Thesis 模板，僅供參考，實際仍請以學校公布的論文規範及系所要求為準。
 
-> **目前狀態**：開發中。v0.5.3 可以用 Typst 或 LaTeX 模板寫作、建置 PDF（建立專案時選擇其一），並保存論文的版本。LaTeX 目前需要電腦上已安裝 TeX Live。安裝檔和 Word 輸出會在後續版本推出（見 [ROADMAP.md](ROADMAP.md)），目前請從原始碼執行。
+> **目前狀態**：開發中。v0.5.3 可以用 Typst 或 LaTeX 模板寫作、建置 PDF（建立專案時選擇其一），並保存論文的版本。LaTeX 目前需要電腦上已安裝 TeX Live。安裝檔會在後續版本推出（見 [ROADMAP.md](ROADMAP.md)），目前請從原始碼執行。
 
 ## 功能
 
@@ -37,8 +37,6 @@ MarkTwain 是 [TW-Thesis](https://github.com/TW-Thesis) 模板的編輯器。你
 - **檔案**：一個專案就是一個 `.marktwain` 檔，它是 SQLite 資料庫，內容以 Markdown 為準。可以匯出成 Typst 或 LaTeX 專案的 zip 檔，不用 MarkTwain 也能編譯，或匯出成 Markdown 原稿與圖片的 zip 檔。
 
 介面有繁體中文和英文。
-
-還沒做的是 Word 輸出（v0.6.x）。
 
 ## 從原始碼執行
 
@@ -93,4 +91,4 @@ gh run download <run-id> -n app-win-unpacked
 
 ## 商標
 
-Typst、LaTeX 與 Microsoft Word 是他人產品的名稱。MarkTwain 並非由 Typst、LaTeX Project 或微軟製作、背書或贊助。在選擇專案輸出方式的方格中，Typst 標誌與 Word 圖示均原樣顯示，僅用來說明各方格代表哪一種工具，其權利歸各自的所有者。詳見 [THIRD_PARTY.md](THIRD_PARTY.md)。
+Typst 與 LaTeX 是他人產品的名稱。MarkTwain 並非由 Typst 或 LaTeX Project 製作、背書或贊助。在選擇專案輸出方式的方格中，Typst 標誌原樣顯示，僅用來說明各方格代表哪一種工具，其權利歸各自的所有者。詳見 [THIRD_PARTY.md](THIRD_PARTY.md)。

@@ -15,7 +15,7 @@ import { MIGRATIONS } from "../../infra/migrations";
 import type { DocumentService } from "../document/document.service";
 import { ProjectRepository } from "./project.repository";
 
-/** The engines that a new project can be written for, Word follows in v0.6.0. */
+/** The engines that a new project can be written for. */
 const NEW_PROJECT_ENGINES: readonly OutputEngine[] = ["typst", "latex"];
 
 export class ProjectService {
