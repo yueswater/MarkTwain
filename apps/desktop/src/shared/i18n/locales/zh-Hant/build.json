@@ -16,6 +16,7 @@
   "export": "匯出",
   "exportPdf": "匯出草稿",
   "exportProject": "匯出專案壓縮檔",
+  "exportMarkdown": "匯出原稿壓縮檔",
   "exported": "已匯出到 {{path}}",
   "watch": "自動更新",
   "watchHint": "每次儲存後自動重新產生",

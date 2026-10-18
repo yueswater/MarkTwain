@@ -16,6 +16,7 @@
   "export": "Export",
   "exportPdf": "Export draft",
   "exportProject": "Export project zip",
+  "exportMarkdown": "Export sources zip",
   "exported": "Exported to {{path}}",
   "watch": "Auto update",
   "watchHint": "Rebuild after every save",

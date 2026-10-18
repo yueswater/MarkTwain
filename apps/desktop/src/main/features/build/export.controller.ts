@@ -18,6 +18,11 @@ export function registerExportController(build: BuildService, dialogs: DialogSer
     return { path };
   });
 
+  handle(IpcChannel.ExportMarkdown, async () => {
+    const path = await dialogs.chooseZipPath(build.markdownArchiveName());
+    return path ? { path: await build.exportMarkdown(path) } : null;
+  });
+
   handle(IpcChannel.ExportProject, async () => {
     const path = await dialogs.chooseZipPath(build.projectArchiveName());
     return path ? { path: await build.exportProject(path) } : null;

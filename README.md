@@ -22,7 +22,7 @@ MarkTwain is an editor for the [TW-Thesis](https://github.com/TW-Thesis) templat
 
 > **Disclaimer**: The format presets come from the TW-Thesis templates and are for reference only. Always follow your school's official thesis regulations and your department's requirements.
 
-> **Status**: under development. v0.5.2 writes and builds PDFs with the Typst template or the LaTeX template, which a project picks when it is created, and keeps versions of the thesis. LaTeX needs a TeX Live on your computer for now. Installers and Word output come in later releases (see [ROADMAP.md](ROADMAP.md)), so for now you run MarkTwain from source.
+> **Status**: under development. v0.5.3 writes and builds PDFs with the Typst template or the LaTeX template, which a project picks when it is created, and keeps versions of the thesis. LaTeX needs a TeX Live on your computer for now. Installers and Word output come in later releases (see [ROADMAP.md](ROADMAP.md)), so for now you run MarkTwain from source.
 
 ## What it does
 
@@ -34,11 +34,11 @@ MarkTwain is an editor for the [TW-Thesis](https://github.com/TW-Thesis) templat
 - **Format.** Pick one of 15 schools, then adjust margins, fonts, heading numbers, list markers and the numbering of figures and tables in the settings.
 - **Fonts.** Add fonts to a project from your computer. The project carries them, and the build prefers them.
 - **Bibliography.** Import BibTeX, pick a citation style, and hover a citation to see which work it is.
-- **Your files.** A project is one `.marktwain` file, a SQLite database whose source of truth is Markdown. You can export it as a Typst project folder that compiles without MarkTwain.
+- **Your files.** A project is one `.marktwain` file, a SQLite database whose source of truth is Markdown. You can export it as a zip of a Typst or LaTeX project that compiles without MarkTwain, or as a zip of the Markdown sources and the images.
 
 The interface is in Traditional Chinese and English.
 
-Still to come: a zip export of the whole thesis as a template folder (v0.5.3), and Word output (v0.6.x).
+Still to come: Word output (v0.6.x).
 
 ## Run from source
 

@@ -7,3 +7,4 @@ export { assignPaths, renderMain, renderMainLatex } from "./layout";
 export type * from "./types";
 export { looksLikeImage } from "./images";
 export { zipFolder } from "./zip";
+export { exportMarkdownProject } from "./export-markdown";

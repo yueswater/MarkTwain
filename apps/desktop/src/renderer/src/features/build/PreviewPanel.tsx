@@ -148,7 +148,7 @@ export function PreviewPanel({ build, saveTick, placeKey, engine, onFillIn, onCl
     }
   }
 
-  async function exportTo(channel: typeof IpcChannel.ExportPdf | typeof IpcChannel.ExportFinalPdf | typeof IpcChannel.ExportProject): Promise<void> {
+  async function exportTo(channel: typeof IpcChannel.ExportPdf | typeof IpcChannel.ExportFinalPdf | typeof IpcChannel.ExportProject | typeof IpcChannel.ExportMarkdown): Promise<void> {
     try {
       const result = await api.invoke(channel);
       // A final copy without a watermark image is told so, since the word final promises a watermark
@@ -232,6 +232,7 @@ export function PreviewPanel({ build, saveTick, placeKey, engine, onFillIn, onCl
               <DropdownMenuItem onSelect={() => void requestExport(IpcChannel.ExportPdf)}>{t("exportPdf")}</DropdownMenuItem>
               <DropdownMenuItem onSelect={() => void requestExport(IpcChannel.ExportFinalPdf)}>{t("exportFinalPdf")}</DropdownMenuItem>
               <DropdownMenuItem onSelect={() => void exportTo(IpcChannel.ExportProject)}>{t("exportProject")}</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => void exportTo(IpcChannel.ExportMarkdown)}>{t("exportMarkdown")}</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
           <Button variant="ghost" size="icon-sm" aria-label={t("close")} onClick={onClose}>

@@ -22,7 +22,7 @@ MarkTwain 是 [TW-Thesis](https://github.com/TW-Thesis) 模板的編輯器。你
 
 > **免責聲明**：格式設定來自 TW-Thesis 模板，僅供參考，實際仍請以學校公布的論文規範及系所要求為準。
 
-> **目前狀態**：開發中。v0.5.2 可以用 Typst 或 LaTeX 模板寫作、建置 PDF（建立專案時選擇其一），並保存論文的版本。LaTeX 目前需要電腦上已安裝 TeX Live。安裝檔和 Word 輸出會在後續版本推出（見 [ROADMAP.md](ROADMAP.md)），目前請從原始碼執行。
+> **目前狀態**：開發中。v0.5.3 可以用 Typst 或 LaTeX 模板寫作、建置 PDF（建立專案時選擇其一），並保存論文的版本。LaTeX 目前需要電腦上已安裝 TeX Live。安裝檔和 Word 輸出會在後續版本推出（見 [ROADMAP.md](ROADMAP.md)），目前請從原始碼執行。
 
 ## 功能
 
@@ -34,11 +34,11 @@ MarkTwain 是 [TW-Thesis](https://github.com/TW-Thesis) 模板的編輯器。你
 - **格式**：選一所學校（共 15 所），再到設定頁調整邊界、字型、標題編號、清單符號，以及圖表的編號方式。
 - **字型**：從電腦加入字型到專案裡，專案會帶著它們走，建置時優先使用。
 - **參考文獻**：匯入 BibTeX、選引用格式，游標停在引用上就會顯示是哪一篇。
-- **檔案**：一個專案就是一個 `.marktwain` 檔，它是 SQLite 資料庫，內容以 Markdown 為準。可以匯出成 Typst 專案資料夾，不用 MarkTwain 也能編譯。
+- **檔案**：一個專案就是一個 `.marktwain` 檔，它是 SQLite 資料庫，內容以 Markdown 為準。可以匯出成 Typst 或 LaTeX 專案的 zip 檔，不用 MarkTwain 也能編譯，或匯出成 Markdown 原稿與圖片的 zip 檔。
 
 介面有繁體中文和英文。
 
-還沒做的是把整份論文匯出成模板資料夾 zip 檔（v0.5.3），以及 Word 輸出（v0.6.x）。
+還沒做的是 Word 輸出（v0.6.x）。
 
 ## 從原始碼執行
 

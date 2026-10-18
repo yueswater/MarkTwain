@@ -152,6 +152,26 @@ test("the PDF and the whole Typst project can be exported", async ({ launch }) =
 });
 
 
+test("the sources of the thesis go into a zip of Markdown files, without a build", async ({ launch }) => {
+  const first = await launch({ name: "原稿", projectName: "論文.marktwain", env: (folder) => ({ MARKTWAIN_TEST_EXPORT_PATH: join(folder, "原稿.zip") }) });
+  const zipPath = join(first.dir, "原稿.zip");
+  const page = await first.app.firstWindow();
+  await createProject(page);
+  await seedChapter(page, "# 緒論\n\n內容，見[文件](https://example.com)。\n");
+  await page.getByRole("button", { name: "Preview" }).click();
+  await page.getByRole("button", { name: "Export" }).click();
+  await page.getByRole("menuitem", { name: "Export sources zip" }).click();
+  await expect(page.locator("[data-sonner-toast]").filter({ hasText: "Exported to" })).toBeVisible();
+  // One folder with a file for each document, the settings and no engine files
+  const names = zipEntries(zipPath);
+  expect(names.every((name) => name.startsWith("論文-markdown/"))).toBe(true);
+  expect(names).toEqual(expect.arrayContaining(["論文-markdown/abstract.md", "論文-markdown/abstract-en.md", "論文-markdown/chapter01.md", "論文-markdown/config.yml"]));
+  expect(names.some((name) => /\.(typ|tex)$/.test(name))).toBe(false);
+  expect(zipText(zipPath, "論文-markdown/chapter01.md")).toBe("# 緒論\n\n內容，見[文件](https://example.com)。\n");
+  expect(zipText(zipPath, "論文-markdown/config.yml")).toContain("title: 論文");
+});
+
+
 test("exporting while the cover is empty asks first, lists what is empty, and leads to the settings", async ({ launch }) => {
   const { app } = await launch({ name: "封面", projectName: "論文.marktwain" });
   const page = await app.firstWindow();

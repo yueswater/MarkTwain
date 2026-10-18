@@ -18,6 +18,7 @@ export const IpcChannel = {
   ExportFinalPdf: "export:final-pdf",
   ExportPdf: "export:pdf",
   ExportProject: "export:project",
+  ExportMarkdown: "export:markdown",
   ColorThemeList: "color-theme:list",
   ColorThemeImport: "color-theme:import",
   ColorThemeRemove: "color-theme:remove",

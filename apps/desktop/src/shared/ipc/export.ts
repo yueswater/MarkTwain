@@ -7,4 +7,6 @@ export type ExportContract = {
   [IpcChannel.ExportFinalPdf]: { req: void; res: { path: string } | null };
   /** Writes the whole project of its engine, template included, into a zip that the user chooses; null when cancelled */
   [IpcChannel.ExportProject]: { req: void; res: { path: string } | null };
+  /** Writes the Markdown of the documents with the images, the bibliography and the settings into a zip that the user chooses; null when cancelled */
+  [IpcChannel.ExportMarkdown]: { req: void; res: { path: string } | null };
 };
