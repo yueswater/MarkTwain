@@ -37,6 +37,7 @@ import { insertLandscape } from "./blocks/statement-commands";
 import { TableHandle } from "./tables/TableHandle";
 import { useTableLayout } from "./tables/use-table-layout";
 import { Toolbar } from "./Toolbar";
+import { Rich } from "../../shared/rich";
 
 type Props = {
   documentId: string;
@@ -84,7 +85,7 @@ export function DocumentEditor({ documentId, scrollTo, onSaved, registerFlush, o
   if (error) {
     return (
       <p role="alert" className="p-8 text-sm text-destructive select-text">
-        {error}
+        <Rich text={error} />
       </p>
     );
   }
@@ -355,7 +356,7 @@ function EditorSurface({ doc, scrollTo, onSaved, registerFlush, onOpenTarget, on
       </div>
       {targets.importError && (
         <p role="alert" className="border-t bg-destructive/5 px-4 py-1 text-xs text-destructive select-text">
-          {targets.importError}
+          <Rich text={targets.importError} />
         </p>
       )}
       {status === "error" ? (

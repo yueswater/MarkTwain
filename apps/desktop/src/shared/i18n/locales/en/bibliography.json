@@ -25,7 +25,7 @@
   "form": {
     "type": "Type",
     "key": "Key",
-    "keyHint": "Letters, digits and _ : . - / + are allowed. Citations use this key.",
+    "keyHint": "Letters, digits and <c>_ : . - / +</c> are allowed. Citations use this key.",
     "required": "Required",
     "save": "Save",
     "saved": "Saved",
@@ -34,7 +34,7 @@
     "newTitle": "New entry"
   },
   "deleteTitle": "Delete this entry?",
-  "deleteBody": "“{{key}}” will be removed from the bibliography. Citations of it in your documents stay and will show as unknown.",
+  "deleteBody": "<b>{{key}}</b> will be removed from the bibliography. Citations of it in your documents stay and will show as unknown.",
   "types": {
     "article": "Journal article",
     "book": "Book",
@@ -62,13 +62,13 @@
     "url": "URL",
     "note": "Note"
   },
-  "authorHint": "Separate people with and, for example Wang, Xiaoming and Lee, Jane.",
+  "authorHint": "Separate people with <c>and</c>, for example <c>Wang, Xiaoming and Lee, Jane</c>.",
   "problems": {
     "title": "Needs attention",
     "unreadable": "Line {{line}} cannot be read: {{message}}.",
-    "duplicate": "The key “{{key}}” is used by more than one entry.",
+    "duplicate": "The key <b>{{key}}</b> is used by more than one entry.",
     "unknown": "Cited but not in the bibliography: {{keys}}",
-    "createFrom": "Add “{{key}}”",
+    "createFrom": "Add <b>{{key}}</b>",
     "reason": {
       "missingKey": "the entry has no key",
       "badField": "a field name is missing or wrong",

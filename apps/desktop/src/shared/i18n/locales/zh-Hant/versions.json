@@ -7,53 +7,53 @@
     "none": "尚無其他修改"
   },
   "action": {
-    "save": "儲存版本…",
-    "start": "開始新的修改…",
-    "history": "版本紀錄…",
-    "merge": "合併回主線…",
-    "discard": "放棄此次修改…",
-    "revert": "回到上次儲存的版本…"
+    "save": "儲存版本...",
+    "start": "開始新的修改...",
+    "history": "版本紀錄...",
+    "merge": "合併回主線...",
+    "discard": "放棄此次修改...",
+    "revert": "回到上次儲存的版本..."
   },
   "save": {
     "title": "儲存版本",
-    "description": "版本是可供回復的時間點，請記錄此次的修改內容。",
+    "description": "版本是可還原的時間點，請說明此次修改。",
     "label": "修改內容",
     "placeholder": "寫完第二節"
   },
   "start": {
     "title": "開始新的修改",
-    "description": "「修改」是論文的一份副本，可在其中放心嘗試。合併回主線之前，主線不會有任何變動。",
+    "description": "<b>修改</b>是論文的副本，可自由嘗試。合併回主線前，主線不受影響。",
     "label": "修改的名稱",
     "placeholder": "重寫第二章"
   },
   "discard": {
-    "title": "放棄「{{name}}」？",
-    "description": "此次修改及其中所有內容都將消失，主線不受影響。此操作無法復原。",
+    "title": "放棄<b>{{name}}</b>？",
+    "description": "此修改及其內容將全數消失，主線不受影響，且無法復原。",
     "confirm": "放棄"
   },
   "history": {
     "title": "版本紀錄",
-    "description": "「{{branch}}」的版本，最新者列於最上方。",
+    "description": "<b>{{branch}}</b>的版本，最新者列於最上方。",
     "empty": "尚無版本。",
     "initial": "起始版本",
     "untitled": "沒有說明的版本",
     "merge": "合併",
     "restore": "還原",
     "restoreTitle": "還原至此版本？",
-    "restoreBody": "文件將還原為「{{label}}」的內容，並儲存為新版本，歷史紀錄不會遺失。上次儲存版本之後的內容會先另存為一個版本，日後仍可找回。",
-    "restoreMessage": "還原「{{label}}」",
+    "restoreBody": "文件將還原為<b>{{label}}</b>並存成新版本，歷史紀錄不受影響。上次儲存之後的內容會先另存為一個版本。",
+    "restoreMessage": "還原<b>{{label}}</b>",
     "current": "目前",
     "compare": "修改內容",
     "pickHint": "勾選兩個版本，即可檢視兩者的差異。",
     "compareTwo": "比較所選版本",
-    "pick": "選取「{{label}}」來比較",
+    "pick": "選取<b>{{label}}</b>來比較",
     "keptMessage": "回復前的內容"
   },
   "error": {
     "title": "操作失敗"
   },
   "compare": {
-    "title": "「{{label}}」的修改內容",
+    "title": "<b>{{label}}</b>的修改內容",
     "description": "與前一個版本比較。",
     "none": "沒有差異。",
     "documentAdded": "新增",
@@ -79,29 +79,29 @@
     "legendRemoved": "刪除",
     "legendModified": "段落內有修改",
     "titlePair": "差異：{{label}}",
-    "descriptionPair": "箭頭左側為較舊的版本，下方顯示自該版本至較新版本之間的修改。",
+    "descriptionPair": "箭頭左側為較舊版本，下方列出兩者之間的修改。",
     "configFile": "論文設定"
   },
   "merge": {
-    "title": "將「{{name}}」合併回主線",
+    "title": "將<b>{{name}}</b>合併回主線",
     "upToDate": "主線已包含此次修改的所有內容。",
-    "fastForward": "主線沒有此次修改所缺少的內容，因此僅將主線推進至此次修改。",
+    "fastForward": "主線沒有新的變動，將直接推進至此修改。",
     "clean": "主線與此次修改可直接合併，沒有衝突。",
     "deleteAfter": "合併後放棄此次修改",
-    "needSave": "請先儲存版本。合併採用的是此次修改已儲存的版本，而非目前輸入的內容。",
-    "saveFirst": "儲存版本…",
+    "needSave": "請先儲存版本。合併採用已儲存的版本，而非目前輸入的內容。",
+    "saveFirst": "儲存版本...",
     "submit": "合併",
-    "conflicts_one": "有 {{count}} 處衝突需要選擇，選擇完成前不會寫入任何內容。",
-    "conflicts_other": "有 {{count}} 處衝突需要選擇，全部選擇完成前不會寫入任何內容。",
+    "conflicts_one": "有 {{count}} 處衝突待選擇，選完前不會寫入任何內容。",
+    "conflicts_other": "有 {{count}} 處衝突待選擇，全選完前不會寫入任何內容。",
     "progress": "已選 {{done}} / {{total}}",
-    "message": "合併「{{name}}」",
-    "loading": "正在比對主線與修改…"
+    "message": "合併<b>{{name}}</b>",
+    "loading": "正在比對主線與修改..."
   },
   "conflict": {
-    "blocks": "兩邊都修改了「{{title}}」的同一段",
-    "field": "兩邊都修改了「{{title}}」的{{field}}",
+    "blocks": "兩邊都修改了<b>{{title}}</b>的同一段",
+    "field": "兩邊都修改了<b>{{title}}</b>的{{field}}",
     "file": "兩邊都修改了檔案 {{path}}",
-    "document": "「{{title}}」在一邊被刪除，在另一邊被修改",
+    "document": "<b>{{title}}</b>在一邊被刪除，在另一邊被修改",
     "base": "原本",
     "ours": "主線",
     "theirs": "此修改",
@@ -121,14 +121,14 @@
     "title": "回到上次儲存的版本？",
     "description": "文件將回到最新版本，之後輸入的內容會消失，且無法復原。",
     "confirm": "放棄",
-    "descriptionCount": "文件將回到最新儲存的版本，之後的 {{count}} 處變動會消失，且無法復原。"
+    "descriptionCount": "文件將回到最新儲存的版本，之後的 {{count}} 處變動將消失，無法復原。"
   },
   "stage": {
     "title": "此版本包含的變動",
     "count": "已選 {{chosen}} / {{total}}",
     "all": "全選",
     "none": "全不選",
-    "rest": "未選取的 {{count}} 處變動會保留在文件中，之後可另存為其他版本。",
+    "rest": "未選取的 {{count}} 處變動會留在文件中，可日後另存。",
     "kind": {
       "hunk": "文字變動",
       "fields": "標題或順序",

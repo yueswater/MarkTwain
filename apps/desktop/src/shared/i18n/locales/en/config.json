@@ -5,7 +5,7 @@
   "description": "These details appear on the cover and title pages. Changes are saved automatically.",
   "save": {
     "dirty": "Unsaved changes",
-    "saving": "Saving…",
+    "saving": "Saving...",
     "saved": "Saved",
     "error": "Could not save"
   },
@@ -47,7 +47,7 @@
     "institutePick": "Department"
   },
   "hint": {
-    "keywords": "Press Enter or a comma to add; each keyword becomes a # tag.",
+    "keywords": "Press <c>Enter</c> or a comma to add; each keyword becomes a # tag.",
     "school": "Formatting rules made from what the school publishes, for reference only. Check the latest rules of your school and department before you hand in. Leave empty to use the default format."
   },
   "noSchool": "No school preset (default format)",

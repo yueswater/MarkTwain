@@ -26,6 +26,7 @@ import { api } from "../../../shared/api";
 import { errorMessage } from "../../../shared/error-message";
 import { Autosaver, type SaveStatus } from "../../../shared/autosaver";
 import { OptionPicker } from "./OptionPicker";
+import { Rich } from "../../../shared/rich";
 
 const NO_SCHOOL = "none";
 
@@ -88,7 +89,7 @@ export function ConfigForm({ onSaved, onLanguageChanged, embedded = false, part 
   if (error) {
     return (
       <p role="alert" className="p-8 text-sm text-destructive select-text">
-        {error}
+        <Rich text={error} />
       </p>
     );
   }
@@ -319,10 +320,10 @@ export function Field({
     <div className="grid gap-1.5">
       <Label htmlFor={id}>{label}</Label>
       {children}
-      {hint && !error && <p className="text-xs text-muted-foreground">{hint}</p>}
+      {hint && !error && <p className="text-xs text-muted-foreground"><Rich text={hint} /></p>}
       {error && (
         <p role="alert" className="text-xs text-destructive">
-          {error}
+          <Rich text={error} />
         </p>
       )}
     </div>

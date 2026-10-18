@@ -8,6 +8,7 @@ import type { AdvancedState, WatermarkInfo, WatermarkMode } from "../../../../..
 import { api } from "../../../shared/api";
 import { errorMessage } from "../../../shared/error-message";
 import { NumberField, SettingsHeading, SettingsRow } from "../controls/fields";
+import { Rich } from "../../../shared/rich";
 
 type Props = {
   state: AdvancedState | null;
@@ -33,7 +34,7 @@ export function WatermarkSettings({ state, onSave }: Props) {
     };
   }, [state, tRoot]);
 
-  if (!info) return error ? <p role="alert" className="text-sm text-destructive">{error}</p> : null;
+  if (!info) return error ? <p role="alert" className="text-sm text-destructive"><Rich text={error} /></p> : null;
   const overridden = (path: string) => state?.values[path] !== undefined;
 
   async function choose(): Promise<void> {
@@ -86,7 +87,7 @@ export function WatermarkSettings({ state, onSave }: Props) {
       <p className="mb-2 text-xs text-muted-foreground">{t("watermark.hint")}</p>
       {error && (
         <p role="alert" className="mb-2 text-sm text-destructive select-text">
-          {error}
+          <Rich text={error} />
         </p>
       )}
       <div role="radiogroup" aria-label={t("watermark.title")} className="grid gap-2">

@@ -21,6 +21,7 @@ import { ExportCheckDialog } from "./ExportCheckDialog";
 import { missingForSubmission } from "./export-check";
 import { PdfPreview } from "./PdfPreview";
 import type { BuildState } from "./use-build";
+import { Rich } from "../../shared/rich";
 
 type Props = {
   build: BuildState;
@@ -234,7 +235,7 @@ export function PreviewPanel({ build, saveTick, placeKey, engine, onFillIn, onCl
 
       {error && (
         <p role="alert" className="border-y bg-destructive/5 px-3 py-2 text-sm text-destructive select-text">
-          {error}
+          <Rich text={error} />
         </p>
       )}
       {exportNote && (
@@ -242,7 +243,7 @@ export function PreviewPanel({ build, saveTick, placeKey, engine, onFillIn, onCl
           role={exportNote.ok ? "status" : "alert"}
           className={cn("border-y px-3 py-2 text-sm select-text", exportNote.ok ? "text-muted-foreground" : "bg-destructive/5 text-destructive")}
         >
-          {exportNote.text}
+          <Rich text={exportNote.text} />
         </p>
       )}
 
@@ -258,7 +259,7 @@ export function PreviewPanel({ build, saveTick, placeKey, engine, onFillIn, onCl
             <ul className="flex flex-col gap-2">
               {errors.map((d, i) => (
                 <li key={`f${i}`} className="select-text rounded-md border border-destructive/30 bg-destructive/5 p-3">
-                  <p className="text-destructive">{friendlyText(d.message)}</p>
+                  <p className="text-destructive"><Rich text={friendlyText(d.message)} /></p>
                   <p className="mt-1 break-words text-xs text-muted-foreground">
                     {t("detail")}: {d.message}
                   </p>
@@ -305,12 +306,12 @@ export function PreviewPanel({ build, saveTick, placeKey, engine, onFillIn, onCl
           <ul className="flex flex-col gap-1 text-muted-foreground">
             {items.map((item, i) => (
               <li key={`w${i}`} className="select-text">
-                {item.kind === "configMissing" && t("configMissing", { field: item.fields.map((key) => tConfig(`field.${configFieldName(key)}`, { defaultValue: key })).join(", ") })}
-                {item.kind === "citation" && t("citationNoBibliography", { keys: item.keys.join(", ") })}
-                {item.kind === "glyphMissing" && t("glyphMissing", { chars: item.chars })}
+                {item.kind === "configMissing" && <Rich text={t("configMissing", { field: item.fields.map((key) => tConfig(`field.${configFieldName(key)}`, { defaultValue: key })).join(", ") })} />}
+                {item.kind === "citation" && <Rich text={t("citationNoBibliography", { keys: item.keys.join(", ") })} />}
+                {item.kind === "glyphMissing" && <Rich text={t("glyphMissing", { chars: item.chars })} />}
                 {item.kind === "brokenRef" && (
                   <>
-                    {t("brokenRef", { label: item.label })}
+                    <Rich text={t("brokenRef", { label: item.label })} />
                     {item.source ? (
                       <Button variant="link" size="sm" className="h-auto px-1 py-0" onClick={() => onJump(item.source!.documentId, item.source!.block)}>
                         {t("goTo")}
@@ -320,7 +321,7 @@ export function PreviewPanel({ build, saveTick, placeKey, engine, onFillIn, onCl
                 )}
                 {item.kind === "defaultChapter" && (
                   <>
-                    {t("defaultChapter", { title: item.title })}
+                    <Rich text={t("defaultChapter", { title: item.title })} />
                     {item.source ? (
                       <Button variant="link" size="sm" className="h-auto px-1 py-0" onClick={() => onJump(item.source!.documentId, item.source!.block)}>
                         {t("goTo")}
@@ -330,7 +331,7 @@ export function PreviewPanel({ build, saveTick, placeKey, engine, onFillIn, onCl
                 )}
                 {item.kind === "duplicateLabel" && (
                   <>
-                    {t("duplicateLabel", { label: item.label })}
+                    <Rich text={t("duplicateLabel", { label: item.label })} />
                     {item.source ? (
                       <Button variant="link" size="sm" className="h-auto px-1 py-0" onClick={() => onJump(item.source!.documentId, item.source!.block)}>
                         {t("goTo")}
@@ -348,10 +349,10 @@ export function PreviewPanel({ build, saveTick, placeKey, engine, onFillIn, onCl
                     ) : null}
                   </>
                 )}
-                {item.kind === "unknownCitation" && t("unknownCitation", { keys: item.keys.join(", ") })}
+                {item.kind === "unknownCitation" && <Rich text={t("unknownCitation", { keys: item.keys.join(", ") })} />}
                 {item.kind === "approximate" && t(`approximate.${item.feature}`, { defaultValue: item.feature })}
-                {item.kind === "math" && t("mathFailed", { latex: item.latex })}
-                {item.kind === "font" && t("fontMissing", { font: item.font })}
+                {item.kind === "math" && <Rich text={t("mathFailed", { latex: item.latex })} />}
+                {item.kind === "font" && <Rich text={t("fontMissing", { font: item.font })} />}
                 {item.kind === "other" && (
                   <>
                     {item.message}

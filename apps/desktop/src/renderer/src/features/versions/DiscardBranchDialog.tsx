@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Rich } from "../../shared/rich";
 
 type Props = {
   name: string;
@@ -23,7 +24,7 @@ export function DiscardBranchDialog({ name, busy, error, onConfirm, onClose }: P
         </DialogHeader>
         {error && (
           <p role="alert" className="text-sm text-destructive">
-            {error}
+            <Rich text={error} />
           </p>
         )}
         <DialogFooter>

@@ -4,6 +4,7 @@ import { IpcChannel } from "../../../../shared/enums/ipc-channel.enum";
 import type { ChangeItemView, ChoiceInput, CompareView, MergePreview, VersionEntry, VersionStatus } from "../../../../shared/ipc";
 import { api } from "../../shared/api";
 import { errorMessage } from "../../shared/error-message";
+import { plain } from "../../shared/rich";
 
 type Options = {
   /** Changes with the project that is open, the versions are read again for another one */
@@ -85,7 +86,7 @@ export function useVersions({ projectKey, saveTick, flush, onReplaced }: Options
   const previewMerge = useCallback((source: string): Promise<MergePreview | undefined> => run(() => api.invoke(IpcChannel.VersionMergePreview, { source }), false), [run]);
   const merge = useCallback(
     (source: string, resolutions: Record<string, ChoiceInput>, deleteSource: boolean) =>
-      attempt(() => api.invoke(IpcChannel.VersionMerge, { source, resolutions, deleteSource, message: t("merge.message", { ns: "versions", name: source }) }), true),
+      attempt(() => api.invoke(IpcChannel.VersionMerge, { source, resolutions, deleteSource, message: plain(t("merge.message", { ns: "versions", name: source })) }), true),
     [attempt, t],
   );
 

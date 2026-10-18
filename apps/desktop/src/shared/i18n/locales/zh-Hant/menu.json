@@ -1,8 +1,8 @@
 {
   "file": {
     "label": "檔案",
-    "newProject": "新增專案…",
-    "openProject": "開啟專案…",
+    "newProject": "新增專案...",
+    "openProject": "開啟專案...",
     "closeProject": "關閉專案",
     "quit": "結束"
   },

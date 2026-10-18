@@ -94,7 +94,7 @@ export function perChapterExample(kind: "footnote" | "equation", perChapter: boo
   const mark = (value: string) => (kind === "equation" ? `(${value})` : value);
   const [a, b] = numberingSample(style, 2) as [string, string];
   if (kind === "equation" && perChapter) return [`(3.${a})`, `(3.${b})`, `(4.${a})`].join("  ");
-  if (perChapter) return [mark(a), mark(b), "…", mark(a)].join("  ");
+  if (perChapter) return [mark(a), mark(b), "...", mark(a)].join("  ");
   return [mark(a), mark(b), mark(numberingSample(style, 3)[2]!)].join("  ");
 }
 

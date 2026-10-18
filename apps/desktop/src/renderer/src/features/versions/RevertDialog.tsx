@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Rich } from "../../shared/rich";
 
 type Props = {
   /** Reads what changed since the latest version, so the dialog can say how much is thrown away */
@@ -34,7 +35,7 @@ export function RevertDialog({ load, busy, error, onConfirm, onClose }: Props) {
         </DialogHeader>
         {error && (
           <p role="alert" className="text-sm text-destructive">
-            {error}
+            <Rich text={error} />
           </p>
         )}
         <DialogFooter>

@@ -4,6 +4,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { latexErrorNear, placeBox, renderLatex, type MathTarget } from "./math-format";
+import { Rich } from "../../../shared/rich";
 
 export type { MathTarget } from "./math-format";
 
@@ -149,7 +150,7 @@ export function MathDialog({ target, onSubmit, onRemove, onClose, onRestoreFocus
           {t("math.done")}
         </Button>
       </div>
-      <p className="text-[11px] text-muted-foreground">{block ? t("math.hintBlock") : t("math.hintInline")}</p>
+      <p className="text-[11px] text-muted-foreground"><Rich text={block ? t("math.hintBlock") : t("math.hintInline")} /></p>
     </div>
   );
 }

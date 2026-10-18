@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import type { VersionEntry } from "../../../../shared/ipc";
 import { relativeTime } from "../project/welcome/relative-time";
+import { Rich, plain } from "../../shared/rich";
 
 type Props = {
   branch: string;
@@ -47,7 +48,7 @@ export function HistoryDialog({ branch, headId, load, busy, error, onRestore, on
         </DialogHeader>
         {error && (
           <p role="alert" className="text-sm text-destructive">
-            {error}
+            <Rich text={error} />
           </p>
         )}
         {entries !== null && entries.length > 1 && (
@@ -72,7 +73,7 @@ export function HistoryDialog({ branch, headId, load, busy, error, onRestore, on
         <ol className="max-h-[60vh] divide-y overflow-y-auto rounded-md border" aria-label={t("history.title")}>
           {(entries ?? []).map((entry) => (
             <li key={entry.id} data-version={entry.id} className="flex items-start gap-3 px-3 py-2.5">
-              <input type="checkbox" className="mt-1" checked={picked.includes(entry.id)} onChange={(event) => pick(entry.id, event.target.checked)} aria-label={t("history.pick", { label: labelOf(entry) })} />
+              <input type="checkbox" className="mt-1" checked={picked.includes(entry.id)} onChange={(event) => pick(entry.id, event.target.checked)} aria-label={plain(t("history.pick", { label: labelOf(entry) }))} />
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="truncate text-sm font-medium">{labelOf(entry)}</span>
@@ -93,13 +94,13 @@ export function HistoryDialog({ branch, headId, load, busy, error, onRestore, on
                 </p>
                 {asking === entry.id && (
                   <div className="mt-2 grid gap-2 rounded-md bg-muted/50 p-2">
-                    <p className="text-sm">{t("history.restoreBody", { label: labelOf(entry) })}</p>
+                    <p className="text-sm"><Rich text={t("history.restoreBody", { label: labelOf(entry) })} /></p>
                     <div className="flex gap-2">
                       <Button
                         size="sm"
                         disabled={busy}
                         onClick={async () => {
-                          const done = await onRestore(entry.id, t("history.restoreMessage", { label: labelOf(entry) }), t("history.keptMessage"));
+                          const done = await onRestore(entry.id, plain(t("history.restoreMessage", { label: labelOf(entry) })), t("history.keptMessage"));
                           if (done) onClose();
                         }}
                       >

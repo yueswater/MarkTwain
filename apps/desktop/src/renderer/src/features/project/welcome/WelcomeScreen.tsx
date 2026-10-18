@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { RecentProject } from "../../../../../shared/ipc/index";
 import { relativeTime } from "./relative-time";
+import { Rich } from "../../../shared/rich";
 
 type Props = {
   recent: RecentProject[];
@@ -25,7 +26,7 @@ export function WelcomeScreen({ recent, onCreate, onOpen, onOpenRecent, onRemove
         <img src={logo} alt="" className="size-16" />
         <div className="flex flex-col gap-2">
           <h2 className="text-2xl font-semibold tracking-tight">{t("welcome.heading")}</h2>
-          <p className="text-sm text-muted-foreground">{t("welcome.description")}</p>
+          <p className="text-sm text-muted-foreground"><Rich text={t("welcome.description")} /></p>
         </div>
         <div className="flex gap-2">
           <Button onClick={onCreate}>

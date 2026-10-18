@@ -50,7 +50,7 @@ describe("numbering examples", () => {
   it("shows how numbers restart with the chapter", () => {
     expect(perChapterExample("equation", true, "1")).toBe("(3.1)  (3.2)  (4.1)");
     expect(perChapterExample("equation", false, "1")).toBe("(1)  (2)  (3)");
-    expect(perChapterExample("footnote", true, "a")).toBe("a  b  …  a");
+    expect(perChapterExample("footnote", true, "a")).toBe("a  b  ...  a");
     expect(perChapterExample("footnote", false, "i")).toBe("i  ii  iii");
   });
 });

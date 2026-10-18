@@ -94,7 +94,7 @@ test("the bibliography is imported, edited, cited, checked and built", async ({ 
   await page.getByRole("button", { name: "Bibliography" }).click();
   const problems = bibliography.getByRole("region", { name: "Needs attention" });
   await expect(problems).toContainText("Cited but not in the bibliography");
-  await problems.getByRole("button", { name: "Add “ghost”" }).click();
+  await problems.getByRole("button", { name: "Add ghost" }).click();
   await expect(bibliography.getByLabel("Key", { exact: true })).toHaveValue("ghost");
   await bibliography.getByLabel(/^Title/).fill("Ghost paper");
   await bibliography.getByRole("button", { name: "Save" }).click();

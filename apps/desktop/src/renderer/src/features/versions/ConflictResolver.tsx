@@ -6,6 +6,7 @@ import type { ChoiceInput, ConflictView } from "../../../../shared/ipc";
 import type { DocumentKind } from "../../../../shared/enums/document-kind.enum";
 import { documentTitle } from "../project/sidebar/document-title";
 import { isResolved, startingText } from "./merge-choices";
+import { Rich, plain } from "../../shared/rich";
 
 type Props = {
   conflicts: ConflictView[];
@@ -40,7 +41,7 @@ export function ConflictResolver({ conflicts, choices, onChoose }: Props) {
   const titleOf = (conflict: { kind: string; title: string; position: number }) => documentTitle(tp, { kind: conflict.kind as DocumentKind, title: conflict.title, position: conflict.position });
 
   return (
-    <ol className="grid gap-4" aria-label={t("merge.title", { name: "" })}>
+    <ol className="grid gap-4" aria-label={plain(t("merge.title", { name: "" }))}>
       {conflicts.map((conflict) => {
         const choice = choices[conflict.id];
         const name = `conflict-${conflict.id}`;
@@ -50,7 +51,7 @@ export function ConflictResolver({ conflicts, choices, onChoose }: Props) {
           <li key={conflict.id} data-conflict={conflict.id} data-resolved={settled} className="grid gap-3 rounded-lg border p-3">
             {conflict.type === "blocks" && (
               <>
-                <p className="text-sm font-medium">{t("conflict.blocks", { title: titleOf(conflict) })}</p>
+                <p className="text-sm font-medium"><Rich text={t("conflict.blocks", { title: titleOf(conflict) })} /></p>
                 <div className="grid gap-2 sm:grid-cols-3">
                   <Side label={t("conflict.base")} blocks={conflict.base} />
                   <Side label={t("conflict.ours")} blocks={conflict.ours} tone="ours" />
@@ -72,7 +73,7 @@ export function ConflictResolver({ conflicts, choices, onChoose }: Props) {
             )}
             {conflict.type === "field" && (
               <>
-                <p className="text-sm font-medium">{t("conflict.field", { title: titleOf(conflict), field: t(`compare.field.${conflict.field}`) })}</p>
+                <p className="text-sm font-medium"><Rich text={t("conflict.field", { title: titleOf(conflict), field: t(`compare.field.${conflict.field}`) })} /></p>
                 <div className="flex flex-wrap gap-x-5 gap-y-2">
                   {radio("ours", `${t("conflict.ours")}: ${String(conflict.ours)}`, choice === "ours", "ours")}
                   {radio("theirs", `${t("conflict.theirs")}: ${String(conflict.theirs)}`, choice === "theirs", "theirs")}
@@ -90,7 +91,7 @@ export function ConflictResolver({ conflicts, choices, onChoose }: Props) {
             )}
             {conflict.type === "document" && (
               <>
-                <p className="text-sm font-medium">{t("conflict.document", { title: titleOf(conflict) })}</p>
+                <p className="text-sm font-medium"><Rich text={t("conflict.document", { title: titleOf(conflict) })} /></p>
                 <p className="text-xs text-muted-foreground">{t(conflict.deletedBy === "ours" ? "conflict.deletedOurs" : "conflict.deletedTheirs")}</p>
                 <div className="flex flex-wrap gap-x-5 gap-y-2">
                   {radio("keep", t("conflict.keep"), choice === "keep", "keep")}

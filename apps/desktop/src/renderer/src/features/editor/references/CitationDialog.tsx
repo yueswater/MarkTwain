@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useBibliography } from "../../bibliography/bibliography-context";
 import { AtomDialogFrame, type Common } from "./AtomDialogFrame";
 import type { AtomTarget } from "./atom-target";
+import { Rich } from "../../../shared/rich";
 
 const CITATION_FORMS = ["paren", "prose", "year", "author"] as const;
 
@@ -93,7 +94,7 @@ export function CitationDialog({
           spellCheck={false}
           onChange={(event) => setKeys([...keys.filter((key) => known.has(key)), ...parseCitationKeys(event.target.value)])}
         />
-        <p className="text-xs text-muted-foreground">{t("citation.keysHint")}</p>
+        <p className="text-xs text-muted-foreground"><Rich text={t("citation.keysHint")} /></p>
       </div>
       <div className="grid gap-2">
         <Label>{t("citation.form")}</Label>

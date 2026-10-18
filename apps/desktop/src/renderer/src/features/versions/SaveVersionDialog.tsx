@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { ChangeItemView } from "../../../../shared/ipc";
 import { ChangeItemRow } from "./ChangeItemRow";
+import { Rich } from "../../shared/rich";
 
 type Props = {
   busy: boolean;
@@ -90,7 +91,7 @@ export function SaveVersionDialog({ busy, error, load, onSubmit, onClose }: Prop
           )}
           {error && (
             <p role="alert" className="text-sm text-destructive">
-              {error}
+              <Rich text={error} />
             </p>
           )}
           <DialogFooter>

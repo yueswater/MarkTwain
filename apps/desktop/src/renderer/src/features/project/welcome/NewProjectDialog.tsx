@@ -13,6 +13,7 @@ import { api } from "../../../shared/api";
 import { errorMessage } from "../../../shared/error-message";
 import { AuthorFields } from "../config/AuthorFields";
 import { Field } from "../config/ConfigForm";
+import { Rich } from "../../../shared/rich";
 
 type Props = {
   /** Called when the dialog is done, whether the author filled it in or skipped it */
@@ -150,7 +151,7 @@ export function NewProjectDialog({ onClose }: Props) {
           )}
           {error && (
             <p role="alert" className="text-sm text-destructive select-text">
-              {error}
+              <Rich text={error} />
             </p>
           )}
           <label className="flex items-center justify-between gap-2 text-sm text-muted-foreground">

@@ -16,7 +16,7 @@ test("a version takes only the changes that are chosen, and any two versions can
 
   const openSave = async () => {
     await bar.click();
-    await page.getByRole("menuitem", { name: "Save a version…" }).click();
+    await page.getByRole("menuitem", { name: "Save a version..." }).click();
   };
   // A first version of the text as it is, then two changes far apart
   await openSave();
@@ -62,12 +62,12 @@ test("a version takes only the changes that are chosen, and any two versions can
 
   // Any two versions can be compared: the oldest with the newest holds both changes
   await bar.click();
-  await page.getByRole("menuitem", { name: "Version history…" }).click();
+  await page.getByRole("menuitem", { name: "Version history..." }).click();
   const history = page.getByRole("dialog");
   await expect(history.getByRole("listitem")).toHaveCount(4);
-  await history.getByRole("checkbox", { name: "Pick “Base” to compare" }).check();
+  await history.getByRole("checkbox", { name: "Pick Base to compare" }).check();
   await expect(history.getByRole("button", { name: "Compare the two" })).toBeDisabled();
-  await history.getByRole("checkbox", { name: "Pick “The rest” to compare" }).check();
+  await history.getByRole("checkbox", { name: "Pick The rest to compare" }).check();
   await history.getByRole("button", { name: "Compare the two" }).click();
   const changes = page.getByTestId("compare-changes");
   await expect(changes.locator('[data-change="modified"]')).toHaveCount(2);

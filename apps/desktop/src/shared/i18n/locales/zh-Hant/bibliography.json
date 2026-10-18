@@ -13,7 +13,7 @@
   "imported": "新增 {{added}} 筆，{{skipped}} 筆已存在，{{errors}} 筆無法讀取。",
   "search": "搜尋文獻",
   "searchPlaceholder": "作者、題名或代號",
-  "empty": "尚無參考文獻。可新增文獻、匯入文獻管理軟體匯出的檔案，或在原始碼檢視中直接編輯 BibTeX。",
+  "empty": "尚無參考文獻。可新增、匯入文獻檔，或在原始碼檢視中編輯 BibTeX。",
   "noMatch": "沒有符合的文獻。",
   "select": "請從左側選取文獻，或新增一筆。",
   "cited": "被引用 {{count}} 次",
@@ -25,7 +25,7 @@
   "form": {
     "type": "類型",
     "key": "代號",
-    "keyHint": "可用英數字與 _ : . - / +，引用時使用此代號。",
+    "keyHint": "可用英數字與 <c>_ : . - / +</c>，引用時使用此代號。",
     "required": "必填",
     "save": "儲存",
     "saved": "已儲存",
@@ -34,7 +34,7 @@
     "newTitle": "新增文獻"
   },
   "deleteTitle": "刪除此筆文獻？",
-  "deleteBody": "「{{key}}」將從參考文獻中移除。文件中對其引用會保留，並顯示為未知。",
+  "deleteBody": "將移除<b>{{key}}</b>。文件中的引用會保留，並顯示為未知。",
   "types": {
     "article": "期刊論文",
     "book": "書籍",
@@ -62,13 +62,13 @@
     "url": "網址",
     "note": "備註"
   },
-  "authorHint": "多位作者以 and 分隔，例如 Wang, Xiaoming and Lee, Jane。",
+  "authorHint": "多位作者以 <c>and</c> 分隔，例如 <c>Wang, Xiaoming and Lee, Jane</c>。",
   "problems": {
     "title": "需要處理",
     "unreadable": "第 {{line}} 行無法讀取：{{message}}。",
-    "duplicate": "代號「{{key}}」被多筆文獻使用。",
+    "duplicate": "代號<b>{{key}}</b>被多筆文獻使用。",
     "unknown": "文件引用了，但參考文獻沒有：{{keys}}",
-    "createFrom": "新增「{{key}}」",
+    "createFrom": "新增<b>{{key}}</b>",
     "reason": {
       "missingKey": "此文獻沒有代號",
       "badField": "欄位名稱缺少或不正確",

@@ -81,8 +81,8 @@ test.describe("with a TeX Live", () => {
     await expect(page.getByTestId("preview-pages")).not.toContainText("could not be made");
     await page.getByRole("button", { name: "Export" }).click();
     // The folder of a project is for Typst only, the PDF is the same for both
-    await expect(page.getByRole("menuitem", { name: "Export Typst project…" })).toHaveCount(0);
-    await page.getByRole("menuitem", { name: "Export draft PDF…" }).click();
+    await expect(page.getByRole("menuitem", { name: "Export Typst project..." })).toHaveCount(0);
+    await page.getByRole("menuitem", { name: "Export draft PDF..." }).click();
     // A new project has an empty cover, which is asked about first
     await page.getByTestId("export-check").getByRole("button", { name: "Export anyway" }).click();
     await expect(page.getByRole("status").filter({ hasText: "Exported to" })).toBeVisible({ timeout: 120_000 });
