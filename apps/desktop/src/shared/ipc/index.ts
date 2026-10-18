@@ -15,6 +15,7 @@ import type { SearchContract } from "./search";
 import type { WatermarkContract } from "./watermark";
 import type { FontContract } from "./font";
 import type { TableTemplateContract } from "./table-template";
+import type { ColorThemeContract } from "./color-theme";
 import type { ToolchainContract } from "./toolchain";
 import type { VersionContract } from "./version";
 import type { ProjectContract } from "./project";
@@ -31,6 +32,7 @@ export type { FileEntry, FileListing, FilePlace } from "./files";
 export type { RecentProject } from "./recent";
 export type { SearchHit } from "./search";
 export type { WatermarkInfo, WatermarkMode, WatermarkPicture } from "./watermark";
+export type { ColorThemeView } from "./color-theme";
 export type { TemplateField, TemplateLanguage, TemplateParam, TemplateSummary } from "./table-template";
 export type { FontAddResult, FontFamilyEntry, FontFileInput, FontRemoveResult, FontSkipReason, FontSource, FontsView, MissingFont } from "./font";
 export type { BibEntryInput, BibImportOutcome, BibItem, BibliographyView } from "./bibliography";
@@ -43,7 +45,7 @@ export type { BranchInfo, ChangeItemView, ChangeView, ChoiceInput, CompareView, 
 export type { LabelIndex, LabelPreview, LabelPreviewContent, LabelReference, LabelTarget, UnlabeledRemote } from "./label";
 
 /** Contracts of all features are merged here, add & XxxContract when adding a feature. */
-export type IpcContract = AppContract & SettingsContract & ProjectContract & DocumentContract & DialogContract & FilesContract & LabelContract & AssetContract & ConfigContract & BuildContract & ExportContract & RecentContract & PrefsContract & SearchContract & BibliographyContract & WatermarkContract & ProfileContract & FontContract & TableTemplateContract & VersionContract & ToolchainContract;
+export type IpcContract = AppContract & SettingsContract & ProjectContract & DocumentContract & DialogContract & FilesContract & LabelContract & AssetContract & ConfigContract & BuildContract & ExportContract & RecentContract & PrefsContract & SearchContract & BibliographyContract & WatermarkContract & ProfileContract & FontContract & TableTemplateContract & ColorThemeContract & VersionContract & ToolchainContract;
 
 export type IpcChannelName = keyof IpcContract;
 export type IpcRequest<C extends IpcChannelName> = IpcContract[C]["req"];

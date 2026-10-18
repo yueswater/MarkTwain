@@ -22,6 +22,7 @@ import { missingForSubmission } from "./export-check";
 import { PdfPreview } from "./PdfPreview";
 import type { BuildState } from "./use-build";
 import { Rich } from "../../shared/rich";
+import { toast } from "sonner";
 
 type Props = {
   build: BuildState;
@@ -60,11 +61,14 @@ function readWatch(): boolean {
   }
 }
 
+type ExportNote = { kind: "noWatermark" } | { kind: "error"; error: unknown };
+
 export function PreviewPanel({ build, saveTick, placeKey, engine, onFillIn, onClose, onJump, follow, onPick }: Props) {
   const { t } = useTranslation("build");
   const { t: tConfig } = useTranslation("config");
   const { t: tRoot } = useTranslation();
-  const [exportNote, setExportNote] = useState<{ ok: boolean; text: string } | null>(null);
+  // The note is kept as what happened and written when it is shown, so it follows the language of the interface
+  const [exportNote, setExportNote] = useState<ExportNote | null>(null);
   const [watch, setWatch] = useState(readWatch);
   const [watermark, setWatermark] = useState(readWatermark);
   const started = useRef(false);
@@ -78,6 +82,10 @@ export function PreviewPanel({ build, saveTick, placeKey, engine, onFillIn, onCl
     const kind = friendlyKind(message);
     const command = kind === "command" ? unknownCommandOf(message) : null;
     return command ? t("friendly.commandNamed", { command }) : t(`friendly.${kind}`);
+  };
+  const exportNoteText = (note: ExportNote): string => {
+    if (note.kind === "error") return errorMessage(tRoot, note.error);
+    return t("noWatermark");
   };
   // A failed build lists its errors in place of the pages, the area below the pages keeps the warnings
   const failed = outcome !== null && !outcome.ok && !building;
@@ -136,7 +144,7 @@ export function PreviewPanel({ build, saveTick, placeKey, engine, onFillIn, onCl
       if (missing.length > 0) setAsking({ channel, missing });
       else await exportTo(channel);
     } catch (e) {
-      setExportNote({ ok: false, text: errorMessage(tRoot, e) });
+      setExportNote({ kind: "error", error: e });
     }
   }
 
@@ -144,12 +152,13 @@ export function PreviewPanel({ build, saveTick, placeKey, engine, onFillIn, onCl
     try {
       const result = await api.invoke(channel);
       // A final copy without a watermark image is told so, since the word final promises a watermark
-      const note = result && channel === IpcChannel.ExportFinalPdf && !(await hasWatermark()) ? ` ${t("noWatermark")}` : "";
-      setExportNote(result ? { ok: true, text: `${t("exported", { path: result.path })}${note}` } : null);
+      // The export is told by a toast that goes by itself, a final copy without a watermark image stays in the panel, since the word final promises a watermark
+      if (result) toast.success(t("exported", { path: result.path }));
+      setExportNote(result && channel === IpcChannel.ExportFinalPdf && !(await hasWatermark()) ? { kind: "noWatermark" } : null);
       // The export was made, so a failure that the preview still shows is out of date
       if (result && outcome && !outcome.ok) void run();
     } catch (e) {
-      setExportNote({ ok: false, text: errorMessage(tRoot, e) });
+      setExportNote({ kind: "error", error: e });
     }
   }
 
@@ -200,7 +209,7 @@ export function PreviewPanel({ build, saveTick, placeKey, engine, onFillIn, onCl
             title={t("watermarkHint")}
             onClick={() => {
               // Turning it on says so when there is nothing to draw
-              if (!watermark) void hasWatermark().then((has) => !has && setExportNote({ ok: false, text: t("noWatermark") }));
+              if (!watermark) void hasWatermark().then((has) => !has && setExportNote({ kind: "noWatermark" }));
               setWatermark((value) => !value);
             }}
           >
@@ -222,9 +231,7 @@ export function PreviewPanel({ build, saveTick, placeKey, engine, onFillIn, onCl
             <DropdownMenuContent align="end">
               <DropdownMenuItem onSelect={() => void requestExport(IpcChannel.ExportPdf)}>{t("exportPdf")}</DropdownMenuItem>
               <DropdownMenuItem onSelect={() => void requestExport(IpcChannel.ExportFinalPdf)}>{t("exportFinalPdf")}</DropdownMenuItem>
-              {engine === "typst" && (
-                <DropdownMenuItem onSelect={() => void exportTo(IpcChannel.ExportProject)}>{t("exportProject")}</DropdownMenuItem>
-              )}
+              <DropdownMenuItem onSelect={() => void exportTo(IpcChannel.ExportProject)}>{t("exportProject")}</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
           <Button variant="ghost" size="icon-sm" aria-label={t("close")} onClick={onClose}>
@@ -240,10 +247,10 @@ export function PreviewPanel({ build, saveTick, placeKey, engine, onFillIn, onCl
       )}
       {exportNote && (
         <p
-          role={exportNote.ok ? "status" : "alert"}
-          className={cn("border-y px-3 py-2 text-sm select-text", exportNote.ok ? "text-muted-foreground" : "bg-destructive/5 text-destructive")}
+          role="alert"
+          className={cn("border-y px-3 py-2 text-sm select-text", "bg-destructive/5 text-destructive")}
         >
-          <Rich text={exportNote.text} />
+          <Rich text={exportNoteText(exportNote)} />
         </p>
       )}
 

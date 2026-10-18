@@ -1,4 +1,4 @@
-import type { Editor } from "@tiptap/core";
+import { getMarkRange, type Editor } from "@tiptap/core";
 import { findTable } from "@tiptap/pm/tables";
 import type { TFunction } from "i18next";
 import type { Placement } from "@marktwain/schema";
@@ -32,6 +32,25 @@ export function createEditorActions(editor: Editor, targets: DialogTargets, t: T
     }
   };
 
+  /**
+   * The dialog of a link for the selection. A caret inside a link takes the whole link, a selected text is made the text of the link,
+   * and without either the link is a new one that has no text yet.
+   */
+  const editLink = () => {
+    const { state } = editor;
+    const linkType = state.schema.marks.link;
+    const range = linkType ? getMarkRange(state.selection.$from, linkType) : undefined;
+    if (range && linkType && state.selection.empty) {
+      const url = String(state.doc.nodeAt(range.from)?.marks.find((mark) => mark.type === linkType)?.attrs.href ?? "");
+      targets.setLink({ from: range.from, to: range.to, text: state.doc.textBetween(range.from, range.to), url, editing: true });
+      return;
+    }
+    const { from, to } = state.selection;
+    const editing = linkType ? state.doc.rangeHasMark(from, to, linkType) : false;
+    const url = editing ? String(editor.getAttributes("link").href ?? "") : "";
+    targets.setLink({ from, to, text: state.doc.textBetween(from, to, " "), url, editing });
+  };
+
   /** Opens the templates for the table that holds the selection, what it has is replaced when one is chosen */
   const changeTemplate = () => {
     const found = findTable(editor.state.selection.$from);
@@ -50,7 +69,7 @@ export function createEditorActions(editor: Editor, targets: DialogTargets, t: T
     });
   };
 
-  return { insertMath, insertImage, insertAtom, changeTemplate, editCaption, insertTable: () => targets.setTableDialog(true) };
+  return { insertMath, insertImage, insertAtom, editLink, changeTemplate, editCaption, insertTable: () => targets.setTableDialog(true) };
 }
 
 export type EditorActions = ReturnType<typeof createEditorActions>;

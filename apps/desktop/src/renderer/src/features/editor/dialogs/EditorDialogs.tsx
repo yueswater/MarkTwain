@@ -13,12 +13,13 @@ import type { CrossRefChoice } from "../references/atom-target";
 import { CitationDialog } from "../references/CitationDialog";
 import { CrossRefDialog } from "../references/CrossRefDialog";
 import { FootnoteDialog } from "../references/FootnoteDialog";
+import { LinkDialog } from "../references/LinkDialog";
 import { EquationLabelBubble } from "../references/EquationLabelBubble";
 import { ReferenceCard } from "../references/ReferenceCard";
 import { LABELS_CHANGED } from "../references/use-label-index";
 import { newLabel } from "../references/unlabeled-targets";
 import { TableInsertDialog } from "../tables/TableInsertDialog";
-import { insertGridTable, insertTemplateTable, removeMath, removeNode, replaceTable, setFigureSource, writeAtom, writeFigure, writeMath } from "./editor-commands";
+import { insertGridTable, insertTemplateTable, removeLink, removeMath, removeNode, replaceTable, setFigureSource, writeAtom, writeFigure, writeLink, writeMath } from "./editor-commands";
 import type { DialogTargets } from "./use-dialog-targets";
 
 type Props = {
@@ -35,7 +36,7 @@ type Props = {
  * Each one is shown while its target is set, and the commands that they run are in editor-commands.
  */
 export function EditorDialogs({ editor, targets, documentId, labels, onOpenTarget }: Props) {
-  const { math, atom, caption, figure, statement, crop, tableDialog, replacing, unlabeled } = targets;
+  const { math, atom, link, caption, figure, statement, crop, tableDialog, replacing, unlabeled } = targets;
   // The focus goes back at once, the focus command of the editor waits for a frame, and what is typed in that frame was lost
   const restoreFocus = () => {
     editor.view.focus();
@@ -147,6 +148,15 @@ export function EditorDialogs({ editor, targets, documentId, labels, onOpenTarge
       )}
       <EquationLabelBubble editor={editor} labels={labels} onOpenTarget={(id, block) => onOpenTarget?.(id, block)} />
       <ReferenceCard editor={editor} labels={labels} onOpenTarget={(id, block) => onOpenTarget?.(id, block)} />
+      {link && (
+        <LinkDialog
+          target={link}
+          onSubmit={(text, url) => writeLink(editor, link, text, url)}
+          onRemove={() => removeLink(editor, link)}
+          onClose={() => targets.setLink(null)}
+          onRestoreFocus={restoreFocus}
+        />
+      )}
       {atom?.type === "footnote" && (
         <FootnoteDialog
           target={atom}

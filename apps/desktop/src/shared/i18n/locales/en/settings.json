@@ -203,6 +203,10 @@
       "title": "Appearance",
       "description": "How the text looks in the editor."
     },
+    "editorTheme": {
+      "title": "Color theme",
+      "description": "The colors of the editor and the interface. The PDF of the thesis is not affected."
+    },
     "editorWriting": {
       "title": "Writing",
       "description": "Block numbers, spell check, pasting and saving."
@@ -280,7 +284,8 @@
       "thesisCaptions": "captions,figure,table,figure caption,table caption,placement,cross-reference,theorem",
       "thesisLists": "lists,bullets,numbering,markers",
       "thesisPageNumber": "page numbers,header,footer,contents,table of contents,list of figures,list of tables",
-      "thesisBibliography": "bibliography,references,citations,title"
+      "thesisBibliography": "bibliography,references,citations,title",
+      "editorTheme": "theme,color,colour,dark,light,night,appearance"
     }
   },
   "changedDot": "This page has settings that differ from the school format",
@@ -425,6 +430,7 @@
       "footnote": "Footnote",
       "citation": "Citation",
       "crossRef": "Cross-reference",
+      "link": "Link",
       "equationName": "Name of the formula",
       "peekReference": "Peek at what a reference points to",
       "undo": "Undo",
@@ -485,5 +491,16 @@
     "px": "px (pixels)",
     "percent": "%",
     "times": "times (a multiple of the text size)"
+  },
+  "theme": {
+    "default": "MarkTwain",
+    "light": "Light",
+    "dark": "Dark",
+    "mine": "My themes",
+    "import": "Import a theme file",
+    "remove": "Remove {{name}}",
+    "importHint": "Choose a file that ends in <c>.marktwain.colortheme</c>.",
+    "formatTitle": "Format of a theme file",
+    "formatHint": "A theme file is YAML. Only <c>background</c>, <c>foreground</c> and <c>primary</c> are needed, the other colors are worked out, and a color is written as <c>#RRGGBB</c>."
   }
 }

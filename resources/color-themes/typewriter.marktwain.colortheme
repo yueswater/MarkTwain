@@ -1,0 +1,12 @@
+name: "Typewriter"
+author: "crashmoney"
+source: "https://github.com/crashmoney/obsidian-typewriter"
+mode: light
+colors:
+  background: "#f4f1ea"
+  foreground: "#1a1a1a"
+  primary: "#1a1a1a"
+  surface: "#faf8f3"
+  muted: "#ebe7dd"
+  muted-foreground: "#6d6a62"
+  border: "#d8d2c4"

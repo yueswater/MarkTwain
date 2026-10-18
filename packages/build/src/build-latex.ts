@@ -1,5 +1,5 @@
-import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync } from "node:fs";
-import { delimiter, join, parse } from "node:path";
+import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, symlinkSync } from "node:fs";
+import { basename, delimiter, join, parse } from "node:path";
 import { collectTargets, parseMarkdown, resolveListLevels, resolvePlacementDefaults, resolveStatementStyle } from "@marktwain/schema";
 import { renderLatexFile, renderStatementsLatex, toIr, type IrDocument, type IrIssue } from "@marktwain/render";
 import { bibliographyKeys } from "./bibliography-keys";
@@ -55,8 +55,8 @@ type Prepared = {
   unsupported: string[];
 };
 
-/** Writes the project into root, the template folders are linked and the rest of the template is copied. */
-function prepare(input: LatexBuildInput, root: string): Prepared {
+/** Writes the project into root, the template folders are linked, or copied when the folder is to leave the computer, and the rest of the template is copied. */
+function prepare(input: LatexBuildInput, root: string, link = true): Prepared {
   const mathFailures: string[] = [];
   const citationFallbacks: string[] = [];
   const unknownCitations: string[] = [];
@@ -65,7 +65,9 @@ function prepare(input: LatexBuildInput, root: string): Prepared {
 
   for (const name of SHARED) {
     const source = join(input.templateDir, name);
-    if (existsSync(source)) symlinkSync(source, join(root, name), "junction");
+    if (!existsSync(source)) continue;
+    if (link) symlinkSync(source, join(root, name), "junction");
+    else copyTree(source, join(root, name));
   }
   for (const name of COPIED) copyFileSync(join(input.templateDir, name), join(root, name));
   // The watermarks of the project are added to this folder, so it is a copy and the template stays as it was
@@ -133,6 +135,19 @@ function warnings(prepared: Prepared): Diagnostic[] {
     })),
     ...[...new Set(prepared.unsupported)].map<Diagnostic>((feature) => ({ severity: "warning", code: "latex-approximate", message: feature, ...empty })),
   ];
+}
+
+/**
+ * Writes the complete LaTeX project, template included, into a new folder.
+ * It builds on its own with `texlua scripts/gen.lua` and `latexmk -xelatex main.tex`, no MarkTwain needed.
+ */
+export function exportLatexProject(input: LatexBuildInput, destination: string): { diagnostics: Diagnostic[]; mathFailures: string[] } {
+  if (existsSync(destination) && readdirSync(destination).length > 0) {
+    throw new Error(`${basename(destination)} is not empty`);
+  }
+  mkdirSync(destination, { recursive: true });
+  const prepared = prepare(input, destination, false);
+  return { diagnostics: warnings(prepared), mathFailures: prepared.mathFailures };
 }
 
 /** Builds the thesis PDF from the project documents with the LaTeX template. */

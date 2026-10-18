@@ -19,7 +19,7 @@ export function registerExportController(build: BuildService, dialogs: DialogSer
   });
 
   handle(IpcChannel.ExportProject, async () => {
-    const parent = await dialogs.chooseExportFolder();
-    return parent ? { path: build.exportProject(parent) } : null;
+    const path = await dialogs.chooseZipPath(build.projectArchiveName());
+    return path ? { path: await build.exportProject(path) } : null;
   });
 }

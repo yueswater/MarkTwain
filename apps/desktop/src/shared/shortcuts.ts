@@ -35,6 +35,7 @@ export const SHORTCUTS: readonly ShortcutCommand[] = [
   { id: "footnote", group: "insert", chord: "Mod+Alt+F", scope: "editor" },
   { id: "citation", group: "insert", chord: "Mod+Shift+K", scope: "editor" },
   { id: "crossRef", group: "insert", chord: "Mod+Alt+R", scope: "editor" },
+  { id: "link", group: "insert", chord: "Mod+K", scope: "editor" },
   { id: "equationName", group: "insert", chord: "Mod+Alt+N", scope: "editor" },
   { id: "peekReference", group: "insert", chord: "Mod+Alt+P", scope: "editor" },
 

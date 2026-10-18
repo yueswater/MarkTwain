@@ -42,6 +42,13 @@
       "singleton": "This project already has a document of that kind."
     },
     "table-template.unknown": "This table template does not exist.",
+    "theme": {
+      "not-yaml": "This is not a valid theme file and cannot be read.",
+      "missing": "The theme file has no <c>{{field}}</c>.",
+      "bad-value": "<c>{{field}}</c> of the theme file is not right, write a color as <c>#RRGGBB</c>.",
+      "too-large": "The theme file is too large to use.",
+      "not-found": "This theme was not found."
+    },
     "version": {
       "name-empty": "A name is needed.",
       "name-taken": "A change with the name <b>{{name}}</b> exists already.",

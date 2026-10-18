@@ -1,0 +1,13 @@
+name: "Minimal"
+author: "kepano"
+source: "https://github.com/kepano/obsidian-minimal"
+mode: light
+colors:
+  background: "#ffffff"
+  foreground: "#222222"
+  primary: "#0b6bcb"
+  surface: "#f7f7f8"
+  muted: "#f1f1f3"
+  muted-foreground: "#6b6b76"
+  border: "#e4e4e8"
+  link: "#0b6bcb"

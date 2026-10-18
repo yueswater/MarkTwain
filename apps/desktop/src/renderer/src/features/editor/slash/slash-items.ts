@@ -32,6 +32,7 @@ export type SlashHandlers = {
   insertImage: () => void;
   insertTable: () => void;
   insertLandscape: () => void;
+  editLink: () => void;
 };
 
 export type SlashGroup = "basic" | "thesis" | "statement";

@@ -1,0 +1,15 @@
+name: "Catppuccin Mocha"
+author: "Catppuccin"
+source: "https://github.com/catppuccin/obsidian"
+mode: dark
+colors:
+  background: "#1e1e2e"
+  foreground: "#cdd6f4"
+  primary: "#cba6f7"
+  surface: "#181825"
+  muted: "#313244"
+  muted-foreground: "#a6adc8"
+  border: "#45475a"
+  destructive: "#f38ba8"
+  heading: "#f5c2e7"
+  link: "#89b4fa"

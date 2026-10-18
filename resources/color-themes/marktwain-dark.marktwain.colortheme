@@ -1,0 +1,11 @@
+name: "MarkTwain Dark"
+author: "MarkTwain"
+mode: dark
+colors:
+  background: "#1d1d1d"
+  foreground: "#f0f0f0"
+  primary: "#f0f0f0"
+  surface: "#232323"
+  muted: "#2d2d2d"
+  muted-foreground: "#b3b3b3"
+  border: "#383838"

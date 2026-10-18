@@ -1,0 +1,15 @@
+name: "Cybertron"
+author: "nickmilo"
+source: "https://github.com/nickmilo/Cybertron"
+mode: dark
+colors:
+  background: "#0f0f19"
+  foreground: "#e0e0ff"
+  primary: "#00e5ff"
+  surface: "#151522"
+  muted: "#1d1d2e"
+  muted-foreground: "#8c8cb3"
+  border: "#2c2c44"
+  destructive: "#ff2a6d"
+  heading: "#ff2a6d"
+  link: "#05d9e8"

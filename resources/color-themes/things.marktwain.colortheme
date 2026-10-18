@@ -1,0 +1,13 @@
+name: "Things"
+author: "Colin Eckert"
+source: "https://github.com/colineckert/obsidian-things"
+mode: light
+colors:
+  background: "#ffffff"
+  foreground: "#1d1d1f"
+  primary: "#3478f6"
+  surface: "#fafafb"
+  muted: "#f2f3f5"
+  muted-foreground: "#72757e"
+  border: "#e5e6ea"
+  heading: "#1d1d1f"

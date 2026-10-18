@@ -154,3 +154,17 @@ export function setFigureSource(editor: Editor, pos: number, src: string): void 
   const node = nodeAtSafe(editor.state.doc, pos);
   if (node) editor.view.dispatch(editor.state.tr.setNodeMarkup(pos, undefined, { ...node.attrs, src }));
 }
+
+/** Writes a link over the range, the text of the link is the text that was given and the caret ends up after it, out of the link. */
+export function writeLink(editor: Editor, range: { from: number; to: number }, text: string, href: string): void {
+  editor
+    .chain()
+    .focus()
+    .insertContentAt(range, { type: "text", text, marks: [{ type: "link", attrs: { href } }] })
+    .run();
+}
+
+/** Takes the link away from the range and leaves its text. */
+export function removeLink(editor: Editor, range: { from: number; to: number }): void {
+  editor.chain().focus().setTextSelection(range).unsetLink().setTextSelection(range.to).run();
+}

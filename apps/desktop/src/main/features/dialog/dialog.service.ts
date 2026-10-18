@@ -14,7 +14,6 @@ export type DialogPort = {
     buttonLabel: string;
     filters: { name: string; extensions: string[] }[];
   }): Promise<string | null>;
-  showFolder(options: { title: string; buttonLabel: string }): Promise<string | null>;
 };
 
 export class DialogService {
@@ -54,6 +53,18 @@ export class DialogService {
     });
   }
 
+  /** The file of a color theme, the hook of the images also stands in for it, as for every other file that is opened. */
+  async chooseColorTheme(): Promise<string | null> {
+    const forced = this.forcedImagePath();
+    if (forced) return forced;
+    const t = this.translator();
+    return this.port.showOpen({
+      title: t("openTheme.title"),
+      buttonLabel: t("openTheme.button"),
+      filters: [{ name: t("filter.theme"), extensions: ["colortheme"] }],
+    });
+  }
+
   async choosePdfPath(suggestedName: string): Promise<string | null> {
     const forced = this.forcedExportPath();
     if (forced) return forced;
@@ -66,10 +77,15 @@ export class DialogService {
     });
   }
 
-  async chooseExportFolder(): Promise<string | null> {
+  async chooseZipPath(suggestedName: string): Promise<string | null> {
     const forced = this.forcedExportPath();
     if (forced) return forced;
     const t = this.translator();
-    return this.port.showFolder({ title: t("exportFolder.title"), buttonLabel: t("exportFolder.button") });
+    return this.port.showSave({
+      title: t("saveZip.title"),
+      buttonLabel: t("saveZip.button"),
+      defaultPath: `${suggestedName}.zip`,
+      filters: [{ name: t("filter.zip"), extensions: ["zip"] }],
+    });
   }
 }

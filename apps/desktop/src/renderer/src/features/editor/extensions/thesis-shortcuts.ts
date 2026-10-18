@@ -14,6 +14,7 @@ const ACTIONS: Record<string, Action> = {
   footnote: (h) => h.insertAtom("footnote"),
   citation: (h) => h.insertAtom("citation"),
   crossRef: (h) => h.insertAtom("crossRef"),
+  link: (h) => h.editLink(),
 };
 
 /** Shortcuts for the actions of the toolbar that have no key of their own in the editor. They do nothing while an input method composes. */
@@ -21,7 +22,7 @@ export const ThesisShortcuts = Extension.create<{ handlers: () => SlashHandlers 
   name: "thesisShortcuts",
 
   addOptions() {
-    return { handlers: () => ({ insertMath: () => undefined, insertAtom: () => undefined, insertImage: () => undefined, insertTable: () => undefined, insertLandscape: () => undefined }) };
+    return { handlers: () => ({ insertMath: () => undefined, insertAtom: () => undefined, insertImage: () => undefined, insertTable: () => undefined, insertLandscape: () => undefined, editLink: () => undefined }) };
   },
 
   addKeyboardShortcuts() {

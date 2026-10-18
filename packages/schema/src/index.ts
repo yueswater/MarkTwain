@@ -134,3 +134,16 @@ export {
   type StatementStyle,
 } from "./statements/kinds";
 export { FontFormatError, readFonts, type FontFace } from "./fonts/sfnt";
+export {
+  COLOR_THEME_EXTENSION,
+  ColorThemeError,
+  OPTIONAL_COLORS,
+  REQUIRED_COLORS,
+  isThemeColor,
+  parseColorTheme,
+  readableOn,
+  themeVariables,
+  writeColorTheme,
+  type ColorTheme,
+  type ThemeColors,
+} from "./theme/color-theme";

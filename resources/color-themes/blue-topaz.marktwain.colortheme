@@ -1,0 +1,13 @@
+name: "Blue Topaz"
+author: "PKM-er"
+source: "https://github.com/PKM-er/Blue-Topaz_Obsidian-css"
+mode: dark
+colors:
+  background: "#1a1d23"
+  foreground: "#dcdee3"
+  primary: "#4f9cff"
+  surface: "#20242b"
+  muted: "#272c35"
+  muted-foreground: "#9097a3"
+  border: "#313743"
+  heading: "#7bb8ff"

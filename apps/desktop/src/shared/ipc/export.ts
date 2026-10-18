@@ -5,6 +5,6 @@ export type ExportContract = {
   [IpcChannel.ExportPdf]: { req: void; res: { path: string } | null };
   /** Builds a final copy with the watermark and saves it where the user chooses; null when cancelled */
   [IpcChannel.ExportFinalPdf]: { req: void; res: { path: string } | null };
-  /** Writes the whole Typst project, template included, into a new folder; null when cancelled */
+  /** Writes the whole project of its engine, template included, into a zip that the user chooses; null when cancelled */
   [IpcChannel.ExportProject]: { req: void; res: { path: string } | null };
 };

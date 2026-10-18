@@ -11,6 +11,7 @@ import {
   FileCodeIcon,
   ImageIcon,
   ItalicIcon,
+  ExternalLinkIcon,
   Link2Icon,
   ListIcon,
   ListOrderedIcon,
@@ -51,6 +52,7 @@ type Props = {
   editor: Editor;
   onInsertMath: (kind: "inline" | "block") => void;
   onInsertAtom: (type: "footnote" | "citation" | "crossRef") => void;
+  onEditLink: () => void;
   onEditCaption: () => void;
   onChangeTemplate: () => void;
   onInsertImage: () => void;
@@ -74,6 +76,7 @@ const TOOLBAR_COMMAND: Record<string, string> = {
   footnote: "footnote",
   citation: "citation",
   crossRef: "crossRef",
+  link: "link",
   image: "image",
   table: "table",
   landscape: "landscape",
@@ -132,7 +135,7 @@ function insertDefinition(editor: Editor, inList: boolean): void {
     .run();
 }
 
-export function Toolbar({ editor, onInsertMath, onInsertAtom, onEditCaption, onChangeTemplate, onInsertImage, onInsertTable }: Props) {
+export function Toolbar({ editor, onInsertMath, onInsertAtom, onEditLink, onEditCaption, onChangeTemplate, onInsertImage, onInsertTable }: Props) {
   const { t } = useTranslation("editor");
   const { prefs } = usePrefs();
   const blockName = (block: string) => (block.startsWith("heading") && block !== "heading1" ? headingName(Number(block.slice(-1)) as 2 | 3 | 4, prefs.headingNames, t(`toolbar.${block}`)) : t(`toolbar.${block}`));
@@ -143,6 +146,7 @@ export function Toolbar({ editor, onInsertMath, onInsertAtom, onEditCaption, onC
     selector: ({ editor: e }) => ({
       block: currentBlock(e),
       bold: e.isActive("bold"),
+      link: e.isActive("link"),
       italic: e.isActive("italic"),
       strike: e.isActive("strike"),
       code: e.isActive("code"),
@@ -262,6 +266,7 @@ export function Toolbar({ editor, onInsertMath, onInsertAtom, onEditCaption, onC
       {button(t("toolbar.footnote"), AsteriskIcon, () => onInsertAtom("footnote"))}
       {button(t("toolbar.citation"), BookMarkedIcon, () => onInsertAtom("citation"))}
       {button(t("toolbar.crossRef"), Link2Icon, () => onInsertAtom("crossRef"))}
+      {button(t("toolbar.link"), ExternalLinkIcon, onEditLink, { active: state.link })}
       <span className="mx-1 h-5 w-px bg-border" aria-hidden="true" />
       {button(t("toolbar.rule"), MinusIcon, () => editor.chain().focus().setHorizontalRule().run())}
       {button(t("toolbar.image"), ImageIcon, onInsertImage)}

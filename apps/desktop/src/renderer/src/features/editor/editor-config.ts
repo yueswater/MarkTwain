@@ -135,6 +135,12 @@ export function buildEditorProps(ctx: EditorContext, label: string): EditorProps
       ctx.targets().setFigure({ pos: nodePos, src: String(node.attrs.src), caption: String(node.attrs.caption ?? ""), width: (node.attrs.width as string | null) ?? null, placement: (node.attrs.placement as Placement | null) ?? null });
       return true;
     },
+    // A click on a link goes to its address in the browser, the main process opens web addresses and nothing else, and the caret still lands in the link so that it can be edited
+    handleClick: (_view, _pos, event) => {
+      const link = event.target instanceof Element ? event.target.closest("a[href]") : null;
+      if (link && event.button === 0) window.open(link.getAttribute("href") ?? "", "_blank");
+      return false;
+    },
     // Open the edit dialog when a footnote, citation or cross-reference is clicked
     handleClickOn: (view, _pos, node, nodePos, _event, direct) => {
       if (!direct || !ATOM_TYPES.has(node.type.name)) return false;

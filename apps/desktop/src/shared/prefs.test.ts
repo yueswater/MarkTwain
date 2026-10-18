@@ -33,4 +33,11 @@ describe("statement prefs", () => {
     expect(prefs.statementColors).toEqual({ lemma: "#ABCDEF" });
     expect(sanitizePrefs({ statementStyle: "boxed" }).statementStyle).toBe("callout");
   });
+
+  it("keeps the id of a color theme when it is one, and falls back to the default otherwise", () => {
+    expect(sanitizePrefs({ colorTheme: "tokyo-night" }).colorTheme).toBe("tokyo-night");
+    for (const bad of ["../x", "Nord", "", 3, null, "a".repeat(61)]) expect(sanitizePrefs({ colorTheme: bad }).colorTheme).toBe("default");
+    expect(sanitizePrefs({ colorTheme: "nord" }, { ...DEFAULT_PREFS, colorTheme: "dracula" }).colorTheme).toBe("nord");
+    expect(sanitizePrefs({}, { ...DEFAULT_PREFS, colorTheme: "dracula" }).colorTheme).toBe("dracula");
+  });
 });

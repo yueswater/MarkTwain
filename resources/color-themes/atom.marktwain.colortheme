@@ -1,0 +1,15 @@
+name: "Atom"
+author: "kognise"
+source: "https://github.com/kognise/obsidian-atom"
+mode: dark
+colors:
+  background: "#282c34"
+  foreground: "#abb2bf"
+  primary: "#61afef"
+  surface: "#21252b"
+  muted: "#2c313a"
+  muted-foreground: "#7f848e"
+  border: "#3e4451"
+  destructive: "#e06c75"
+  heading: "#e06c75"
+  link: "#61afef"
