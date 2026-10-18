@@ -40,10 +40,12 @@ type Props = {
   initialPage?: SettingsPageId;
   /** Called when something of the thesis was saved, the preview watches it */
   onThesisSaved: () => void;
+  /** Called when the text of the documents was changed under the editor, by a new language of the thesis */
+  onDocumentsChanged: () => void;
 };
 
 /** The settings as a window over the app: sections with their pages on the left, the page on the right. */
-export function SettingsDialog({ open, onOpenChange, hasProject, initialPage, onThesisSaved }: Props) {
+export function SettingsDialog({ open, onOpenChange, hasProject, initialPage, onThesisSaved, onDocumentsChanged }: Props) {
   const { t } = useTranslation("settings");
   const { t: tConfig } = useTranslation("config");
   const [pageId, setPageId] = useState<SettingsPageId>(() => initialPage ?? lastPage() ?? (hasProject ? "thesisInfo" : "editorAppearance"));
@@ -115,7 +117,7 @@ export function SettingsDialog({ open, onOpenChange, hasProject, initialPage, on
       <DialogContent showCloseButton className="flex h-[min(80vh,720px)] w-[min(92vw,56rem)] max-w-none gap-0 overflow-hidden p-0 sm:max-w-none">
         <DialogTitle className="sr-only">{t("title")}</DialogTitle>
         <DialogDescription className="sr-only">{t("description")}</DialogDescription>
-        <nav aria-label={t("title")} className="flex w-56 shrink-0 flex-col gap-1 overflow-y-auto border-r bg-muted/30 p-3">
+        <nav aria-label={t("title")} className="flex w-64 shrink-0 flex-col gap-1 overflow-y-auto border-r bg-muted/30 p-3">
           <p className="px-2 py-1.5 text-sm font-semibold">{t("title")}</p>
           <div className="relative mb-1">
             <SearchIcon className="pointer-events-none absolute top-1/2 left-2 size-3.5 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
@@ -171,7 +173,7 @@ export function SettingsDialog({ open, onOpenChange, hasProject, initialPage, on
           {page.needsProject && !hasProject ? (
             <p className="text-sm text-muted-foreground">{t("noProject")}</p>
           ) : (
-            <PageBody pageId={page.id} onThesisSaved={onThesisSaved} advanced={advanced} />
+            <PageBody pageId={page.id} onThesisSaved={onThesisSaved} onDocumentsChanged={onDocumentsChanged} advanced={advanced} />
           )}
         </section>
       </DialogContent>
@@ -179,7 +181,7 @@ export function SettingsDialog({ open, onOpenChange, hasProject, initialPage, on
   );
 }
 
-function PageBody({ pageId, onThesisSaved, advanced }: { pageId: SettingsPageId; onThesisSaved: () => void; advanced: ReturnType<typeof useAdvancedState> }) {
+function PageBody({ pageId, onThesisSaved, onDocumentsChanged, advanced }: { pageId: SettingsPageId; onThesisSaved: () => void; onDocumentsChanged: () => void; advanced: ReturnType<typeof useAdvancedState> }) {
   const page = pageOf(pageId);
   switch (pageId) {
     case "editorAppearance":
@@ -197,6 +199,7 @@ function PageBody({ pageId, onThesisSaved, advanced }: { pageId: SettingsPageId;
         <ConfigForm
           embedded
           part="school"
+          onLanguageChanged={onDocumentsChanged}
           onSaved={() => {
             onThesisSaved();
             // The school decides what the format settings inherit, the watermark included

@@ -1,3 +1,4 @@
+import { nodeAtSafe } from "./node-at";
 import type { Editor } from "@tiptap/core";
 import { Fragment } from "@tiptap/pm/model";
 
@@ -13,7 +14,7 @@ export function insertLandscape(editor: Editor): void {
 
 /** Changes the kind and the title of the block at pos, its label and other attributes stay. */
 export function updateStatement(editor: Editor, pos: number, change: { kind: string; title: string }): void {
-  const node = editor.state.doc.nodeAt(pos);
+  const node = nodeAtSafe(editor.state.doc, pos);
   if (!node || node.type.name !== "div") return;
   const { title: _old, ...props } = (node.attrs.props ?? {}) as Record<string, string>;
   void _old;
@@ -32,7 +33,7 @@ export function updateStatement(editor: Editor, pos: number, change: { kind: str
 
 /** Takes the frame of the block away and keeps what is inside. */
 export function unwrapStatement(editor: Editor, pos: number): void {
-  const node = editor.state.doc.nodeAt(pos);
+  const node = nodeAtSafe(editor.state.doc, pos);
   if (!node || node.type.name !== "div") return;
   editor
     .chain()

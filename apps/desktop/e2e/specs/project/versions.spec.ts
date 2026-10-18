@@ -64,6 +64,9 @@ test("a version is saved, a change is started and opened again, the history rest
   const history = page.getByRole("dialog");
   await expect(history.getByRole("listitem")).toHaveCount(3);
   await expect(history.getByRole("listitem").first()).toContainText("Rewrote it");
+  // The main line is called by its name in the menu everywhere, not by the name that it has inside
+  await expect(history.getByRole("listitem").filter({ hasText: "The first draft" })).toContainText("Main line");
+  await expect(history).not.toContainText("main\n");
   const row = history.getByRole("listitem").filter({ hasText: "The first draft" });
   await row.getByRole("button", { name: "Restore" }).click();
   // The row asks first, and then the only button of the row that restores is the one that confirms

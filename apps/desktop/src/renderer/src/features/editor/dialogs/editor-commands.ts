@@ -1,4 +1,6 @@
+import { nodeAtSafe } from "../blocks/node-at";
 import type { Editor, JSONContent } from "@tiptap/core";
+import { NodeSelection } from "@tiptap/pm/state";
 import { findTable } from "@tiptap/pm/tables";
 import { parseMarkdown, type Placement } from "@marktwain/schema";
 import type { MathTarget } from "../math/MathDialog";
@@ -19,8 +21,23 @@ export function anchorOfNode(editor: Editor | null, pos: number): MathTarget["an
   return { top: box.top, bottom: box.bottom, left: box.left, right: box.right };
 }
 
+/**
+ * A formula or a figure that was just made is selected as a whole, and an insertion on top of a selection takes its place.
+ * The caret goes to the paragraph after the block, one is made when there is none, so what is inserted next lands after it.
+ */
+export function stepOutOfNode(editor: Editor): void {
+  const { selection, doc } = editor.state;
+  if (!(selection instanceof NodeSelection) || selection.node.isInline) return;
+  const after = selection.to;
+  const next = doc.resolve(after).nodeAfter;
+  const chain = editor.chain();
+  if (!next || !next.isTextblock) chain.insertContentAt(after, { type: "paragraph" });
+  chain.setTextSelection(after + 1).run();
+}
+
 /** Adds a new atom node, or updates an existing one when pos is set. */
 export function writeAtom(editor: Editor, name: string, attrs: Record<string, unknown>, pos: number | null): void {
+  if (pos === null) stepOutOfNode(editor);
   const chain = editor.chain().focus();
   if (pos === null) chain.insertContent({ type: name, attrs }).run();
   else {
@@ -36,11 +53,12 @@ export function writeAtom(editor: Editor, name: string, attrs: Record<string, un
 /** Takes the node at pos away. */
 export function removeNode(editor: Editor, pos: number | null): void {
   if (pos === null) return;
-  const node = editor.state.doc.nodeAt(pos);
+  const node = nodeAtSafe(editor.state.doc, pos);
   if (node) editor.chain().focus().deleteRange({ from: pos, to: pos + node.nodeSize }).run();
 }
 
 export function writeMath(editor: Editor, target: MathTarget, latex: string): void {
+  if (target.pos === null) stepOutOfNode(editor);
   const chain = editor.chain().focus();
   if (target.pos === null) {
     (target.kind === "inline" ? chain.insertInlineMath({ latex }) : chain.insertBlockMath({ latex })).run();
@@ -57,6 +75,7 @@ export function removeMath(editor: Editor, target: MathTarget): void {
 
 /** A table of the given size after the cursor, a table cannot hold another table, so a new one goes after the current one. */
 export function insertGridTable(editor: Editor, size: { rows: number; columns: number; caption: string }): void {
+  stepOutOfNode(editor);
   const chain = editor.chain().focus();
   const table = findTable(editor.state.selection.$from);
   if (table) {
@@ -71,6 +90,7 @@ export function insertGridTable(editor: Editor, size: { rows: number; columns: n
 export function insertTemplateTable(editor: Editor, markdown: string): void {
   const table = parseMarkdown(markdown).content?.[0];
   if (!table) return;
+  stepOutOfNode(editor);
   const chain = editor.chain().focus();
   const inside = findTable(editor.state.selection.$from);
   if (inside) {
@@ -81,7 +101,7 @@ export function insertTemplateTable(editor: Editor, markdown: string): void {
 
 /** Puts the table of a template where the table at pos is, and keeps what the person gave it: label, caption, notes, place and size. */
 export function replaceTable(editor: Editor, pos: number, markdown: string): void {
-  const old = editor.state.doc.nodeAt(pos);
+  const old = nodeAtSafe(editor.state.doc, pos);
   const made = parseMarkdown(markdown).content?.[0] as JSONContent | undefined;
   if (!old || old.type.name !== "table" || !made) return;
   const keep = (name: string, fallback: unknown) => (old.attrs[name] ? old.attrs[name] : fallback);
@@ -108,6 +128,7 @@ export function replaceTable(editor: Editor, pos: number, markdown: string): voi
 export function writeFigure(editor: Editor, target: { pos: number | null; src: string }, values: { caption: string; width: string | null; placement: Placement | null }): void {
   const attrs = { src: target.src, ...values };
   if (target.pos === null) {
+    stepOutOfNode(editor);
     const table = findTable(editor.state.selection.$from);
     const chain = editor.chain().focus();
     if (table) chain.insertContentAt(table.pos + table.node.nodeSize, { type: "figure", attrs });
@@ -116,7 +137,7 @@ export function writeFigure(editor: Editor, target: { pos: number | null; src: s
     return;
   }
   const pos = target.pos;
-  const node = editor.state.doc.nodeAt(pos);
+  const node = nodeAtSafe(editor.state.doc, pos);
   if (!node) return;
   editor
     .chain()
@@ -130,6 +151,6 @@ export function writeFigure(editor: Editor, target: { pos: number | null; src: s
 
 /** Puts a new stored image in place of the one of the figure at pos. */
 export function setFigureSource(editor: Editor, pos: number, src: string): void {
-  const node = editor.state.doc.nodeAt(pos);
+  const node = nodeAtSafe(editor.state.doc, pos);
   if (node) editor.view.dispatch(editor.state.tr.setNodeMarkup(pos, undefined, { ...node.attrs, src }));
 }

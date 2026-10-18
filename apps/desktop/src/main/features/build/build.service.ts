@@ -1,3 +1,4 @@
+import { isDefaultText } from "../../../shared/default-headings";
 import { buildLatex, buildTypst, exportTypstProject, type BuildInput, type BuildResult, type LatexBuildInput } from "@marktwain/build";
 import { existsSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -134,6 +135,18 @@ export class BuildService {
     return destination;
   }
 
+  /** A chapter or an appendix that nobody has written in still has the heading it was made with, and prints as an empty chapter with that title. */
+  private untouchedChapters(): BuildOutcome["diagnostics"] {
+    return this.documents
+      .list()
+      .flatMap((summary) => {
+        const doc = this.documents.get(summary.id);
+        if (!isDefaultText(doc.kind, doc.text)) return [];
+        const title = doc.text.replace(/^#\s+/, "").trim();
+        return [{ severity: "warning" as const, code: "default-chapter" as const, message: title, file: null, line: null, source: { documentId: doc.id, block: 0 } }];
+      });
+  }
+
   async build(): Promise<BuildOutcome> {
     if (this.running) throw new AppError(ErrorCode.BuildBusy);
     const latex = this.engine() === "latex";
@@ -154,14 +167,17 @@ export class BuildService {
       }
       return {
         ok: result.ok,
-        diagnostics: result.diagnostics.map((d) => ({
-          severity: d.severity,
-          code: d.code ?? null,
-          message: d.message,
-          file: d.file,
-          line: d.line,
-          source: d.source,
-        })),
+        diagnostics: [
+          ...result.diagnostics.map((d) => ({
+            severity: d.severity,
+            code: d.code ?? null,
+            message: d.message,
+            file: d.file,
+            line: d.line,
+            source: d.source,
+          })),
+          ...this.untouchedChapters(),
+        ],
         mathFailures: result.mathFailures,
         pageCount: result.ok ? pageCountOf(result.pdf) : 0,
         anchors: result.ok ? result.anchors : [],

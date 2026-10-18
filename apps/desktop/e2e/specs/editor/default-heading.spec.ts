@@ -52,3 +52,38 @@ test("the heading that nobody touched follows the language of the thesis, the on
   await sidebar.getByRole("button", { name: "Chapter 2", exact: true }).click();
   await expect(editor.locator("h1")).toHaveText("研究方法");
 });
+
+test("a chapter that is open follows a new language of the thesis at once, and what is saved is the new heading", async ({ launch }) => {
+  const { app } = await launch({ name: "開著換語言", projectName: "論文.marktwain", env: WITH_HEADING });
+  const page = await app.firstWindow();
+  await createProject(page);
+  const editor = page.locator(".ProseMirror");
+  await expect(editor.locator("h1")).toHaveText("緒論");
+  await page.keyboard.press("ControlOrMeta+,");
+  const dialog = page.getByRole("dialog", { name: "Settings" });
+  await dialog.getByRole("button", { name: "School and format", exact: true }).click();
+  await dialog.getByRole("combobox", { name: "Language of the thesis" }).click();
+  await page.getByRole("option", { name: "English" }).click();
+  await page.keyboard.press("Escape");
+  // The editor was open on the old heading, it is made again from what the language changed
+  await expect(editor.locator("h1")).toHaveText("Introduction");
+  await page.waitForTimeout(1500);
+  expect(await savedChapter(page)).toBe("# Introduction\n");
+});
+
+test("the preview warns about a chapter that nobody has written in, and the warning is gone once there is text", async ({ launch }) => {
+  const { app } = await launch({ name: "空章警告", projectName: "論文.marktwain", env: WITH_HEADING });
+  const page = await app.firstWindow();
+  await createProject(page);
+  await page.getByRole("button", { name: "Preview", exact: true }).click();
+  const notes = page.getByRole("log");
+  await expect(notes).toContainText("has no text yet and still has its default title", { timeout: 90_000 });
+
+  // The first typing replaces the title, a paragraph below it is the text, and the next build has no such warning
+  const editor = page.locator(".ProseMirror");
+  await editor.click();
+  await page.keyboard.press("ControlOrMeta+End");
+  await page.keyboard.press("Enter");
+  await page.keyboard.type("內文。");
+  await expect(notes).not.toContainText("has no text yet", { timeout: 90_000 });
+});

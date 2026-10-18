@@ -175,6 +175,7 @@ export function App() {
         }}
         hasProject={state.project !== null}
         onThesisSaved={bumpSaved}
+        onDocumentsChanged={() => setGeneration((n) => n + 1)}
       />
     </AppShell>
   );

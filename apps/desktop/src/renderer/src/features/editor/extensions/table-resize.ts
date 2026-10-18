@@ -1,3 +1,4 @@
+import { nodeAtSafe } from "../blocks/node-at";
 import { Extension } from "@tiptap/core";
 import { Plugin, PluginKey } from "@tiptap/pm/state";
 import { columnResizingPluginKey } from "@tiptap/pm/tables";
@@ -74,7 +75,7 @@ export const TableResize = Extension.create<{ labels: ResizeLabels }>({
             pointer = { x: event.clientX, y: event.clientY };
             if (drag) {
               const height = rowHeightPoints(drag.startHeight + (event.clientY - drag.startY));
-              const node = view.state.doc.nodeAt(drag.pos);
+              const node = nodeAtSafe(view.state.doc, drag.pos);
               if (node) view.dispatch(view.state.tr.setNodeMarkup(drag.pos, undefined, { ...node.attrs, height: `${height}pt` }));
               show(labels.height(height));
               return;
