@@ -2,6 +2,7 @@ import type { JSONContent } from "@tiptap/core";
 import { EditorContent, useEditor } from "@tiptap/react";
 import { parseMarkdown, serializeMarkdown, type Placement } from "@marktwain/schema";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { isDefaultText } from "../../../../shared/default-headings";
 import { useTranslation } from "react-i18next";
 import { usePrefs } from "@/lib/prefs";
 import { cn } from "@/lib/utils";
@@ -148,8 +149,18 @@ function EditorSurface({ doc, scrollTo, onSaved, registerFlush, onOpenTarget, on
     if (status === "saved") savedRef.current?.();
   }, [status, savedRef]);
 
-  const autosaver = useMemo(() => new Autosaver((text) => api.invoke(IpcChannel.DocumentSave, { id: doc.id, text }), setStatus), [doc.id]);
+  // The first updates of an editor can only be what it normalizes while it opens, text that is the same as what is on disk is nothing to save, and saving it would write over a change made elsewhere
+  const opened = useMemo(() => ({ updates: 0, saved: null as string | null }), [doc.id]);
+  const autosaver = useMemo(
+    () =>
+      new Autosaver(async (text) => {
+        await api.invoke(IpcChannel.DocumentSave, { id: doc.id, text });
+        opened.saved = text;
+      }, setStatus),
+    [doc.id, opened],
+  );
   const autosaverRef = useLatest(autosaver);
+
   useEffect(() => autosaver.setDelay(prefs.autosaveDelayMs), [autosaver, prefs.autosaveDelayMs]);
   useEffect(() => {
     registerFlush?.(() => autosaver.flush());
@@ -174,7 +185,14 @@ function EditorSurface({ doc, scrollTo, onSaved, registerFlush, onOpenTarget, on
     {
       extensions: buildExtensions(context),
       content: parseMarkdown(doc.text) as JSONContent,
-      onUpdate: ({ editor: e }) => autosaver.schedule(() => serializeMarkdown(e.getJSON())),
+      onUpdate: ({ editor: e }) => {
+        if (opened.updates < 3 && !autosaver.hasUnsaved()) {
+          opened.updates += 1;
+          opened.saved ??= serializeMarkdown(parseMarkdown(doc.text) as Parameters<typeof serializeMarkdown>[0]);
+          if (serializeMarkdown(e.getJSON() as Parameters<typeof serializeMarkdown>[0]) === opened.saved) return;
+        }
+        autosaver.schedule(() => serializeMarkdown(e.getJSON()));
+      },
       // Where the caret is, only when a person moved it in the editor, the preview follows
       onSelectionUpdate: ({ editor: e }) => {
         if (!e.isFocused) return;
@@ -185,6 +203,14 @@ function EditorSurface({ doc, scrollTo, onSaved, registerFlush, onOpenTarget, on
     [doc.id],
   );
   editorRef.current = editor;
+
+  // A chapter that nobody has written in starts with its default heading selected, so the first typing replaces the title and does not land inside it
+  useEffect(() => {
+    if (!editor || editor.isDestroyed || !isDefaultText(doc.kind, doc.text)) return;
+    const heading = editor.state.doc.firstChild;
+    if (heading?.type.name === "heading") editor.chain().focus().setTextSelection({ from: 1, to: heading.nodeSize - 1 }).run();
+    // Once for each document, the text that was read is the one that decides
+  }, [editor, doc.id]);
 
   const follow = usePreviewFollow({ editor, scroller, onTopBlock, scrollTo });
   const flip = useChapterFlip({ editor, scroller, neighbors, onFlip, arrive, onArrived });

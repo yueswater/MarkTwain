@@ -1,3 +1,4 @@
+import { nodeAtSafe } from "./node-at";
 import type { Editor } from "@tiptap/core";
 import type { Node as PmNode, Slice } from "@tiptap/pm/model";
 import { NodeSelection } from "@tiptap/pm/state";
@@ -44,7 +45,7 @@ export const endNodeDrag = (): void => {
 export function startNodeDrag(editor: Editor, pos: number, image: Element | null, event: { dataTransfer: DataTransfer | null; preventDefault: () => void }): void {
   const { view } = editor;
   const data = event.dataTransfer;
-  const node = view.state.doc.nodeAt(pos);
+  const node = nodeAtSafe(view.state.doc, pos);
   if (!data || !node) return event.preventDefault();
   const slice = NodeSelection.create(view.state.doc, pos).content();
   const { dom, text } = view.serializeForClipboard(slice);

@@ -1,3 +1,4 @@
+import { nodeAtSafe } from "./node-at";
 import type { Editor } from "@tiptap/core";
 import { GripVerticalIcon } from "lucide-react";
 import { useCallback, useEffect, useRef, useState, type RefObject } from "react";
@@ -76,7 +77,7 @@ export function BlockHandle({ editor, frame, inset }: { editor: Editor; frame: R
   useEffect(() => {
     const update = () => {
       if (block.current === null) return;
-      if (!editor.state.doc.nodeAt(block.current)) {
+      if (!nodeAtSafe(editor.state.doc, block.current)) {
         block.current = null;
         setPlace(null);
       } else measure();

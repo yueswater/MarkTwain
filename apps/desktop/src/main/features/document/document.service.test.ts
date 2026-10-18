@@ -174,3 +174,37 @@ describe("reorder", () => {
     expect(codeOf(() => service.reorder("nope", "id-3", "after"))).toBe("document.not-found");
   });
 });
+
+describe("the default heading of a chapter", () => {
+  const withLanguage = (language: () => string) => {
+    let n = 0;
+    return new DocumentService(session, () => `h-${++n}`, () => new Date(1000), language);
+  };
+
+  it("is a first level heading in the language of the thesis, for a new project and for a new chapter", () => {
+    const documents = withLanguage(() => "english");
+    documents.seedDefaults();
+    const second = documents.create("chapter");
+    const appendix = documents.create("appendix");
+    expect(documents.get("h-3").text).toBe("# Introduction\n");
+    expect(documents.get(second.id).text).toBe("# New chapter\n");
+    expect(documents.get(appendix.id).text).toBe("# New appendix\n");
+    expect(documents.get("h-1").text).toBe("");
+  });
+
+  it("is in Chinese when nobody says another language", () => {
+    service.seedDefaults();
+    expect(service.get("id-3").text).toBe("# 緒論\n");
+  });
+
+  it("is written again in a new language while nobody has written in the chapter, and only then", () => {
+    service.seedDefaults();
+    const second = service.create("chapter");
+    const third = service.create("chapter");
+    service.save(third.id, "# 研究方法\n\n內文\n");
+    service.retitleUntouched("chinese", "english");
+    expect(service.get("id-3").text).toBe("# Introduction\n");
+    expect(service.get(second.id).text).toBe("# New chapter\n");
+    expect(service.get(third.id).text).toBe("# 研究方法\n\n內文\n");
+  });
+});

@@ -57,5 +57,6 @@
     "other": "Something here could not be turned into a PDF.",
     "commandNamed": "A formula or a piece of text uses a command that is not known: {{command}}. Check that it is spelled correctly."
   },
-  "noWatermark": "This thesis has no watermark image, so none is drawn. Choose a school in the settings or use an image of your own."
+  "noWatermark": "This thesis has no watermark image, so none is drawn. Choose a school in the settings or use an image of your own.",
+  "defaultChapter": "“{{title}}” has no text yet and still has its default title, so the PDF has an empty chapter."
 }

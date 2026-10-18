@@ -133,7 +133,8 @@ export function PdfPreview({ revision, placeKey, anchors, follow, onPick }: Prop
       // A thesis is read here, not edited: no annotations, forms, stamps or tools, and the links of the PDF are followed
       disabledCategories: ["annotation", "redaction", "form", "signature", "stamp", "insert", "history", "mode", "document-open", "document-protect", "document-print", "document-capture", "document-export", "document-close", "panel-comment", "panel-annotation-style"],
       annotations: { locked: { type: LockModeType.All }, autoOpenLinks: true },
-      stamp: { libraries: [] },
+      // The stamp plugin asks a CDN for its default stamps unless it is told that there are none
+      stamp: { manifests: [] },
       zoom: { defaultZoomLevel: ZoomMode.FitWidth },
     }),
     // The language is read when the viewer starts

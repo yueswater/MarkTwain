@@ -43,7 +43,7 @@ export function HistoryDialog({ branch, headId, load, busy, error, onRestore, on
       <DialogContent className="sm:max-w-xl">
         <DialogHeader>
           <DialogTitle>{t("history.title")}</DialogTitle>
-          <DialogDescription>{t("history.description", { branch })}</DialogDescription>
+          <DialogDescription>{t("history.description", { branch: branch === "main" ? t("branch.main") : branch })}</DialogDescription>
         </DialogHeader>
         {error && (
           <p role="alert" className="text-sm text-destructive">
@@ -84,7 +84,7 @@ export function HistoryDialog({ branch, headId, load, busy, error, onRestore, on
                   )}
                   {entry.heads.map((head) => (
                     <span key={head} className="rounded-full border px-2 py-0.5 text-xs text-muted-foreground">
-                      {head}
+                      {head === "main" ? t("branch.main") : head}
                     </span>
                   ))}
                 </div>

@@ -1,3 +1,4 @@
+import { defaultText, isUntouched } from "../../../shared/default-headings";
 import { DOCUMENT_KIND_ORDER, DocumentKind, SINGLETON_KINDS } from "../../../shared/enums/document-kind.enum";
 import { ErrorCode } from "../../../shared/enums/error-code.enum";
 import type { DocumentData, DocumentSummary } from "../../../shared/ipc";
@@ -29,6 +30,10 @@ export class DocumentService {
     private readonly session: DatabaseSession,
     private readonly newId: () => string = () => crypto.randomUUID(),
     private readonly now: () => Date = () => new Date(),
+    /** The language of the thesis, the default heading of a new chapter is written in it */
+    private readonly language: () => string = () => "chinese",
+    /** False for a new chapter to start empty, for the tests */
+    private readonly defaultHeadings: boolean = true,
   ) {}
 
   private repository(): DocumentRepository {
@@ -45,7 +50,7 @@ export class DocumentService {
         kind,
         position: 1,
         title: "",
-        text: "",
+        text: this.defaultHeadings ? defaultText(kind, 1, this.language()) : "",
         updated_at: updatedAt,
       });
     }
@@ -103,11 +108,21 @@ export class DocumentService {
       kind,
       position: existing.length + 1,
       title: "",
-      text: "",
+      text: this.defaultHeadings ? defaultText(kind, existing.length + 1, this.language()) : "",
       updated_at: this.now().getTime(),
     };
     repository.insert(row);
     return toSummary(row);
+  }
+
+  /** The language of the thesis changed, a heading that nobody touched is written again in the new language, and one that was edited stays. */
+  retitleUntouched(from: string, to: string): void {
+    const repository = this.repository();
+    const updatedAt = this.now().getTime();
+    for (const row of repository.list()) {
+      if (!isUntouched(row.kind, row.text, from)) continue;
+      repository.updateText(row.id, defaultText(row.kind, row.text === defaultText(row.kind, 1, from) ? 1 : 2, to), updatedAt);
+    }
   }
 
   /** After a delete the remaining documents of that kind are renumbered 1 to n. */
