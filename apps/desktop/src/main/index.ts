@@ -1,6 +1,7 @@
 import { app, BrowserWindow } from "electron";
 import { declareAssetScheme, handleAssetProtocol } from "./core/asset-protocol";
 import { settingsFilePath } from "./config/paths.config";
+import { TEST_NO_DEFAULT_HEADING_ENV } from "./config/app.config";
 import { readFileSync } from "node:fs";
 import { DEFAULT_NUMBERING } from "./config/numbering.config";
 import { join } from "node:path";
@@ -56,7 +57,14 @@ app.setPath("userData", userData);
 
 // Composition root, creates the shared objects and passes each feature controller to bootstrap.
 const session = new DatabaseSession();
-const documents = new DocumentService(session);
+const documents = new DocumentService(session, undefined, undefined, () => {
+  // The language of the thesis, a project that is not open or has no settings yet is in Chinese
+  try {
+    return config.get().fields.language;
+  } catch {
+    return "chinese";
+  }
+}, process.env[TEST_NO_DEFAULT_HEADING_ENV] !== "1");
 const projects = new ProjectService(session, documents);
 const assets = new AssetService(session);
 const search = new SearchService(documents);
@@ -67,7 +75,7 @@ const config = new ConfigService(session, undefined, (path) => {
   } catch {
     return null;
   }
-});
+}, (from, to) => documents.retitleUntouched(from, to));
 const labels = new LabelService(documents, () => {
   // The thesis settings decide whether equation numbers restart in each chapter, a closed project uses the defaults
   try {

@@ -2,6 +2,7 @@ import type { JSONContent } from "@tiptap/core";
 import { EditorContent, useEditor } from "@tiptap/react";
 import { parseMarkdown, serializeMarkdown, type Placement } from "@marktwain/schema";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { isDefaultText } from "../../../../shared/default-headings";
 import { useTranslation } from "react-i18next";
 import { usePrefs } from "@/lib/prefs";
 import { cn } from "@/lib/utils";
@@ -185,6 +186,14 @@ function EditorSurface({ doc, scrollTo, onSaved, registerFlush, onOpenTarget, on
     [doc.id],
   );
   editorRef.current = editor;
+
+  // A chapter that nobody has written in starts with its default heading selected, so the first typing replaces the title and does not land inside it
+  useEffect(() => {
+    if (!editor || editor.isDestroyed || !isDefaultText(doc.kind, doc.text)) return;
+    const heading = editor.state.doc.firstChild;
+    if (heading?.type.name === "heading") editor.chain().focus().setTextSelection({ from: 1, to: heading.nodeSize - 1 }).run();
+    // Once for each document, the text that was read is the one that decides
+  }, [editor, doc.id]);
 
   const follow = usePreviewFollow({ editor, scroller, onTopBlock, scrollTo });
   const flip = useChapterFlip({ editor, scroller, neighbors, onFlip, arrive, onArrived });
