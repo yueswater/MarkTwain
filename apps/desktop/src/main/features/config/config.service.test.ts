@@ -92,3 +92,19 @@ describe("advanced settings", () => {
     expect(service.get().fields.title).toBe("論文");
   });
 });
+
+describe("ConfigService, the language of the thesis", () => {
+  it("tells when the language changes, with the old one and the new one, and only then", () => {
+    const seen: [string, string][] = [];
+    const session = new DatabaseSession();
+    session.open(db, ":memory:");
+    const watching = new ConfigService(session, () => new Date(5), () => null, (from, to) => seen.push([from, to]));
+    watching.set({ ...defaultFields(), language: "english" });
+    watching.set({ ...defaultFields(), language: "english", title: "題目" });
+    watching.set({ ...defaultFields(), language: "chinese" });
+    expect(seen).toEqual([
+      ["chinese", "english"],
+      ["english", "chinese"],
+    ]);
+  });
+});

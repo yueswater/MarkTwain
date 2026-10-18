@@ -25,6 +25,8 @@ export class ConfigService {
     private readonly now: () => Date = () => new Date(),
     /** Reads a file of the template such as schools/default.yml, null when it is missing */
     private readonly templateFile: (path: string) => string | null = () => null,
+    /** Called when the language of the thesis changes, with the language it was and the one it is now */
+    private readonly onLanguageChanged: (from: string, to: string) => void = () => undefined,
   ) {}
 
   /** Raw config.yml text for the build, built from defaults when the project has none yet. */
@@ -62,8 +64,12 @@ export class ConfigService {
   set(fields: ConfigFields): ConfigState {
     const repository = new ConfigRepository(this.session.db);
     const existing = repository.read() ?? "";
-    this.parse(existing); // Do not overwrite content that is not valid YAML
+    const before = this.parse(existing); // Do not overwrite content that is not valid YAML
     repository.write(writeConfig(existing, fields), this.now().getTime());
+    // A project without a language in its settings is in Chinese
+    const was = before.language === "english" ? "english" : "chinese";
+    const now = fields.language === "english" ? "english" : "chinese";
+    if (was !== now) this.onLanguageChanged(was, now);
     return { fields, issues: validateConfig(fields) };
   }
 
