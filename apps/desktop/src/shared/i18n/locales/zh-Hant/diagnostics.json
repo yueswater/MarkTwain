@@ -12,7 +12,8 @@
       "too-new": "此專案檔由較新版本建立（格式版本 {{found}}，目前支援至 {{supported}}）。請先更新 MarkTwain。",
       "none-open": "目前沒有開啟的專案。",
       "exists": "此位置已有同名檔案，無法覆蓋。",
-      "engine-unavailable": "此輸出方式無法用於新專案。"
+      "engine-unavailable": "此輸出方式無法用於新專案。",
+      "backup-failed": "專案未開啟。升級前無法備份此檔案，檔案維持原狀。請確認資料夾可以寫入。"
     },
     "build": {
       "busy": "PDF 正在產生中。",

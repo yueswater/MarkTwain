@@ -1,6 +1,7 @@
 import { app, BrowserWindow } from "electron";
 import { declareAssetScheme, handleAssetProtocol } from "./core/asset-protocol";
-import { settingsFilePath } from "./config/paths.config";
+import { logFilePath, settingsFilePath } from "./config/paths.config";
+import { describeError, log, setLogFile } from "./infra/logger";
 import { TEST_NO_DEFAULT_HEADING_ENV } from "./config/app.config";
 import { readFileSync } from "node:fs";
 import { DEFAULT_NUMBERING } from "./config/numbering.config";
@@ -56,6 +57,16 @@ import { projectWorkingCopy } from "./features/version/working-copy";
 const userData = app.getPath("userData");
 app.setName("MarkTwain");
 app.setPath("userData", userData);
+
+// The log is local and holds codes only, see infra/logger
+setLogFile(logFilePath());
+log.info("app", `started ${app.getVersion()} on ${process.platform} ${process.arch}`);
+// The monitor only watches, so the default handling of a crash stays as it is
+process.on("uncaughtExceptionMonitor", (error) => log.error("process", `uncaught ${describeError(error)}`));
+process.on("unhandledRejection", (reason) => {
+  console.error(reason);
+  log.error("process", `unhandled rejection ${describeError(reason)}`);
+});
 
 // Composition root, creates the shared objects and passes each feature controller to bootstrap.
 const session = new DatabaseSession();
