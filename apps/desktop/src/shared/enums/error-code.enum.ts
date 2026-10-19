@@ -11,6 +11,7 @@ export const ErrorCode = {
   ProjectTooNew: "project.too-new",
   ProjectNoneOpen: "project.none-open",
   ProjectEngineUnavailable: "project.engine-unavailable",
+  ProjectBackupFailed: "project.backup-failed",
   DocumentNotFound: "document.not-found",
   DocumentSingleton: "document.singleton",
   BuildBusy: "build.busy",

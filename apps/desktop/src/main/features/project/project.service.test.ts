@@ -119,7 +119,7 @@ describe("open", () => {
     service([...MIGRATIONS, later]).open(file);
 
     const backups = readdirSync(dir).filter((name) => name.includes(".bak-"));
-    expect(backups).toEqual(["我的論文.marktwain.bak-20261014-133005"]);
+    expect(backups).toEqual([`我的論文.marktwain.bak-${MIGRATIONS.length}`]);
     expect(documents.get(chapter.id).text).toBe("keep me");
     expect(
       session.db.all("SELECT name FROM sqlite_master WHERE name = 'later'"),

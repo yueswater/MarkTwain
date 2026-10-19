@@ -1,10 +1,11 @@
-import { copyFileSync, existsSync, rmSync } from "node:fs";
+import { existsSync, rmSync } from "node:fs";
 import { ErrorCode } from "../../../shared/enums/error-code.enum";
 import type { OutputEngine, ProjectInfo } from "../../../shared/ipc";
 import type { DatabaseSession } from "../../core/database-session";
 import { AppError } from "../../core/errors";
-import { createBackupPath } from "../../helpers/backup.helper";
+import { backUpProject } from "../../helpers/backup.helper";
 import { openDatabase, type Database } from "../../infra/db";
+import { describeError, log } from "../../infra/logger";
 import {
   currentVersion,
   migrate,
@@ -57,10 +58,9 @@ export class ProjectService {
         throw new AppError(ErrorCode.ProjectInvalid);
       }
       const pending = pendingMigrations(db, this.migrations);
-      if (pending > 0 && version > 0) {
-        copyFileSync(path, createBackupPath(path, this.now()));
-      }
-      migrate(db, this.migrations);
+      if (pending > 0) this.backUp(path, version);
+      const result = migrate(db, this.migrations);
+      if (pending > 0) log.info("project", `upgraded schema ${result.from} to ${result.to}`);
       if (!new ProjectRepository(db).get()) throw new AppError(ErrorCode.ProjectInvalid);
     } catch (error) {
       db.close();
@@ -77,6 +77,20 @@ export class ProjectService {
 
   close(): void {
     this.session.close();
+  }
+
+  /**
+   * Copies the file before an upgrade changes it. The upgrade does not start when the copy fails,
+   * since a project that cannot be restored must not be changed.
+   */
+  private backUp(path: string, schemaVersion: number): void {
+    try {
+      const { backup, removed } = backUpProject(path, schemaVersion);
+      log.info("project", `backup of schema ${schemaVersion} written as ${backup.slice(backup.lastIndexOf(".bak-"))}, ${removed.length} old removed`);
+    } catch (error) {
+      log.error("project", `backup of schema ${schemaVersion} failed ${describeError(error)}`);
+      throw new AppError(ErrorCode.ProjectBackupFailed);
+    }
   }
 
   /** Opens the database and checks it really is a SQLite file. */

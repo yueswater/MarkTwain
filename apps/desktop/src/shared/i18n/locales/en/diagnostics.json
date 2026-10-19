@@ -12,7 +12,8 @@
       "too-new": "This project was created by a newer version of MarkTwain (file format version {{found}}; this version supports up to {{supported}}). Please update MarkTwain.",
       "none-open": "No project is open.",
       "exists": "A file already exists at that location and will not be overwritten.",
-      "engine-unavailable": "This output engine cannot be used for a new project."
+      "engine-unavailable": "This output engine cannot be used for a new project.",
+      "backup-failed": "The project was not opened. A copy of it could not be made before the upgrade, so the file was left as it is. Check that the folder can be written to."
     },
     "build": {
       "busy": "A build is already running.",
